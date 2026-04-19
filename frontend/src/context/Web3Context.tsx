@@ -34,12 +34,12 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [walletType, setWalletType] = useState<'metamask' | 'hashpack' | null>(null);
     const [balance, setBalance] = useState("0");
 
-    const isConnected = !!(metamask.address || hashpack.accountId);
-    const address = metamask.address || hashpack.accountId;
+    const isConnected = !!(metamask.account || hashpack.accountId);
+    const address = metamask.account || hashpack.accountId;
     const isConnecting = metamask.isConnecting || hashpack.isConnecting;
 
     useEffect(() => {
-        if (metamask.address) {
+        if (metamask.account) {
             setWalletType('metamask');
             setBalance(metamask.balance);
         } else if (hashpack.accountId) {
