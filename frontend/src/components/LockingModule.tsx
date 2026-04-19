@@ -5,68 +5,68 @@ import React, { useState } from 'react';
 export const LockingModule: React.FC = () => {
   const [amount, setAmount] = useState("");
   const [asset, setAsset] = useState("HBAR");
-  const [duration, setDuration] = useState("3");
+  const [unlockDate, setUnlockDate] = useState("");
 
   return (
-    <div className="glass-panel p-8">
-      <h2 className="text-2xl font-bold mb-2">Saving & Locking</h2>
-      <p className="text-text-secondary text-sm mb-8">Secure your assets and earn yield on HBAR.</p>
+    <div className="industrial-panel">
+      <div className="mb-8 border-b border-white/5 pb-4">
+        <h2 className="text-xl font-black uppercase tracking-tight text-white">Saving & Locking</h2>
+        <p className="text-[10px] text-white/40 uppercase font-bold mt-1">Asset Staking Infrastructure</p>
+      </div>
 
       <div className="space-y-6">
-        <div className="flex flex-col">
-          <label className="text-xs font-semibold text-text-secondary mb-2 uppercase">Select Asset</label>
-          <div className="grid grid-cols-3 gap-3">
-            {["HBAR", "USDT", "USDC"].map((t) => (
-              <button
-                key={t}
-                onClick={() => setAsset(t)}
-                className={`py-3 rounded-xl font-medium text-sm border transition-all ${
-                  asset === t ? "border-accent-cyan bg-accent-cyan/10 text-accent-cyan" : "border-glass-border hover:border-white/20"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+        <div className="grid grid-cols-3 gap-2">
+          {["HBAR", "USDT", "USDC"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setAsset(t)}
+              className={`text-[10px] font-black py-2 border transition-all ${
+                asset === t ? "bg-white text-black border-white" : "border-white/10 text-white/40 hover:border-white/30"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div>
+          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Input Amount</label>
+          <div className="relative">
+            <input
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="industrial-input text-lg pr-12"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20">{asset}</span>
           </div>
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-xs font-semibold text-text-secondary mb-2 uppercase">Amount</label>
+        <div>
+          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Unlock Date</label>
           <input
-            type="number"
-            placeholder="0.00"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="bg-surface-highlight border border-glass-border rounded-xl p-4 text-white focus:outline-none focus:border-accent-terracotta"
+            type="date"
+            value={unlockDate}
+            onChange={(e) => setUnlockDate(e.target.value)}
+            className="industrial-input"
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-xs font-semibold text-text-secondary mb-2 uppercase">Lock Duration (Weeks)</label>
-          <select
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="bg-surface-highlight border border-glass-border rounded-xl p-4 text-white focus:outline-none"
-          >
-            <option value="3">3 Weeks (Min)</option>
-            <option value="6">6 Weeks</option>
-            <option value="12">12 Weeks</option>
-            <option value="24">24 Weeks</option>
-          </select>
-        </div>
-
-        <div className="bg-accent-terracotta/5 border border-accent-terracotta/20 rounded-xl p-4">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-text-secondary font-medium">Estimated Yield:</span>
-            <span className="text-accent-terracotta font-bold">{asset === "HBAR" ? "0.3% / 3w" : "0.00%"}</span>
-          </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-text-secondary">
-            <span>Early Withdrawal Penalty:</span>
-            <span>5.00%</span>
+        <div className="bg-red-500/5 border border-red-500/20 p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-1.5 h-1.5 bg-red-500 mt-1" />
+            <div>
+              <p className="text-[9px] font-black text-red-500 uppercase tracking-widest">Warning: Premature Liquidation</p>
+              <p className="text-[10px] text-white/60 mt-1 leading-relaxed">
+                Early withdrawal incurs a <span className="text-white font-bold">5.00% penalty</span>. 
+                Yield for HBAR is calculated at 0.3% per 21-day cycle.
+              </p>
+            </div>
           </div>
         </div>
 
-        <button className="btn-primary w-full py-4 text-lg">Lock Assets</button>
+        <button className="btn-terracotta w-full py-5 text-sm">Initialize Lock-up</button>
       </div>
     </div>
   );
