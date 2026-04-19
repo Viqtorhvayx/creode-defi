@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { XPGauge } from '../components/XPGauge';
-import { LockingModule } from '../components/LockingModule';
-import { BorrowingModule } from '../components/BorrowingModule';
+import { useWeb3 } from '../context/Web3Context';
 
 export default function Home() {
+  const { address, isConnected, walletType, balance, connectMetaMask, connectHashpack, disconnect } = useWeb3();
   const [userXP, setUserXP] = useState(68); // Mock XP for demo
   const [points, setPoints] = useState(12450); // Mock Lending Points
 
@@ -26,12 +24,29 @@ export default function Home() {
 
         <div className="flex space-x-4">
           <div className="glass-panel px-8 py-6 text-center">
-            <span className="block text-xs font-bold text-text-secondary uppercase mb-1">Lending Points</span>
-            <span className="text-3xl font-bold text-white">{points.toLocaleString()}</span>
+            <span className="block text-xs font-bold text-text-secondary uppercase mb-1">HBAR Balance</span>
+            <span className="text-3xl font-bold text-white">{Number(balance).toFixed(2)}</span>
           </div>
-          <button className="btn-primary flex items-center h-[fit-content] self-center">
-            Connect Wallet
-          </button>
+          
+          <div className="flex flex-col space-y-2">
+            {!isConnected ? (
+              <>
+                <button onClick={connectMetaMask} className="btn-primary py-2 text-sm bg-accent-terracotta">
+                  MetaMask
+                </button>
+                <button onClick={connectHashpack} className="btn-primary py-2 text-sm bg-accent-cyan text-black">
+                  HashPack
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] font-bold text-accent-cyan uppercase mb-1">{walletType} Active</span>
+                <button onClick={disconnect} className="btn-secondary py-2 text-sm border border-accent-terracotta/50 text-accent-terracotta">
+                  {address?.slice(0, 6)}...{address?.slice(-4)} (Disconnect)
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
