@@ -1,11 +1,29 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useWeb3 } from '../context/Web3Context';
 
 export const LockingModule: React.FC = () => {
+  const { lockAssets, isConnected } = useWeb3();
   const [amount, setAmount] = useState("");
   const [asset, setAsset] = useState("HBAR");
   const [unlockDate, setUnlockDate] = useState("");
+  const [isPending, setIsPending] = useState(false);
+
+  const handleLock = async () => {
+    if (!amount || !unlockDate) return;
+    try {
+      setIsPending(true);
+      const timestamp = Math.floor(new Date(unlockDate).getTime() / 1000);
+      await lockAssets(amount, timestamp);
+      alert("Lock-up successful!");
+    } catch (error: any) {
+      console.error(error);
+      alert("Error: " + (error.reason || error.message));
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
     <div className="industrial-panel">
@@ -66,7 +84,13 @@ export const LockingModule: React.FC = () => {
           </div>
         </div>
 
-        <button className="btn-terracotta w-full py-5 text-sm">Initialize Lock-up</button>
+        <button 
+          onClick={handleLock}
+          disabled={!isConnected || isPending || !amount || !unlockDate}
+          className="btn-terracotta w-full py-5 text-sm disabled:opacity-30"
+        >
+          {isPending ? "OPERATING..." : "Initialize Lock-up"}
+        </button>
       </div>
     </div>
   );

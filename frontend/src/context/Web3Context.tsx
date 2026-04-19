@@ -1,71 +1,122 @@
 "use client";
 
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { ethers } from 'ethers';
 import { useMetaMask } from '../hooks/useMetaMask';
 import { useHashpack } from '../hooks/useHashpack';
+import abis from './abis.json';
 
 interface Web3ContextType {
     address: string | null;
     isConnected: boolean;
-    walletType: 'MetaMask' | 'HashPack' | null;
+    walletType: 'metamask' | 'hashpack' | null;
     balance: string;
     connectMetaMask: () => Promise<void>;
     connectHashpack: () => Promise<void>;
-    disconnect: () => void;
-    network: string | null;
+    disconnect: () => Promise<void>;
+    isConnecting: boolean;
+    // Contract methods
+    lockAssets: (amount: string, unlockDate: number) => Promise<void>;
+    provideLiquidity: (amount: string) => Promise<void>;
+    borrow: (collateralAmount: string) => Promise<void>;
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
-/**
- * @title Web3Provider
- * @author Viqtorhvayx
- * @dev Unified Context Provider for managing multiple Hedera wallets.
- */
+// Deployed Addresses (Placeholders - Update after deployment)
+const VAULT_ADDRESS = "0x0000000000000000000000000000000000000000"; 
+const XP_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const metaMask = useMetaMask();
+    const metamask = useMetaMask();
     const hashpack = useHashpack();
 
-    const [address, setAddress] = useState<string | null>(null);
-    const [walletType, setWalletType] = useState<'MetaMask' | 'HashPack' | null>(null);
-    const [balance, setBalance] = useState<string>("0");
+    const [walletType, setWalletType] = useState<'metamask' | 'hashpack' | null>(null);
+    const [balance, setBalance] = useState("0");
 
-    // Sync state based on active connection
+    const isConnected = !!(metamask.address || hashpack.accountId);
+    const address = metamask.address || hashpack.accountId;
+    const isConnecting = metamask.isConnecting || hashpack.isConnecting;
+
     useEffect(() => {
-        if (metaMask.account) {
-            setAddress(metaMask.account);
-            setWalletType('MetaMask');
-            setBalance(metaMask.balance);
+        if (metamask.address) {
+            setWalletType('metamask');
+            setBalance(metamask.balance);
         } else if (hashpack.accountId) {
-            setAddress(hashpack.accountId);
-            setWalletType('HashPack');
-            // Balance fetching for HashPack would go here (via Mirror Node or HC)
-            setBalance("0"); 
+            setWalletType('hashpack');
+            setBalance("0"); // Hashpack balance fetching is separate
         } else {
-            setAddress(null);
             setWalletType(null);
             setBalance("0");
         }
-    }, [metaMask.account, metaMask.balance, hashpack.accountId]);
+    }, [metamask.address, metamask.balance, hashpack.accountId]);
 
-    const disconnect = () => {
-        if (walletType === 'MetaMask') metaMask.disconnect();
-        if (walletType === 'HashPack') hashpack.disconnect();
+    const connectMetaMask = async () => {
+        await metamask.connect();
     };
 
-    const value = {
-        address,
-        isConnected: !!address,
-        walletType,
-        balance,
-        connectMetaMask: metaMask.connect,
-        connectHashpack: hashpack.connect,
-        disconnect,
-        network: metaMask.account ? "Hedera Testnet (EVM)" : (hashpack.accountId ? "Hedera Testnet" : null)
+    const connectHashpack = async () => {
+        await hashpack.connect();
+    };
+
+    const disconnect = async () => {
+        if (walletType === 'metamask') await metamask.disconnect();
+        else if (walletType === 'hashpack') await hashpack.disconnect();
+    };
+
+    // Contract Interaction Logic (EVM focus for now, HashConnect requires separate signer logic)
+    const getVaultContract = useCallback(async () => {
+        if (walletType === 'metamask' && typeof window !== 'undefined' && (window as any).ethereum) {
+            const provider = new ethers.BrowserProvider((window as any).ethereum);
+            const signer = await provider.getSigner();
+            return new ethers.Contract(VAULT_ADDRESS, abis.CreodeVault, signer);
+        }
+        return null;
+    }, [walletType]);
+
+    const lockAssets = async (amount: string, unlockDate: number) => {
+        const contract = await getVaultContract();
+        if (!contract) throw new Error("Wallet not connected or unsupported");
+        
+        const tx = await contract.lockHbar(unlockDate, {
+            value: ethers.parseEther(amount)
+        });
+        await tx.wait();
+    };
+
+    const provideLiquidity = async (amount: string) => {
+        const contract = await getVaultContract();
+        if (!contract) throw new Error("Wallet not connected or unsupported");
+
+        const tx = await contract.provideLiquidityHbar({
+            value: ethers.parseEther(amount)
+        });
+        await tx.wait();
+    };
+
+    const borrow = async (collateralAmount: string) => {
+        const contract = await getVaultContract();
+        if (!contract) throw new Error("Wallet not connected or unsupported");
+
+        // Assuming HTS Token address for collateral (placeholder)
+        const tx = await contract.borrowHbar(ethers.parseUnits(collateralAmount, 6), "0x0000000000000000000000000000000000000000");
+        await tx.wait();
     };
 
     return (
-        <Web3Context.Provider value={value}>
+        <Web3Context.Provider value={{
+            address,
+            isConnected,
+            walletType,
+            balance,
+            connectMetaMask,
+            connectHashpack,
+            disconnect,
+            isConnecting,
+            lockAssets,
+            provideLiquidity,
+            borrow
+        }}>
             {children}
         </Web3Context.Provider>
     );

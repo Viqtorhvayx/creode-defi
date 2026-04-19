@@ -1,11 +1,29 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useWeb3 } from '../context/Web3Context';
 
 export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
+  const { borrow, isConnected } = useWeb3();
   const [collateral, setCollateral] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  
   const isLocked = xp < 15;
   const ltv = (xp * 0.8).toFixed(1);
+
+  const handleBorrow = async () => {
+    if (!collateral) return;
+    try {
+      setIsPending(true);
+      await borrow(collateral);
+      alert("Borrow order executed!");
+    } catch (error: any) {
+      console.error(error);
+      alert("Error: " + (error.reason || error.message));
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
     <div className={`industrial-panel ${isLocked ? "opacity-40 grayscale pointer-events-none" : ""}`}>
@@ -21,7 +39,7 @@ export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
 
       <div className="space-y-6">
         <div>
-          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Collateral (USDT/USDC)</label>
+          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Collateral (STABLES)</label>
           <div className="relative">
             <input
               type="number"
@@ -44,7 +62,13 @@ export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
           </div>
         </div>
 
-        <button className="btn-cyan w-full py-5 text-sm">Execute Credit Order</button>
+        <button 
+          onClick={handleBorrow}
+          disabled={!isConnected || isPending || !collateral || isLocked}
+          className="btn-cyan w-full py-5 text-sm disabled:opacity-30"
+        >
+          {isPending ? "EXECUTING..." : "Execute Credit Order"}
+        </button>
       </div>
     </div>
   );

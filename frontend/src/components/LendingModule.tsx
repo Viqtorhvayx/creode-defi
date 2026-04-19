@@ -1,10 +1,27 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useWeb3 } from '../context/Web3Context';
 
 export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
+  const { provideLiquidity, isConnected } = useWeb3();
   const [amount, setAmount] = useState("");
   const [asset, setAsset] = useState("HBAR");
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSupply = async () => {
+    if (!amount) return;
+    try {
+      setIsPending(true);
+      await provideLiquidity(amount);
+      alert("Liquidity deployed successfully!");
+    } catch (error: any) {
+      console.error(error);
+      alert("Error: " + (error.reason || error.message));
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
     <div className="industrial-panel">
@@ -54,7 +71,13 @@ export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
           </div>
         </div>
 
-        <button className="btn-industrial bg-sage text-black hover:bg-sage-muted w-full py-5 text-sm">Deploy Liquidity</button>
+        <button 
+          onClick={handleSupply}
+          disabled={!isConnected || isPending || !amount}
+          className="btn-industrial bg-sage text-black hover:bg-sage-muted w-full py-5 text-sm disabled:opacity-30"
+        >
+          {isPending ? "DEPLOYING..." : "Deploy Liquidity"}
+        </button>
       </div>
     </div>
   );
