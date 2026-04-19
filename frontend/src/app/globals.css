@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --background: #050505;
@@ -8,34 +6,44 @@
   --text-primary: #f4f1de;
 }
 
-body {
-  @apply bg-background text-[#f4f1de] font-industrial antialiased;
+@theme {
+  --color-background: #050505;
+  --color-surface: #101010;
+  --color-terracotta: #E07A5F;
+  --color-terracotta-muted: #8C4F3F;
+  --color-cyan: #81B29A;
+  --color-cyan-muted: #4F6F5F;
+  --color-sage: #B4C4B4;
+  --color-sage-muted: #788778;
 }
 
-@layer components {
-  .industrial-panel {
-    @apply bg-surface border border-white/5 rounded-none p-6 transition-all duration-300;
-  }
+body {
+  @apply bg-background text-[#f4f1de] antialiased;
+  font-family: 'Inter', system-ui, sans-serif;
+}
 
-  .industrial-input {
-    @apply w-full bg-black border border-white/10 rounded-none p-3 text-white outline-none focus:border-terracotta transition-colors;
-  }
+@utility industrial-panel {
+  @apply bg-surface border border-white/5 rounded-none p-6 transition-all duration-300;
+}
 
-  .btn-industrial {
-    @apply px-6 py-3 font-bold uppercase tracking-widest text-xs transition-all duration-200 disabled:opacity-50;
-  }
+@utility industrial-input {
+  @apply w-full bg-black border border-white/10 rounded-none p-3 text-white outline-none focus:border-terracotta transition-colors;
+}
 
-  .btn-terracotta {
-    @apply btn-industrial bg-terracotta text-black hover:bg-terracotta-muted;
-  }
+@utility btn-industrial {
+  @apply px-6 py-3 font-bold uppercase tracking-widest text-xs transition-all duration-200 disabled:opacity-50;
+}
 
-  .btn-cyan {
-    @apply btn-industrial bg-cyan text-black hover:bg-cyan-muted;
-  }
+@utility btn-terracotta {
+  @apply btn-industrial bg-terracotta text-black hover:bg-terracotta-muted;
+}
 
-  .btn-outline {
-    @apply btn-industrial border border-white/20 text-white hover:bg-white/5;
-  }
+@utility btn-cyan {
+  @apply btn-industrial bg-cyan text-black hover:bg-cyan-muted;
+}
+
+@utility btn-outline {
+  @apply btn-industrial border border-white/20 text-white hover:bg-white/5;
 }
 
 .creode-title {
