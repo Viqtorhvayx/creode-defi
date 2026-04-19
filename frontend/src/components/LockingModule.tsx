@@ -3,6 +3,11 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
+/**
+ * @title LockingModule
+ * @author Viqtorhvayx
+ * @dev Module for time-locking assets with yield cycles and early withdrawal penalties.
+ */
 export const LockingModule: React.FC = () => {
   const { lockAssets, isConnected } = useWeb3();
   const [amount, setAmount] = useState("");
@@ -26,20 +31,20 @@ export const LockingModule: React.FC = () => {
   };
 
   return (
-    <div className="industrial-panel">
-      <div className="mb-8 border-b border-white/5 pb-4">
-        <h2 className="text-xl font-black uppercase tracking-tight text-white">Saving & Locking</h2>
-        <p className="text-[10px] text-white/40 uppercase font-bold mt-1">Asset Staking Infrastructure</p>
+    <div className="industrial-panel bg-white shadow-sm border border-black/5">
+      <div className="mb-8 border-b border-black/5 pb-4">
+        <h2 className="text-xl font-bold text-black tracking-tight">Saving & Locking</h2>
+        <p className="text-[11px] text-black/40 uppercase font-semibold mt-1">Structured Staking Infrastructure</p>
       </div>
 
       <div className="space-y-6">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 p-1 bg-black/5 rounded-xl">
           {["HBAR", "USDT", "USDC"].map((t) => (
             <button
               key={t}
               onClick={() => setAsset(t)}
-              className={`text-[10px] font-black py-2 border transition-all ${
-                asset === t ? "bg-white text-black border-white" : "border-white/10 text-white/40 hover:border-white/30"
+              className={`text-[11px] font-bold py-2 rounded-lg transition-all ${
+                asset === t ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black"
               }`}
             >
               {t}
@@ -48,21 +53,21 @@ export const LockingModule: React.FC = () => {
         </div>
 
         <div>
-          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Input Amount</label>
+          <label className="text-[10px] font-bold uppercase text-black/40 mb-2 block">Deposit Amount</label>
           <div className="relative">
             <input
               type="number"
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="industrial-input text-lg pr-12"
+              className="industrial-input text-lg pr-14"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20">{asset}</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-black/20">{asset}</span>
           </div>
         </div>
 
         <div>
-          <label className="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Unlock Date</label>
+          <label className="text-[10px] font-bold uppercase text-black/40 mb-2 block">Maturity Date</label>
           <input
             type="date"
             value={unlockDate}
@@ -71,14 +76,14 @@ export const LockingModule: React.FC = () => {
           />
         </div>
 
-        <div className="bg-red-500/5 border border-red-500/20 p-4">
+        <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-1.5 h-1.5 bg-red-500 mt-1" />
+            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-1.5" />
             <div>
-              <p className="text-[9px] font-black text-red-500 uppercase tracking-widest">Warning: Premature Liquidation</p>
-              <p className="text-[10px] text-white/60 mt-1 leading-relaxed">
-                Early withdrawal incurs a <span className="text-white font-bold">5.00% penalty</span>. 
-                Yield for HBAR is calculated at 0.3% per 21-day cycle.
+              <p className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Liquidation Penalty Notice</p>
+              <p className="text-[11px] text-black/60 mt-1 leading-relaxed font-medium">
+                Early withdrawal incurs a <span className="text-black font-bold">5.00% penalty</span>. 
+                HBAR yield is 0.3% per 21-day cycle.
               </p>
             </div>
           </div>
@@ -87,9 +92,9 @@ export const LockingModule: React.FC = () => {
         <button 
           onClick={handleLock}
           disabled={!isConnected || isPending || !amount || !unlockDate}
-          className="btn-terracotta w-full py-5 text-sm disabled:opacity-30"
+          className="btn-primary w-full py-4 text-sm font-bold shadow-md shadow-accent-blue/20"
         >
-          {isPending ? "OPERATING..." : "Initialize Lock-up"}
+          {isPending ? "Connecting to Network..." : "Initialize Lock-up"}
         </button>
       </div>
     </div>

@@ -1,60 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --surface: #101010;
-  --text-primary: #f4f1de;
+  --background: #FFFFFF;
+  --surface: #F8F9FA;
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --accent-blue: #0081A7;
 }
 
 @theme {
-  --color-background: #050505;
-  --color-surface: #101010;
-  --color-terracotta: #E07A5F;
-  --color-terracotta-muted: #8C4F3F;
-  --color-cyan: #81B29A;
-  --color-cyan-muted: #4F6F5F;
-  --color-sage: #B4C4B4;
-  --color-sage-muted: #788778;
+  --color-background: #FFFFFF;
+  --color-surface: #F8F9FA;
+  --color-accent-blue: #0081A7;
+  --color-accent-blue-muted: #005F7A;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
 }
 
 body {
-  @apply bg-background text-[#f4f1de] antialiased;
-  font-family: 'Inter', system-ui, sans-serif;
+  @apply bg-background text-[#1D1D1F] antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
 @utility industrial-panel {
-  @apply bg-surface border border-white/5 rounded-none p-6 transition-all duration-300;
+  @apply bg-surface border border-black/5 rounded-2xl p-6 transition-all duration-300 shadow-sm;
 }
 
 @utility industrial-input {
-  @apply w-full bg-black border border-white/10 rounded-none p-3 text-white outline-none focus:border-terracotta transition-colors;
+  @apply w-full bg-white border border-black/10 rounded-xl p-3 text-black outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-industrial {
-  @apply px-6 py-3 font-bold uppercase tracking-widest text-xs transition-all duration-200 disabled:opacity-50;
+  @apply px-6 py-3 font-semibold rounded-xl text-sm transition-all duration-200 disabled:opacity-50;
 }
 
-@utility btn-terracotta {
-  @apply btn-industrial bg-terracotta text-black hover:bg-terracotta-muted;
-}
-
-@utility btn-cyan {
-  @apply btn-industrial bg-cyan text-black hover:bg-cyan-muted;
+@utility btn-primary {
+  @apply btn-industrial bg-accent-blue text-white hover:bg-accent-blue-muted;
 }
 
 @utility btn-outline {
-  @apply btn-industrial border border-white/20 text-white hover:bg-white/5;
+  @apply btn-industrial border border-black/10 text-black hover:bg-black/5;
 }
 
 .creode-title {
   position: fixed;
   top: 1.5rem;
   right: 1.5rem;
-  font-size: 0.6rem;
-  font-weight: 900;
-  letter-spacing: 0.4em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #444;
+  color: #86868B;
   z-index: 1000;
   pointer-events: none;
 }
