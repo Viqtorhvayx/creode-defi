@@ -1,6 +1,10 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
+import { XPGauge } from '../components/XPGauge';
+import { LockingModule } from '../components/LockingModule';
+import { BorrowingModule } from '../components/BorrowingModule';
 
 export default function Home() {
   const { address, isConnected, walletType, balance, connectMetaMask, connectHashpack, disconnect } = useWeb3();
