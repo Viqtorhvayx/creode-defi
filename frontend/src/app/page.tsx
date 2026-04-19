@@ -22,9 +22,6 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background p-6 md:p-12 lg:p-16">
-      {/* Brand Watermark */}
-      <div className="creode-title font-bold">CREODE</div>
-
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
@@ -88,7 +85,7 @@ export default function Dashboard() {
           <div className="industrial-panel bg-white lg:col-span-2">
             <h4 className="text-[10px] font-bold text-black/40 uppercase mb-1">Status Report</h4>
             <div className="text-[11px] font-semibold text-black/60 leading-relaxed uppercase">
-              Network: Hedera Testnet // Security: Standard // Operator: Authorized
+              Network: Hedera Testnet
             </div>
           </div>
         </div>
@@ -118,10 +115,20 @@ export default function Dashboard() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-24 border-t border-black/5 pt-12 pb-24 text-center">
+        <footer className="mt-24 border-t border-black/5 pt-12 pb-24 flex flex-col items-center gap-6">
           <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.3em]">
-            Protocol Developed & Maintained by [Viqtorhvayx] // 2026
+            Built by Team
           </p>
+          <a 
+            href="https://x.com/creode" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-black/40 hover:text-accent-blue transition-colors"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
         </footer>
       </div>
     </main>

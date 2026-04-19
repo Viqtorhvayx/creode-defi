@@ -5,14 +5,14 @@
   --surface: #F8F9FA;
   --text-primary: #1D1D1F;
   --text-secondary: #86868B;
-  --accent-blue: #0081A7;
+  --accent-blue: #00A8E8;
 }
 
 @theme {
   --color-background: #FFFFFF;
   --color-surface: #F8F9FA;
-  --color-accent-blue: #0081A7;
-  --color-accent-blue-muted: #005F7A;
+  --color-accent-blue: #00A8E8;
+  --color-accent-blue-muted: #0086B8;
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
 }
@@ -40,17 +40,4 @@ body {
 
 @utility btn-outline {
   @apply btn-industrial border border-black/10 text-black hover:bg-black/5;
-}
-
-.creode-title {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #86868B;
-  z-index: 1000;
-  pointer-events: none;
 }
