@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { HashConnect } from 'hashconnect';
+import { LedgerId } from '@hashgraph/sdk';
 
 /**
  * @title useHashpack
@@ -15,10 +16,11 @@ export const useHashpack = () => {
 
     const init = useCallback(async () => {
         // HashConnect v3 simplified initialization
-        const hc = new HashConnect("testnet", "7ac375b7ac375b7ac375b7ac375b7ac3", {
+        const hc = new HashConnect(LedgerId.TESTNET, "7ac375b7ac375b7ac375b7ac375b7ac3", {
             name: "CREODE DEFI",
             description: "Advanced Saving, Lending, and Borrowing platform on Hedera. Engineered by Viqtorhvayx.",
-            icon: "https://www.hashpack.app/img/logo.svg",
+            icons: ["https://www.hashpack.app/img/logo.svg"],
+            url: typeof window !== 'undefined' ? window.location.origin : ""
         }, true);
         
         setHashconnect(hc);
