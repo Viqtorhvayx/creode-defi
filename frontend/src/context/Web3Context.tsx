@@ -49,7 +49,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setWalletType(null);
             setBalance("0");
         }
-    }, [metamask.address, metamask.balance, hashpack.accountId]);
+    }, [metamask.account, metamask.balance, hashpack.accountId]);
 
     const connectMetaMask = async () => {
         await metamask.connect();
