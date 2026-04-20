@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Explicitly set Vault Liquidity colors for Light/Dark.
+ * @dev Main dashboard for CREODE Protocol. Enforces explicit color logic for Vault Liquidity via theme detection.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -37,6 +37,9 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
+  // Explicit color detection for Vault Liquidity
+  const vaultTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
@@ -44,11 +47,22 @@ export default function Dashboard() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          {/* VAULT LIQUIDITY Section - Explicitly set Black in Light / White in Dark */}
+          {/* VAULT LIQUIDITY Section - Strictly controlled via theme-detected inline styles */}
           <div className="industrial-panel">
-            <h4 className="text-[10px] font-bold text-black dark:text-white uppercase mb-1">Vault Liquidity</h4>
-            <div className="text-2xl font-bold text-black dark:text-white">
-              {Number(balance).toFixed(2)} <span className="text-sm font-medium text-black dark:text-white ml-1">HBAR</span>
+            <h4 
+              className="text-[10px] font-bold uppercase mb-1"
+              style={{ color: vaultTextColor }}
+            >
+              Vault Liquidity
+            </h4>
+            <div 
+              className="text-2xl font-bold"
+              style={{ color: vaultTextColor }}
+            >
+              {Number(balance).toFixed(2)} 
+              <span className="text-sm font-medium ml-1" style={{ color: vaultTextColor }}>
+                HBAR
+              </span>
             </div>
           </div>
           
