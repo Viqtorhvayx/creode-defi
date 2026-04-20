@@ -14,8 +14,8 @@
 .dark {
   --background: #0B0E14;
   --surface: #151A22;
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
+  --text-primary: #FFFFFF; /* Pure White as requested */
+  --text-secondary: #FFFFFF; /* Also White for consistency in this request */
   --accent-blue: #00A8E8;
   --accent-blue-hover: #33C2FF;
   --accent-glow: rgba(0, 168, 232, 0.15);
@@ -41,7 +41,8 @@ body {
 }
 
 @utility industrial-input {
-  @apply w-full bg-white dark:bg-black/20 border border-black/10 dark:border-[var(--border)] rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
+  /* Keep background white and text black even in dark mode for high contrast if specified */
+  @apply w-full bg-white border border-black/10 rounded-xl p-3 text-black outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-action {
@@ -49,7 +50,7 @@ body {
 }
 
 @utility btn-wallet {
-  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 font-bold rounded-xl px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
+  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white font-bold rounded-xl px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
 }
 
 @utility btn-wallet-active {

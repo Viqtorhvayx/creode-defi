@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with time-based yield and Premium Dark Mode support.
+ * @dev Module for asset locking with white numerical inputs and pure white typography in Dark Mode.
  */
 export const LockingModule: React.FC = () => {
   const { lockAssets } = useWeb3();
@@ -27,29 +27,29 @@ export const LockingModule: React.FC = () => {
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-[#94A3B8]">Time-Lock Engine</h3>
-          <p className="text-2xl font-black text-black dark:text-[#F8FAFC]">Initialize Lock-up</p>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white">Time-Lock Engine</h3>
+          <p className="text-2xl font-black text-black dark:text-white">Initialize Lock-up</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold text-black/30 dark:text-[#94A3B8] uppercase">Target Yield</p>
-          <p className="text-xl font-black text-accent-blue">0.30% <span className="text-xs font-medium text-black/20 dark:text-[#94A3B8]">APY</span></p>
+          <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Target Yield</p>
+          <p className="text-xl font-black text-accent-blue">0.30% <span className="text-xs font-medium text-black/20 dark:text-white/40">APY</span></p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div>
-            <label className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase block mb-2">Amount to Lock (HBAR)</label>
+            <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Amount to Lock (HBAR)</label>
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input"
+              className="industrial-input" // Note: industrial-input utility is white bg with black text even in dark mode
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase block mb-2">Duration: {weeks} Weeks</label>
+            <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Duration: {weeks} Weeks</label>
             <input 
               type="range" 
               min="3" 
@@ -64,12 +64,12 @@ export const LockingModule: React.FC = () => {
         <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase">Early Exit Fee</span>
+              <span className="text-[10px] font-bold text-black/40 dark:text-white uppercase">Early Exit Fee</span>
               <span className="text-[11px] font-black text-red-500">5.00%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase">Maturity Date</span>
-              <span className="text-[11px] font-bold text-black dark:text-[#F8FAFC]">
+              <span className="text-[10px] font-bold text-black/40 dark:text-white uppercase">Maturity Date</span>
+              <span className="text-[11px] font-bold text-black dark:text-white">
                 {new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
               </span>
             </div>
