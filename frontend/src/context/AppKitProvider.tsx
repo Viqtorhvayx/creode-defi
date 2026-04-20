@@ -9,7 +9,7 @@ import { hederaTestnet } from '@reown/appkit/networks'
 
 const projectId = '7ac375b7ac375b7ac375b7ac375b7ac3'
 const queryClient = new QueryClient()
-const networks = [hederaTestnet]
+const networks: [any, ...any[]] = [hederaTestnet]
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
