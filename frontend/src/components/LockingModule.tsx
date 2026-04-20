@@ -41,7 +41,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Time-Lock Engine
           </h3>
-          <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Savings & Lock-up</p>
+          {/* Section Title updated to 'Vault' as requested */}
+          <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Vault</p>
         </div>
         <div className="text-right">
           <p 
@@ -121,7 +122,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          {/* Button Text simplified as requested */}
           <button 
             onClick={handleAction}
             disabled={!amount || Number(amount) <= 0}
