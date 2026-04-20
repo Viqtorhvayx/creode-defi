@@ -12,8 +12,11 @@ interface LogoProps {
  * @dev Precision SVG logo for CREODE Protocol with explicit theme-detected inline styling.
  */
 export const Logo: React.FC<LogoProps> = ({ theme }) => {
-  // Explicit color detection to bypass inheritance
+  // Explicit color detection
   const brandTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+  
+  // Explicit intensity matching for tagline (Matching 'REPUTATION METRIC' text-black/30 in Light Mode)
+  const taglineColor = theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.3)';
 
   return (
     <div className="flex flex-col select-none group">
@@ -42,12 +45,12 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
         </span>
       </div>
       
-      {/* Tagline: Explicitly set via inline style for theme detection. Changed to lowercase. */}
+      {/* Tagline: Explicitly set via inline style for theme detection. Matching intensity of 'REPUTATION METRIC' in Light Mode. */}
       <p 
-        className="text-[10px] font-bold tracking-[0.2em] mt-1 ml-0.5"
-        style={{ color: brandTextColor }}
+        className="text-[10px] font-bold uppercase tracking-[0.2em] mt-1 ml-0.5"
+        style={{ color: taglineColor }}
       >
-        structured credit infrastructure
+        STRUCTURED CREDIT INFRASTRUCTURE
       </p>
     </div>
   );
