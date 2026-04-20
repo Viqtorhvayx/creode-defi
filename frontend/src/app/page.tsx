@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol with strict targeted Dark Mode text overrides.
+ * @dev Main dashboard for CREODE Protocol. Removed Network Report section.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -43,7 +43,7 @@ export default function Dashboard() {
         <Header theme={theme} toggleTheme={toggleTheme} />
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Vault Liquidity</h4>
             <div className="text-2xl font-bold text-black dark:text-white">
@@ -54,12 +54,6 @@ export default function Dashboard() {
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Standard Yield</h4>
             <div className="text-2xl font-bold !text-[#00A8E8]">
               0.30% <span className="text-sm font-medium text-black/30 dark:text-white">/21d</span>
-            </div>
-          </div>
-          <div className="industrial-panel lg:col-span-2">
-            <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Network Report</h4>
-            <div className="text-[11px] font-bold text-black/60 dark:text-white leading-relaxed uppercase tracking-wider">
-              Environment: Hedera Testnet // Oracle Service: Active // Gateway: Reown AppKit
             </div>
           </div>
         </div>
