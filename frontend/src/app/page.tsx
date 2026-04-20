@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Refined Dark Mode intensities to match System Notification.
+ * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -37,7 +37,7 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // Explicit color detection for primary elements
+  // Explicit color detection for primary stats
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
   
   // Matched intensity for secondary labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
@@ -106,7 +106,7 @@ export default function Dashboard() {
           {/* Right Column: Functional Modules */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="md:col-span-2">
-              <LockingModule />
+              <LockingModule theme={theme} />
             </div>
             <LendingModule points={userPoints} />
             <BorrowingModule xp={userXP} />

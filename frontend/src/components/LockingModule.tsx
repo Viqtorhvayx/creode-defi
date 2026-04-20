@@ -3,12 +3,16 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
+interface LockingModuleProps {
+  theme?: 'light' | 'dark';
+}
+
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with strict targeted Dark Mode text overrides.
+ * @dev Module for asset locking with explicit theme-detected inline styling for labels.
  */
-export const LockingModule: React.FC = () => {
+export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
   const [amount, setAmount] = useState("");
   const [weeks, setWeeks] = useState(3);
@@ -23,23 +27,50 @@ export const LockingModule: React.FC = () => {
     }
   };
 
+  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
+  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+
   return (
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white">Time-Lock Engine</h3>
-          <p className="text-2xl font-black text-black dark:text-white">Initialize Lock-up</p>
+          <h3 
+            className="text-[11px] font-bold uppercase tracking-wider"
+            style={{ color: labelColor }}
+          >
+            Time-Lock Engine
+          </h3>
+          <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Initialize Lock-up</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Target Yield</p>
-          <p className="text-xl font-black !text-[#00A8E8]">0.30% <span className="text-xs font-medium text-black/20 dark:text-white">APY</span></p>
+          <p 
+            className="text-[10px] font-bold uppercase"
+            style={{ color: labelColor }}
+          >
+            Target Yield
+          </p>
+          <p className="text-xl font-black !text-[#00A8E8]">
+            0.30% 
+            <span 
+              className="text-xs font-medium ml-1"
+              style={{ color: labelColor }}
+            >
+              APY
+            </span>
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div>
-            <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Amount to Lock (HBAR)</label>
+            <label 
+              className="text-[10px] font-bold uppercase block mb-2"
+              style={{ color: labelColor }}
+            >
+              Amount to Lock (HBAR)
+            </label>
             <input 
               type="number" 
               placeholder="0.00"
@@ -49,7 +80,12 @@ export const LockingModule: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Duration: {weeks} Weeks</label>
+            <label 
+              className="text-[10px] font-bold uppercase block mb-2"
+              style={{ color: labelColor }}
+            >
+              Duration: {weeks} Weeks
+            </label>
             <input 
               type="range" 
               min="3" 
@@ -64,12 +100,22 @@ export const LockingModule: React.FC = () => {
         <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-black/40 dark:text-white uppercase">Early Exit Fee</span>
+              <span 
+                className="text-[10px] font-bold uppercase"
+                style={{ color: labelColor }}
+              >
+                Early Exit Fee
+              </span>
               <span className="text-[11px] font-black !text-red-500">5.00%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-bold text-black/40 dark:text-white uppercase">Maturity Date</span>
-              <span className="text-[11px] font-bold text-black dark:text-white">
+              <span 
+                className="text-[10px] font-bold uppercase"
+                style={{ color: labelColor }}
+              >
+                Maturity Date
+              </span>
+              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
                 {new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
               </span>
             </div>
