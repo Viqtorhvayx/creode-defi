@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
 interface LockingModuleProps {
@@ -10,16 +10,56 @@ interface LockingModuleProps {
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with explicit theme-detected inline styling for labels.
+ * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
   const [amount, setAmount] = useState("");
-  const [weeks, setWeeks] = useState(3);
+  
+  // State for synchronization
+  const [days, setDays] = useState<number>(21); // Default 21 days (3 weeks)
+  const [maturityDate, setMaturityDate] = useState<string>("");
+
+  // Initialize maturity date on mount
+  useEffect(() => {
+    updateDateFromDays(21);
+  }, []);
+
+  const updateDateFromDays = (d: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() + d);
+    setMaturityDate(date.toISOString().split('T')[0]);
+  };
+
+  const updateDaysFromDate = (dateStr: string) => {
+    const selectedDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = selectedDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays >= 0) {
+      setDays(diffDays);
+    }
+  };
+
+  const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value) || 0;
+    setDays(val);
+    updateDateFromDays(val);
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setMaturityDate(val);
+    updateDaysFromDate(val);
+  };
 
   const handleAction = async () => {
     try {
-      const unlockDate = Math.floor(Date.now() / 1000) + (weeks * 7 * 24 * 60 * 60);
+      const unlockDate = Math.floor(Date.now() / 1000) + (days * 24 * 60 * 60);
       await lockAssets(amount, unlockDate);
       alert("Lock-up initialized!");
     } catch (e: any) {
@@ -35,7 +75,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
-          {/* Label updated as requested */}
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: labelColor }}
@@ -75,26 +114,42 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input text-black" // Exception: text-black for white box readability
+              className="industrial-input text-black"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
-          <div>
-            <label 
-              className="text-[10px] font-bold uppercase block mb-2"
-              style={{ color: labelColor }}
-            >
-              Duration: {weeks} Weeks
-            </label>
-            <input 
-              type="range" 
-              min="3" 
-              max="52" 
-              className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#00A8E8]"
-              value={weeks}
-              onChange={(e) => setWeeks(parseInt(e.target.value))}
-            />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label 
+                className="text-[10px] font-bold uppercase block mb-2"
+                style={{ color: labelColor }}
+              >
+                Duration (Days)
+              </label>
+              <input 
+                type="number" 
+                min="1"
+                className="industrial-input text-black"
+                value={days}
+                onChange={handleDaysChange}
+              />
+            </div>
+            <div>
+              <label 
+                className="text-[10px] font-bold uppercase block mb-2"
+                style={{ color: labelColor }}
+              >
+                Maturity Date
+              </label>
+              <input 
+                type="date" 
+                className="industrial-input text-black"
+                value={maturityDate}
+                onChange={handleDateChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -114,17 +169,17 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 className="text-[10px] font-bold uppercase"
                 style={{ color: labelColor }}
               >
-                Maturity Date
+                Calculated Maturity
               </span>
               <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
-                {new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                {new Date(maturityDate).toLocaleDateString()}
               </span>
             </div>
           </div>
           
           <button 
             onClick={handleAction}
-            disabled={!amount || Number(amount) <= 0}
+            disabled={!amount || Number(amount) <= 0 || days <= 0}
             className="btn-action w-full mt-6"
           >
             Initialize
