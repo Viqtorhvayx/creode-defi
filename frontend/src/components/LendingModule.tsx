@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title LendingModule
  * @author Viqtorhvayx
- * @dev Module for providing liquidity with white input boxes and pure white typography in Dark Mode.
+ * @dev Module for providing liquidity with homogenized primary action buttons (#00A8E8).
  */
 export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
   const { provideLiquidity } = useWeb3();
@@ -40,7 +40,7 @@ export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
           <input 
             type="number" 
             placeholder="0.00"
-            className="industrial-input" // Note: industrial-input utility is white bg with black text even in dark mode
+            className="industrial-input"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />

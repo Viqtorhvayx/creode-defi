@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Module for reputation-based borrowing with white numerical input boxes and pure white typography in Dark Mode.
+ * @dev Module for reputation-based borrowing with homogenized primary action buttons (#00A8E8).
  */
 export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
   const { borrow } = useWeb3();
@@ -45,7 +45,7 @@ export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input" // Note: industrial-input utility is white bg with black text even in dark mode
+              className="industrial-input"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
