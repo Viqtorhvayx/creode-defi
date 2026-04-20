@@ -22,10 +22,10 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
 
   const gaugeColor = getGaugeColor(xp);
   
-  // Matched intensity for listed Dark Mode elements (Matching 'SYSTEM NOTIFICATION' opacity-60 white)
+  // Matched intensity for Dark Mode elements (Matching 'SYSTEM NOTIFICATION' opacity-60 white)
   const matchedWhite = 'rgba(255, 255, 255, 0.6)';
   
-  // Secondary labels logic
+  // Secondary labels logic for Light Mode (30% black)
   const secondaryLabelColorLight = 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
@@ -35,7 +35,7 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
         <div>
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
-            style={{ color: theme === 'dark' ? '#FFFFFF' : secondaryLabelColorLight }}
+            style={{ color: theme === 'dark' ? matchedWhite : secondaryLabelColorLight }}
           >
             Reputation Metric
           </h3>
