@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/**
+ * @dev Global Styling Configuration for CREODE Protocol.
+ * @author Viqtorhvayx
+ */
+
 :root {
   --background: #FFFFFF;
   --surface: #F8F9FA;
@@ -14,8 +19,8 @@
 .dark {
   --background: #0B0E14;
   --surface: #151A22;
-  --text-primary: #FFFFFF; /* Pure White as requested */
-  --text-secondary: #FFFFFF; /* Also White for consistency in this request */
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
   --accent-blue: #00A8E8;
   --accent-blue-hover: #33C2FF;
   --accent-glow: rgba(0, 168, 232, 0.15);
@@ -31,9 +36,21 @@
   --radius-2xl: 1rem;
 }
 
+/* Force San Francisco Font Stack Globally */
 body {
   @apply bg-background text-black dark:text-white antialiased transition-colors duration-500;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Global Dark Mode Text Override */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark p, .dark span, .dark label, .dark div {
+  @apply text-white;
+}
+
+/* Specific Exception: Numerical data in white boxes must remain black */
+.dark .industrial-input, 
+.dark .text-numerical-on-white {
+  @apply text-black! dark:text-black!;
 }
 
 @utility industrial-panel {
@@ -41,8 +58,8 @@ body {
 }
 
 @utility industrial-input {
-  /* Keep background white and text black even in dark mode for high contrast if specified */
-  @apply w-full bg-white border border-black/10 rounded-xl p-3 text-black outline-none focus:border-accent-blue transition-colors;
+  /* Enforce white background and black text in BOTH modes for high contrast numerical display */
+  @apply w-full bg-white! border border-black/10 rounded-xl p-3 text-black! outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-action {

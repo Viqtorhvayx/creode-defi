@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation and Header component with dynamic wallet connection state and address formatting.
+ * @dev Navigation and Header component with dynamic wallet connection state and absolute white text for Dark Mode.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { address, isConnected, connect, disconnect, walletType } = useWeb3();
@@ -25,18 +25,17 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     
     // Check for Hedera Native ID (Hashpack)
     if (type?.includes('hashpack') || addr.startsWith('0.0.')) {
-      return addr; // Hedera IDs are already short enough (e.g., 0.0.12345)
+      return addr; 
     }
 
     // EVM Format (MetaMask/WalletConnect)
-    // User requested first 4 and last 4 characters
     return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`;
   };
 
   return (
     <>
       {/* Navigation Bar */}
-      <nav className="flex justify-between items-center mb-16">
+      <nav className="flex justify-between items-center mb-16 text-black dark:text-white">
         <Logo />
         <button 
           onClick={toggleTheme}
@@ -66,10 +65,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
       {/* Header Section */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black dark:text-[#F8FAFC]">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black dark:text-white">
             CREODE
           </h1>
-          <p className="text-[11px] font-bold text-black/40 dark:text-[#94A3B8] uppercase tracking-[0.3em] mt-2">
+          <p className="text-[11px] font-bold text-black/40 dark:text-white uppercase tracking-[0.3em] mt-2">
             Structured Credit Infrastructure
           </p>
         </div>
@@ -79,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             <div className="flex flex-col items-end animate-in fade-in slide-in-from-right duration-500">
               <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-[var(--border)]">
                 <div className="w-2 h-2 bg-accent-blue rounded-full animate-pulse" />
-                <span className="text-[11px] font-bold text-black/60 dark:text-[#F8FAFC] font-mono">
+                <span className="text-[11px] font-bold text-black/60 dark:text-white font-mono">
                   {formatAddress(address, walletType)}
                 </span>
                 <span className="text-[9px] font-black text-white bg-accent-blue px-2 py-0.5 rounded-md uppercase tracking-tighter">
