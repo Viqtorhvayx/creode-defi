@@ -42,12 +42,12 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
         </span>
       </div>
       
-      {/* Tagline: Explicitly set via inline style for theme detection */}
+      {/* Tagline: Explicitly set via inline style for theme detection. Changed to lowercase. */}
       <p 
-        className="text-[10px] font-bold uppercase tracking-[0.2em] mt-1 ml-0.5"
+        className="text-[10px] font-bold tracking-[0.2em] mt-1 ml-0.5"
         style={{ color: brandTextColor }}
       >
-        Structured Credit Infrastructure
+        structured credit infrastructure
       </p>
     </div>
   );
