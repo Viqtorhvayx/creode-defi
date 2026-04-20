@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with refined vertical alignment and compact button sizing.
+ * @dev Navigation component with refined vertical alignment and explicit theme passing to Logo.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { address, isConnected, connect, disconnect, walletType } = useWeb3();
@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     <header className="mb-12">
       {/* Navigation Bar: Perfectly horizontally aligned and shifted up via reduced bottom margin */}
       <nav className="flex justify-between items-center">
-        <Logo />
+        <Logo theme={theme} />
         
         <div className="flex items-center gap-4">
           <button 
