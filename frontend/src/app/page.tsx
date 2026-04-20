@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Refined layout with reduced top padding.
+ * @dev Main dashboard for CREODE Protocol. Enforces pure white text in Dark Mode for Vault Liquidity.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -44,16 +44,18 @@ export default function Dashboard() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
+          {/* VAULT LIQUIDITY Section - Targeted for Dark Mode White Text */}
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Vault Liquidity</h4>
             <div className="text-2xl font-bold text-black dark:text-white">
-              {Number(balance).toFixed(2)} <span className="text-sm font-medium text-black/30 dark:text-white">HBAR</span>
+              {Number(balance).toFixed(2)} <span className="text-sm font-medium text-black/30 dark:text-white ml-1">HBAR</span>
             </div>
           </div>
+          
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Standard Yield</h4>
             <div className="text-2xl font-bold !text-[#00A8E8]">
-              0.30% <span className="text-sm font-medium text-black/30 dark:text-white">/21d</span>
+              0.30% <span className="text-sm font-medium text-black/30 dark:text-white ml-1">/21d</span>
             </div>
           </div>
         </div>
