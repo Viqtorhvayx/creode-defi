@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Synchronized label intensities for UI consistency.
+ * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -113,7 +113,7 @@ export default function Dashboard() {
               <LockingModule theme={theme} />
             </div>
             <LendingModule points={userPoints} theme={theme} />
-            <BorrowingModule xp={userXP} />
+            <BorrowingModule xp={userXP} theme={theme} />
           </div>
         </div>
 

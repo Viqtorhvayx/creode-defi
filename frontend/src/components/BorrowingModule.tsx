@@ -3,12 +3,17 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
+interface BorrowingModuleProps {
+  xp: number;
+  theme?: 'light' | 'dark';
+}
+
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Module for reputation-based borrowing with strict targeted Dark Mode text overrides.
+ * @dev Module for reputation-based borrowing with explicit theme-detected inline styling.
  */
-export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
+export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) => {
   const { borrow } = useWeb3();
   const [amount, setAmount] = useState("");
   const [collateralType, setCollateralType] = useState<'USDT' | 'USDC'>('USDT');
@@ -26,21 +31,38 @@ export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
     }
   };
 
+  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
+  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+
   return (
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white">Credit Facility</h3>
-          <p className="text-xl font-black text-black dark:text-white">Initialize Credit Request</p>
+          <h3 
+            className="text-[11px] font-bold uppercase tracking-wider"
+            style={{ color: labelColor }}
+          >
+            Credit Facility
+          </h3>
+          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Initialize Credit Request</p>
         </div>
-        <div className="bg-[#00A8E8]/10 px-3 py-1 rounded-full">
-          <span className="text-[10px] font-bold !text-[#00A8E8] uppercase">XP Multiplier: {(xp/100).toFixed(2)}x</span>
+        {/* XP Multiplier: Reduced padding and adjusted font size for perfect containment */}
+        <div className="bg-[#00A8E8]/10 px-2 py-0.5 rounded-full border border-[#00A8E8]/20 flex items-center justify-center min-w-[fit-content]">
+          <span className="text-[9px] font-bold !text-[#00A8E8] uppercase whitespace-nowrap leading-none">
+            XP Multiplier: {(xp/100).toFixed(2)}x
+          </span>
         </div>
       </div>
 
       <div className="space-y-6">
         <div>
-          <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Deposit Collateral</label>
+          <label 
+            className="text-[10px] font-bold uppercase block mb-2"
+            style={{ color: labelColor }}
+          >
+            Deposit Collateral
+          </label>
           <div className="relative">
             <input 
               type="number" 
@@ -68,8 +90,13 @@ export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
           <div className="flex justify-between mb-2">
-            <span className="text-[10px] font-bold text-black/40 dark:text-white uppercase">Max Borrowing Capacity</span>
-            <span className="text-[11px] font-bold text-black dark:text-white">{maxBorrow.toFixed(2)} HBAR</span>
+            <span 
+              className="text-[10px] font-bold uppercase"
+              style={{ color: labelColor }}
+            >
+              Max Borrowing Capacity
+            </span>
+            <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-[#00A8E8] w-2/3 opacity-50" />
