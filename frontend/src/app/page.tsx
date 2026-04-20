@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Enforces explicit color logic for stats via theme detection.
+ * @dev Main dashboard for CREODE Protocol. Refined stats labels to match Reputation Metric styling.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -37,8 +37,8 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // Explicit color detection for primary stats
-  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+  // Explicit color detection (Matching 'REPUTATION METRIC' text-black/30 in Light Mode)
+  const secondaryLabelColor = theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.3)';
 
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
@@ -47,30 +47,33 @@ export default function Dashboard() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          {/* VAULT LIQUIDITY Section - Explicit theme-detected inline styles */}
+          {/* VAULT LIQUIDITY Section - Matched to Reputation Metric label styling */}
           <div className="industrial-panel">
             <h4 
-              className="text-[10px] font-bold uppercase mb-1"
-              style={{ color: primaryTextColor }}
+              className="text-[11px] font-bold uppercase tracking-wider mb-1"
+              style={{ color: secondaryLabelColor }}
             >
               Vault Liquidity
             </h4>
             <div 
               className="text-2xl font-bold"
-              style={{ color: primaryTextColor }}
+              style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}
             >
               {Number(balance).toFixed(2)} 
-              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>
+              <span 
+                className="text-sm font-medium ml-1" 
+                style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}
+              >
                 HBAR
               </span>
             </div>
           </div>
           
-          {/* STANDARD YIELD Section - Explicit theme-detected inline styles for labels */}
+          {/* STANDARD YIELD Section - Matched to Reputation Metric label styling */}
           <div className="industrial-panel">
             <h4 
-              className="text-[10px] font-bold uppercase mb-1"
-              style={{ color: primaryTextColor }}
+              className="text-[11px] font-bold uppercase tracking-wider mb-1"
+              style={{ color: secondaryLabelColor }}
             >
               Standard Yield
             </h4>
@@ -78,7 +81,7 @@ export default function Dashboard() {
               0.30% 
               <span 
                 className="text-sm font-medium ml-1" 
-                style={{ color: primaryTextColor }}
+                style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}
               >
                 /21d
               </span>
@@ -112,7 +115,10 @@ export default function Dashboard() {
 
         {/* Footer */}
         <footer className="mt-24 border-t border-[var(--border)] pt-12 pb-24 flex flex-col items-center gap-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: primaryTextColor }}>
+          <p 
+            className="text-[10px] font-bold uppercase tracking-[0.4em]" 
+            style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}
+          >
             Built by Team
           </p>
           <div className="flex gap-4">
@@ -121,7 +127,7 @@ export default function Dashboard() {
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-[#00A8E8] transition-colors duration-300"
-              style={{ color: primaryTextColor }}
+              style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
