@@ -2,19 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
+import { Header } from '../components/Header';
 import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
-import { Logo } from '../components/Logo';
 
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol with Premium Dark Mode.
+ * @dev Main dashboard for CREODE Protocol with Dynamic Wallet Integration.
  */
 export default function Dashboard() {
-  const { address, isConnected, connect, disconnect, balance, walletType } = useWeb3();
+  const { balance } = useWeb3();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   // Simulated XP and Points
@@ -40,86 +40,21 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-background p-6 md:p-12 lg:p-16 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
-        {/* Navigation Bar */}
-        <nav className="flex justify-between items-center mb-16">
-          <Logo />
-          <button 
-            onClick={toggleTheme}
-            className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
-            aria-label="Toggle Theme"
-          >
-            {theme === 'light' ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
-            )}
-          </button>
-        </nav>
-
-        {/* Header Section */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black dark:text-[#F8FAFC]">
-              CREODE
-            </h1>
-            <p className="text-[11px] font-bold text-black/40 dark:text-[#94A3B8] uppercase tracking-[0.3em] mt-2">
-              Structured Credit Infrastructure
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {isConnected ? (
-              <div className="flex flex-col items-end animate-in fade-in slide-in-from-right duration-500">
-                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-[var(--border)]">
-                  <div className="w-2 h-2 bg-accent-blue rounded-full animate-pulse" />
-                  <span className="text-[11px] font-bold text-black/60 dark:text-[#F8FAFC] truncate max-w-[120px]">
-                    {address}
-                  </span>
-                  <span className="text-[10px] font-black text-white bg-accent-blue px-2 py-0.5 rounded-md uppercase">
-                    {walletType}
-                  </span>
-                </div>
-                <button 
-                  onClick={disconnect}
-                  className="text-[10px] font-bold text-red-500 uppercase mt-2 hover:underline tracking-wider"
-                >
-                  Terminate Session
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <button 
-                  onClick={connect}
-                  className="btn-action"
-                >
-                  Connect Wallet
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
+        <Header theme={theme} toggleTheme={toggleTheme} />
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase mb-1">Vault Liquidity</h4>
-            <div className="text-2xl font-bold text-black dark:text-[#F8FAFC]">{Number(balance).toFixed(2)} <span className="text-sm font-medium text-black/30 dark:text-[#94A3B8]">HBAR</span></div>
+            <div className="text-2xl font-bold text-black dark:text-[#F8FAFC]">
+              {Number(balance).toFixed(2)} <span className="text-sm font-medium text-black/30 dark:text-[#94A3B8]">HBAR</span>
+            </div>
           </div>
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase mb-1">Standard Yield</h4>
-            <div className="text-2xl font-bold text-accent-blue">0.30% <span className="text-sm font-medium text-black/30 dark:text-[#94A3B8]">/21d</span></div>
+            <div className="text-2xl font-bold text-accent-blue">
+              0.30% <span className="text-sm font-medium text-black/30 dark:text-[#94A3B8]">/21d</span>
+            </div>
           </div>
           <div className="industrial-panel lg:col-span-2">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-[#94A3B8] uppercase mb-1">Network Report</h4>
