@@ -11,10 +11,10 @@ import { Logo } from '../components/Logo';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol with theme switching and refined interactions.
+ * @dev Main dashboard for CREODE Protocol with Reown AppKit integration.
  */
 export default function Dashboard() {
-  const { address, isConnected, connectMetaMask, connectHashpack, disconnect, balance, walletType } = useWeb3();
+  const { address, isConnected, connect, disconnect, balance, walletType } = useWeb3();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   // Simulated XP and Points
@@ -100,16 +100,10 @@ export default function Dashboard() {
             ) : (
               <div className="flex gap-2">
                 <button 
-                  onClick={connectMetaMask}
-                  className={`btn-wallet ${walletType === 'metamask' ? 'btn-wallet-active' : ''}`}
+                  onClick={connect}
+                  className="btn-primary"
                 >
-                  Connect MetaMask
-                </button>
-                <button 
-                  onClick={connectHashpack}
-                  className={`btn-wallet ${walletType === 'hashpack' ? 'btn-wallet-active' : ''}`}
-                >
-                  Connect Hashpack
+                  Connect Wallet
                 </button>
               </div>
             )}
@@ -120,7 +114,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="industrial-panel bg-white dark:bg-[#003459]">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase mb-1">Vault Liquidity</h4>
-            <div className="text-2xl font-bold text-black dark:text-white">{balance} <span className="text-sm font-medium text-black/30 dark:text-white/30">HBAR</span></div>
+            <div className="text-2xl font-bold text-black dark:text-white">{Number(balance).toFixed(2)} <span className="text-sm font-medium text-black/30 dark:text-white/30">HBAR</span></div>
           </div>
           <div className="industrial-panel bg-white dark:bg-[#003459]">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase mb-1">Standard Yield</h4>
@@ -129,7 +123,7 @@ export default function Dashboard() {
           <div className="industrial-panel bg-white dark:bg-[#003459] lg:col-span-2">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase mb-1">Network Report</h4>
             <div className="text-[11px] font-bold text-black/60 dark:text-white/60 leading-relaxed uppercase tracking-wider">
-              Environment: Hedera Testnet // Oracle Service: Active // Last Sync: Real-Time
+              Environment: Hedera Testnet // Oracle Service: Active // Gateway: Reown AppKit
             </div>
           </div>
         </div>

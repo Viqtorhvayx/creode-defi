@@ -2,17 +2,16 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { ethers } from 'ethers';
-import { useMetaMask } from '../hooks/useMetaMask';
-import { useHashpack } from '../hooks/useHashpack';
+import { useAccount, useDisconnect, useBalance } from 'wagmi';
+import { useAppKit } from '@reown/appkit/react';
 import abis from './abis.json';
 
 interface Web3ContextType {
     address: string | null;
     isConnected: boolean;
-    walletType: 'metamask' | 'hashpack' | null;
+    walletType: string | null;
     balance: string;
-    connectMetaMask: () => Promise<void>;
-    connectHashpack: () => Promise<void>;
+    connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     isConnecting: boolean;
     // Contract methods
@@ -23,56 +22,47 @@ interface Web3ContextType {
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
-// Deployed Addresses (Placeholders - Update after deployment)
 const VAULT_ADDRESS = "0x0000000000000000000000000000000000000000"; 
-const XP_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const metamask = useMetaMask();
-    const hashpack = useHashpack();
+    const { address, isConnected, isConnecting, connector } = useAccount();
+    const { disconnect: wagmiDisconnect } = useDisconnect();
+    const { open } = useAppKit();
+    const { data: balanceData } = useBalance({ address });
 
-    const [walletType, setWalletType] = useState<'metamask' | 'hashpack' | null>(null);
     const [balance, setBalance] = useState("0");
-
-    const isConnected = !!(metamask.account || hashpack.accountId);
-    const address = metamask.account || hashpack.accountId;
-    const isConnecting = metamask.isConnecting || hashpack.isConnecting;
+    const [walletType, setWalletType] = useState<string | null>(null);
 
     useEffect(() => {
-        if (metamask.account) {
-            setWalletType('metamask');
-            setBalance(metamask.balance);
-        } else if (hashpack.accountId) {
-            setWalletType('hashpack');
-            setBalance("0"); // Hashpack balance fetching is separate
+        if (balanceData) {
+            setBalance(balanceData.formatted);
+        }
+    }, [balanceData]);
+
+    useEffect(() => {
+        if (connector) {
+            setWalletType(connector.name.toLowerCase());
         } else {
             setWalletType(null);
-            setBalance("0");
         }
-    }, [metamask.account, metamask.balance, hashpack.accountId]);
+    }, [connector]);
 
-    const connectMetaMask = async () => {
-        await metamask.connect();
-    };
-
-    const connectHashpack = async () => {
-        await hashpack.connect();
+    const connect = async () => {
+        await open();
     };
 
     const disconnect = async () => {
-        if (walletType === 'metamask') await metamask.disconnect();
-        else if (walletType === 'hashpack') await hashpack.disconnect();
+        await wagmiDisconnect();
     };
 
-    // Contract Interaction Logic (EVM focus for now, HashConnect requires separate signer logic)
     const getVaultContract = useCallback(async () => {
-        if (walletType === 'metamask' && typeof window !== 'undefined' && (window as any).ethereum) {
+        if (isConnected && typeof window !== 'undefined' && (window as any).ethereum) {
             const provider = new ethers.BrowserProvider((window as any).ethereum);
             const signer = await provider.getSigner();
             return new ethers.Contract(VAULT_ADDRESS, abis.CreodeVault, signer);
         }
         return null;
-    }, [walletType]);
+    }, [isConnected]);
 
     const lockAssets = async (amount: string, unlockDate: number) => {
         const contract = await getVaultContract();
@@ -98,19 +88,17 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const contract = await getVaultContract();
         if (!contract) throw new Error("Wallet not connected or unsupported");
 
-        // Assuming HTS Token address for collateral (placeholder)
         const tx = await contract.borrowHbar(ethers.parseUnits(collateralAmount, 6), "0x0000000000000000000000000000000000000000");
         await tx.wait();
     };
 
     return (
         <Web3Context.Provider value={{
-            address,
+            address: address || null,
             isConnected,
             walletType,
             balance,
-            connectMetaMask,
-            connectHashpack,
+            connect,
             disconnect,
             isConnecting,
             lockAssets,

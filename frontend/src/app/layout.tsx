@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { Web3Provider } from "@/context/Web3Context";
+import { AppKitProvider } from "@/context/AppKitProvider";
 
 export default function RootLayout({
   children,
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <Web3Provider>
-          {children}
-        </Web3Provider>
+        <AppKitProvider>
+          <Web3Provider>
+            {children}
+          </Web3Provider>
+        </AppKitProvider>
       </body>
     </html>
   );
