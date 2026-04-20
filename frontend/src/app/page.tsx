@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol with pure white typography in Dark Mode.
+ * @dev Main dashboard for CREODE Protocol with refined corporate layout and removed hero text.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
