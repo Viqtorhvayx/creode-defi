@@ -35,13 +35,13 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
+          {/* Label updated as requested */}
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: labelColor }}
           >
-            Time-Lock Engine
+            Time-lock savings
           </h3>
-          {/* Section Title updated to 'Vault' as requested */}
           <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Vault</p>
         </div>
         <div className="text-right">
