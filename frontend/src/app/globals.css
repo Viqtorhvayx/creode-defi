@@ -8,16 +8,18 @@
   --accent-blue: #00A8E8;
   --accent-blue-hover: #0086B8;
   --accent-glow: rgba(0, 168, 232, 0.3);
+  --border: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
-  --background: #00171F;
-  --surface: #003459;
-  --text-primary: #FFFFFF;
-  --text-secondary: #B0B0B5;
+  --background: #0B0E14;
+  --surface: #151A22;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
   --accent-blue: #00A8E8;
   --accent-blue-hover: #33C2FF;
-  --accent-glow: rgba(0, 168, 232, 0.4);
+  --accent-glow: rgba(0, 168, 232, 0.15);
+  --border: #2A313C;
 }
 
 @theme {
@@ -35,11 +37,11 @@ body {
 }
 
 @utility industrial-panel {
-  @apply bg-surface border border-black/5 dark:border-white/5 rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[var(--accent-glow)];
+  @apply bg-surface border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[var(--accent-glow)];
 }
 
 @utility industrial-input {
-  @apply w-full bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
+  @apply w-full bg-white dark:bg-black/20 border border-black/10 dark:border-[var(--border)] rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-action {
