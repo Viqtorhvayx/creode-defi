@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol with refined corporate layout and removed hero text.
+ * @dev Main dashboard for CREODE Protocol with persistent accent blue highlights.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -52,7 +52,7 @@ export default function Dashboard() {
           </div>
           <div className="industrial-panel">
             <h4 className="text-[10px] font-bold text-black/40 dark:text-white uppercase mb-1">Standard Yield</h4>
-            <div className="text-2xl font-bold text-accent-blue">
+            <div className="text-2xl font-bold text-[#00A8E8] dark:text-[#00A8E8]!">
               0.30% <span className="text-sm font-medium text-black/30 dark:text-white/40">/21d</span>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with white numerical inputs and pure white typography in Dark Mode.
+ * @dev Module for asset locking with precise blue accent preservation in Dark Mode.
  */
 export const LockingModule: React.FC = () => {
   const { lockAssets } = useWeb3();
@@ -32,7 +32,7 @@ export const LockingModule: React.FC = () => {
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Target Yield</p>
-          <p className="text-xl font-black text-accent-blue">0.30% <span className="text-xs font-medium text-black/20 dark:text-white/40">APY</span></p>
+          <p className="text-xl font-black text-[#00A8E8] dark:text-[#00A8E8]!">0.30% <span className="text-xs font-medium text-black/20 dark:text-white/40">APY</span></p>
         </div>
       </div>
 
@@ -43,7 +43,7 @@ export const LockingModule: React.FC = () => {
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input" // Note: industrial-input utility is white bg with black text even in dark mode
+              className="industrial-input" 
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
