@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Removed Network Report section.
+ * @dev Main dashboard for CREODE Protocol. Refined layout with reduced top padding.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -38,7 +38,7 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-background p-6 md:p-12 lg:p-16 transition-colors duration-500">
+    <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
         <Header theme={theme} toggleTheme={toggleTheme} />
 

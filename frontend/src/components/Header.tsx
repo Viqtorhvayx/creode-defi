@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation and Header component with systematic Dark Mode text color targeting.
+ * @dev Navigation component with refined vertical alignment and compact button sizing.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { address, isConnected, connect, disconnect, walletType } = useWeb3();
@@ -24,9 +24,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
-  /**
-   * @dev Neatly truncates the connected address based on wallet type.
-   */
   const formatAddress = (addr: string | null, type: string | null) => {
     if (!addr) return "";
     if (type?.includes('hashpack') || addr.startsWith('0.0.')) return addr; 
@@ -34,20 +31,20 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   return (
-    <header className="mb-16">
-      {/* Navigation Bar */}
-      <nav className="flex justify-between items-start">
+    <header className="mb-12">
+      {/* Navigation Bar: Perfectly horizontally aligned and shifted up via reduced bottom margin */}
+      <nav className="flex justify-between items-center">
         <Logo />
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <button 
             onClick={handleThemeToggle}
-            className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
+            className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
               <svg 
-                width="20" height="20" viewBox="0 0 24 24" 
+                width="18" height="18" viewBox="0 0 24 24" 
                 fill={isToggling ? "#00A8E8" : "none"} 
                 stroke="#00A8E8" 
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -57,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
               </svg>
             ) : (
               <svg 
-                width="20" height="20" viewBox="0 0 24 24" 
+                width="18" height="18" viewBox="0 0 24 24" 
                 fill={isToggling ? "#00A8E8" : "none"} 
                 stroke="#00A8E8" 
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -78,27 +75,24 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
 
           <div className="flex items-center gap-3">
             {isConnected ? (
-              <div className="flex flex-col items-end animate-in fade-in slide-in-from-right duration-500">
-                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-[var(--border)]">
-                  <div className="w-2 h-2 bg-accent-blue rounded-full animate-pulse" />
-                  <span className="text-[11px] font-bold text-black/60 dark:text-white font-mono">
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-500">
+                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
+                  <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
+                  <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
                     {formatAddress(address, walletType)}
-                  </span>
-                  <span className="text-[9px] font-black text-white bg-[#00A8E8] px-2 py-0.5 rounded-md uppercase tracking-tighter">
-                    {walletType === 'metamask' ? 'EVM' : 'NATIVE'}
                   </span>
                 </div>
                 <button 
                   onClick={disconnect}
-                  className="text-[10px] font-bold text-red-500 uppercase mt-2 hover:underline tracking-wider"
+                  className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider"
                 >
-                  Terminate Session
+                  Exit
                 </button>
               </div>
             ) : (
               <button 
                 onClick={connect}
-                className="btn-action shadow-lg shadow-[#00A8E8]/10"
+                className="btn-action !px-4 !py-2 !text-xs shadow-lg shadow-[#00A8E8]/10"
               >
                 Connect Wallet
               </button>
