@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Module for reputation-based borrowing with granular text color targeting for Dark Mode.
+ * @dev Module for reputation-based borrowing with systematic Dark Mode text color targeting.
  */
 export const BorrowingModule: React.FC<{ xp: number }> = ({ xp }) => {
   const { borrow } = useWeb3();

@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with granular text color targeting for Dark Mode.
+ * @dev Module for asset locking with systematic Dark Mode text color targeting.
  */
 export const LockingModule: React.FC = () => {
   const { lockAssets } = useWeb3();
@@ -43,7 +43,7 @@ export const LockingModule: React.FC = () => {
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input" 
+              className="industrial-input" // Note: industrial-input utility is white bg with black text even in dark mode
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />

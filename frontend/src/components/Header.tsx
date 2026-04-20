@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation and Header component with accent blue theme toggle and corporate logo placement.
+ * @dev Navigation and Header component with systematic Dark Mode text color targeting.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { address, isConnected, connect, disconnect, walletType } = useWeb3();
@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
         <div className="flex items-center gap-6">
           <button 
             onClick={handleThemeToggle}
-            className="p-3 bg-accent-blue/5 rounded-full hover:bg-accent-blue/10 transition-all duration-300 active:scale-90"
+            className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                   <span className="text-[11px] font-bold text-black/60 dark:text-white font-mono">
                     {formatAddress(address, walletType)}
                   </span>
-                  <span className="text-[9px] font-black text-white bg-accent-blue px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                  <span className="text-[9px] font-black text-white bg-[#00A8E8] px-2 py-0.5 rounded-md uppercase tracking-tighter">
                     {walletType === 'metamask' ? 'EVM' : 'NATIVE'}
                   </span>
                 </div>
@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             ) : (
               <button 
                 onClick={connect}
-                className="btn-action shadow-lg shadow-accent-blue/10"
+                className="btn-action shadow-lg shadow-[#00A8E8]/10"
               >
                 Connect Wallet
               </button>

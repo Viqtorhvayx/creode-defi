@@ -6,7 +6,7 @@ import { useWeb3 } from '../context/Web3Context';
 /**
  * @title LendingModule
  * @author Viqtorhvayx
- * @dev Module for providing liquidity with granular text color targeting for Dark Mode.
+ * @dev Module for providing liquidity with systematic Dark Mode text color targeting.
  */
 export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
   const { provideLiquidity } = useWeb3();
