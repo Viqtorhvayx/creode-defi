@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
+ * @dev Main dashboard for CREODE Protocol. Synchronized label intensities for UI consistency.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -37,11 +37,10 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // Explicit color detection for primary stats
+  // Explicit intensity detection for synchronization
+  const matchedDarkIntensity = 'rgba(255, 255, 255, 0.6)';
+  const secondaryLabelColor = theme === 'dark' ? matchedDarkIntensity : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  
-  // Matched intensity for secondary labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
-  const secondaryLabelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
 
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
@@ -50,7 +49,7 @@ export default function Dashboard() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          {/* VAULT LIQUIDITY Section - Matched to System Notification intensity in Dark Mode */}
+          {/* VAULT LIQUIDITY Section */}
           <div className="industrial-panel">
             <h4 
               className="text-[11px] font-bold uppercase tracking-wider mb-1"
@@ -69,7 +68,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* STANDARD YIELD Section - Matched to System Notification intensity in Dark Mode */}
+          {/* STANDARD YIELD Section */}
           <div className="industrial-panel">
             <h4 
               className="text-[11px] font-bold uppercase tracking-wider mb-1"
@@ -96,7 +95,12 @@ export default function Dashboard() {
             <XPGauge xp={userXP} theme={theme} />
             
             <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4 opacity-60">System Notification</h3>
+              <h3 
+                className="text-[11px] font-bold uppercase tracking-wider mb-4"
+                style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}
+              >
+                System Notification
+              </h3>
               <p className="text-sm font-medium leading-relaxed">
                 Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
               </p>
@@ -108,7 +112,7 @@ export default function Dashboard() {
             <div className="md:col-span-2">
               <LockingModule theme={theme} />
             </div>
-            <LendingModule points={userPoints} />
+            <LendingModule points={userPoints} theme={theme} />
             <BorrowingModule xp={userXP} />
           </div>
         </div>

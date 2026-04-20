@@ -3,12 +3,17 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
+interface LendingModuleProps {
+  points: number;
+  theme?: 'light' | 'dark';
+}
+
 /**
  * @title LendingModule
  * @author Viqtorhvayx
- * @dev Module for providing liquidity with strict targeted Dark Mode text overrides.
+ * @dev Module for providing liquidity with explicit theme-detected inline styling for labels.
  */
-export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
+export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
   const [amount, setAmount] = useState("");
 
@@ -21,22 +26,42 @@ export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
     }
   };
 
+  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
+  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+
   return (
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white">Liquidity Pool</h3>
-          <p className="text-xl font-black text-black dark:text-white">Deploy Liquidity</p>
+          <h3 
+            className="text-[11px] font-bold uppercase tracking-wider"
+            style={{ color: labelColor }}
+          >
+            Liquidity Pool
+          </h3>
+          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Deploy Liquidity</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Earned Points</p>
+          <p 
+            className="text-[10px] font-bold uppercase"
+            style={{ color: labelColor }}
+          >
+            Earned Points
+          </p>
+          {/* Points value (1,250) left untouched as requested */}
           <p className="text-lg font-black !text-[#00A8E8]">{points.toLocaleString()}</p>
         </div>
       </div>
 
       <div className="space-y-6">
         <div>
-          <label className="text-[10px] font-bold text-black/40 dark:text-white uppercase block mb-2">Amount to Provide (HBAR)</label>
+          <label 
+            className="text-[10px] font-bold uppercase block mb-2"
+            style={{ color: labelColor }}
+          >
+            Amount to Provide (HBAR)
+          </label>
           <input 
             type="number" 
             placeholder="0.00"
@@ -47,7 +72,10 @@ export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
         </div>
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
-          <p className="text-[10px] font-medium text-black/60 dark:text-white leading-relaxed">
+          <p 
+            className="text-[10px] font-medium leading-relaxed"
+            style={{ color: labelColor }}
+          >
             By providing liquidity, you earn <span className="!text-[#00A8E8] font-bold">Lending Points</span> per HBAR per hour. Points determine your eligibility for future protocol incentives.
           </p>
         </div>
