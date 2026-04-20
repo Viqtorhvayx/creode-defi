@@ -2,24 +2,22 @@
 
 :root {
   --background: #FFFFFF;
-  --surface: #F2F2F7;
-  --text-primary: #1C1C1E;
-  --text-secondary: #8E8E93;
+  --surface: #F8F9FA;
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
   --accent-blue: #00A8E8;
   --accent-blue-hover: #0086B8;
-  --accent-glow: rgba(0, 168, 232, 0.15);
-  --border-color: rgba(0, 0, 0, 0.05);
+  --accent-glow: rgba(0, 168, 232, 0.3);
 }
 
 .dark {
-  --background: #000000;
-  --surface: #1C1C1E;
+  --background: #00171F;
+  --surface: #003459;
   --text-primary: #FFFFFF;
-  --text-secondary: #8E8E93;
+  --text-secondary: #B0B0B5;
   --accent-blue: #00A8E8;
   --accent-blue-hover: #33C2FF;
-  --accent-glow: rgba(0, 168, 232, 0.25);
-  --border-color: rgba(255, 255, 255, 0.05);
+  --accent-glow: rgba(0, 168, 232, 0.4);
 }
 
 @theme {
@@ -37,15 +35,15 @@ body {
 }
 
 @utility industrial-panel {
-  @apply bg-surface border border-[var(--border-color)] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-[var(--accent-glow)];
+  @apply bg-surface border border-black/5 dark:border-white/5 rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[var(--accent-glow)];
 }
 
 @utility industrial-input {
-  @apply w-full bg-white dark:bg-[#2C2C2E] border border-[var(--border-color)] rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
+  @apply w-full bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-action {
-  @apply bg-accent-blue text-white font-bold rounded-xl px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent-blue/20 active:scale-95 disabled:opacity-50;
+  @apply bg-accent-blue text-white font-bold rounded-xl px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50;
 }
 
 @utility btn-wallet {
@@ -58,18 +56,4 @@ body {
 
 .transition-bounce {
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Custom scrollbar for a neat look */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-background;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-black/10 dark:bg-white/10 rounded-full;
-}
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-black/20 dark:bg-white/20;
 }
