@@ -30,7 +30,7 @@ export const LendingModule: React.FC<{ points: number }> = ({ points }) => {
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Earned Points</p>
-          <p className="text-lg font-black text-[#00A8E8] dark:text-[#00A8E8]!">{points.toLocaleString()}</p>
+          <p className="text-lg font-black !text-[#00A8E8]">{points.toLocaleString()}</p>
         </div>
       </div>
 

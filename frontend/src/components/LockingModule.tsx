@@ -32,7 +32,7 @@ export const LockingModule: React.FC = () => {
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold text-black/30 dark:text-white uppercase">Target Yield</p>
-          <p className="text-xl font-black text-[#00A8E8] dark:text-[#00A8E8]!">0.30% <span className="text-xs font-medium text-black/20 dark:text-white/40">APY</span></p>
+          <p className="text-xl font-black !text-[#00A8E8]">0.30% <span className="text-xs font-medium text-black/20 dark:text-white/40">APY</span></p>
         </div>
       </div>
 

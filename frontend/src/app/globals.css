@@ -42,11 +42,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Global Dark Mode Text Override */
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark p, .dark span, .dark label, .dark div {
-  @apply text-white;
-}
-
 /* Specific Exception: Numerical data in white boxes must remain black */
 .dark .industrial-input, 
 .dark .text-numerical-on-white {
