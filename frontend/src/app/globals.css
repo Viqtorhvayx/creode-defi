@@ -6,38 +6,55 @@
   --text-primary: #1D1D1F;
   --text-secondary: #86868B;
   --accent-blue: #00A8E8;
+  --accent-blue-hover: #0086B8;
+  --accent-glow: rgba(0, 168, 232, 0.3);
+}
+
+.dark {
+  --background: #00171F;
+  --surface: #003459;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B5;
+  --accent-blue: #00A8E8;
+  --accent-blue-hover: #33C2FF;
+  --accent-glow: rgba(0, 168, 232, 0.4);
 }
 
 @theme {
-  --color-background: #FFFFFF;
-  --color-surface: #F8F9FA;
-  --color-accent-blue: #00A8E8;
-  --color-accent-blue-muted: #0086B8;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-muted: var(--accent-blue-hover);
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
 }
 
 body {
-  @apply bg-background text-[#1D1D1F] antialiased;
+  @apply bg-background text-black dark:text-white antialiased transition-colors duration-300;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
 @utility industrial-panel {
-  @apply bg-surface border border-black/5 rounded-2xl p-6 transition-all duration-300 shadow-sm;
+  @apply bg-surface border border-black/5 dark:border-white/5 rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[var(--accent-glow)];
 }
 
 @utility industrial-input {
-  @apply w-full bg-white border border-black/10 rounded-xl p-3 text-black outline-none focus:border-accent-blue transition-colors;
+  @apply w-full bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl p-3 text-black dark:text-white outline-none focus:border-accent-blue transition-colors;
 }
 
-@utility btn-industrial {
-  @apply px-6 py-3 font-semibold rounded-xl text-sm transition-all duration-200 disabled:opacity-50;
+@utility btn-action {
+  @apply bg-accent-blue text-white font-bold rounded-xl px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50;
 }
 
-@utility btn-primary {
-  @apply btn-industrial bg-accent-blue text-white hover:bg-accent-blue-muted;
+@utility btn-wallet {
+  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 font-bold rounded-xl px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
 }
 
-@utility btn-outline {
-  @apply btn-industrial border border-black/10 text-black hover:bg-black/5;
+@utility btn-wallet-active {
+  @apply bg-accent-blue! text-white! border-none!;
+}
+
+/* Custom transitions for bounce effect */
+.transition-bounce {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
