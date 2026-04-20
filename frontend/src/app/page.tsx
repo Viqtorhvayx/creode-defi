@@ -11,7 +11,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
+ * @dev Main dashboard for CREODE Protocol. Refined Dark Mode intensities to match System Notification.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -37,8 +37,11 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // Explicit color detection for primary stats
+  // Explicit color detection for primary elements
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+  
+  // Matched intensity for secondary labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  const secondaryLabelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
 
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
@@ -47,11 +50,11 @@ export default function Dashboard() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          {/* VAULT LIQUIDITY Section - Explicit theme-detected inline styles */}
+          {/* VAULT LIQUIDITY Section - Matched to System Notification intensity in Dark Mode */}
           <div className="industrial-panel">
             <h4 
               className="text-[11px] font-bold uppercase tracking-wider mb-1"
-              style={{ color: theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.3)' }}
+              style={{ color: secondaryLabelColor }}
             >
               Vault Liquidity
             </h4>
@@ -66,11 +69,11 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* STANDARD YIELD Section - Explicit theme-detected inline styles for labels */}
+          {/* STANDARD YIELD Section - Matched to System Notification intensity in Dark Mode */}
           <div className="industrial-panel">
             <h4 
               className="text-[11px] font-bold uppercase tracking-wider mb-1"
-              style={{ color: theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.3)' }}
+              style={{ color: secondaryLabelColor }}
             >
               Standard Yield
             </h4>

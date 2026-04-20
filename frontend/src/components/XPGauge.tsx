@@ -22,8 +22,11 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
 
   const gaugeColor = getGaugeColor(xp);
   
-  // Explicit color detection for secondary labels
-  const secondaryLabelColor = theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.3)';
+  // Matched intensity for listed Dark Mode elements (Matching 'SYSTEM NOTIFICATION' opacity-60 white)
+  const matchedWhite = 'rgba(255, 255, 255, 0.6)';
+  
+  // Secondary labels logic
+  const secondaryLabelColorLight = 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
@@ -32,7 +35,7 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
         <div>
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
-            style={{ color: secondaryLabelColor }}
+            style={{ color: theme === 'dark' ? '#FFFFFF' : secondaryLabelColorLight }}
           >
             Reputation Metric
           </h3>
@@ -47,7 +50,7 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
           {xp}
           <span 
             className="text-sm ml-1" 
-            style={{ color: theme === 'dark' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.2)' }}
+            style={{ color: theme === 'dark' ? matchedWhite : 'rgba(0, 0, 0, 0.2)' }}
           >
             /100
           </span>
@@ -64,11 +67,10 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
       <div className="flex justify-between mt-4">
         <span 
           className="text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: secondaryLabelColor }}
+          style={{ color: theme === 'dark' ? matchedWhite : secondaryLabelColorLight }}
         >
           Threshold: 15 XP
         </span>
-        {/* 'status: functional' removed as requested */}
       </div>
     </div>
   );
