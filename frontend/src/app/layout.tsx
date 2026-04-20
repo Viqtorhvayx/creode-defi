@@ -4,7 +4,7 @@ import "./globals.css";
 /**
  * @title RootLayout
  * @author Viqtorhvayx
- * @dev Root layout for CREODE DeFi. Enforces San Francisco typography and global Dark Mode text colors.
+ * @dev Root layout for CREODE DeFi. Removes global text color cascade to allow precise color targeting.
  */
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased dark:text-white transition-colors duration-500">
+      <body className="antialiased bg-background transition-colors duration-500">
         <AppKitProvider>
           <Web3Provider>
             {children}
