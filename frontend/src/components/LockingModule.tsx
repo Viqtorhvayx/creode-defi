@@ -99,7 +99,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Target Yield
           </p>
-          <p className="text-xl font-black !text-[#00A8E8]">
+          {/* Updated color to Profit Green and ensured flush right alignment */}
+          <p className="text-xl font-black !text-[#25A18E]">
             0.30% 
             <span 
               className="text-xs font-medium ml-1"

@@ -68,7 +68,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* STANDARD YIELD Section */}
+          {/* STANDARD YIELD Section: Updated color to Profit Green and reduced size */}
           <div className="industrial-panel">
             <h4 
               className="text-[11px] font-bold uppercase tracking-wider mb-1"
@@ -76,7 +76,7 @@ export default function Dashboard() {
             >
               Standard Yield
             </h4>
-            <div className="text-2xl font-bold !text-[#00A8E8]">
+            <div className="text-xl font-bold !text-[#25A18E]">
               0.30% 
               <span 
                 className="text-sm font-medium ml-1" 
