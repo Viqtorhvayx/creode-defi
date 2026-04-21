@@ -186,19 +186,17 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               </span>
               <span className="text-[11px] font-black !text-red-500">5.00%</span>
             </div>
-            {/* Updated Calculated Maturity Section: Date appears BEFORE label text */}
+            {/* Updated Calculated Maturity Section: Date right-aligned to match '5.00%' position */}
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
-                  {new Date(maturityDate).toLocaleDateString()}
-                </span>
-                <span 
-                  className="text-[10px] font-bold uppercase"
-                  style={{ color: labelColor }}
-                >
-                  Calculated Maturity
-                </span>
-              </div>
+              <span 
+                className="text-[10px] font-bold uppercase"
+                style={{ color: labelColor }}
+              >
+                Calculated Maturity
+              </span>
+              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
+                {new Date(maturityDate).toLocaleDateString()}
+              </span>
             </div>
           </div>
           
