@@ -178,11 +178,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
+              {/* Text label renamed from 'Early Exit Fee' to 'Early Withdrawal Fee' */}
               <span 
                 className="text-[10px] font-bold uppercase"
                 style={{ color: labelColor }}
               >
-                Early Exit Fee
+                Early Withdrawal Fee
               </span>
               <span className="text-[11px] font-black !text-red-500">5.00%</span>
             </div>
