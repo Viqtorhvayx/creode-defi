@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Amount & Actions (Deposit/Withdraw) on left, Stats & Time Configuration on right.
+ * Updated layout: Maturity Date input replaced with a 'Set' button.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -52,12 +52,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     updateDateFromDays(val);
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setMaturityDate(val);
-    updateDaysFromDate(val);
-  };
-
   const handleDeposit = async () => {
     try {
       const unlockDate = Math.floor(Date.now() / 1000) + (days * 24 * 60 * 60);
@@ -75,6 +69,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     } catch (e: any) {
       alert(e.message);
     }
+  };
+
+  const handleSetMaturity = () => {
+    alert("Maturity confirmed!");
   };
 
   // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
@@ -144,7 +142,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Action Buttons Row: Shifted downward with mt-20 margin */}
           <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
@@ -190,7 +187,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration & Maturity Inputs (Repositioned to the right) */}
+          {/* Duration & Actions (MATURITY DATE replaced with 'Set' button) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
@@ -211,23 +208,15 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onChange={handleDaysChange}
               />
             </div>
-            <div>
-              <label 
-                className="text-[10px] font-bold uppercase block mb-2"
-                style={{ color: labelColor }}
+            <div className="flex flex-col justify-end">
+              {/* Blue 'Set' button replacing Maturity Date input. Matched size with Deposit/Withdraw. */}
+              <button 
+                onClick={handleSetMaturity}
+                className="btn-action w-full !py-2.5 !h-auto"
+                style={{ borderRadius: '60px' }}
               >
-                Maturity Date
-              </label>
-              <input 
-                type="date" 
-                className={numericInputClasses}
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                }}
-                value={maturityDate}
-                onChange={handleDateChange}
-              />
+                Set
+              </button>
             </div>
           </div>
         </div>
