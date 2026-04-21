@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Maturity Date input replaced with a 'Set' button.
+ * Updated layout: Height alignment fix for Duration input to match action buttons.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -30,20 +30,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     const date = new Date();
     date.setDate(date.getDate() + d);
     setMaturityDate(date.toISOString().split('T')[0]);
-  };
-
-  const updateDaysFromDate = (dateStr: string) => {
-    const selectedDate = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    selectedDate.setHours(0, 0, 0, 0);
-    
-    const diffTime = selectedDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays >= 0) {
-      setDays(diffDays);
-    }
   };
 
   const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,7 +173,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration & Actions (MATURITY DATE replaced with 'Set' button) */}
+          {/* Duration & Actions: Height alignment fix for Duration input */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
@@ -199,7 +185,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <input 
                 type="number" 
                 min="1"
-                className={numericInputClasses}
+                className={numericInputClasses + " !py-2.5 !h-auto"} // Height matched with buttons
                 style={{ 
                   backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                   color: theme === 'dark' ? '#FFFFFF' : '#000000'
@@ -209,7 +195,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               />
             </div>
             <div className="flex flex-col justify-end">
-              {/* Blue 'Set' button replacing Maturity Date input. Matched size with Deposit/Withdraw. */}
               <button 
                 onClick={handleSetMaturity}
                 className="btn-action w-full !py-2.5 !h-auto"
