@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Amount group shifted further downward for improved spacing.
+ * Updated: Unified horizontal alignment for all action buttons (Deposit, Withdraw, Set).
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -50,7 +50,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const handleWithdraw = async () => {
     try {
-      // Placeholder for withdraw functionality
       alert("Withdrawal requested!");
     } catch (e: any) {
       alert(e.message);
@@ -61,17 +60,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     alert("Maturity confirmed!");
   };
 
-  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  // Matched intensity for labels
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
-  /**
-   * Shared classes for professional numerical inputs:
-   * - No outline/ring even on focus
-   * - Elevated blue undershadow for depth
-   * - Smooth 60px corner radius
-   * - Suppressed default spinners
-   */
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   return (
@@ -105,11 +97,14 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* 
+          Main Grid: Using items-end to ensure the bottoms of both columns 
+          (and thus their respective action buttons) match perfectly.
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
         {/* Left Column: Amount Input & Action Buttons */}
-        <div className="flex flex-col">
-          {/* Amount Input group shifted further downward (mt-6) for refined spacing */}
-          <div className="mt-6">
+        <div className="flex flex-col h-full justify-between">
+          <div>
             <label 
               className="text-[10px] font-bold uppercase block mb-2"
               style={{ color: labelColor }}
@@ -129,7 +124,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          <div className="flex gap-4 mt-20">
+          {/* Unified Action Row for Left Column: No top margin to avoid pushing below Right Column baseline */}
+          <div className="flex gap-4 mt-8">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
@@ -174,8 +170,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration & Actions: Height alignment fix for Duration input */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Duration & Set Action: Unified grid with items-end for perfect baseline matching */}
+          <div className="grid grid-cols-2 gap-4 items-end">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
@@ -195,7 +191,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onChange={handleDaysChange}
               />
             </div>
-            <div className="flex flex-col justify-end">
+            <div>
               <button 
                 onClick={handleSetMaturity}
                 className="btn-action w-full !py-2.5 !h-auto"
