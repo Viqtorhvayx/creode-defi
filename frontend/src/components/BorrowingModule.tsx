@@ -35,6 +35,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  // Shared classes for professional numerical inputs (No spinners, custom shadow, focus ring)
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none transition-all border border-transparent shadow-[0_4px_15px_-3px_rgba(0,168,232,0.3)] focus:ring-2 focus:ring-[#00A8E8] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
@@ -67,7 +70,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input text-black"
+              className={numericInputClasses}
+              style={{ 
+                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                color: theme === 'dark' ? '#FFFFFF' : '#000000'
+              }}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />

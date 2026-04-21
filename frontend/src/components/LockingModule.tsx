@@ -71,6 +71,9 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  // Shared classes for professional numerical inputs (No spinners, custom shadow, focus ring)
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none transition-all border border-transparent shadow-[0_4px_15px_-3px_rgba(0,168,232,0.3)] focus:ring-2 focus:ring-[#00A8E8] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
   return (
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
@@ -111,11 +114,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             >
               Amount to Lock (HBAR)
             </label>
-            {/* Updated Input Box with explicit theme detection and 60px corner radius */}
             <input 
               type="number" 
               placeholder="0.00"
-              className="w-full border border-[#00A8E8] rounded-[60px] p-3 outline-none focus:ring-2 focus:ring-[#00A8E8]/50 transition-all"
+              className={numericInputClasses}
               style={{ 
                 backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                 color: theme === 'dark' ? '#FFFFFF' : '#000000'
@@ -136,7 +138,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <input 
                 type="number" 
                 min="1"
-                className="industrial-input text-black"
+                className={numericInputClasses}
+                style={{ 
+                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
+                }}
                 value={days}
                 onChange={handleDaysChange}
               />
