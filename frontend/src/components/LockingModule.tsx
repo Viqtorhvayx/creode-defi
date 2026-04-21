@@ -135,11 +135,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Initialize button moved slightly lower with increased vertical spacing (mt-14) */}
+          {/* Initialize button moved subtly lower with mt-16 margin */}
           <button 
             onClick={handleAction}
             disabled={!amount || Number(amount) <= 0 || days <= 0}
-            className="btn-action px-12 w-fit mt-14"
+            className="btn-action px-12 w-fit mt-16"
             style={{ borderRadius: '60px' }}
           >
             Initialize
