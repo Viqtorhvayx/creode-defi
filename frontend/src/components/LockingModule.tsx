@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Height alignment fix for Duration input to match action buttons.
+ * Updated layout: Maturity Date input replaced with a 'Set' button. Label updated to 'AMOUNT TO SAVE'.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -113,7 +113,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               className="text-[10px] font-bold uppercase block mb-2"
               style={{ color: labelColor }}
             >
-              Amount to Lock (HBAR)
+              Amount to Save (HBAR)
             </label>
             <input 
               type="number" 
@@ -185,7 +185,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <input 
                 type="number" 
                 min="1"
-                className={numericInputClasses + " !py-2.5 !h-auto"} // Height matched with buttons
+                className={numericInputClasses + " !py-2.5 !h-auto"} 
                 style={{ 
                   backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                   color: theme === 'dark' ? '#FFFFFF' : '#000000'
