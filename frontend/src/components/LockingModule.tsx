@@ -181,6 +181,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             onClick={handleAction}
             disabled={!amount || Number(amount) <= 0 || days <= 0}
             className="btn-action w-full mt-6"
+            style={{ borderRadius: '60px' }}
           >
             Initialize
           </button>

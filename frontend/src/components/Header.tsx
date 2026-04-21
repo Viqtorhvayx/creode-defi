@@ -93,6 +93,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
               <button 
                 onClick={connect}
                 className="btn-action !px-4 !py-2 !text-xs shadow-lg shadow-[#00A8E8]/10"
+                style={{ borderRadius: '60px' }}
               >
                 Connect Wallet
               </button>

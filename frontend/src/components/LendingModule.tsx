@@ -34,12 +34,14 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
     <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
         <div>
+          {/* Title updated to LENDING POOL */}
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: labelColor }}
           >
             Lending Pool
           </h3>
+          {/* Text updated to Lend */}
           <p className="text-xl font-black" style={{ color: primaryTextColor }}>Lend</p>
         </div>
         <div className="text-right">
@@ -71,6 +73,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+          {/* Notice text updated as requested */}
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
@@ -79,11 +82,12 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </p>
         </div>
 
-        {/* mt-auto pushes the button to the bottom for vertical alignment with siblings */}
+        {/* Button label renamed to 'Initialize' as requested, with explicit 60px border radius */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
           className="btn-action w-full mt-auto"
+          style={{ borderRadius: '60px' }}
         >
           Initialize
         </button>

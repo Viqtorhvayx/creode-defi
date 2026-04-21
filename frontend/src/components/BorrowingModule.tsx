@@ -103,11 +103,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
           </div>
         </div>
 
-        {/* mt-auto pushes the button to the bottom for vertical alignment with the Lend section button */}
+        {/* Action Button label updated to 'Initialize', with explicit 60px border radius */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
           className="btn-action w-full mt-auto"
+          style={{ borderRadius: '60px' }}
         >
           Initialize
         </button>
