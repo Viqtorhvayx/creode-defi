@@ -36,7 +36,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
-    <div className="industrial-panel bg-surface">
+    <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
         <div>
           <h3 
@@ -55,7 +55,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 flex flex-col flex-grow">
         <div>
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
@@ -96,18 +96,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
             >
               Max Borrowing Capacity
             </span>
-            <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
+            <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-[#00A8E8] w-2/3 opacity-50" />
           </div>
         </div>
 
-        {/* Action Button label updated to 'Initialize' as requested */}
+        {/* mt-auto pushes the button to the bottom for vertical alignment with the Lend section button */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full"
+          className="btn-action w-full mt-auto"
         >
           Initialize
         </button>

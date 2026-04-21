@@ -31,7 +31,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
-    <div className="industrial-panel bg-surface">
+    <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
         <div>
           <h3 
@@ -53,7 +53,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 flex flex-col flex-grow">
         <div>
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
@@ -79,11 +79,11 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </p>
         </div>
 
-        {/* Button label renamed to 'Initialize' as requested */}
+        {/* mt-auto pushes the button to the bottom for vertical alignment with siblings */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full"
+          className="btn-action w-full mt-auto"
         >
           Initialize
         </button>
