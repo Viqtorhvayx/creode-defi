@@ -111,10 +111,15 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             >
               Amount to Lock (HBAR)
             </label>
+            {/* Updated Input Box with explicit theme detection and 60px corner radius */}
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input text-black"
+              className="w-full border border-[#00A8E8] rounded-[60px] p-3 outline-none focus:ring-2 focus:ring-[#00A8E8]/50 transition-all"
+              style={{ 
+                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                color: theme === 'dark' ? '#FFFFFF' : '#000000'
+              }}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
