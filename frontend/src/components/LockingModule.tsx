@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Amount group shifted downward.
+ * Updated layout: Amount group shifted further downward for improved spacing.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -108,8 +108,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column: Amount Input & Action Buttons */}
         <div className="flex flex-col">
-          {/* Amount Input group shifted downward for better visual balance */}
-          <div className="mt-4">
+          {/* Amount Input group shifted further downward (mt-6) for refined spacing */}
+          <div className="mt-6">
             <label 
               className="text-[10px] font-bold uppercase block mb-2"
               style={{ color: labelColor }}
