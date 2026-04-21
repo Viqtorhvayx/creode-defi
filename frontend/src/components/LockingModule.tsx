@@ -144,8 +144,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Action Buttons Row: Reduced height for Deposit and Withdraw buttons */}
-          <div className="flex gap-4 mt-18">
+          {/* Action Buttons Row: Shifted downward with mt-20 margin */}
+          <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
