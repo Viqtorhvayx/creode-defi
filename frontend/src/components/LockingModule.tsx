@@ -99,7 +99,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Target Yield
           </p>
-          {/* Balanced Rich Green (#10B981) with typographic alignment */}
           <p className="text-[18px] font-black !text-[#10B981] leading-none tracking-[0.04em] flex items-baseline">
             0.30% 
             <span 
@@ -112,7 +111,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="space-y-6">
           <div>
             <label 
@@ -133,98 +132,85 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
-          
-          <div className="grid grid-cols-2 gap-4 items-end">
-            <div>
-              <label 
-                className="text-[10px] font-bold uppercase block mb-2"
-                style={{ color: labelColor }}
-              >
-                Duration (Days)
-              </label>
-              <input 
-                type="number" 
-                min="1"
-                className={numericInputClasses}
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                }}
-                value={days}
-                onChange={handleDaysChange}
-              />
-            </div>
-            <div>
-              <label 
-                className="text-[10px] font-bold uppercase block mb-2"
-                style={{ color: labelColor }}
-              >
-                Maturity Date
-              </label>
-              <input 
-                type="date" 
-                className={numericInputClasses}
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                }}
-                value={maturityDate}
-                onChange={handleDateChange}
-              />
-            </div>
-          </div>
         </div>
 
-        <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
+        {/* Right Panel: Fees and Calculated Maturity */}
+        <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
+          <div className="space-y-4">
+            <div className="flex justify-between">
               <span 
                 className="text-[10px] font-bold uppercase"
                 style={{ color: labelColor }}
               >
                 Early Exit Fee
               </span>
-              <span className="text-[11px] font-black !text-red-500">5.00%</span>
+              <div className="flex flex-col items-end">
+                <span className="text-[11px] font-black !text-red-500">5.00%</span>
+                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
+                  {new Date(maturityDate).toLocaleDateString()}
+                </span>
+              </div>
             </div>
-            
-            {/* 
-              Calculated Maturity Section: 
-              - Pushed downward with mt-4 to align horizontally with the inputs in the adjacent column
-              - Wrapped in a rectangle container to match the input style
-            */}
-            <div className="mt-4">
+            <div className="flex justify-between items-center">
               <span 
-                className="text-[10px] font-bold uppercase block mb-2"
+                className="text-[10px] font-bold uppercase"
                 style={{ color: labelColor }}
               >
                 Calculated Maturity
               </span>
-              <div 
-                className="w-full rounded-[60px] p-3 shadow-[0_4px_15px_rgba(0,168,232,0.15)] flex items-center justify-center"
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                }}
-              >
-                <span className="text-[13px] font-black" style={{ color: primaryTextColor }}>
-                  {new Date(maturityDate).toLocaleDateString(undefined, { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </span>
-              </div>
+              {/* Value moved under Early Exit Fee */}
             </div>
           </div>
-          
-          <button 
-            onClick={handleAction}
-            disabled={!amount || Number(amount) <= 0 || days <= 0}
-            className="btn-action w-full mt-6"
-            style={{ borderRadius: '60px' }}
-          >
-            Initialize
-          </button>
         </div>
+      </div>
+
+      {/* Bottom Horizontal Row: Duration, Maturity Date, and Initialize Button */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+        <div>
+          <label 
+            className="text-[10px] font-bold uppercase block mb-2"
+            style={{ color: labelColor }}
+          >
+            Duration (Days)
+          </label>
+          <input 
+            type="number" 
+            min="1"
+            className={numericInputClasses}
+            style={{ 
+              backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+              color: theme === 'dark' ? '#FFFFFF' : '#000000'
+            }}
+            value={days}
+            onChange={handleDaysChange}
+          />
+        </div>
+        <div>
+          <label 
+            className="text-[10px] font-bold uppercase block mb-2"
+            style={{ color: labelColor }}
+          >
+            Maturity Date
+          </label>
+          <input 
+            type="date" 
+            className={numericInputClasses}
+            style={{ 
+              backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+              color: theme === 'dark' ? '#FFFFFF' : '#000000'
+            }}
+            value={maturityDate}
+            onChange={handleDateChange}
+          />
+        </div>
+        <button 
+          onClick={handleAction}
+          disabled={!amount || Number(amount) <= 0 || days <= 0}
+          className="btn-action w-full"
+          style={{ borderRadius: '60px' }}
+        >
+          Initialize
+        </button>
       </div>
     </div>
   );
