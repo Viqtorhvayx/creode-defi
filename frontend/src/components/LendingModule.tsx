@@ -34,13 +34,15 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-start mb-8">
         <div>
+          {/* Title updated to LENDING POOL */}
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: labelColor }}
           >
-            Liquidity Pool
+            Lending Pool
           </h3>
-          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Deploy Liquidity</p>
+          {/* Text updated to Lend */}
+          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Lend</p>
         </div>
         <div className="text-right">
           <p 
@@ -49,7 +51,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           >
             Earned Points
           </p>
-          {/* Points value (1,250) left untouched as requested */}
           <p className="text-lg font-black !text-[#00A8E8]">{points.toLocaleString()}</p>
         </div>
       </div>
@@ -65,27 +66,29 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           <input 
             type="number" 
             placeholder="0.00"
-            className="industrial-input text-black" // Exception: text-black for white box readability
+            className="industrial-input text-black"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
         </div>
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+          {/* Notice text updated as requested */}
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
           >
-            By providing liquidity, you earn <span className="!text-[#00A8E8] font-bold">Lending Points</span> per HBAR per hour. Points determine your eligibility for future protocol incentives.
+            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
           </p>
         </div>
 
+        {/* Button updated to Lend */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
           className="btn-action w-full"
         >
-          Deploy Liquidity
+          Lend
         </button>
       </div>
     </div>
