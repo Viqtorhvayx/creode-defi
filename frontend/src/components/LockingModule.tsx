@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated layout: Amount & Action on left, Stats & Time Configuration on right.
+ * Updated layout: Amount & Actions (Deposit/Withdraw) on left, Stats & Time Configuration on right.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -58,11 +58,20 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     updateDaysFromDate(val);
   };
 
-  const handleAction = async () => {
+  const handleDeposit = async () => {
     try {
       const unlockDate = Math.floor(Date.now() / 1000) + (days * 24 * 60 * 60);
       await lockAssets(amount, unlockDate);
       alert("Lock-up initialized!");
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      // Placeholder for withdraw functionality
+      alert("Withdrawal requested!");
     } catch (e: any) {
       alert(e.message);
     }
@@ -113,7 +122,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column: Amount Input & Action Button */}
+        {/* Left Column: Amount Input & Action Buttons */}
         <div className="flex flex-col">
           <div>
             <label 
@@ -135,15 +144,24 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Button label renamed from 'Initialize' to 'Deposit' */}
-          <button 
-            onClick={handleAction}
-            disabled={!amount || Number(amount) <= 0 || days <= 0}
-            className="btn-action px-12 w-fit mt-18"
-            style={{ borderRadius: '60px' }}
-          >
-            Deposit
-          </button>
+          {/* Action Buttons Row: Deposit and Withdraw aligned horizontally */}
+          <div className="flex gap-4 mt-18">
+            <button 
+              onClick={handleDeposit}
+              disabled={!amount || Number(amount) <= 0 || days <= 0}
+              className="btn-action flex-1 min-w-[120px]"
+              style={{ borderRadius: '60px' }}
+            >
+              Deposit
+            </button>
+            <button 
+              onClick={handleWithdraw}
+              className="btn-action flex-1 min-w-[120px]"
+              style={{ borderRadius: '60px' }}
+            >
+              Withdraw
+            </button>
+          </div>
         </div>
 
         {/* Right Column: Stats & Time Configuration */}
