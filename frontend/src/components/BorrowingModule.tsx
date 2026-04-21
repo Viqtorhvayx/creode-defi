@@ -99,20 +99,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
+            {/* Updated Selection Box with soft blue fill and no border */}
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 p-1 bg-black/5 dark:bg-white/5 rounded-2xl">
               <button 
                 onClick={() => setCollateralType('USDT')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 ${collateralType === 'USDT' ? 'bg-[#00A8E8] shadow-md' : 'opacity-60 hover:opacity-100'}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 border-none ${collateralType === 'USDT' ? 'bg-[#00A8E8]/20 shadow-none' : 'opacity-60 hover:opacity-100'}`}
               >
-                <USDTLogo active={collateralType === 'USDT'} />
-                <span className={`text-[10px] font-black uppercase ${collateralType === 'USDT' ? 'text-white' : ''}`} style={collateralType !== 'USDT' ? { color: primaryTextColor } : {}}>USDT</span>
+                <USDTLogo active={false} />
+                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDT</span>
               </button>
               <button 
                 onClick={() => setCollateralType('USDC')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 ${collateralType === 'USDC' ? 'bg-[#00A8E8] shadow-md' : 'opacity-60 hover:opacity-100'}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 border-none ${collateralType === 'USDC' ? 'bg-[#00A8E8]/20 shadow-none' : 'opacity-60 hover:opacity-100'}`}
               >
-                <USDCLogo active={collateralType === 'USDC'} />
-                <span className={`text-[10px] font-black uppercase ${collateralType === 'USDC' ? 'text-white' : ''}`} style={collateralType !== 'USDC' ? { color: primaryTextColor } : {}}>USDC</span>
+                <USDCLogo active={false} />
+                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDC</span>
               </button>
             </div>
           </div>

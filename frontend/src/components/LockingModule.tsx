@@ -99,8 +99,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Target Yield
           </p>
-          {/* Refined typographic alignment and vibrant green. Matched width to 'TARGET YIELD' label. */}
-          <p className="text-[18px] font-black !text-[#00E676] leading-none tracking-[0.04em] flex items-baseline">
+          {/* Updated color to Balanced Rich Green (#10B981). Matched width to 'TARGET YIELD' label. */}
+          <p className="text-[18px] font-black !text-[#10B981] leading-none tracking-[0.04em] flex items-baseline">
             0.30% 
             <span 
               className="text-[10px] font-bold ml-1 tracking-tight"

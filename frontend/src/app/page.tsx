@@ -68,7 +68,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* STANDARD YIELD Section: Refined typographic alignment and vibrant green */}
+          {/* STANDARD YIELD Section: Updated color to Balanced Rich Green */}
           <div className="industrial-panel flex flex-col items-start">
             <h4 
               className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1"
@@ -77,7 +77,7 @@ export default function Dashboard() {
               Standard Yield
             </h4>
             <div 
-              className="text-[19px] font-black !text-[#00E676] leading-none tracking-[-0.015em] flex items-baseline"
+              className="text-[19px] font-black !text-[#10B981] leading-none tracking-[-0.015em] flex items-baseline"
             >
               0.30%
               <span 
