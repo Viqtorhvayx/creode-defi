@@ -45,7 +45,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
           >
             Credit Facility
           </h3>
-          {/* Sub-title updated to Borrow HBAR as requested */}
           <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow HBAR</p>
         </div>
         {/* XP Multiplier Badge */}
@@ -104,13 +103,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
           </div>
         </div>
 
-        {/* Action Button label updated to Borrow HBAR as requested */}
+        {/* Action Button label updated to 'Initialize' as requested */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
           className="btn-action w-full"
         >
-          Borrow HBAR
+          Initialize
         </button>
       </div>
     </div>
