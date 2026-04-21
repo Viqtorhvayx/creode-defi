@@ -44,6 +44,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
    */
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
+  // Simple SVG Icons
+  const USDTLogo = ({ active }: { active: boolean }) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill={active ? "white" : "#26A17B"} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z"/>
+    </svg>
+  );
+
+  const USDCLogo = ({ active }: { active: boolean }) => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill={active ? "white" : "#2775CA"} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+      <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+    </svg>
+  );
+
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
@@ -84,20 +99,20 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1.5 p-1 bg-black/5 dark:bg-white/5 rounded-2xl">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 p-1 bg-black/5 dark:bg-white/5 rounded-2xl">
               <button 
                 onClick={() => setCollateralType('USDT')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 border ${collateralType === 'USDT' ? 'bg-[#00A8E8]/15 border-[#00A8E8] shadow-sm' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 ${collateralType === 'USDT' ? 'bg-[#00A8E8] shadow-md' : 'opacity-60 hover:opacity-100'}`}
               >
-                <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDT</span>
+                <USDTLogo active={collateralType === 'USDT'} />
+                <span className={`text-[10px] font-black uppercase ${collateralType === 'USDT' ? 'text-white' : ''}`} style={collateralType !== 'USDT' ? { color: primaryTextColor } : {}}>USDT</span>
               </button>
               <button 
                 onClick={() => setCollateralType('USDC')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 border ${collateralType === 'USDC' ? 'bg-[#00A8E8]/15 border-[#00A8E8] shadow-sm' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 ${collateralType === 'USDC' ? 'bg-[#00A8E8] shadow-md' : 'opacity-60 hover:opacity-100'}`}
               >
-                <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" alt="USDC" className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDC</span>
+                <USDCLogo active={collateralType === 'USDC'} />
+                <span className={`text-[10px] font-black uppercase ${collateralType === 'USDC' ? 'text-white' : ''}`} style={collateralType !== 'USDC' ? { color: primaryTextColor } : {}}>USDC</span>
               </button>
             </div>
           </div>
