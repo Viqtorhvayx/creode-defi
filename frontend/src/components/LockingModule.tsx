@@ -114,7 +114,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column: Amount Input & Action Button */}
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col">
           <div>
             <label 
               className="text-[10px] font-bold uppercase block mb-2"
@@ -135,10 +135,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
+          {/* Initialize button moved slightly downward with increased vertical spacing */}
           <button 
             onClick={handleAction}
             disabled={!amount || Number(amount) <= 0 || days <= 0}
-            className="btn-action px-12 w-fit"
+            className="btn-action px-12 w-fit mt-10"
             style={{ borderRadius: '60px' }}
           >
             Initialize
