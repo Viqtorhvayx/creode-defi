@@ -99,7 +99,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Target Yield
           </p>
-          {/* Updated color to Balanced Rich Green (#10B981). Matched width to 'TARGET YIELD' label. */}
+          {/* Balanced Rich Green (#10B981) with typographic alignment */}
           <p className="text-[18px] font-black !text-[#10B981] leading-none tracking-[0.04em] flex items-baseline">
             0.30% 
             <span 
@@ -134,7 +134,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 items-end">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
@@ -176,7 +176,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
 
         <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex justify-between items-center">
               <span 
                 className="text-[10px] font-bold uppercase"
@@ -186,16 +186,33 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               </span>
               <span className="text-[11px] font-black !text-red-500">5.00%</span>
             </div>
-            <div className="flex justify-between items-center">
+            
+            {/* 
+              Calculated Maturity Section: 
+              - Pushed downward with mt-4 to align horizontally with the inputs in the adjacent column
+              - Wrapped in a rectangle container to match the input style
+            */}
+            <div className="mt-4">
               <span 
-                className="text-[10px] font-bold uppercase"
+                className="text-[10px] font-bold uppercase block mb-2"
                 style={{ color: labelColor }}
               >
                 Calculated Maturity
               </span>
-              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
-                {new Date(maturityDate).toLocaleDateString()}
-              </span>
+              <div 
+                className="w-full rounded-[60px] p-3 shadow-[0_4px_15px_rgba(0,168,232,0.15)] flex items-center justify-center"
+                style={{ 
+                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                }}
+              >
+                <span className="text-[13px] font-black" style={{ color: primaryTextColor }}>
+                  {new Date(maturityDate).toLocaleDateString(undefined, { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
             </div>
           </div>
           
