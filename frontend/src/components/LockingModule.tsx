@@ -135,14 +135,14 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Initialize button moved subtly upward with mt-18 margin */}
+          {/* Button label renamed from 'Initialize' to 'Deposit' */}
           <button 
             onClick={handleAction}
             disabled={!amount || Number(amount) <= 0 || days <= 0}
             className="btn-action px-12 w-fit mt-18"
             style={{ borderRadius: '60px' }}
           >
-            Initialize
+            Deposit
           </button>
         </div>
 
