@@ -144,19 +144,19 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Action Buttons Row: Deposit and Withdraw aligned horizontally */}
+          {/* Action Buttons Row: Reduced height for Deposit and Withdraw buttons */}
           <div className="flex gap-4 mt-18">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
-              className="btn-action flex-1 min-w-[120px]"
+              className="btn-action flex-1 min-w-[120px] !py-2.5 !h-auto"
               style={{ borderRadius: '60px' }}
             >
               Deposit
             </button>
             <button 
               onClick={handleWithdraw}
-              className="btn-action flex-1 min-w-[120px]"
+              className="btn-action flex-1 min-w-[120px] !py-2.5 !h-auto"
               style={{ borderRadius: '60px' }}
             >
               Withdraw
