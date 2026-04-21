@@ -45,9 +45,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
           >
             Credit Facility
           </h3>
-          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Initialize Credit Request</p>
+          {/* Sub-title updated to Borrow HBAR as requested */}
+          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow HBAR</p>
         </div>
-        {/* XP Multiplier: Reduced padding and adjusted font size for perfect containment */}
+        {/* XP Multiplier Badge */}
         <div className="bg-[#00A8E8]/10 px-2 py-0.5 rounded-full border border-[#00A8E8]/20 flex items-center justify-center min-w-[fit-content]">
           <span className="text-[9px] font-bold !text-[#00A8E8] uppercase whitespace-nowrap leading-none">
             XP Multiplier: {(xp/100).toFixed(2)}x
@@ -67,7 +68,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
             <input 
               type="number" 
               placeholder="0.00"
-              className="industrial-input text-black" // Exception: text-black for white box readability
+              className="industrial-input text-black"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
@@ -103,12 +104,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
           </div>
         </div>
 
+        {/* Action Button label updated to Borrow HBAR as requested */}
         <button 
           onClick={handleAction}
           disabled={!amount || Number(amount) <= 0}
           className="btn-action w-full"
         >
-          Initialize Credit Request
+          Borrow HBAR
         </button>
       </div>
     </div>
