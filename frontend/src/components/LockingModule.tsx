@@ -92,18 +92,18 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           </h3>
           <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Vault</p>
         </div>
-        <div className="text-right">
+        <div className="text-right flex flex-col items-end">
           <p 
-            className="text-[10px] font-bold uppercase"
+            className="text-[10px] font-bold uppercase tracking-[0.1em]"
             style={{ color: labelColor }}
           >
             Target Yield
           </p>
-          {/* Updated color to Profit Green and ensured flush right alignment */}
-          <p className="text-xl font-black !text-[#25A18E]">
+          {/* Refined typographic alignment and vibrant green. Matched width to 'TARGET YIELD' label. */}
+          <p className="text-[18px] font-black !text-[#00E676] leading-none tracking-[0.04em] flex items-baseline">
             0.30% 
             <span 
-              className="text-xs font-medium ml-1"
+              className="text-[10px] font-bold ml-1 tracking-tight"
               style={{ color: labelColor }}
             >
               APY
