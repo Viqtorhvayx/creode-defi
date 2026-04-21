@@ -11,6 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
+ * Updated layout: Amount & Action on left, Stats & Time Configuration on right.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -99,7 +100,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           >
             Target Yield
           </p>
-          {/* Updated color to Balanced Rich Green (#10B981). Matched width to 'TARGET YIELD' label. */}
           <p className="text-[18px] font-black !text-[#10B981] leading-none tracking-[0.04em] flex items-baseline">
             0.30% 
             <span 
@@ -113,7 +113,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+        {/* Left Column: Amount Input & Action Button */}
+        <div className="flex flex-col space-y-6">
           <div>
             <label 
               className="text-[10px] font-bold uppercase block mb-2"
@@ -134,6 +135,43 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
+          <button 
+            onClick={handleAction}
+            disabled={!amount || Number(amount) <= 0 || days <= 0}
+            className="btn-action px-12 w-fit"
+            style={{ borderRadius: '60px' }}
+          >
+            Initialize
+          </button>
+        </div>
+
+        {/* Right Column: Stats & Time Configuration */}
+        <div className="flex flex-col space-y-6">
+          {/* Summary Box */}
+          <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <span 
+                className="text-[10px] font-bold uppercase"
+                style={{ color: labelColor }}
+              >
+                Early Withdrawal Fee
+              </span>
+              <span className="text-[11px] font-black !text-red-500">5.00%</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span 
+                className="text-[10px] font-bold uppercase"
+                style={{ color: labelColor }}
+              >
+                Calculated Maturity
+              </span>
+              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
+                {new Date(maturityDate).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+
+          {/* Duration & Maturity Inputs (Repositioned to the right) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
@@ -173,42 +211,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               />
             </div>
           </div>
-        </div>
-
-        <div className="flex flex-col justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              {/* Text label renamed from 'Early Exit Fee' to 'Early Withdrawal Fee' */}
-              <span 
-                className="text-[10px] font-bold uppercase"
-                style={{ color: labelColor }}
-              >
-                Early Withdrawal Fee
-              </span>
-              <span className="text-[11px] font-black !text-red-500">5.00%</span>
-            </div>
-            {/* Updated Calculated Maturity Section: Date right-aligned to match '5.00%' position */}
-            <div className="flex justify-between items-center">
-              <span 
-                className="text-[10px] font-bold uppercase"
-                style={{ color: labelColor }}
-              >
-                Calculated Maturity
-              </span>
-              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
-                {new Date(maturityDate).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-          
-          <button 
-            onClick={handleAction}
-            disabled={!amount || Number(amount) <= 0 || days <= 0}
-            className="btn-action w-full mt-6"
-            style={{ borderRadius: '60px' }}
-          >
-            Initialize
-          </button>
         </div>
       </div>
     </div>
