@@ -84,18 +84,20 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1.5 p-1 bg-black/5 dark:bg-white/5 rounded-2xl">
               <button 
                 onClick={() => setCollateralType('USDT')}
-                className={`text-[10px] font-bold px-2 py-1 rounded transition-colors ${collateralType === 'USDT' ? 'bg-[#00A8E8] text-white' : 'bg-black/5 dark:bg-black/10 text-black/40 dark:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 border ${collateralType === 'USDT' ? 'bg-[#00A8E8]/15 border-[#00A8E8] shadow-sm' : 'border-transparent opacity-60 hover:opacity-100'}`}
               >
-                USDT
+                <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDT</span>
               </button>
               <button 
                 onClick={() => setCollateralType('USDC')}
-                className={`text-[10px] font-bold px-2 py-1 rounded transition-colors ${collateralType === 'USDC' ? 'bg-[#00A8E8] text-white' : 'bg-black/5 dark:bg-black/10 text-black/40 dark:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 border ${collateralType === 'USDC' ? 'bg-[#00A8E8]/15 border-[#00A8E8] shadow-sm' : 'border-transparent opacity-60 hover:opacity-100'}`}
               >
-                USDC
+                <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=040" alt="USDC" className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDC</span>
               </button>
             </div>
           </div>
