@@ -10,7 +10,7 @@ interface PriceChartProps {
 /**
  * @title PriceChart
  * @author Viqtorhvayx
- * @dev HBAR/USD Market Chart with optimized control layout.
+ * @dev HBAR/USD Market Chart with optimized control layout and precise label casing.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -137,15 +137,14 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   /**
-   * Compact FilterButton Styling
-   * - Reduced from text-[10px] to text-[8px]
-   * - Reduced padding from py-1.5 to py-1
-   * - Preserved shape (rounded-60px) and behavior
+   * Compact FilterButton Styling with exact casing requirement:
+   * - Removed 'uppercase' utility to honor exact string case.
+   * - Maintained text-[8px] and py-1 for compact hierarchy.
    */
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 uppercase tracking-tighter ${
+      className={`text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter ${
         active 
           ? 'bg-[#00A8E8] text-white shadow-md shadow-[#00A8E8]/20' 
           : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20'
@@ -159,7 +158,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     <div className="industrial-panel bg-surface !p-5 flex flex-col gap-4">
       <div className="flex justify-between items-start">
         <div className="flex flex-col relative">
-          {/* HBAR/USD Header: Primary visual element */}
           <div className="z-10 bg-surface pr-4 pb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
               HBAR / USD
@@ -170,7 +168,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Time Range Controls: Positioned underneath the HBAR/USD hierarchy */}
           <div className="flex gap-1 mt-2 z-0">
             {(['15min', 'Hour', 'Day', 'Week'] as const).map(interval => (
               <FilterButton 
@@ -182,8 +179,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             ))}
           </div>
         </div>
-
-        {/* Right side remains empty or for future alignment requirements */}
       </div>
 
       <div className="relative w-full h-[220px] mt-2">
