@@ -7,28 +7,30 @@ import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
-import { PriceChart } from '../components/PriceChart';
 
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
- * Rollback: Reverted layout structure to original grid configuration while preserving content.
+ * @dev Main dashboard for CREODE Protocol. Updated to default to Dark Mode for premium aesthetic.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   // Simulated XP and Points
   const userXP = 45; 
   const userPoints = 1250;
 
-  // Theme management
+  // Theme management: Defaulting to Dark for premium state-of-the-art experience
   useEffect(() => {
-    const savedTheme = localStorage.getItem('creode-theme') as 'light' | 'dark';
+    const savedTheme = localStorage.getItem('creode-theme') as 'light' | 'dark' | null;
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      // Default to Dark if no preference saved
+      setTheme('dark');
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
@@ -39,7 +41,6 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  // Explicit intensity detection for synchronization
   const matchedDarkIntensity = 'rgba(255, 255, 255, 0.6)';
   const secondaryLabelColor = theme === 'dark' ? matchedDarkIntensity : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
@@ -49,60 +50,33 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto">
         <Header theme={theme} toggleTheme={toggleTheme} />
 
-        {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          {/* VAULT LIQUIDITY Section */}
           <div className="industrial-panel">
-            <h4 
-              className="text-[11px] font-bold uppercase tracking-wider mb-1"
-              style={{ color: secondaryLabelColor }}
-            >
+            <h4 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: secondaryLabelColor }}>
               Vault Liquidity
             </h4>
-            <div 
-              className="text-2xl font-bold"
-              style={{ color: primaryTextColor }}
-            >
+            <div className="text-2xl font-bold" style={{ color: primaryTextColor }}>
               {Number(balance).toFixed(2)} 
-              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>
-                HBAR
-              </span>
+              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>HBAR</span>
             </div>
           </div>
           
-          {/* STANDARD YIELD Section */}
           <div className="industrial-panel flex flex-col items-start">
-            <h4 
-              className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1"
-              style={{ color: secondaryLabelColor }}
-            >
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1" style={{ color: secondaryLabelColor }}>
               Standard Yield
             </h4>
-            <div 
-              className="text-[19px] font-black !text-[#10B981] leading-none tracking-[-0.015em] flex items-baseline"
-            >
+            <div className="text-[19px] font-black !text-[#10B981] leading-none tracking-[-0.015em] flex items-baseline">
               0.30%
-              <span 
-                className="text-[9px] font-bold ml-1 tracking-tight" 
-                style={{ color: primaryTextColor }}
-              >
-                /21days
-              </span>
+              <span className="text-[9px] font-bold ml-1 tracking-tight" style={{ color: primaryTextColor }}>/21days</span>
             </div>
           </div>
         </div>
 
-        {/* Main Interface Grid: Reverted to original lg:grid-cols-12 layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: XP & Control (REPUTATION METRIC & SYSTEM NOTIFICATION) */}
           <div className="lg:col-span-4 space-y-8">
             <XPGauge xp={userXP} theme={theme} />
-            
             <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
-              <h3 
-                className="text-[11px] font-bold uppercase tracking-wider mb-4"
-                style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}
-              >
+              <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
                 System Notification
               </h3>
               <p className="text-sm font-medium leading-relaxed">
@@ -111,35 +85,19 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Right Column: Functional Modules */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="md:col-span-2">
               <LockingModule theme={theme} />
             </div>
             <LendingModule points={userPoints} theme={theme} />
             <BorrowingModule xp={userXP} theme={theme} />
-            <div className="md:col-span-2">
-              <PriceChart theme={theme} />
-            </div>
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-24 border-t border-[var(--border)] pt-12 pb-24 flex flex-col items-center gap-6">
-          <p 
-            className="text-[10px] font-bold uppercase tracking-[0.4em]" 
-            style={{ color: primaryTextColor }}
-          >
-            Built by Team
-          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: primaryTextColor }}>Built by Team</p>
           <div className="flex gap-4">
-            <a 
-              href="https://x.com/creode" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-[#00A8E8] transition-colors duration-300"
-              style={{ color: primaryTextColor }}
-            >
+            <a href="https://x.com/creode" target="_blank" rel="noopener noreferrer" className="hover:text-[#00A8E8] transition-colors duration-300" style={{ color: primaryTextColor }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
