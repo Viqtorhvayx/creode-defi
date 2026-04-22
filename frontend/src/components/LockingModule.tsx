@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Capitalized protocol stats labels and matched value colors to labels.
+ * Rollback: Reverted layout structure, margins, and grid configuration to original state.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,11 +102,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-        {/* Left Column: Stats & Amount Input & Action Buttons */}
-        <div className="flex flex-col h-full justify-between">
+      {/* Reverted Grid Layout: Removed items-end to restore original vertical alignment */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Left Column: Amount Input & Action Buttons */}
+        <div className="flex flex-col">
           <div>
-            {/* Protocol Stats Rows: Capitalized and color-matched values */}
+            {/* Protocol Stats Rows: Preserved Content */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
@@ -122,7 +123,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               </div>
             </div>
 
-            <div className="mt-4">
+            <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
                 style={{ color: labelColor }}
@@ -143,7 +144,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          <div className="flex gap-4 mt-8">
+          {/* Reverted Spacing: Restored mt-20 and removed dynamic height alignment */}
+          <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
@@ -188,8 +190,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration & Set Action */}
-          <div className="grid grid-cols-2 gap-4 items-end">
+          {/* Reverted Duration & Set Action Structure */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
@@ -209,7 +211,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onChange={handleDaysChange}
               />
             </div>
-            <div>
+            <div className="flex flex-col justify-end">
               <button 
                 onClick={handleSetMaturity}
                 className="btn-action w-full !py-2.5 !h-auto"
