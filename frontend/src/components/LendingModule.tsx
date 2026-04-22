@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Explicitly set text-sm on action buttons to maintain exact parity with Borrowing module.
+ * Updated: Standardized hover/mouse movement animations (bounce/shift) to match the Borrow module's Repay & Withdraw button.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -48,11 +48,11 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
   /**
    * Helper to determine button styles based on active state.
-   * Updated: Included text-sm for explicit font size synchronization.
+   * Updated: Included hover:-translate-y-1 and active:scale-95 for synchronized dApp ergonomics.
    */
   const getButtonClasses = (action: 'deposit' | 'withdraw') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
     
     if (isActive) {
       return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
