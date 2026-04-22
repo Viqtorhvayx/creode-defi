@@ -23,7 +23,8 @@
   --text-secondary: #FFFFFF;
   --accent-blue: #00A8E8;
   --accent-blue-hover: #33C2FF;
-  --accent-glow: rgba(0, 168, 232, 0.15);
+  /* Enhanced glow for Dark Mode to ensure hover parity with Light Mode */
+  --accent-glow: rgba(0, 168, 232, 0.4);
   --border: #2A313C;
 }
 
@@ -49,7 +50,11 @@ body {
 }
 
 @utility industrial-panel {
-  @apply bg-surface border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[var(--accent-glow)];
+  /**
+   * Updated: Standardized hover behavior across Light and Dark modes.
+   * Added hover:-translate-y-1 for consistent 'lift' animation and matched shadow intensity.
+   */
+  @apply bg-surface border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-[var(--accent-glow)] hover:-translate-y-1;
 }
 
 @utility industrial-input {
