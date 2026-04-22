@@ -10,13 +10,16 @@ interface LockingModuleProps {
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Synchronized penalty box base text color with the module's label intensity.
+ * @dev Module for asset locking with interactive action state management.
+ * Updated: Implemented active/inactive button states for Deposit, Withdraw, and Set.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
   const [amount, setAmount] = useState("");
   
+  // Interactive State Management
+  const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | 'set'>('deposit');
+
   // Simulated protocol statistics
   const [deposited, setDeposited] = useState(2500.00);
   const [earnings, setEarnings] = useState(7.50); // Simulated 0.30% APY earnings
@@ -44,6 +47,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const handleDeposit = async () => {
+    setActiveAction('deposit');
     try {
       const unlockDate = Math.floor(Date.now() / 1000) + (days * 24 * 60 * 60);
       await lockAssets(amount, unlockDate);
@@ -54,6 +58,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const handleWithdraw = async () => {
+    setActiveAction('withdraw');
     try {
       alert("Withdrawal requested!");
     } catch (e: any) {
@@ -62,14 +67,31 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const handleSetMaturity = () => {
+    setActiveAction('set');
     alert("Maturity confirmed!");
   };
 
-  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  // Matched intensity for labels
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
+  /**
+   * Helper to determine button styles based on active state.
+   * Active: Full intensity blue
+   * Inactive: Low intensity transparent blue
+   */
+  const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
+    const isActive = activeAction === action;
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
+    
+    if (isActive) {
+      return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
+    } else {
+      return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
+    }
+  };
 
   return (
     <div className="industrial-panel bg-surface">
@@ -144,19 +166,20 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
+          {/* 
+              Primary Action Row: Interactive state-aware buttons
+          */}
           <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
-              className="btn-action flex-1 min-w-[120px] !py-2.5 !h-auto"
-              style={{ borderRadius: '60px' }}
+              className={getButtonClasses('deposit')}
             >
               Deposit
             </button>
             <button 
               onClick={handleWithdraw}
-              className="btn-action flex-1 min-w-[120px] !py-2.5 !h-auto"
-              style={{ borderRadius: '60px' }}
+              className={getButtonClasses('withdraw')}
             >
               Withdraw
             </button>
@@ -166,11 +189,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Right Column: Warning, Stats & Time Configuration */}
         <div className="flex flex-col h-full justify-between">
           <div className="space-y-6">
-            {/* 
-                Refined Penalty Fee Box: 
-                - Base text color synchronized with 'Time-lock savings' labelColor.
-                - 5.00% penalty figure isolated and preserved in warning red.
-            */}
+            {/* Penalty Fee Box */}
             <div 
               className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]"
             >
@@ -207,7 +226,9 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration Configuration Row */}
+          {/* 
+              Duration Configuration Row: Interactive state-aware Set button
+          */}
           <div className="grid grid-cols-2 gap-4 mt-8">
             <div>
               <label 
@@ -231,8 +252,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             <div className="flex flex-col justify-end">
               <button 
                 onClick={handleSetMaturity}
-                className="btn-action w-full !py-2.5 !h-auto"
-                style={{ borderRadius: '60px' }}
+                className={getButtonClasses('set').replace('flex-1 min-w-[120px]', 'w-full')}
               >
                 Set
               </button>
