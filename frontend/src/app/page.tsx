@@ -12,7 +12,7 @@ import { PriceChart } from '../components/PriceChart';
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Integrated Minimalist Market Chart in the left utility column.
+ * @dev Main dashboard for CREODE Protocol. Aligned Price Chart baseline with Lending Module.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -74,22 +74,26 @@ export default function Dashboard() {
         </div>
 
         {/* Main Interface Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Column: XP, System Notification & Price Chart */}
-          <div className="lg:col-span-4 space-y-8">
-            <XPGauge xp={userXP} theme={theme} />
-            
-            <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
-              <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
-                System Notification
-              </h3>
-              <p className="text-sm font-medium leading-relaxed">
-                Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
-              </p>
+          <div className="lg:col-span-4 flex flex-col h-full">
+            <div className="space-y-8 flex-grow">
+              <XPGauge xp={userXP} theme={theme} />
+              
+              <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
+                  System Notification
+                </h3>
+                <p className="text-sm font-medium leading-relaxed">
+                  Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
+                </p>
+              </div>
             </div>
 
-            {/* Integrated HBAR Market Chart */}
-            <PriceChart theme={theme} />
+            {/* Integrated HBAR Market Chart: Aligned to bottom baseline */}
+            <div className="mt-8">
+              <PriceChart theme={theme} />
+            </div>
           </div>
 
           {/* Right Column: Functional Modules */}
