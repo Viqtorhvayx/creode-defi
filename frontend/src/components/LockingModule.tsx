@@ -11,12 +11,17 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Shifted Amount group downward while locking action buttons to the bottom baseline.
+ * Updated: Added protocol statistics rows (deposit, earnings, tvl) above the amount group.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
   const [amount, setAmount] = useState("");
   
+  // Simulated protocol statistics
+  const [deposited, setDeposited] = useState(2500.00);
+  const [earnings, setEarnings] = useState(7.50); // Simulated 0.30% APY earnings
+  const [tvl, setTvl] = useState(125000.00);
+
   // State for synchronization
   const [days, setDays] = useState<number>(21); // Default 21 days (3 weeks)
   const [maturityDate, setMaturityDate] = useState<string>("");
@@ -97,35 +102,45 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* 
-          Main Grid: items-end locks all primary actions to the same horizontal baseline.
-      */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-        {/* Left Column: Amount Input & Action Buttons */}
+        {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
-          {/* 
-              Amount Input group shifted downward using mt-12. 
-              Because the parent has h-full and justify-between, 
-              this moves the input closer to the buttons WITHOUT moving the buttons themselves.
-          */}
-          <div className="mt-12">
-            <label 
-              className="text-[10px] font-bold uppercase block mb-2"
-              style={{ color: labelColor }}
-            >
-              Amount to Save (HBAR)
-            </label>
-            <input 
-              type="number" 
-              placeholder="0.00"
-              className={numericInputClasses}
-              style={{ 
-                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                color: theme === 'dark' ? '#FFFFFF' : '#000000'
-              }}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
+          <div>
+            {/* Protocol Stats Rows: Positioned between Title and Amount group */}
+            <div className="space-y-3 mb-8">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>deposit</span>
+                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{deposited.toLocaleString()} HBAR</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>earnings</span>
+                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{earnings.toLocaleString()} HBAR</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>tvl</span>
+                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{tvl.toLocaleString()} HBAR</span>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label 
+                className="text-[10px] font-bold uppercase block mb-2"
+                style={{ color: labelColor }}
+              >
+                Amount to Save (HBAR)
+              </label>
+              <input 
+                type="number" 
+                placeholder="0.00"
+                className={numericInputClasses}
+                style={{ 
+                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
+                }}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
           </div>
           
           <div className="flex gap-4 mt-8">
