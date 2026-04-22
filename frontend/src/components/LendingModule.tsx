@@ -11,8 +11,8 @@ interface LendingModuleProps {
 /**
  * @title LendingModule
  * @author Viqtorhvayx
- * @dev Module for providing liquidity with synchronized button state management matching the Vault.
- * Updated: Split action into Deposit/Withdraw with exact Vault-consistent styling.
+ * @dev Module for providing liquidity with synchronized button state management.
+ * Updated: Explicitly set text-sm on action buttons to maintain exact parity with Borrowing module.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -47,13 +47,12 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   /**
-   * Helper to determine button styles based on active state (Exact copy from Vault).
-   * Active: Full intensity blue
-   * Inactive: Low intensity transparent blue
+   * Helper to determine button styles based on active state.
+   * Updated: Included text-sm for explicit font size synchronization.
    */
   const getButtonClasses = (action: 'deposit' | 'withdraw') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm";
     
     if (isActive) {
       return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
@@ -115,10 +114,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </p>
         </div>
 
-        {/* 
-            Action Row: Split into Deposit and Withdraw 
-            Matching Vault styling and state management exactly.
-        */}
         <div className="flex flex-row gap-4 w-full mt-auto">
           <button 
             onClick={handleDeposit}

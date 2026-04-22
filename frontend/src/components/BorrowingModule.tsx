@@ -11,7 +11,7 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with dynamic XP safety color-coding and refined labels.
+ * @dev Overhauled borrowing module with synchronized font sizing matching the Lend section.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -51,18 +51,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     }
   };
 
-  /**
-   * Dynamic XP Color Coding based on safety levels:
-   * Green = Safe (80+)
-   * Yellow = Moderate (60-79)
-   * Orange = Risky (30-59)
-   * Red = High Risk (<30)
-   */
   const getXPColor = (val: number) => {
-    if (val >= 80) return "#10B981"; // Green
-    if (val >= 60) return "#FBBF24"; // Yellow
-    if (val >= 30) return "#F97316"; // Orange
-    return "#EF4444"; // Red
+    if (val >= 80) return "#10B981"; // Safe
+    if (val >= 60) return "#FBBF24"; // Moderate
+    if (val >= 30) return "#F97316"; // Risky
+    return "#EF4444";               // High Risk
   };
 
   const handleActionInitiation = () => {
@@ -106,8 +99,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
     const isActive = activeTab === tab;
-    // Removed 'uppercase' as requested for "Deposit", "Borrow", "Repay & Withdraw" labels
-    const base = "flex-1 !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-[10px] tracking-wider";
+    /**
+     * Font Sizing Update:
+     * Matched exactly to the button text size in the 'Lend' section (text-sm).
+     */
+    const base = "flex-1 !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm tracking-wider";
     return isActive 
       ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
@@ -115,7 +111,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
-      {/* 3-Button Toggle System with Title Case labels */}
       <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
         <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
@@ -125,16 +120,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</h3>
-          {/* Changed "Borrowing Status" to "Borrow" */}
           <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</p>
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Loan Health (XP)</p>
-          {/* 
-              XP Display Styling:
-              - Numeric value is dynamically color-coded by safety level.
-              - "XP" label matches the CREDIT FACILITY (labelColor).
-          */}
           <p className="text-lg font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-[10px] font-bold ml-1" style={{ color: labelColor }}>XP</span>
@@ -175,18 +164,17 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Action Button: Changed to Title Case */}
+        {/* Action Button: Matched to text-sm */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full mt-auto !py-3 font-bold text-[11px] tracking-wider"
+          className="btn-action w-full mt-auto !py-3 font-bold text-sm tracking-wider"
           style={{ borderRadius: '60px' }}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
       </div>
 
-      {/* Modal remains unchanged as per "Do not modify functionality" */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-surface border border-[var(--border)] rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
