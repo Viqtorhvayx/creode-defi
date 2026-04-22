@@ -11,7 +11,7 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized physical dimensions matching the protocol standard.
+ * @dev Overhauled borrowing module with compact toggle buttons for refined ergonomics.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -99,7 +99,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
     const isActive = activeTab === tab;
-    const base = "flex-1 !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm tracking-wider";
+    /**
+     * Compact Button Sizing Update:
+     * - Reduced padding from !py-2.5 to !py-1.5
+     * - Reduced font size from text-sm to text-[10px]
+     * - Maintained flex-1 for side-by-side layout parity.
+     */
+    const base = "flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-[10px] tracking-wider";
     return isActive 
       ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
@@ -160,10 +166,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* 
-            Action Button: Height Synchronization 
-            Updated: Set height to exactly match the Lend section buttons using !py-2.5 !h-auto.
-        */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
