@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Increased penalty box vertical padding to py-3 for improved visual balance.
+ * Updated: Synchronized penalty box base text color with the module's label intensity.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -65,7 +65,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     alert("Maturity confirmed!");
   };
 
-  // Matched intensity for labels
+  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
@@ -168,13 +168,16 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-6">
             {/* 
                 Refined Penalty Fee Box: 
-                - Padding increased to py-3 for improved height.
-                - flex-col justify-center ensures precise vertical centering.
+                - Base text color synchronized with 'Time-lock savings' labelColor.
+                - 5.00% penalty figure isolated and preserved in warning red.
             */}
             <div 
               className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]"
             >
-              <p className="text-xs font-medium leading-tight dark:text-white" style={{ color: theme === 'light' ? '#7F1D1D' : undefined }}>
+              <p 
+                className="text-xs font-medium leading-tight"
+                style={{ color: labelColor }}
+              >
                 Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
               </p>
             </div>
