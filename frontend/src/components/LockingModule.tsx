@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Refined penalty box height, text size (text-xs), and top alignment with protocol stats.
+ * Updated: Increased penalty box vertical padding to py-3 for improved visual balance.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,15 +102,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* 
-          Main Grid Container: items-start ensures the tops of both columns 
-          (and thus the stats and penalty box) align perfectly.
-      */}
+      {/* Main Grid Container */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
           <div>
-            {/* Protocol Stats Rows: Aligned at the top */}
+            {/* Protocol Stats Rows */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
@@ -171,12 +168,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-6">
             {/* 
                 Refined Penalty Fee Box: 
-                - Reduced vertical padding (py-2 instead of p-4)
-                - Compact text (text-xs leading-tight)
-                - Top edge aligned with protocol stats via parent items-start
+                - Padding increased to py-3 for improved height.
+                - flex-col justify-center ensures precise vertical centering.
             */}
             <div 
-              className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-2"
+              className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]"
             >
               <p className="text-xs font-medium leading-tight dark:text-white" style={{ color: theme === 'light' ? '#7F1D1D' : undefined }}>
                 Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
@@ -208,7 +204,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration Configuration Row: Baseline alignment maintained via column flow */}
+          {/* Duration Configuration Row */}
           <div className="grid grid-cols-2 gap-4 mt-8">
             <div>
               <label 
