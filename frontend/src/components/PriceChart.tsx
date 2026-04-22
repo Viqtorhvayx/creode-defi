@@ -57,7 +57,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       handleScroll: true,
     });
 
-    const areaSeries = chart.addAreaSeries({
+    const chartInstance = chart as any;
+
+    const areaSeries = chartInstance.addAreaSeries({
       lineColor: '#00A8E8',
       topColor: 'rgba(0, 168, 232, 0.2)',
       bottomColor: 'rgba(0, 168, 232, 0)',
@@ -65,7 +67,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       priceFormat: { type: 'price', precision: 4, minMove: 0.0001 }
     });
 
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = chartInstance.addHistogramSeries({
       color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
       priceFormat: { type: 'volume' },
       priceScaleId: '', // Overlay
