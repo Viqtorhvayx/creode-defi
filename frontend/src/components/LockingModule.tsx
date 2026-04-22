@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Injected premium warning banner above the protocol statistics and configuration.
+ * Updated: Refined penalty box height, text size (text-xs), and top alignment with protocol stats.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,11 +102,15 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+      {/* 
+          Main Grid Container: items-start ensures the tops of both columns 
+          (and thus the stats and penalty box) align perfectly.
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Left Column: Stats & Amount Input & Action Buttons */}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full justify-between">
           <div>
-            {/* Protocol Stats Rows */}
+            {/* Protocol Stats Rows: Aligned at the top */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
@@ -143,7 +147,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          <div className="flex gap-4 mt-8">
+          <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
@@ -163,45 +167,49 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
 
         {/* Right Column: Warning, Stats & Time Configuration */}
-        <div className="flex flex-col space-y-6">
-          {/* 
-              Premium Warning Banner: Injected immediately below the Target Yield 
-              and above the summary rows.
-          */}
-          <div 
-            className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl p-4"
-          >
-            <p className="text-sm font-medium leading-relaxed dark:text-white" style={{ color: theme === 'light' ? '#7F1D1D' : undefined }}>
-              Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
-            </p>
+        <div className="flex flex-col h-full justify-between">
+          <div className="space-y-6">
+            {/* 
+                Refined Penalty Fee Box: 
+                - Reduced vertical padding (py-2 instead of p-4)
+                - Compact text (text-xs leading-tight)
+                - Top edge aligned with protocol stats via parent items-start
+            */}
+            <div 
+              className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-2"
+            >
+              <p className="text-xs font-medium leading-tight dark:text-white" style={{ color: theme === 'light' ? '#7F1D1D' : undefined }}>
+                Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
+              </p>
+            </div>
+
+            {/* Summary Box */}
+            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
+              <div className="flex justify-between items-center">
+                <span 
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: labelColor }}
+                >
+                  Early Withdrawal Fee
+                </span>
+                <span className="text-[11px] font-black !text-red-500">5.00%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span 
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: labelColor }}
+                >
+                  Calculated Maturity
+                </span>
+                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
+                  {new Date(maturityDate).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Summary Box */}
-          <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
-            <div className="flex justify-between items-center">
-              <span 
-                className="text-[10px] font-bold uppercase"
-                style={{ color: labelColor }}
-              >
-                Early Withdrawal Fee
-              </span>
-              <span className="text-[11px] font-black !text-red-500">5.00%</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span 
-                className="text-[10px] font-bold uppercase"
-                style={{ color: labelColor }}
-              >
-                Calculated Maturity
-              </span>
-              <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>
-                {new Date(maturityDate).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-
-          {/* Duration Configuration Row */}
-          <div className="grid grid-cols-2 gap-4 items-end">
+          {/* Duration Configuration Row: Baseline alignment maintained via column flow */}
+          <div className="grid grid-cols-2 gap-4 mt-8">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
@@ -221,7 +229,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onChange={handleDaysChange}
               />
             </div>
-            <div>
+            <div className="flex flex-col justify-end">
               <button 
                 onClick={handleSetMaturity}
                 className="btn-action w-full !py-2.5 !h-auto"
