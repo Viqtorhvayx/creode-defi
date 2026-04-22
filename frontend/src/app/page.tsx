@@ -7,6 +7,7 @@ import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
+import { PriceChart } from '../components/PriceChart';
 
 /**
  * @title Dashboard
