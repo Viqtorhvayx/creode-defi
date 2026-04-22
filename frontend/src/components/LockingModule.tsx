@@ -10,8 +10,8 @@ interface LockingModuleProps {
 /**
  * @title LockingModule
  * @author Viqtorhvayx
- * @dev Module for asset locking with interactive action state management.
- * Updated: Implemented active/inactive button states for Deposit, Withdraw, and Set.
+ * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
+ * Updated: Resolved leading zero bug in Duration input by transitioning to string-based state management.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -25,8 +25,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [earnings, setEarnings] = useState(7.50); // Simulated 0.30% APY earnings
   const [tvl, setTvl] = useState(125000.00);
 
-  // State for synchronization
-  const [days, setDays] = useState<number>(21); // Default 21 days (3 weeks)
+  // State for synchronization: Initialized as empty string to resolve leading zero bug
+  const [days, setDays] = useState<string>("21"); 
   const [maturityDate, setMaturityDate] = useState<string>("");
 
   // Initialize maturity date on mount
@@ -40,16 +40,27 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     setMaturityDate(date.toISOString().split('T')[0]);
   };
 
+  /**
+   * Refined onChange handler to strip leading zeros and prevent negative input.
+   */
   const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value) || 0;
+    let val = e.target.value;
+    
+    // Automatically strip leading zeros (e.g., "023" -> "23")
+    val = val.replace(/^0+/, '');
+    
     setDays(val);
-    updateDateFromDays(val);
+    
+    // Update maturity date based on numeric value (defaults to 0 if empty)
+    const numericDays = parseInt(val) || 0;
+    updateDateFromDays(numericDays);
   };
 
   const handleDeposit = async () => {
     setActiveAction('deposit');
     try {
-      const unlockDate = Math.floor(Date.now() / 1000) + (days * 24 * 60 * 60);
+      const numericDays = parseInt(days) || 0;
+      const unlockDate = Math.floor(Date.now() / 1000) + (numericDays * 24 * 60 * 60);
       await lockAssets(amount, unlockDate);
       alert("Lock-up initialized!");
     } catch (e: any) {
@@ -77,11 +88,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
-  /**
-   * Helper to determine button styles based on active state.
-   * Active: Full intensity blue
-   * Inactive: Low intensity transparent blue
-   */
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
     const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
@@ -124,7 +130,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* Main Grid Container */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
@@ -166,13 +171,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          {/* 
-              Primary Action Row: Interactive state-aware buttons
-          */}
           <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
-              disabled={!amount || Number(amount) <= 0 || days <= 0}
+              disabled={!amount || Number(amount) <= 0 || !days || Number(days) <= 0}
               className={getButtonClasses('deposit')}
             >
               Deposit
@@ -226,9 +228,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* 
-              Duration Configuration Row: Interactive state-aware Set button
-          */}
+          {/* Duration Configuration Row */}
           <div className="grid grid-cols-2 gap-4 mt-8">
             <div>
               <label 
@@ -240,6 +240,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <input 
                 type="number" 
                 min="1"
+                placeholder="0"
                 className={numericInputClasses + " !py-2.5 !h-auto"} 
                 style={{ 
                   backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
