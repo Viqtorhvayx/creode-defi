@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Resolved leading zero bug in Duration input by transitioning to string-based state management.
+ * Updated: Synchronized hover animation (bounce/lift) with the Borrow section's action buttons.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -88,9 +88,16 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
+  /**
+   * getButtonClasses
+   * Synchronized with btn-action behavior:
+   * - hover:-translate-y-1 (lift animation)
+   * - hover:shadow-md
+   * - active:scale-95
+   */
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
     
     if (isActive) {
       return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
