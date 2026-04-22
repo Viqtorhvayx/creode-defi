@@ -117,6 +117,9 @@ export default function Dashboard() {
             </div>
             <LendingModule points={userPoints} theme={theme} />
             <BorrowingModule xp={userXP} theme={theme} />
+            <div className="md:col-span-2">
+              <PriceChart theme={theme} />
+            </div>
           </div>
         </div>
 
