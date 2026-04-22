@@ -11,7 +11,7 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with compact toggle buttons for refined ergonomics.
+ * @dev Overhauled borrowing module with precision typographic control for multi-label buttons.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -53,8 +53,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const getXPColor = (val: number) => {
     if (val >= 80) return "#10B981"; // Safe
-    if (val >= 60) return "#FBBF24"; // Moderate
-    if (val >= 30) return "#F97316"; // Risky
+    if (val >= 60) return "#FBBF24"; // Yellow
+    if (val >= 30) return "#F97316"; // Orange
     return "#EF4444";               // High Risk
   };
 
@@ -100,15 +100,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
     const isActive = activeTab === tab;
     /**
-     * Compact Button Sizing Update:
-     * - Reduced padding from !py-2.5 to !py-1.5
-     * - Reduced font size from text-sm to text-[10px]
-     * - Maintained flex-1 for side-by-side layout parity.
+     * Typographic Precision Update:
+     * - 'Repay & Withdraw' button: Forced to single line using 'whitespace-nowrap' and slightly smaller 'text-[9px]'.
+     * - Others: Standardized at 'text-[10px]'.
      */
-    const base = "flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-[10px] tracking-wider";
-    return isActive 
-      ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
-      : `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
+    const isRepayButton = tab === 'repay';
+    const fontSize = isRepayButton ? 'text-[9px]' : 'text-[10px]';
+    const wrapControl = isRepayButton ? 'whitespace-nowrap' : '';
+    
+    const base = `flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] ${fontSize} ${wrapControl} tracking-tight px-1`;
+    
+    if (isActive) {
+      return `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
+    } else {
+      return `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
+    }
   };
 
   return (
