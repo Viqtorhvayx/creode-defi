@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Added protocol statistics rows (deposit, earnings, tvl) above the amount group.
+ * Updated: Capitalized protocol stats labels and matched value colors to labels.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -106,19 +106,19 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
           <div>
-            {/* Protocol Stats Rows: Positioned between Title and Amount group */}
+            {/* Protocol Stats Rows: Capitalized and color-matched values */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>deposit</span>
-                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{deposited.toLocaleString()} HBAR</span>
+                <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{deposited.toLocaleString()} HBAR</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>earnings</span>
-                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{earnings.toLocaleString()} HBAR</span>
+                <span className="text-[10px] font-bold" style={{ color: labelColor }}>Earnings</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{earnings.toLocaleString()} HBAR</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold lowercase" style={{ color: labelColor }}>tvl</span>
-                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{tvl.toLocaleString()} HBAR</span>
+                <span className="text-[10px] font-bold" style={{ color: labelColor }}>TVL</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{tvl.toLocaleString()} HBAR</span>
               </div>
             </div>
 
