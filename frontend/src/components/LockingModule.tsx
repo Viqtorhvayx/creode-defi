@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Aligned Duration input and Set button baseline with left-column action buttons.
+ * Updated: Implemented precise baseline alignment using items-end on the main grid container.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,8 +102,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column: Stats & Amount Input & Action Buttons */}
+      {/* 
+          Main Grid Container: Using items-end to lock the bottoms of all action 
+          and configuration elements to the exact same horizontal baseline.
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+        {/* Left Column: Amount Input & Primary Action Row */}
         <div className="flex flex-col">
           <div>
             {/* Protocol Stats Rows */}
@@ -143,7 +147,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          <div className="flex gap-4 mt-20">
+          {/* 
+              Primary Action Row: Baseline aligned with the Duration config row 
+              via the items-end property on the main grid container.
+          */}
+          <div className="flex gap-4 mt-8">
             <button 
               onClick={handleDeposit}
               disabled={!amount || Number(amount) <= 0 || days <= 0}
@@ -162,7 +170,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           </div>
         </div>
 
-        {/* Right Column: Stats & Time Configuration */}
+        {/* Right Column: Stats & Duration Configuration Row */}
         <div className="flex flex-col space-y-6">
           {/* Summary Box */}
           <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
@@ -189,10 +197,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           </div>
 
           {/* 
-              Duration & Set Action: Baseline synchronization with left column actions.
-              Applying mt-20 to the container to match the Deposit/Withdraw baseline.
+              Duration Configuration Row: Nested grid also uses items-end to ensure 
+              the 'Set' button and 'Days' input share the same horizontal baseline.
           */}
-          <div className="grid grid-cols-2 gap-4 mt-20">
+          <div className="grid grid-cols-2 gap-4 items-end">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
@@ -212,7 +220,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onChange={handleDaysChange}
               />
             </div>
-            <div className="flex flex-col justify-end">
+            <div>
               <button 
                 onClick={handleSetMaturity}
                 className="btn-action w-full !py-2.5 !h-auto"
