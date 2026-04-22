@@ -11,13 +11,18 @@ interface LendingModuleProps {
 /**
  * @title LendingModule
  * @author Viqtorhvayx
- * @dev Module for providing liquidity with explicit theme-detected inline styling for labels.
+ * @dev Module for providing liquidity with synchronized button state management matching the Vault.
+ * Updated: Split action into Deposit/Withdraw with exact Vault-consistent styling.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
   const [amount, setAmount] = useState("");
+  
+  // Interactive State Management matching Vault behavior
+  const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw'>('deposit');
 
-  const handleAction = async () => {
+  const handleDeposit = async () => {
+    setActiveAction('deposit');
     try {
       await provideLiquidity(amount);
       alert("Liquidity deployed successfully!");
@@ -26,31 +31,47 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
     }
   };
 
-  // Matched intensity for labels (Matching 'SYSTEM NOTIFICATION' opacity-60 white in Dark Mode)
+  const handleWithdraw = async () => {
+    setActiveAction('withdraw');
+    try {
+      alert("Liquidity withdrawal requested!");
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  // Matched intensity for labels
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
-  /**
-   * Shared classes for professional numerical inputs:
-   * - No outline/ring even on focus
-   * - Elevated blue undershadow for depth
-   * - Smooth 60px corner radius
-   * - Suppressed default spinners
-   */
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
+  /**
+   * Helper to determine button styles based on active state (Exact copy from Vault).
+   * Active: Full intensity blue
+   * Inactive: Low intensity transparent blue
+   */
+  const getButtonClasses = (action: 'deposit' | 'withdraw') => {
+    const isActive = activeAction === action;
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
+    
+    if (isActive) {
+      return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
+    } else {
+      return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
+    }
+  };
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-8">
         <div>
-          {/* Title updated to LENDING POOL */}
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: labelColor }}
           >
             Lending Pool
           </h3>
-          {/* Text updated to Lend */}
           <p className="text-xl font-black" style={{ color: primaryTextColor }}>Lend</p>
         </div>
         <div className="text-right">
@@ -86,7 +107,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
-          {/* Notice text updated as requested */}
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
@@ -95,15 +115,25 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </p>
         </div>
 
-        {/* Button label renamed to 'Initialize' as requested, with explicit 60px border radius */}
-        <button 
-          onClick={handleAction}
-          disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full mt-auto"
-          style={{ borderRadius: '60px' }}
-        >
-          Initialize
-        </button>
+        {/* 
+            Action Row: Split into Deposit and Withdraw 
+            Matching Vault styling and state management exactly.
+        */}
+        <div className="flex flex-row gap-4 w-full mt-auto">
+          <button 
+            onClick={handleDeposit}
+            disabled={!amount || Number(amount) <= 0}
+            className={getButtonClasses('deposit')}
+          >
+            Deposit
+          </button>
+          <button 
+            onClick={handleWithdraw}
+            className={getButtonClasses('withdraw')}
+          >
+            Withdraw
+          </button>
+        </div>
       </div>
     </div>
   );
