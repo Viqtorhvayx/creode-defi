@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Implemented precise baseline alignment using items-end on the main grid container.
+ * Updated: Injected premium warning banner above the protocol statistics and configuration.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,12 +102,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* 
-          Main Grid Container: Using items-end to lock the bottoms of all action 
-          and configuration elements to the exact same horizontal baseline.
-      */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-        {/* Left Column: Amount Input & Primary Action Row */}
+        {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col">
           <div>
             {/* Protocol Stats Rows */}
@@ -147,10 +143,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          {/* 
-              Primary Action Row: Baseline aligned with the Duration config row 
-              via the items-end property on the main grid container.
-          */}
           <div className="flex gap-4 mt-8">
             <button 
               onClick={handleDeposit}
@@ -170,8 +162,20 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           </div>
         </div>
 
-        {/* Right Column: Stats & Duration Configuration Row */}
+        {/* Right Column: Warning, Stats & Time Configuration */}
         <div className="flex flex-col space-y-6">
+          {/* 
+              Premium Warning Banner: Injected immediately below the Target Yield 
+              and above the summary rows.
+          */}
+          <div 
+            className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl p-4"
+          >
+            <p className="text-sm font-medium leading-relaxed dark:text-white" style={{ color: theme === 'light' ? '#7F1D1D' : undefined }}>
+              Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
+            </p>
+          </div>
+
           {/* Summary Box */}
           <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
             <div className="flex justify-between items-center">
@@ -196,10 +200,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* 
-              Duration Configuration Row: Nested grid also uses items-end to ensure 
-              the 'Set' button and 'Days' input share the same horizontal baseline.
-          */}
+          {/* Duration Configuration Row */}
           <div className="grid grid-cols-2 gap-4 items-end">
             <div>
               <label 
