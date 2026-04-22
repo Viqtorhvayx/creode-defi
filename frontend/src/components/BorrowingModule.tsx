@@ -11,7 +11,7 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with precision typographic control for multi-label buttons.
+ * @dev Overhauled borrowing module with synchronized XP styling matching the Reputation Metric.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -51,11 +51,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     }
   };
 
+  /**
+   * Synchronized XP Color Coding matching XPGauge.tsx:
+   * Green (Safe) = #25A18E
+   * Yellow (Moderate) = #F4E285
+   * Orange (Risky) = #FF5400
+   * Red (High Risk) = #FF3837
+   */
   const getXPColor = (val: number) => {
-    if (val >= 80) return "#10B981"; // Safe
-    if (val >= 60) return "#FBBF24"; // Yellow
-    if (val >= 30) return "#F97316"; // Orange
-    return "#EF4444";               // High Risk
+    if (val >= 70) return '#25A18E';
+    if (val >= 40) return '#F4E285';
+    if (val >= 16) return '#FF5400';
+    return '#FF3837';
   };
 
   const handleActionInitiation = () => {
@@ -97,13 +104,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
 
+  // Exact color for /100 from XPGauge.tsx
+  const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
+
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
     const isActive = activeTab === tab;
-    /**
-     * Typographic Precision Update:
-     * - 'Repay & Withdraw' button: Forced to single line using 'whitespace-nowrap' and slightly smaller 'text-[9px]'.
-     * - Others: Standardized at 'text-[10px]'.
-     */
     const isRepayButton = tab === 'repay';
     const fontSize = isRepayButton ? 'text-[9px]' : 'text-[10px]';
     const wrapControl = isRepayButton ? 'whitespace-nowrap' : '';
@@ -132,9 +137,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Loan Health (XP)</p>
+          {/* 
+              XP Display Synchronized with Reputation Metric:
+              - Value color matches the gauge and metric number (#25A18E etc.)
+              - Label replaced with "/100" in a smaller font
+              - "/100" color synchronized with metric's max value color
+          */}
           <p className="text-lg font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
-            <span className="text-[10px] font-bold ml-1" style={{ color: labelColor }}>XP</span>
+            <span className="text-[10px] font-bold ml-1" style={{ color: maxXPColor }}>/100</span>
           </p>
         </div>
       </div>
