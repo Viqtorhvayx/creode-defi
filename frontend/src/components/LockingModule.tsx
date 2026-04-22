@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Unified horizontal alignment for all action buttons (Deposit, Withdraw, Set).
+ * Updated: Shifted Amount group downward while locking action buttons to the bottom baseline.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -98,13 +98,17 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       </div>
 
       {/* 
-          Main Grid: Using items-end to ensure the bottoms of both columns 
-          (and thus their respective action buttons) match perfectly.
+          Main Grid: items-end locks all primary actions to the same horizontal baseline.
       */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
         {/* Left Column: Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
-          <div>
+          {/* 
+              Amount Input group shifted downward using mt-12. 
+              Because the parent has h-full and justify-between, 
+              this moves the input closer to the buttons WITHOUT moving the buttons themselves.
+          */}
+          <div className="mt-12">
             <label 
               className="text-[10px] font-bold uppercase block mb-2"
               style={{ color: labelColor }}
@@ -124,7 +128,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             />
           </div>
           
-          {/* Unified Action Row for Left Column: No top margin to avoid pushing below Right Column baseline */}
           <div className="flex gap-4 mt-8">
             <button 
               onClick={handleDeposit}
@@ -170,7 +173,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration & Set Action: Unified grid with items-end for perfect baseline matching */}
+          {/* Duration & Set Action */}
           <div className="grid grid-cols-2 gap-4 items-end">
             <div>
               <label 
