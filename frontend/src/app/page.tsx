@@ -12,6 +12,7 @@ import { BorrowingModule } from '../components/BorrowingModule';
  * @title Dashboard
  * @author Viqtorhvayx
  * @dev Main dashboard for CREODE Protocol. Explicit theme passing to child modules.
+ * Updated: Standard Yield period text renamed from /21d to /21days.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -68,7 +69,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* STANDARD YIELD Section: Updated color to Balanced Rich Green */}
+          {/* STANDARD YIELD Section: Period text updated to /21days */}
           <div className="industrial-panel flex flex-col items-start">
             <h4 
               className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1"
@@ -84,7 +85,7 @@ export default function Dashboard() {
                 className="text-[12px] font-bold ml-1 tracking-tight" 
                 style={{ color: primaryTextColor }}
               >
-                /21d
+                /21days
               </span>
             </div>
           </div>
