@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 
 interface PriceChartProps {
   theme?: 'light' | 'dark';
@@ -23,8 +23,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
 
   // Simulated metrics
-  const volume = activePair === 'USDT' ? "1.2M" : "850K";
-  const liquidity = activePair === 'USDT' ? "$4.5M" : "$3.1M";
+  const volumeValue = activePair === 'USDT' ? "1.2M" : "850K";
+  const liquidityValue = activePair === 'USDT' ? "$4.5M" : "$3.1M";
   const currentPrice = 0.0942;
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         },
     });
 
-    // Mock Data Generation
+    // Mock Data Generation with explicit UTCTimestamp casting
     const generateData = () => {
       const data = [];
       const volumeData = [];
@@ -101,7 +101,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       const step = activeInterval === '15min' ? 15 * 60 : activeInterval === 'Hour' ? 3600 : 86400;
 
       for (let i = count; i >= 0; i--) {
-        const time = Math.floor(now.getTime() / 1000) - (i * step);
+        const time = (Math.floor(now.getTime() / 1000) - (i * step)) as UTCTimestamp;
         const change = (Math.random() - 0.5) * 0.002;
         basePrice += change;
         data.push({ time, value: basePrice });
@@ -200,11 +200,11 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4">
         <div className="flex flex-col">
           <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>24H Volume</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{volume} <span className="text-[9px] font-bold opacity-40">HBAR</span></span>
+          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{volumeValue} <span className="text-[9px] font-bold opacity-40">HBAR</span></span>
         </div>
         <div className="flex flex-col">
           <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>Liquidity</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{liquidity}</span>
+          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{liquidityValue}</span>
         </div>
       </div>
     </div>
