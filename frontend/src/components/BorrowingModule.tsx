@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 
 interface BorrowingModuleProps {
@@ -11,102 +11,123 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Module for reputation-based borrowing with synchronized button state management matching the Vault.
- * Updated: Refactored action area into dual-button layout (Borrow/Repay).
+ * @dev Overhauled borrowing module with 3-state toggle and 2-step repayment modal.
  */
-export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) => {
+export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
   const [amount, setAmount] = useState("");
   const [collateralType, setCollateralType] = useState<'USDT' | 'USDC'>('USDT');
   
-  // Interactive State Management matching Vault and Lend modules
-  const [activeAction, setActiveAction] = useState<'borrow' | 'repay'>('borrow');
+  // 1. Toggle State Management: Deposit, Borrow, Repay & Withdraw
+  const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('deposit');
+  
+  // 2. Modal Flow State
+  const [showModal, setShowModal] = useState(false);
+  const [modalStep, setModalStep] = useState<1 | 2>(1); // 1: Repayment, 2: Withdrawal
+  const [isRepaid, setIsRepaid] = useState(false);
+
+  // Simulated live XP (with decay)
+  const [currentXP, setCurrentXP] = useState(initialXP);
+
+  useEffect(() => {
+    // Simulated XP Decay visualization (1 XP point every 24 hours while loan active)
+    // In production, this would be fetched from the contract
+    if (activeTab === 'borrow') {
+      const timer = setInterval(() => {
+        setCurrentXP(prev => Math.max(prev - 1, 15));
+      }, 86400000); // 24 hours
+      return () => clearInterval(timer);
+    }
+  }, [activeTab]);
 
   const hbarPrice = 0.085; 
   const collateralValue = Number(amount) || 0;
-  const maxBorrow = (collateralValue / hbarPrice) * (xp / 100);
+  const maxBorrow = (collateralValue / hbarPrice) * (currentXP / 100);
 
-  const handleBorrow = async () => {
-    setActiveAction('borrow');
+  // Dynamic Label Logic
+  const getLabelText = () => {
+    switch (activeTab) {
+      case 'deposit': return "Deposit Collateral";
+      case 'borrow': return "Borrow HBAR";
+      case 'repay': return "Repay HBAR / Withdraw Collateral";
+      default: return "Amount";
+    }
+  };
+
+  const handleActionInitiation = () => {
+    if (activeTab === 'repay') {
+      setShowModal(true);
+      setModalStep(1);
+    } else {
+      handleExecution();
+    }
+  };
+
+  const handleExecution = async () => {
     try {
-      await borrow(amount);
-      alert("Borrowing request initialized!");
+      if (activeTab === 'deposit') {
+        alert("Collateral deposited!");
+      } else if (activeTab === 'borrow') {
+        await borrow(amount);
+        alert("Borrowing successful! XP decay is now active.");
+      }
     } catch (e: any) {
       alert(e.message);
     }
   };
 
-  const handleRepay = async () => {
-    setActiveAction('repay');
-    try {
-      alert("Repayment request initialized!");
-    } catch (e: any) {
-      alert(e.message);
-    }
+  const handleRepayStep = async () => {
+    // Simulated on-chain confirmation
+    setTimeout(() => {
+      setIsRepaid(true);
+      setModalStep(2);
+      alert("HBAR Repayment Confirmed. Proceeding to Collateral Withdrawal.");
+    }, 1500);
   };
 
-  // Matched intensity for labels
+  const handleWithdrawStep = async () => {
+    setShowModal(false);
+    setIsRepaid(false);
+    alert("Collateral Withdrawn Successfully!");
+  };
+
+  // Theme-aware colors matching industrial design system
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
 
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
-
-  /**
-   * Helper to determine button styles based on active state (Exact copy from Vault/Lend).
-   * Active: Full intensity blue
-   * Inactive: Low intensity transparent blue
-   */
-  const getButtonClasses = (action: 'borrow' | 'repay') => {
-    const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px]";
-    
-    if (isActive) {
-      return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
-    } else {
-      return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
-    }
+  const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
+    const isActive = activeTab === tab;
+    const base = "flex-1 !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-[10px] uppercase tracking-wider";
+    return isActive 
+      ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
+      : `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
   };
 
-  const USDTLogo = ({ active }: { active: boolean }) => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill={active ? "white" : "#26A17B"} xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-      <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z"/>
-    </svg>
-  );
-
-  const USDCLogo = ({ active }: { active: boolean }) => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill={active ? "white" : "#2775CA"} xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-      <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
-    </svg>
-  );
-
   return (
-    <div className="industrial-panel bg-surface flex flex-col h-full">
-      <div className="flex justify-between items-start mb-8">
+    <div className="industrial-panel bg-surface flex flex-col h-full relative">
+      {/* 3-Button Toggle System */}
+      <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
+        <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
+        <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
+        <button onClick={() => setActiveTab('repay')} className={getTabClasses('repay')}>Repay & Withdraw</button>
+      </div>
+
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h3 
-            className="text-[11px] font-bold uppercase tracking-wider"
-            style={{ color: labelColor }}
-          >
-            Credit Facility
-          </h3>
-          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow HBAR</p>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</h3>
+          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrowing Status</p>
         </div>
-        <div className="bg-[#00A8E8]/10 px-2 py-0.5 rounded-full border border-[#00A8E8]/20 flex items-center justify-center min-w-[fit-content]">
-          <span className="text-[9px] font-bold !text-[#00A8E8] uppercase whitespace-nowrap leading-none">
-            XP Multiplier: {(xp/100).toFixed(2)}x
-          </span>
+        <div className="text-right">
+          <p className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Loan Health (XP)</p>
+          <p className={`text-lg font-black ${currentXP < 30 ? 'text-red-500' : 'text-[#00A8E8]'}`}>{currentXP} XP</p>
         </div>
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
         <div>
-          <label 
-            className="text-[10px] font-bold uppercase block mb-2"
-            style={{ color: labelColor }}
-          >
-            Deposit Collateral
+          <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
+            {getLabelText()}
           </label>
           <div className="relative">
             <input 
@@ -120,60 +141,74 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp, theme }) =
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 p-1 bg-black/5 dark:bg-white/5 rounded-2xl">
-              <button 
-                onClick={() => setCollateralType('USDT')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 border-none ${collateralType === 'USDT' ? 'bg-[#00A8E8]/20 shadow-none' : 'opacity-60 hover:opacity-100'}`}
-              >
-                <USDTLogo active={false} />
-                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDT</span>
-              </button>
-              <button 
-                onClick={() => setCollateralType('USDC')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all duration-300 border-none ${collateralType === 'USDC' ? 'bg-[#00A8E8]/20 shadow-none' : 'opacity-60 hover:opacity-100'}`}
-              >
-                <USDCLogo active={false} />
-                <span className="text-[10px] font-black uppercase" style={{ color: primaryTextColor }}>USDC</span>
-              </button>
-            </div>
           </div>
         </div>
 
+        {/* Dynamic Borrowing Capacity Box */}
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
           <div className="flex justify-between mb-2">
-            <span 
-              className="text-[10px] font-bold uppercase"
-              style={{ color: labelColor }}
-            >
-              Max Borrowing Capacity
-            </span>
+            <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Max Borrowing Limit</span>
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[#00A8E8] w-2/3 opacity-50" />
+            <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((collateralValue / 1000) * 100, 100)}%` }} />
           </div>
+          <p className="text-[9px] mt-2 opacity-60" style={{ color: labelColor }}>
+            *Starting XP is calculated based on Collateralization Ratio.
+          </p>
         </div>
 
-        {/* 
-            Action Row: Split into Borrow and Repay 
-            Matching Vault styling and state management exactly.
-        */}
-        <div className="flex flex-row gap-4 w-full mt-auto items-center">
-          <button 
-            onClick={handleBorrow}
-            disabled={!amount || Number(amount) <= 0}
-            className={getButtonClasses('borrow')}
-          >
-            Borrow
-          </button>
-          <button 
-            onClick={handleRepay}
-            className={getButtonClasses('repay')}
-          >
-            Repay
-          </button>
-        </div>
+        <button 
+          onClick={handleActionInitiation}
+          disabled={!amount || Number(amount) <= 0}
+          className="btn-action w-full mt-auto !py-3 font-bold uppercase tracking-widest text-[11px]"
+          style={{ borderRadius: '60px' }}
+        >
+          Initialize {activeTab}
+        </button>
       </div>
+
+      {/* 2-Step Repayment & Withdrawal Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface border border-[var(--border)] rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-between items-center mb-6">
+              <h4 className="text-lg font-black uppercase tracking-tight" style={{ color: primaryTextColor }}>
+                Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
+              </h4>
+              <button onClick={() => setShowModal(false)} className="opacity-40 hover:opacity-100 transition-opacity">✕</button>
+            </div>
+
+            <div className="mb-8 p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-[var(--border)]">
+              {modalStep === 1 ? (
+                <div className="space-y-4">
+                  <p className="text-sm opacity-80" style={{ color: labelColor }}>You are about to repay your active HBAR loan. This will stop the daily XP decay.</p>
+                  <div className="flex justify-between font-bold">
+                    <span>Total Debt</span>
+                    <span className="!text-[#00A8E8]">540.22 HBAR</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm opacity-80" style={{ color: labelColor }}>Repayment confirmed! You can now safely withdraw your collateral.</p>
+                  <div className="flex justify-between font-bold">
+                    <span>Collateral Release</span>
+                    <span className="!text-emerald-500">1,200.00 {collateralType}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button 
+              onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep}
+              className="w-full btn-action !py-4 font-black uppercase tracking-[0.2em] text-[10px]"
+              style={{ borderRadius: '60px' }}
+            >
+              {modalStep === 1 ? 'Confirm Repayment' : 'Confirm Withdrawal'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
