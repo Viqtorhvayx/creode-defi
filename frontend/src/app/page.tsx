@@ -7,11 +7,12 @@ import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
+import { PriceChart } from '../components/PriceChart';
 
 /**
  * @title Dashboard
  * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Updated to default to Dark Mode for premium aesthetic.
+ * @dev Main dashboard for CREODE Protocol. Integrated Minimalist Market Chart in the left utility column.
  */
 export default function Dashboard() {
   const { balance } = useWeb3();
@@ -28,7 +29,6 @@ export default function Dashboard() {
       setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
-      // Default to Dark if no preference saved
       setTheme('dark');
       document.documentElement.classList.add('dark');
     }
@@ -50,6 +50,7 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto">
         <Header theme={theme} toggleTheme={toggleTheme} />
 
+        {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
           <div className="industrial-panel">
             <h4 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: secondaryLabelColor }}>
@@ -72,9 +73,12 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Main Interface Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: XP, System Notification & Price Chart */}
           <div className="lg:col-span-4 space-y-8">
             <XPGauge xp={userXP} theme={theme} />
+            
             <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
               <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
                 System Notification
@@ -83,8 +87,12 @@ export default function Dashboard() {
                 Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
               </p>
             </div>
+
+            {/* Integrated HBAR Market Chart */}
+            <PriceChart theme={theme} />
           </div>
 
+          {/* Right Column: Functional Modules */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="md:col-span-2">
               <LockingModule theme={theme} />
@@ -94,6 +102,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Footer */}
         <footer className="mt-24 border-t border-[var(--border)] pt-12 pb-24 flex flex-col items-center gap-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: primaryTextColor }}>Built by Team</p>
           <div className="flex gap-4">
