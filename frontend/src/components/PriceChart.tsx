@@ -10,7 +10,7 @@ interface PriceChartProps {
 /**
  * @title PriceChart
  * @author Viqtorhvayx
- * @dev Simplified HBAR Market Chart showing exclusively HBAR/USD with synchronized button styling.
+ * @dev HBAR/USD Market Chart with optimized control layout.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -137,20 +137,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   /**
-   * Synchronized FilterButton Styling
-   * Matched exactly to BorrowingModule.tsx getTabClasses:
-   * - text-[10px]
-   * - !py-1.5 !h-auto
-   * - rounded-[60px]
-   * - Active: bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20
-   * - Inactive: bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20
+   * Compact FilterButton Styling
+   * - Reduced from text-[10px] to text-[8px]
+   * - Reduced padding from py-1.5 to py-1
+   * - Preserved shape (rounded-60px) and behavior
    */
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[10px] font-bold transition-all duration-300 rounded-[60px] !py-1.5 !h-auto px-3 tracking-tight ${
+      className={`text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 uppercase tracking-tighter ${
         active 
-          ? 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20' 
+          ? 'bg-[#00A8E8] text-white shadow-md shadow-[#00A8E8]/20' 
           : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20'
       }`}
     >
@@ -160,32 +157,36 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
   return (
     <div className="industrial-panel bg-surface !p-5 flex flex-col gap-4">
-      <div className="flex justify-between items-center">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2 mb-1">
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col relative">
+          {/* HBAR/USD Header: Primary visual element */}
+          <div className="z-10 bg-surface pr-4 pb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
               HBAR / USD
             </span>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span className="text-xl font-black" style={{ color: primaryTextColor }}>{currentPrice}</span>
+              <span className="text-[10px] font-bold !text-[#10B981]">+1.24%</span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl font-black" style={{ color: primaryTextColor }}>{currentPrice}</span>
-            <span className="text-[10px] font-bold !text-[#10B981]">+1.24%</span>
+
+          {/* Time Range Controls: Positioned underneath the HBAR/USD hierarchy */}
+          <div className="flex gap-1 mt-2 z-0">
+            {(['15min', 'Hour', 'Day', 'Week'] as const).map(interval => (
+              <FilterButton 
+                key={interval}
+                label={interval}
+                active={activeInterval === interval}
+                onClick={() => setActiveInterval(interval)}
+              />
+            ))}
           </div>
         </div>
 
-        <div className="flex gap-1">
-          {(['15min', 'Hour', 'Day', 'Week'] as const).map(interval => (
-            <FilterButton 
-              key={interval}
-              label={interval}
-              active={activeInterval === interval}
-              onClick={() => setActiveInterval(interval)}
-            />
-          ))}
-        </div>
+        {/* Right side remains empty or for future alignment requirements */}
       </div>
 
-      <div className="relative w-full h-[220px]">
+      <div className="relative w-full h-[220px] mt-2">
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
