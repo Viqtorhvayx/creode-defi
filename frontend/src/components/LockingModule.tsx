@@ -11,7 +11,7 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Rollback: Reverted layout structure, margins, and grid configuration to original state.
+ * Updated: Aligned Duration input and Set button baseline with left-column action buttons.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const { lockAssets } = useWeb3();
@@ -102,12 +102,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* Reverted Grid Layout: Removed items-end to restore original vertical alignment */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column: Amount Input & Action Buttons */}
+        {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col">
           <div>
-            {/* Protocol Stats Rows: Preserved Content */}
+            {/* Protocol Stats Rows */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
@@ -144,7 +143,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
           
-          {/* Reverted Spacing: Restored mt-20 and removed dynamic height alignment */}
           <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
@@ -190,8 +188,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Reverted Duration & Set Action Structure */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* 
+              Duration & Set Action: Baseline synchronization with left column actions.
+              Applying mt-20 to the container to match the Deposit/Withdraw baseline.
+          */}
+          <div className="grid grid-cols-2 gap-4 mt-20">
             <div>
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
