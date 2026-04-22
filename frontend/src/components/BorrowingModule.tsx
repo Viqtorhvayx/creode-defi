@@ -11,7 +11,7 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized font sizing matching the Lend section.
+ * @dev Overhauled borrowing module with synchronized physical dimensions matching the protocol standard.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -99,10 +99,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
     const isActive = activeTab === tab;
-    /**
-     * Font Sizing Update:
-     * Matched exactly to the button text size in the 'Lend' section (text-sm).
-     */
     const base = "flex-1 !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm tracking-wider";
     return isActive 
       ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
@@ -164,11 +160,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Action Button: Matched to text-sm */}
+        {/* 
+            Action Button: Height Synchronization 
+            Updated: Set height to exactly match the Lend section buttons using !py-2.5 !h-auto.
+        */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full mt-auto !py-3 font-bold text-sm tracking-wider"
+          className="btn-action w-full mt-auto !py-2.5 !h-auto font-bold text-sm tracking-wider"
           style={{ borderRadius: '60px' }}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
