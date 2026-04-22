@@ -10,8 +10,7 @@ interface PriceChartProps {
 /**
  * @title PriceChart
  * @author Viqtorhvayx
- * @dev Minimalist HBAR Market Chart with Price, Volume, and Liquidity overlays.
- * Supports HBAR/USDT and HBAR/USDC toggles with multiple time intervals.
+ * @dev Simplified HBAR Market Chart showing exclusively HBAR/USD.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -19,12 +18,11 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
-  const [activePair, setActivePair] = useState<'USDT' | 'USDC'>('USDT');
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
 
-  // Simulated metrics
-  const volumeValue = activePair === 'USDT' ? "1.2M" : "850K";
-  const liquidityValue = activePair === 'USDT' ? "$4.5M" : "$3.1M";
+  // Simulated metrics for HBAR/USD
+  const volumeValue = "1.8M";
+  const liquidityValue = "$6.2M";
   const currentPrice = 0.0942;
 
   useEffect(() => {
@@ -80,21 +78,20 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         priceFormat: {
             type: 'volume',
         },
-        priceScaleId: '', // overlay
+        priceScaleId: '', 
     });
 
     volumeSeries.priceScale().applyOptions({
         scaleMargins: {
-            top: 0.7, // volume at bottom 30%
+            top: 0.7,
             bottom: 0,
         },
     });
 
-    // Mock Data Generation with explicit UTCTimestamp casting
     const generateData = () => {
       const data = [];
       const volumeData = [];
-      let basePrice = activePair === 'USDT' ? 0.092 : 0.093;
+      let basePrice = 0.094;
       const now = new Date();
       
       const count = activeInterval === '15min' ? 100 : activeInterval === 'Hour' ? 72 : 30;
@@ -134,7 +131,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [theme, activePair, activeInterval]);
+  }, [theme, activeInterval]);
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
@@ -158,22 +155,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         <div className="flex flex-col">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
-              HBAR / {activePair}
+              HBAR / USD
             </span>
-            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded-lg">
-              <button 
-                onClick={() => setActivePair('USDT')}
-                className={`text-[8px] font-black px-1.5 py-0.5 rounded-md transition-all ${activePair === 'USDT' ? 'bg-[#00A8E8] text-white shadow-sm' : 'text-black/40 dark:text-white/40'}`}
-              >
-                USDT
-              </button>
-              <button 
-                onClick={() => setActivePair('USDC')}
-                className={`text-[8px] font-black px-1.5 py-0.5 rounded-md transition-all ${activePair === 'USDC' ? 'bg-[#00A8E8] text-white shadow-sm' : 'text-black/40 dark:text-white/40'}`}
-              >
-                USDC
-              </button>
-            </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-xl font-black" style={{ color: primaryTextColor }}>{currentPrice}</span>
