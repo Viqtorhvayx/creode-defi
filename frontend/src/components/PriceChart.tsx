@@ -10,7 +10,7 @@ interface PriceChartProps {
 /**
  * @title PriceChart
  * @author Viqtorhvayx
- * @dev Simplified HBAR Market Chart showing exclusively HBAR/USD.
+ * @dev Simplified HBAR Market Chart showing exclusively HBAR/USD with synchronized button styling.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -136,13 +136,22 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  /**
+   * Synchronized FilterButton Styling
+   * Matched exactly to BorrowingModule.tsx getTabClasses:
+   * - text-[10px]
+   * - !py-1.5 !h-auto
+   * - rounded-[60px]
+   * - Active: bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20
+   * - Inactive: bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20
+   */
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[9px] font-bold px-2 py-1 rounded-md transition-all duration-200 ${
+      className={`text-[10px] font-bold transition-all duration-300 rounded-[60px] !py-1.5 !h-auto px-3 tracking-tight ${
         active 
-          ? 'bg-[#00A8E8] text-white' 
-          : 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:bg-black/10 dark:hover:bg-white/10'
+          ? 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20' 
+          : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20'
       }`}
     >
       {label}
