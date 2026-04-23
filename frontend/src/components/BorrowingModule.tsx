@@ -12,7 +12,7 @@ interface BorrowingModuleProps {
  * @title BorrowingModule
  * @author Viqtorhvayx
  * @dev Overhauled borrowing module with static header replacement for tab buttons.
- * Updated: Typographic mirroring to ensure symmetry with the Lending module headers and data figures.
+ * Updated: Adjusted vertical alignment (items-start, removed py-4) to ensure perfect baseline symmetry with the Lending module.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -99,7 +99,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15_rgba(0,168,232,0.15)] [appearance:textfield]";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
 
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
@@ -107,20 +107,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
       {/* 
-          Typographic Mirroring Update:
-          Synchronized font sizes with LendingModule.tsx for dashboard symmetry.
+          Baseline Alignment Update:
+          Synchronized header layout with LendingModule.tsx (items-start, mb-8) 
+          and removed internal py-4 padding to pull elements into perfect horizontal symmetry.
       */}
-      <div className="flex justify-between items-center mb-8 px-2 py-4">
+      <div className="flex justify-between items-start mb-8">
         <div className="flex flex-col">
-          {/* Section Header: Match 'LENDING POOL' size ([11px]) */}
+          {/* Section Header: Mirrored LENDING POOL */}
           <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
-          {/* Main Title: Match 'Lend' size (text-xl) */}
+          {/* Main Title: Mirrored Lend */}
           <span className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</span>
         </div>
         <div className="text-right">
-          {/* Data Label: Match 'EARNED POINTS' size ([10px]) */}
-          <span className="text-[10px] font-bold uppercase block mb-0.5" style={{ color: labelColor }}>Loan Health XP</span>
-          {/* Data Figure: Match '1,250' size (text-lg) */}
+          {/* Data Label: Mirrored EARNED POINTS */}
+          <span className="text-[10px] font-bold uppercase block" style={{ color: labelColor }}>Loan Health XP</span>
+          {/* Data Figure: Mirrored figure baseline */}
           <p className="text-lg font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-[10px] font-bold ml-1" style={{ color: maxXPColor }}>/100</span>
