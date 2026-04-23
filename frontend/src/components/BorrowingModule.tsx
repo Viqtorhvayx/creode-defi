@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with refined vertical positioning.
- * Updated: Shifted the entire interaction stack (label + input) upward slightly 
- * using a negative top margin (mt-[-8px]) while preserving internal alignment.
+ * @dev Overhauled borrowing module with micro-alignment for interaction boxes.
+ * Updated: Increased the negative top margin of the input rectangle (marginTop: '-4px') 
+ * to pull it closer to the dynamic section label.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -183,8 +183,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
       <div className="space-y-6 flex flex-col flex-grow">
         {/* 
-            Interaction Stack: Shifted upward slightly using negative top margin (mt-[-8px]).
-            This moves the label and input rectangle together as a single unit.
+            Interaction Stack: Refined vertical shift for the input box.
         */}
         <div className="mt-[-8px]">
           <label 
@@ -204,7 +203,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               style={{ 
                 backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                 color: theme === 'dark' ? '#FFFFFF' : '#000000',
-                marginTop: '-1px'
+                marginTop: '-4px' // Increased negative margin to pull the box higher
               }}
               value={amount}
               onChange={(e) => {
@@ -233,6 +232,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           onClick={handleActionInitiation}
           disabled={!hasInput}
           className={getActionButtonClasses()}
+          style={{ 
+            fontSize: '14px',
+            backgroundColor: 'rgba(0, 168, 232, 0.3)',
+            color: '#0072A3'
+          }}
         >
           {activeTab === 'borrow' ? 'Borrow' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + (activeTab === 'repay' ? ' & Withdraw' : '')}
         </button>
