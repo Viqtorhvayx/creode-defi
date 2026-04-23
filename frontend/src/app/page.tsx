@@ -91,7 +91,7 @@ export default function Dashboard() {
             </div>
 
             {/* Integrated HBAR Market Chart: Precision-aligned to match Lending Pool height */}
-            <div className="mt-8 h-[384px]">
+            <div className="mt-8 h-[350px]">
               <PriceChart theme={theme} />
             </div>
           </div>
