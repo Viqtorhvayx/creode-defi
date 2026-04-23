@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Standardized hover/mouse movement animations (bounce/shift) to match the Borrow module's Repay & Withdraw button.
+ * Updated: Swapped vertical positions of the Lending Points note and the Amount input section.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -48,7 +48,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
   /**
    * Helper to determine button styles based on active state.
-   * Updated: Included hover:-translate-y-1 and active:scale-95 for synchronized dApp ergonomics.
    */
   const getButtonClasses = (action: 'deposit' | 'withdraw') => {
     const isActive = activeAction === action;
@@ -85,6 +84,17 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
+        {/* Lending Points Note: Position swapped to top */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+          <p 
+            className="text-[10px] font-medium leading-relaxed"
+            style={{ color: labelColor }}
+          >
+            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
+          </p>
+        </div>
+
+        {/* Amount Input Section: Position swapped to below note */}
         <div>
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
@@ -103,15 +113,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-        </div>
-
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
-          <p 
-            className="text-[10px] font-medium leading-relaxed"
-            style={{ color: labelColor }}
-          >
-            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
-          </p>
         </div>
 
         <div className="flex flex-row gap-4 w-full mt-auto">
