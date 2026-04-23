@@ -44,7 +44,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         horzLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 220,
+      height: 180,
       timeScale: {
         borderVisible: false,
         timeVisible: true,
@@ -155,7 +155,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   );
 
   return (
-    <div className="industrial-panel bg-surface !p-5 flex flex-col gap-4">
+    <div className="industrial-panel bg-surface !p-5 flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div className="flex flex-col relative">
           <div className="z-10 bg-surface pr-4 pb-1">
@@ -181,7 +181,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="relative w-full h-[220px] mt-2">
+      <div className="relative w-full flex-grow mt-2 min-h-[180px]">
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
