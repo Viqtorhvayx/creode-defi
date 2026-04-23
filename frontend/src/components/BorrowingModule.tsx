@@ -214,8 +214,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
         </div>
 
-        {/* Max Borrowing Limit Box */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
+        {/* Max Borrowing Limit Box: Lowered and baseline-synchronized with Lend section */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto -mb-1">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Max Borrowing Limit</span>
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
