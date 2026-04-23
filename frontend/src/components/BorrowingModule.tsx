@@ -11,8 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with restored 3-button toggle system for action selection.
- * Updated: Reintegrated the Deposit/Borrow/Repay toggle buttons between the header and input fields.
+ * @dev Overhauled borrowing module with restored 1:1 input box styling parity.
+ * Updated: Overwrote numericInputClasses to perfectly match the Lending module's design, including shadow and spin-button resets.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -99,7 +99,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15_rgba(0,168,232,0.15)] [appearance:textfield]";
+  
+  /**
+   * Restored input classes to match LendingModule.tsx 1:1.
+   * Includes fixed shadow [15px] and webkit spin-button resets.
+   */
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
@@ -142,8 +147,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       {/* 
-          Restored Toggle Buttons: 
-          Positioned between the header and the input stack as requested.
+          Toggle Buttons
       */}
       <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
@@ -152,7 +156,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Input Wrapper: Vertical Baseline Synchronized */}
+        {/* Input Wrapper: Mirrored styling from 'Amount to Provide (HBAR)' */}
         <div className="mt-2">
           <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
             {getLabelText()}
