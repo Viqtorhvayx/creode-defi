@@ -11,8 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with refined vertical spacing.
- * Updated: Reduced top margin (mt-1) on the input wrapper to pull the field closer to the toggle buttons.
+ * @dev Overhauled borrowing module with synchronized primary button ergonomics.
+ * Updated: Adjusted action button height to match Lending section's 'Withdraw' button (!py-2.5) 
+ * and implemented dynamic state-based color schemes (light blue default / intense blue active).
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -127,13 +128,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Main Action Button Styling: Perfectly synchronized with the section's toggle buttons.
+   * Main Action Button Styling: Synchronized height and states.
+   * Height: !py-2.5 to match Lending section's 'Withdraw' button.
+   * Default: Light blue bg with vivid blue text.
+   * Active: Intense blue bg with white text.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-1.5 !h-auto font-bold transition-all duration-300 text-[10px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    const aesthetic = "rounded-[60px] bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20";
+    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 text-[10px] rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
     
-    return `${base} ${aesthetic} disabled:opacity-50 disabled:cursor-not-allowed`;
+    // Default (Unselected) State: Light blue bg + Vivid blue text
+    const defaultStyle = "bg-[#00A8E8]/10 text-[#00A8E8]";
+    
+    // Active (Selected/Clicked) State: Primary blue bg + White text
+    const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
+    
+    return `${base} ${defaultStyle} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   return (
@@ -166,8 +175,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
       <div className="space-y-6 flex flex-col flex-grow">
         {/* 
-            Input Wrapper: Reduced top margin (mt-1) to move the input field 
-            upward, closer to the toggle buttons.
+            Input Wrapper
         */}
         <div className="mt-1">
           <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
@@ -202,6 +210,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
+        {/* Primary Action Button: Height matched to Lending 'Withdraw' button and dynamic states implemented */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
