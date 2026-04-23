@@ -11,8 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with restored 1:1 input box styling parity.
- * Updated: Overwrote numericInputClasses to perfectly match the Lending module's design, including shadow and spin-button resets.
+ * @dev Overhauled borrowing module with synchronized UI and system-ui typography.
+ * Updated: Restyled the primary action button to use rounded-2xl and dynamic state transitions (hover highlights, active blue).
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -102,7 +102,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   
   /**
    * Restored input classes to match LendingModule.tsx 1:1.
-   * Includes fixed shadow [15px] and webkit spin-button resets.
    */
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
@@ -125,6 +124,25 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     } else {
       return `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
     }
+  };
+
+  /**
+   * Action Button Styling: System-UI, rounded-2xl, and dynamic hover/active states.
+   */
+  const getActionButtonClasses = () => {
+    const base = "w-full py-4 font-bold transition-all duration-300 rounded-2xl text-sm tracking-widest uppercase font-sans";
+    
+    // Inactive state colors (Dark card color or neutral grey)
+    const inactiveBg = theme === 'dark' ? 'bg-[#151A22]' : 'bg-gray-100';
+    const inactiveText = theme === 'dark' ? 'text-white/60' : 'text-black/60';
+    
+    // Hover: blue text highlight + subtle bounce
+    const hoverStyles = "hover:text-[#00A8E8] hover:-translate-y-1 hover:shadow-lg";
+    
+    // Active: Full blue background + white text
+    const activeStyles = "active:bg-[#00A8E8] active:text-white";
+    
+    return `${base} ${inactiveBg} ${inactiveText} ${hoverStyles} ${activeStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   return (
@@ -156,7 +174,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Input Wrapper: Mirrored styling from 'Amount to Provide (HBAR)' */}
         <div className="mt-2">
           <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
             {getLabelText()}
@@ -190,11 +207,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
+        {/* Primary Action Button: Restyled to match design system constraints */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full !py-2.5 !h-auto font-bold text-sm tracking-wider"
-          style={{ borderRadius: '60px' }}
+          className={getActionButtonClasses()}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
