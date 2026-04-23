@@ -87,7 +87,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         {/* Amount Input Section: Further elevated for balanced vertical spacing */}
         <div className="mt-6">
           <label 
-            className="text-[10px] font-bold uppercase block mb-2"
+            className="text-[10px] font-bold uppercase block mb-1"
             style={{ color: labelColor }}
           >
             Amount to Provide (HBAR)
