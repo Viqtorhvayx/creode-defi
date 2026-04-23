@@ -105,8 +105,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
         </div>
 
-        {/* Lending Points Note: Lowered and baseline-synchronized with Borrow section */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto -mb-1">
+        {/* Lending Points Note: Height synchronized to match Borrow section limit box */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
