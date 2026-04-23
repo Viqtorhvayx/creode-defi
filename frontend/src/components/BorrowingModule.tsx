@@ -161,7 +161,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       {/* 
           Section Header: Baseline Synchronized
       */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-2">
         <div className="flex flex-col">
           <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
           <span className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</span>
@@ -178,7 +178,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       {/* 
           Toggle Buttons
       */}
-      <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
+      <div className="flex gap-2 mb-2 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
         <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
         <button onClick={() => setActiveTab('repay')} className={getTabClasses('repay')}>Repay & Withdraw</button>

@@ -62,7 +62,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full">
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex justify-between items-start mb-6">
         <div>
           <h3 
             className="text-[11px] font-bold uppercase tracking-wider"
@@ -84,8 +84,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Amount Input Section: Slightly elevated for balanced vertical spacing */}
-        <div className="mt-[60px]">
+        {/* Amount Input Section: Precision-aligned to Borrow baseline (Total 60px offset) */}
+        <div className="mt-9">
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
             style={{ color: labelColor }}
