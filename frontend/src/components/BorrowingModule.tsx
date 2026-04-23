@@ -11,8 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized UI and system-ui typography.
- * Updated: Restyled the primary action button to use rounded-2xl and dynamic state transitions (hover highlights, active blue).
+ * @dev Overhauled borrowing module with synchronized primary button styling.
+ * Updated: Overwrote the long Borrow button's aesthetic styling to perfectly match the Lend 'Deposit' button, preserving its full-width layout.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -127,22 +127,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Action Button Styling: System-UI, rounded-2xl, and dynamic hover/active states.
+   * Main Action Button Styling: Mirrored aesthetic from Lending module's 'Deposit' button.
+   * Uses rounded-[60px], shadow-lg shadow-[#00A8E8]/20, and hover: bounce effects.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full py-4 font-bold transition-all duration-300 rounded-2xl text-sm tracking-widest uppercase font-sans";
+    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const aesthetic = "rounded-[60px] bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20";
     
-    // Inactive state colors (Dark card color or neutral grey)
-    const inactiveBg = theme === 'dark' ? 'bg-[#151A22]' : 'bg-gray-100';
-    const inactiveText = theme === 'dark' ? 'text-white/60' : 'text-black/60';
-    
-    // Hover: blue text highlight + subtle bounce
-    const hoverStyles = "hover:text-[#00A8E8] hover:-translate-y-1 hover:shadow-lg";
-    
-    // Active: Full blue background + white text
-    const activeStyles = "active:bg-[#00A8E8] active:text-white";
-    
-    return `${base} ${inactiveBg} ${inactiveText} ${hoverStyles} ${activeStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
+    return `${base} ${aesthetic} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   return (
@@ -207,7 +199,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Restyled to match design system constraints */}
+        {/* Primary Action Button: Aesthetic mirrored from Lending's 'Deposit' button */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
