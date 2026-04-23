@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with exact aesthetic mirroring of the Lending section.
- * Updated: Replicated the 'Withdraw' button's Tailwind classes and interaction logic 1:1 
- * for the primary action button, as authored by Viqtorhvayx.
+ * @dev Overhauled borrowing module with refined vertical positioning.
+ * Updated: Shifted the entire interaction stack (label + input) upward slightly 
+ * using a negative top margin (mt-[-8px]) while preserving internal alignment.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -141,7 +141,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Action Button Logic: EXACT mirroring of LendingModule's 'Withdraw' button behavior.
-   * Uses base classes, hover transitions, and state-based color swaps (blue/10 -> solid blue).
    */
   const getActionButtonClasses = () => {
     const baseClasses = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
@@ -183,7 +182,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        <div className="mt-1">
+        {/* 
+            Interaction Stack: Shifted upward slightly using negative top margin (mt-[-8px]).
+            This moves the label and input rectangle together as a single unit.
+        */}
+        <div className="mt-[-8px]">
           <label 
             className="text-[10px] font-bold uppercase block" 
             style={{ 
@@ -226,10 +229,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* 
-            Primary Action Button: EXACT mirroring of Lending section's 'Withdraw' button.
-            Replicated fill color, text color, font weight, radius, and interactive transitions.
-        */}
         <button 
           onClick={handleActionInitiation}
           disabled={!hasInput}
