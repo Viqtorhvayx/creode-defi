@@ -12,6 +12,7 @@ interface BorrowingModuleProps {
  * @title BorrowingModule
  * @author Viqtorhvayx
  * @dev Overhauled borrowing module with synchronized XP styling matching the Reputation Metric.
+ * Updated: Applied mt-auto to the Max Borrowing Limit box for precise baseline alignment with the Lend section.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -52,11 +53,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Synchronized XP Color Coding matching XPGauge.tsx:
-   * Green (Safe) = #25A18E
-   * Yellow (Moderate) = #F4E285
-   * Orange (Risky) = #FF5400
-   * Red (High Risk) = #FF3837
+   * Synchronized XP Color Coding matching XPGauge.tsx.
    */
   const getXPColor = (val: number) => {
     if (val >= 70) return '#25A18E';
@@ -137,12 +134,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
         <div className="text-right">
           <p className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Loan Health (XP)</p>
-          {/* 
-              XP Display Synchronized with Reputation Metric:
-              - Value color matches the gauge and metric number (#25A18E etc.)
-              - Label replaced with "/100" in a smaller font
-              - "/100" color synchronized with metric's max value color
-          */}
           <p className="text-lg font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-[10px] font-bold ml-1" style={{ color: maxXPColor }}>/100</span>
@@ -170,7 +161,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
         </div>
 
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+        {/* Max Borrowing Limit Box: Applied mt-auto for cross-section baseline alignment */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Max Borrowing Limit</span>
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
@@ -186,7 +178,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
-          className="btn-action w-full mt-auto !py-2.5 !h-auto font-bold text-sm tracking-wider"
+          className="btn-action w-full !py-2.5 !h-auto font-bold text-sm tracking-wider"
           style={{ borderRadius: '60px' }}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}

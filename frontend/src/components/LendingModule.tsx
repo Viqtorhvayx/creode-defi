@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Reduced the top margin of the Lending Points note for tighter vertical alignment.
+ * Updated: Applied mt-auto to the note wrapper for precise baseline alignment with the Borrow section.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -84,7 +84,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Input Block: Shifted downward via mt-4 to provide vertical breathing room */}
+        {/* Amount Input Section */}
         <div className="mt-4">
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
@@ -105,8 +105,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
         </div>
 
-        {/* Lending Points Note: Shifted up a tiny bit (mt-8) for surgical layout refinement */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-8">
+        {/* Lending Points Note: Applied mt-auto for bottom-alignment synchronization */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-auto">
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
@@ -115,7 +115,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </p>
         </div>
 
-        <div className="flex flex-row gap-4 w-full mt-auto">
+        <div className="flex flex-row gap-4 w-full">
           <button 
             onClick={handleDeposit}
             disabled={!amount || Number(amount) <= 0}
