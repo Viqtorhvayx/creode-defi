@@ -105,8 +105,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
         </div>
 
-        {/* Lending Points Note: Shifted slightly further downward (mt-10) for surgical layout refinement */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-10">
+        {/* Lending Points Note: Shifted slightly further downward (mt-14) for surgical layout refinement */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-14">
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
