@@ -84,8 +84,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Amount Input Section: Precision-aligned to match Borrow section baseline */}
-        <div className="mt-[68px]">
+        {/* Amount Input Section: Slightly elevated for balanced vertical spacing */}
+        <div className="mt-[60px]">
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
             style={{ color: labelColor }}
