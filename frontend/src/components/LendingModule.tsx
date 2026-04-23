@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Adjusted vertical positioning of the Lending Points note for tighter alignment.
+ * Updated: Repositioned Lending Points note between the amount input and the action buttons.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -84,17 +84,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* Lending Points Note: Shifted slightly upward via negative margin */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] -mt-2">
-          <p 
-            className="text-[10px] font-medium leading-relaxed"
-            style={{ color: labelColor }}
-          >
-            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
-          </p>
-        </div>
-
-        {/* Amount Input Section */}
+        {/* Amount Input Section: Positioned at top of interaction stack */}
         <div>
           <label 
             className="text-[10px] font-bold uppercase block mb-2"
@@ -113,6 +103,16 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
+        </div>
+
+        {/* Lending Points Note: Positioned between input and buttons */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+          <p 
+            className="text-[10px] font-medium leading-relaxed"
+            style={{ color: labelColor }}
+          >
+            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
+          </p>
         </div>
 
         <div className="flex flex-row gap-4 w-full mt-auto">
