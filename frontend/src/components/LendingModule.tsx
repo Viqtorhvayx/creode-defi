@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Increased the top margin of the Lending Points note for further vertical separation.
+ * Updated: Reduced the top margin of the Lending Points note for tighter vertical alignment.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -105,8 +105,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
         </div>
 
-        {/* Lending Points Note: Shifted slightly further downward (mt-14) for surgical layout refinement */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-14">
+        {/* Lending Points Note: Shifted up a tiny bit (mt-8) for surgical layout refinement */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-8">
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
