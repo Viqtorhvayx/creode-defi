@@ -12,7 +12,7 @@ interface BorrowingModuleProps {
  * @title BorrowingModule
  * @author Viqtorhvayx
  * @dev Overhauled borrowing module with synchronized XP styling matching the Reputation Metric.
- * Updated: Applied mt-auto to the Max Borrowing Limit box for precise baseline alignment with the Lend section.
+ * Updated: Reduced the vertical padding of the Max Borrowing Limit box for height synchronization with the Lend section.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -99,7 +99,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15_rgba(0,168,232,0.15)] [appearance:textfield]";
 
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
@@ -161,8 +161,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
         </div>
 
-        {/* Max Borrowing Limit Box: Applied mt-auto for cross-section baseline alignment */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-auto">
+        {/* Max Borrowing Limit Box: py-2 applied for perfect height synchronization with the Lend section note */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Max Borrowing Limit</span>
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{maxBorrow.toFixed(2)} HBAR</span>
