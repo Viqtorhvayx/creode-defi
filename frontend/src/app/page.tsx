@@ -91,7 +91,7 @@ export default function Dashboard() {
             </div>
 
             {/* Integrated HBAR Market Chart: Precision-aligned to match Lending Pool height */}
-            <div className="mt-8 h-[354px]">
+            <div className="mt-8 h-[370px]">
               <PriceChart theme={theme} />
             </div>
           </div>
@@ -101,8 +101,12 @@ export default function Dashboard() {
             <div className="md:col-span-2">
               <LockingModule theme={theme} />
             </div>
-            <LendingModule points={userPoints} theme={theme} />
-            <BorrowingModule xp={userXP} theme={theme} />
+            <div className="h-[370px]">
+              <LendingModule points={userPoints} theme={theme} />
+            </div>
+            <div className="h-[370px]">
+              <BorrowingModule xp={userXP} theme={theme} />
+            </div>
           </div>
         </div>
 
