@@ -11,8 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized primary button styling.
- * Updated: Overwrote the long Borrow button's aesthetic styling to perfectly match the Lend 'Deposit' button, preserving its full-width layout.
+ * @dev Overhauled borrowing module with internal style consistency.
+ * Updated: Modified the primary action button to perfectly match the typographic and padding scale of the section's toggle buttons.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -127,11 +127,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Main Action Button Styling: Mirrored aesthetic from Lending module's 'Deposit' button.
-   * Uses rounded-[60px], shadow-lg shadow-[#00A8E8]/20, and hover: bounce effects.
+   * Main Action Button Styling: Perfectly synchronized with the section's toggle buttons.
+   * Matches !py-1.5, text-[10px], and rounded-[60px] logic.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const base = "w-full !py-1.5 !h-auto font-bold transition-all duration-300 text-[10px] hover:-translate-y-1 hover:shadow-md active:scale-95";
     const aesthetic = "rounded-[60px] bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20";
     
     return `${base} ${aesthetic} disabled:opacity-50 disabled:cursor-not-allowed`;
@@ -199,7 +199,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Aesthetic mirrored from Lending's 'Deposit' button */}
+        {/* Primary Action Button: Style matched to internal section toggles */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
