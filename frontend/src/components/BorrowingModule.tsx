@@ -12,7 +12,7 @@ interface BorrowingModuleProps {
  * @title BorrowingModule
  * @author Viqtorhvayx
  * @dev Overhauled borrowing module with static header replacement for tab buttons.
- * Updated: Removed the dark mode background capsule for the header to achieve a seamless transparent look.
+ * Updated: Typographic mirroring to ensure symmetry with the Lending module headers and data figures.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -107,18 +107,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
       {/* 
-          Header Transparency Update:
-          Removed bg-black/5 and dark:bg-white/5 to strip away the visible rectangle effect.
-          The container is now completely transparent while maintaining internal alignment.
+          Typographic Mirroring Update:
+          Synchronized font sizes with LendingModule.tsx for dashboard symmetry.
       */}
       <div className="flex justify-between items-center mb-8 px-2 py-4">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
-          <span className="text-[14px] font-black" style={{ color: primaryTextColor }}>Borrow</span>
+          {/* Section Header: Match 'LENDING POOL' size ([11px]) */}
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
+          {/* Main Title: Match 'Lend' size (text-xl) */}
+          <span className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</span>
         </div>
         <div className="text-right">
+          {/* Data Label: Match 'EARNED POINTS' size ([10px]) */}
           <span className="text-[10px] font-bold uppercase block mb-0.5" style={{ color: labelColor }}>Loan Health XP</span>
-          <p className="text-[14px] font-black flex items-baseline justify-end">
+          {/* Data Figure: Match '1,250' size (text-lg) */}
+          <p className="text-lg font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-[10px] font-bold ml-1" style={{ color: maxXPColor }}>/100</span>
           </p>
