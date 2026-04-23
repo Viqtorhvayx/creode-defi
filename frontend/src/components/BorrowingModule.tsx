@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized primary button typography.
- * Updated: Set primary action button font size to exactly 14px (matching Lending 'Deposit' button) 
- * using explicit inline styling as requested.
+ * @dev Overhauled borrowing module with intensified primary action button aesthetics.
+ * Updated: Increased inactive background fill visibility (bg-[#00A8E8]/20) and 
+ * boosted text color intensity for the primary action button.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -128,12 +128,16 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Main Action Button Styling: Synchronized height and states.
-   * Removed Tailwind font size class to use explicit inline style.
+   * Main Action Button Styling: Intensified background and text colors.
+   * Default: Stronger light blue bg (bg-[#00A8E8]/20) and more vivid blue text.
    */
   const getActionButtonClasses = () => {
     const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    const defaultStyle = "bg-[#00A8E8]/10 text-[#00A8E8]";
+    
+    // Inactive/Unselected: Boosted background visibility and vivid text intensity
+    const defaultStyle = "bg-[#00A8E8]/20 text-[#0094C6]"; 
+    
+    // Active/Selected: Maintained primary blue consistency
     const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
     
     return `${base} ${defaultStyle} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
@@ -208,12 +212,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Typography synchronized with Lending 'Deposit' button (14px) */}
+        {/* Primary Action Button: Intensified inactive background and text vividness */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
           className={getActionButtonClasses()}
-          style={{ fontSize: '14px' }} // Exactly matches Lending section's 'Deposit' button (text-sm)
+          style={{ fontSize: '14px' }}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
