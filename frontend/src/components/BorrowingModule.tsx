@@ -11,8 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with conditional button state logic.
- * Updated: Implemented 'hasInput' and 'isClicked' states to drive the final primary blue transition.
+ * @dev Overhauled borrowing module with intensified button states and refined case formatting.
+ * Updated: Set button text to 'Borrow' (Sentence case), intensified idle blue to 0.4 opacity, 
+ * and decoupled input state from visual transitions.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -74,7 +75,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const handleActionInitiation = () => {
     if (!hasInput) return;
     
-    // Trigger "isClicked" state for final color swap
+    // Trigger "isClicked" state for final color swap (Valid input + Click)
     setIsClicked(true);
 
     if (activeTab === 'repay') {
@@ -94,8 +95,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       }
     } catch (e: any) {
       alert(e.message);
-    } finally {
-      // Logic would typically reset or transition state here
     }
   };
 
@@ -145,36 +144,37 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Action Button Classes: Configuring hover intensities.
-   * hover:bg-[#00A8E8]/40 ensures text remains distinct while background highlights.
+   * hover:bg-[#00A8E8]/60 provides a brighter blue than the idle state.
+   * Removed 'uppercase' to allow Sentence case formatting.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-sm tracking-wide uppercase";
+    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[14px] tracking-wide";
     
-    // Hover State (Unclicked): Background intensity increases but remains weaker than text
-    const hoverStyles = "hover:bg-[#00A8E8]/40 hover:shadow-md";
+    // Hover State: Brighter blue intensity than idle
+    const hoverStyles = "hover:bg-[#00A8E8]/60 hover:shadow-md";
     
     return `${base} ${hoverStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   /**
-   * Final Submitted State Styling: 100% Solid Primary Blue with White Text.
-   * Driven by conditional React logic (hasInput && isClicked).
+   * Action Button Styles: Driven by idle and click state.
+   * Decoupled from input state alone to ensure idle look persists during typing.
    */
   const getActionButtonStyles = (): React.CSSProperties => {
     const isFinalActive = hasInput && isClicked;
     
     if (isFinalActive) {
+      // Active/Click State: Solid Primary Blue + White Text
       return {
-        fontSize: '14px',
-        backgroundColor: '#00A8E8', // 100% Solid Primary Blue
-        color: '#FFFFFF', // Pure White
+        backgroundColor: '#00A8E8',
+        color: '#FFFFFF',
         boxShadow: '0 4px 15px rgba(0, 168, 232, 0.3)'
       };
     } else {
+      // Idle State (and Typing State): Intensified weak blue fill
       return {
-        fontSize: '14px',
-        backgroundColor: 'rgba(0, 168, 232, 0.3)', // Default weak state (boosted visibility)
-        color: '#00A8E8' // 100% Opacity Primary Blue
+        backgroundColor: 'rgba(0, 168, 232, 0.4)', // Slightly stronger/more visible blue
+        color: '#00A8E8'
       };
     }
   };
@@ -231,7 +231,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               value={amount}
               onChange={(e) => {
                 setAmount(e.target.value);
-                setIsClicked(false); // Reset clicked state on new input
+                setIsClicked(false); // Reset clicked state to ensure idle look persists while typing
               }}
             />
           </div>
@@ -252,8 +252,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
 
         {/* 
-            Primary Action Button: Refined hover effects and conditional click state logic.
-            Styling is driven by explicit CSS with theme detection via the 'getActionButtonStyles' helper.
+            Primary Action Button: Sentence case label and intensified idle/hover states.
+            Transition logic is strictly decoupled from input entry to maintain idle aesthetics while typing.
         */}
         <button 
           onClick={handleActionInitiation}
@@ -261,7 +261,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           className={getActionButtonClasses()}
           style={getActionButtonStyles()}
         >
-          {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
+          {activeTab === 'borrow' ? 'Borrow' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + (activeTab === 'repay' ? ' & Withdraw' : '')}
         </button>
       </div>
 
