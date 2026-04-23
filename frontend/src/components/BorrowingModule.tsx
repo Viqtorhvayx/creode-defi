@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with intensified button states and refined case formatting.
- * Updated: Set button text to 'Borrow' (Sentence case), intensified idle blue to 0.4 opacity, 
- * and decoupled input state from visual transitions.
+ * @dev Overhauled borrowing module with softened button aesthetics.
+ * Updated: Slightly lightened the base blue fill by blending in a small amount of white 
+ * (rgba(51, 185, 237, 0.4)) while preserving all interaction logic.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -74,10 +74,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const handleActionInitiation = () => {
     if (!hasInput) return;
-    
-    // Trigger "isClicked" state for final color swap (Valid input + Click)
     setIsClicked(true);
-
     if (activeTab === 'repay') {
       setShowModal(true);
       setModalStep(1);
@@ -144,36 +141,30 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Action Button Classes: Configuring hover intensities.
-   * hover:bg-[#00A8E8]/60 provides a brighter blue than the idle state.
-   * Removed 'uppercase' to allow Sentence case formatting.
    */
   const getActionButtonClasses = () => {
     const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[14px] tracking-wide";
-    
-    // Hover State: Brighter blue intensity than idle
     const hoverStyles = "hover:bg-[#00A8E8]/60 hover:shadow-md";
-    
     return `${base} ${hoverStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   /**
-   * Action Button Styles: Driven by idle and click state.
-   * Decoupled from input state alone to ensure idle look persists during typing.
+   * Action Button Styles: Softened blue fill via white blending.
+   * Inactive: Shifted to a softer, slightly lightened blue (rgba(51, 185, 237, 0.4)).
    */
   const getActionButtonStyles = (): React.CSSProperties => {
     const isFinalActive = hasInput && isClicked;
     
     if (isFinalActive) {
-      // Active/Click State: Solid Primary Blue + White Text
       return {
         backgroundColor: '#00A8E8',
         color: '#FFFFFF',
         boxShadow: '0 4px 15px rgba(0, 168, 232, 0.3)'
       };
     } else {
-      // Idle State (and Typing State): Intensified weak blue fill
       return {
-        backgroundColor: 'rgba(0, 168, 232, 0.4)', // Slightly stronger/more visible blue
+        // Slightly lightened the blue by blending in white (RGB 0,168,232 -> 51,185,237)
+        backgroundColor: 'rgba(51, 185, 237, 0.4)', 
         color: '#00A8E8'
       };
     }
@@ -231,7 +222,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               value={amount}
               onChange={(e) => {
                 setAmount(e.target.value);
-                setIsClicked(false); // Reset clicked state to ensure idle look persists while typing
+                setIsClicked(false);
               }}
             />
           </div>
@@ -252,8 +243,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
 
         {/* 
-            Primary Action Button: Sentence case label and intensified idle/hover states.
-            Transition logic is strictly decoupled from input entry to maintain idle aesthetics while typing.
+            Primary Action Button: Softened base blue fill via white blending.
+            Preserves text color and interaction logic strictly.
         */}
         <button 
           onClick={handleActionInitiation}
