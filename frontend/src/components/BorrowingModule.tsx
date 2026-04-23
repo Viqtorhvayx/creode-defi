@@ -11,9 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with deep-tone primary button aesthetics.
- * Updated: Shifted inactive background fill to 0.3 opacity and boosted text color to a deeper, 
- * more saturated blue (#0072A3) using explicit inline styling.
+ * @dev Overhauled borrowing module with conditional button state logic.
+ * Updated: Implemented 'hasInput' and 'isClicked' states to drive the final primary blue transition.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -26,6 +25,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [showModal, setShowModal] = useState(false);
   const [modalStep, setModalStep] = useState<1 | 2>(1);
   const [isRepaid, setIsRepaid] = useState(false);
+
+  // Interaction State Logic
+  const [isClicked, setIsClicked] = useState(false);
+  const hasInput = amount.length > 0 && Number(amount) > 0;
+
+  // Reset isClicked if input becomes empty
+  useEffect(() => {
+    if (!hasInput) setIsClicked(false);
+  }, [hasInput]);
 
   // Simulated live XP
   const [currentXP, setCurrentXP] = useState(initialXP);
@@ -64,6 +72,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   const handleActionInitiation = () => {
+    if (!hasInput) return;
+    
+    // Trigger "isClicked" state for final color swap
+    setIsClicked(true);
+
     if (activeTab === 'repay') {
       setShowModal(true);
       setModalStep(1);
@@ -81,6 +94,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       }
     } catch (e: any) {
       alert(e.message);
+    } finally {
+      // Logic would typically reset or transition state here
     }
   };
 
@@ -94,6 +109,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const handleWithdrawStep = async () => {
     setShowModal(false);
     setIsRepaid(false);
+    setIsClicked(false);
     alert("Collateral Withdrawn!");
   };
 
@@ -128,15 +144,39 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Main Action Button Styling: Deeper, more saturated tones for unselected state.
-   * Background: Boosted to 0.3 opacity.
-   * Text: Shifted toward a deeper blue tone (#0072A3).
+   * Action Button Classes: Configuring hover intensities.
+   * hover:bg-[#00A8E8]/40 ensures text remains distinct while background highlights.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
+    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-sm tracking-wide uppercase";
     
-    return `${base} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
+    // Hover State (Unclicked): Background intensity increases but remains weaker than text
+    const hoverStyles = "hover:bg-[#00A8E8]/40 hover:shadow-md";
+    
+    return `${base} ${hoverStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
+  };
+
+  /**
+   * Final Submitted State Styling: 100% Solid Primary Blue with White Text.
+   * Driven by conditional React logic (hasInput && isClicked).
+   */
+  const getActionButtonStyles = (): React.CSSProperties => {
+    const isFinalActive = hasInput && isClicked;
+    
+    if (isFinalActive) {
+      return {
+        fontSize: '14px',
+        backgroundColor: '#00A8E8', // 100% Solid Primary Blue
+        color: '#FFFFFF', // Pure White
+        boxShadow: '0 4px 15px rgba(0, 168, 232, 0.3)'
+      };
+    } else {
+      return {
+        fontSize: '14px',
+        backgroundColor: 'rgba(0, 168, 232, 0.3)', // Default weak state (boosted visibility)
+        color: '#00A8E8' // 100% Opacity Primary Blue
+      };
+    }
   };
 
   return (
@@ -189,7 +229,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 marginTop: '-1px'
               }}
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                setIsClicked(false); // Reset clicked state on new input
+              }}
             />
           </div>
         </div>
@@ -208,16 +251,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Deeper tones for unselected state via explicit styling */}
+        {/* 
+            Primary Action Button: Refined hover effects and conditional click state logic.
+            Styling is driven by explicit CSS with theme detection via the 'getActionButtonStyles' helper.
+        */}
         <button 
           onClick={handleActionInitiation}
-          disabled={!amount || Number(amount) <= 0}
+          disabled={!hasInput}
           className={getActionButtonClasses()}
-          style={{ 
-            fontSize: '14px',
-            backgroundColor: 'rgba(0, 168, 232, 0.3)', // Intensified unselected background fill
-            color: '#0072A3' // Deeper, more saturated blue text
-          }}
+          style={getActionButtonStyles()}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
@@ -230,7 +272,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               <h4 className="text-lg font-black uppercase tracking-tight" style={{ color: primaryTextColor }}>
                 Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
               </h4>
-              <button onClick={() => setShowModal(false)} className="opacity-40 hover:opacity-100 transition-opacity">✕</button>
+              <button onClick={() => { setShowModal(false); setIsClicked(false); }} className="opacity-40 hover:opacity-100 transition-opacity">✕</button>
             </div>
 
             <div className="mb-8 p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-[var(--border)]">
