@@ -11,9 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized primary button ergonomics.
- * Updated: Adjusted action button height to match Lending section's 'Withdraw' button (!py-2.5) 
- * and implemented dynamic state-based color schemes (light blue default / intense blue active).
+ * @dev Overhauled borrowing module with refined micro-spacing for the interaction stack.
+ * Updated: Reduced vertical gap between the label and input rectangle using explicit inline styling.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -129,17 +128,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Main Action Button Styling: Synchronized height and states.
-   * Height: !py-2.5 to match Lending section's 'Withdraw' button.
-   * Default: Light blue bg with vivid blue text.
-   * Active: Intense blue bg with white text.
    */
   const getActionButtonClasses = () => {
     const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 text-[10px] rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    
-    // Default (Unselected) State: Light blue bg + Vivid blue text
     const defaultStyle = "bg-[#00A8E8]/10 text-[#00A8E8]";
-    
-    // Active (Selected/Clicked) State: Primary blue bg + White text
     const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
     
     return `${base} ${defaultStyle} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
@@ -175,10 +167,17 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
       <div className="space-y-6 flex flex-col flex-grow">
         {/* 
-            Input Wrapper
+            Input Stack: Micro-spacing refined to move input rectangle closer to label.
+            Applied explicit inline style for margin-bottom to achieve a tighter layout.
         */}
         <div className="mt-1">
-          <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
+          <label 
+            className="text-[10px] font-bold uppercase block" 
+            style={{ 
+              color: labelColor,
+              marginBottom: '3px' // Surgically reduced from mb-2 (8px) for tighter alignment
+            }}
+          >
             {getLabelText()}
           </label>
           <div className="relative">
@@ -188,7 +187,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               className={numericInputClasses}
               style={{ 
                 backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                color: theme === 'dark' ? '#FFFFFF' : '#000000'
+                color: theme === 'dark' ? '#FFFFFF' : '#000000',
+                marginTop: '-1px' // Micro-adjustment to raise the rectangle slightly
               }}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -210,7 +210,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Height matched to Lending 'Withdraw' button and dynamic states implemented */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
