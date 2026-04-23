@@ -11,15 +11,15 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with synchronized XP styling matching the Reputation Metric.
- * Updated: Reduced the vertical padding of the Max Borrowing Limit box for height synchronization with the Lend section.
+ * @dev Overhauled borrowing module with static header replacement for tab buttons.
+ * Updated: Swapped toggle buttons for static 'Credit Facility', 'Borrow', and 'Loan Health XP' labels.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
   const [amount, setAmount] = useState("");
   
-  // Toggle State Management
-  const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('deposit');
+  // Toggle State Management (Maintained for logic, though UI is now static)
+  const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('borrow');
   
   // Modal Flow State
   const [showModal, setShowModal] = useState(false);
@@ -99,42 +99,26 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15_rgba(0,168,232,0.15)] [appearance:textfield]";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
 
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
 
-  const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
-    const isActive = activeTab === tab;
-    const isRepayButton = tab === 'repay';
-    const fontSize = isRepayButton ? 'text-[9px]' : 'text-[10px]';
-    const wrapControl = isRepayButton ? 'whitespace-nowrap' : '';
-    
-    const base = `flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] ${fontSize} ${wrapControl} tracking-tight px-1`;
-    
-    if (isActive) {
-      return `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
-    } else {
-      return `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
-    }
-  };
-
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
-      <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
-        <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
-        <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
-        <button onClick={() => setActiveTab('repay')} className={getTabClasses('repay')}>Repay & Withdraw</button>
-      </div>
-
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</h3>
-          <p className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</p>
+      {/* 
+          Header Content Swap:
+          Replaced the "Deposit", "Borrow", and "Repay & Withdraw" toggle buttons with 
+          static informational labels as a 1-to-1 spatial replacement.
+      */}
+      <div className="flex justify-between items-center mb-8 bg-black/5 dark:bg-white/5 px-6 py-4 rounded-[60px]">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
+          <span className="text-[14px] font-black" style={{ color: primaryTextColor }}>Borrow</span>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Loan Health (XP)</p>
-          <p className="text-lg font-black flex items-baseline justify-end">
+          <span className="text-[10px] font-bold uppercase block mb-0.5" style={{ color: labelColor }}>Loan Health XP</span>
+          <p className="text-[14px] font-black flex items-baseline justify-end">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-[10px] font-bold ml-1" style={{ color: maxXPColor }}>/100</span>
           </p>
@@ -161,7 +145,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
         </div>
 
-        {/* Max Borrowing Limit Box: py-2 applied for perfect height synchronization with the Lend section note */}
+        {/* Max Borrowing Limit Box */}
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Max Borrowing Limit</span>
