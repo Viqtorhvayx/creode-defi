@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with intensified primary action button aesthetics.
- * Updated: Increased inactive background fill visibility (bg-[#00A8E8]/20) and 
- * boosted text color intensity for the primary action button.
+ * @dev Overhauled borrowing module with deep-tone primary button aesthetics.
+ * Updated: Shifted inactive background fill to 0.3 opacity and boosted text color to a deeper, 
+ * more saturated blue (#0072A3) using explicit inline styling.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -128,19 +128,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Main Action Button Styling: Intensified background and text colors.
-   * Default: Stronger light blue bg (bg-[#00A8E8]/20) and more vivid blue text.
+   * Main Action Button Styling: Deeper, more saturated tones for unselected state.
+   * Background: Boosted to 0.3 opacity.
+   * Text: Shifted toward a deeper blue tone (#0072A3).
    */
   const getActionButtonClasses = () => {
     const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    
-    // Inactive/Unselected: Boosted background visibility and vivid text intensity
-    const defaultStyle = "bg-[#00A8E8]/20 text-[#0094C6]"; 
-    
-    // Active/Selected: Maintained primary blue consistency
     const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
     
-    return `${base} ${defaultStyle} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
+    return `${base} ${activeStyle} disabled:opacity-50 disabled:cursor-not-allowed`;
   };
 
   return (
@@ -212,12 +208,16 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Intensified inactive background and text vividness */}
+        {/* Primary Action Button: Deeper tones for unselected state via explicit styling */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
           className={getActionButtonClasses()}
-          style={{ fontSize: '14px' }}
+          style={{ 
+            fontSize: '14px',
+            backgroundColor: 'rgba(0, 168, 232, 0.3)', // Intensified unselected background fill
+            color: '#0072A3' // Deeper, more saturated blue text
+          }}
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
