@@ -11,10 +11,10 @@ interface LockingModuleProps {
  * @title LockingModule
  * @author Viqtorhvayx
  * @dev Module for asset locking with synchronized duration (days) and maturity date selection.
- * Updated: Synchronized hover animation (bounce/lift) with the Borrow section's action buttons.
+ * Updated: Integrated HBAR USD value display and percentage quick-select buttons with synchronized industrial styling.
  */
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
-  const { lockAssets } = useWeb3();
+  const { lockAssets, balance } = useWeb3();
   const [amount, setAmount] = useState("");
   
   // Interactive State Management
@@ -45,13 +45,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
    */
   const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-    
-    // Automatically strip leading zeros (e.g., "023" -> "23")
     val = val.replace(/^0+/, '');
-    
     setDays(val);
-    
-    // Update maturity date based on numeric value (defaults to 0 if empty)
     const numericDays = parseInt(val) || 0;
     updateDateFromDays(numericDays);
   };
@@ -82,19 +77,23 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     alert("Maturity confirmed!");
   };
 
-  // Matched intensity for labels
+  // Quick Select Logic
+  const handleQuickSelect = (percent: number) => {
+    const numericBalance = Number(balance) || 0;
+    const targetAmount = (numericBalance * (percent / 100)).toFixed(2);
+    setAmount(targetAmount);
+  };
+
+  const handleMaxSelect = () => {
+    setAmount(Number(balance).toFixed(2));
+  };
+
+  // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
-  /**
-   * getButtonClasses
-   * Synchronized with btn-action behavior:
-   * - hover:-translate-y-1 (lift animation)
-   * - hover:shadow-md
-   * - active:scale-95
-   */
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
     const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
@@ -105,6 +104,27 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
     }
   };
+
+  /**
+   * QuickSelect Button Styling
+   * Matched to PriceChart.tsx FilterButton:
+   * - text-[8px]
+   * - font-black
+   * - !py-1 !h-auto
+   * - rounded-[60px]
+   * - Inactive: bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20
+   */
+  const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
+    <button
+      onClick={onClick}
+      className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
+    >
+      {label}
+    </button>
+  );
+
+  // Dynamic USD Value Calculation (Simulated HBAR/USD price = 0.0942)
+  const usdValue = (Number(amount) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="industrial-panel bg-surface">
@@ -141,7 +161,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Left Column: Stats & Amount Input & Action Buttons */}
         <div className="flex flex-col h-full justify-between">
           <div>
-            {/* Protocol Stats Rows */}
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
@@ -157,7 +176,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               </div>
             </div>
 
-            <div>
+            <div className="relative">
               <label 
                 className="text-[10px] font-bold uppercase block mb-2"
                 style={{ color: labelColor }}
@@ -175,6 +194,18 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
+              
+              {/* USD Value Display and Quick Select Controls */}
+              <div className="flex justify-between items-baseline mt-2 px-2">
+                <span className="text-[10px] font-bold" style={{ color: labelColor }}>
+                  ${usdValue}
+                </span>
+                <div className="flex gap-1">
+                  <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
+                  <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
+                  <QuickButton label="Max" onClick={handleMaxSelect} />
+                </div>
+              </div>
             </div>
           </div>
           
@@ -198,7 +229,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Right Column: Warning, Stats & Time Configuration */}
         <div className="flex flex-col h-full justify-between">
           <div className="space-y-6">
-            {/* Penalty Fee Box */}
             <div 
               className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]"
             >
@@ -210,7 +240,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               </p>
             </div>
 
-            {/* Summary Box */}
             <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
               <div className="flex justify-between items-center">
                 <span 
@@ -235,7 +264,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Duration Configuration Row */}
           <div className="grid grid-cols-2 gap-4 mt-8">
             <div>
               <label 
