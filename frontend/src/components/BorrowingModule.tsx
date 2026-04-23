@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with micro-alignment for interaction boxes.
- * Updated: Increased the negative top margin of the input rectangle (marginTop: '-4px') 
- * to pull it closer to the dynamic section label.
+ * @dev Overhauled borrowing module with exact aesthetic mirroring of the Lending section.
+ * Updated: Replicated the 'Withdraw' button's styling and interaction logic 1:1, 
+ * ensuring it is visually and functionally indistinguishable from the reference source of truth.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -140,15 +140,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Action Button Logic: EXACT mirroring of LendingModule's 'Withdraw' button behavior.
+   * Action Button Classes: EXACT replication of LendingModule's 'Withdraw' button.
+   * Matches fill color, text color, font weight, border radius, and interactive behaviors 1:1.
    */
   const getActionButtonClasses = () => {
     const baseClasses = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
     const isActive = hasInput && isClicked;
     
     if (isActive) {
+      // Replicated 'Active' state (Solid Primary Blue + White Text)
       return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
     } else {
+      // Replicated 'Idle' state (10% Blue Background + Blue Text)
       return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
     }
   };
@@ -182,10 +185,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* 
-            Interaction Stack: Refined vertical shift for the input box.
-        */}
-        <div className="mt-[-8px]">
+        <div className="mt-1">
           <label 
             className="text-[10px] font-bold uppercase block" 
             style={{ 
@@ -203,7 +203,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               style={{ 
                 backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                 color: theme === 'dark' ? '#FFFFFF' : '#000000',
-                marginTop: '-4px' // Increased negative margin to pull the box higher
+                marginTop: '-1px'
               }}
               value={amount}
               onChange={(e) => {
@@ -228,15 +228,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
+        {/* 
+            Primary Action Button: Indistinguishable from the 'Withdraw' button in LendingSection.
+            Uses matched classes and Sentence case labeling ('Borrow').
+        */}
         <button 
           onClick={handleActionInitiation}
           disabled={!hasInput}
           className={getActionButtonClasses()}
-          style={{ 
-            fontSize: '14px',
-            backgroundColor: 'rgba(0, 168, 232, 0.3)',
-            color: '#0072A3'
-          }}
         >
           {activeTab === 'borrow' ? 'Borrow' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + (activeTab === 'repay' ? ' & Withdraw' : '')}
         </button>
