@@ -11,14 +11,14 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with static header replacement for tab buttons.
- * Updated: Applied mt-4 to the input wrapper for perfect baseline synchronization with the Lending module.
+ * @dev Overhauled borrowing module with restored 3-button toggle system for action selection.
+ * Updated: Reintegrated the Deposit/Borrow/Repay toggle buttons between the header and input fields.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
   const [amount, setAmount] = useState("");
   
-  // Toggle State Management (Maintained for logic)
+  // Toggle State Management
   const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('borrow');
   
   // Modal Flow State
@@ -104,12 +104,30 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
 
+  /**
+   * Tab Styling matching original industrial logic.
+   */
+  const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
+    const isActive = activeTab === tab;
+    const isRepayButton = tab === 'repay';
+    const fontSize = isRepayButton ? 'text-[9px]' : 'text-[10px]';
+    const wrapControl = isRepayButton ? 'whitespace-nowrap' : '';
+    
+    const base = `flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] ${fontSize} ${wrapControl} tracking-tight px-1`;
+    
+    if (isActive) {
+      return `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
+    } else {
+      return `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
+    }
+  };
+
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
       {/* 
-          Header Baseline Synchronization (Mirroring LendingModule.tsx)
+          Section Header: Baseline Synchronized
       */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex justify-between items-start mb-6">
         <div className="flex flex-col">
           <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
           <span className="text-xl font-black" style={{ color: primaryTextColor }}>Borrow</span>
@@ -123,12 +141,19 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
       </div>
 
+      {/* 
+          Restored Toggle Buttons: 
+          Positioned between the header and the input stack as requested.
+      */}
+      <div className="flex gap-2 mb-8 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
+        <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
+        <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
+        <button onClick={() => setActiveTab('repay')} className={getTabClasses('repay')}>Repay & Withdraw</button>
+      </div>
+
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* 
-            Input Wrapper: Applied mt-4 to synchronize the vertical position of the input rectangle 
-            with the Lending section's 'Amount to Provide' rectangle.
-        */}
-        <div className="mt-4">
+        {/* Input Wrapper: Vertical Baseline Synchronized */}
+        <div className="mt-2">
           <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
             {getLabelText()}
           </label>
