@@ -12,13 +12,13 @@ interface BorrowingModuleProps {
  * @title BorrowingModule
  * @author Viqtorhvayx
  * @dev Overhauled borrowing module with static header replacement for tab buttons.
- * Updated: Swapped toggle buttons for static 'Credit Facility', 'Borrow', and 'Loan Health XP' labels.
+ * Updated: Removed the dark mode background capsule for the header to achieve a seamless transparent look.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
   const [amount, setAmount] = useState("");
   
-  // Toggle State Management (Maintained for logic, though UI is now static)
+  // Toggle State Management (Maintained for logic)
   const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('borrow');
   
   // Modal Flow State
@@ -99,7 +99,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield]";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15_rgba(0,168,232,0.15)] [appearance:textfield]";
 
   // Exact color for /100 from XPGauge.tsx
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
@@ -107,11 +107,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
       {/* 
-          Header Content Swap:
-          Replaced the "Deposit", "Borrow", and "Repay & Withdraw" toggle buttons with 
-          static informational labels as a 1-to-1 spatial replacement.
+          Header Transparency Update:
+          Removed bg-black/5 and dark:bg-white/5 to strip away the visible rectangle effect.
+          The container is now completely transparent while maintaining internal alignment.
       */}
-      <div className="flex justify-between items-center mb-8 bg-black/5 dark:bg-white/5 px-6 py-4 rounded-[60px]">
+      <div className="flex justify-between items-center mb-8 px-2 py-4">
         <div className="flex flex-col">
           <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Credit Facility</span>
           <span className="text-[14px] font-black" style={{ color: primaryTextColor }}>Borrow</span>
