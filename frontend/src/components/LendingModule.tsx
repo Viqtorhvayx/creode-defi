@@ -12,7 +12,7 @@ interface LendingModuleProps {
  * @title LendingModule
  * @author Viqtorhvayx
  * @dev Module for providing liquidity with synchronized button state management.
- * Updated: Shifted the entire amount input and informational block downward for layout balance.
+ * Updated: Adjusted vertical positioning of the Lending Points note for enhanced layout breathing room.
  */
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
   const { provideLiquidity } = useWeb3();
@@ -105,8 +105,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
         </div>
 
-        {/* Lending Points Note: Maintains grouping with input block */}
-        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)]">
+        {/* Lending Points Note: Shifted slightly downward within the container */}
+        <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl p-4 border border-[var(--border)] mt-8">
           <p 
             className="text-[10px] font-medium leading-relaxed"
             style={{ color: labelColor }}
