@@ -11,9 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with softened button aesthetics.
- * Updated: Slightly lightened the base blue fill by blending in a small amount of white 
- * (rgba(51, 185, 237, 0.4)) while preserving all interaction logic.
+ * @dev Overhauled borrowing module with exact aesthetic mirroring of the Lending section.
+ * Updated: Replicated the 'Withdraw' button's Tailwind classes and interaction logic 1:1 
+ * for the primary action button, as authored by Viqtorhvayx.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -140,33 +140,17 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   /**
-   * Action Button Classes: Configuring hover intensities.
+   * Action Button Logic: EXACT mirroring of LendingModule's 'Withdraw' button behavior.
+   * Uses base classes, hover transitions, and state-based color swaps (blue/10 -> solid blue).
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[14px] tracking-wide";
-    const hoverStyles = "hover:bg-[#00A8E8]/60 hover:shadow-md";
-    return `${base} ${hoverStyles} disabled:opacity-50 disabled:cursor-not-allowed`;
-  };
-
-  /**
-   * Action Button Styles: Softened blue fill via white blending.
-   * Inactive: Shifted to a softer, slightly lightened blue (rgba(51, 185, 237, 0.4)).
-   */
-  const getActionButtonStyles = (): React.CSSProperties => {
-    const isFinalActive = hasInput && isClicked;
+    const baseClasses = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const isActive = hasInput && isClicked;
     
-    if (isFinalActive) {
-      return {
-        backgroundColor: '#00A8E8',
-        color: '#FFFFFF',
-        boxShadow: '0 4px 15px rgba(0, 168, 232, 0.3)'
-      };
+    if (isActive) {
+      return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
     } else {
-      return {
-        // Slightly lightened the blue by blending in white (RGB 0,168,232 -> 51,185,237)
-        backgroundColor: 'rgba(51, 185, 237, 0.4)', 
-        color: '#00A8E8'
-      };
+      return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
     }
   };
 
@@ -243,14 +227,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
 
         {/* 
-            Primary Action Button: Softened base blue fill via white blending.
-            Preserves text color and interaction logic strictly.
+            Primary Action Button: EXACT mirroring of Lending section's 'Withdraw' button.
+            Replicated fill color, text color, font weight, radius, and interactive transitions.
         */}
         <button 
           onClick={handleActionInitiation}
           disabled={!hasInput}
           className={getActionButtonClasses()}
-          style={getActionButtonStyles()}
         >
           {activeTab === 'borrow' ? 'Borrow' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + (activeTab === 'repay' ? ' & Withdraw' : '')}
         </button>
