@@ -11,8 +11,8 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with internal style consistency.
- * Updated: Modified the primary action button to perfectly match the typographic and padding scale of the section's toggle buttons.
+ * @dev Overhauled borrowing module with refined vertical spacing.
+ * Updated: Reduced top margin (mt-1) on the input wrapper to pull the field closer to the toggle buttons.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -128,7 +128,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Main Action Button Styling: Perfectly synchronized with the section's toggle buttons.
-   * Matches !py-1.5, text-[10px], and rounded-[60px] logic.
    */
   const getActionButtonClasses = () => {
     const base = "w-full !py-1.5 !h-auto font-bold transition-all duration-300 text-[10px] hover:-translate-y-1 hover:shadow-md active:scale-95";
@@ -166,7 +165,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        <div className="mt-2">
+        {/* 
+            Input Wrapper: Reduced top margin (mt-1) to move the input field 
+            upward, closer to the toggle buttons.
+        */}
+        <div className="mt-1">
           <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>
             {getLabelText()}
           </label>
@@ -199,7 +202,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
-        {/* Primary Action Button: Style matched to internal section toggles */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
