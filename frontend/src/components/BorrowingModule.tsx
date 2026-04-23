@@ -11,8 +11,9 @@ interface BorrowingModuleProps {
 /**
  * @title BorrowingModule
  * @author Viqtorhvayx
- * @dev Overhauled borrowing module with refined micro-spacing for the interaction stack.
- * Updated: Reduced vertical gap between the label and input rectangle using explicit inline styling.
+ * @dev Overhauled borrowing module with synchronized primary button typography.
+ * Updated: Set primary action button font size to exactly 14px (matching Lending 'Deposit' button) 
+ * using explicit inline styling as requested.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { borrow } = useWeb3();
@@ -128,9 +129,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   /**
    * Main Action Button Styling: Synchronized height and states.
+   * Removed Tailwind font size class to use explicit inline style.
    */
   const getActionButtonClasses = () => {
-    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 text-[10px] rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const base = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
     const defaultStyle = "bg-[#00A8E8]/10 text-[#00A8E8]";
     const activeStyle = "active:bg-[#00A8E8] active:text-white active:shadow-lg active:shadow-[#00A8E8]/20";
     
@@ -166,16 +168,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        {/* 
-            Input Stack: Micro-spacing refined to move input rectangle closer to label.
-            Applied explicit inline style for margin-bottom to achieve a tighter layout.
-        */}
         <div className="mt-1">
           <label 
             className="text-[10px] font-bold uppercase block" 
             style={{ 
               color: labelColor,
-              marginBottom: '3px' // Surgically reduced from mb-2 (8px) for tighter alignment
+              marginBottom: '3px'
             }}
           >
             {getLabelText()}
@@ -188,7 +186,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               style={{ 
                 backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
                 color: theme === 'dark' ? '#FFFFFF' : '#000000',
-                marginTop: '-1px' // Micro-adjustment to raise the rectangle slightly
+                marginTop: '-1px'
               }}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -210,10 +208,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </p>
         </div>
 
+        {/* Primary Action Button: Typography synchronized with Lending 'Deposit' button (14px) */}
         <button 
           onClick={handleActionInitiation}
           disabled={!amount || Number(amount) <= 0}
           className={getActionButtonClasses()}
+          style={{ fontSize: '14px' }} // Exactly matches Lending section's 'Deposit' button (text-sm)
         >
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} {activeTab === 'repay' ? '& Withdraw' : ''}
         </button>
