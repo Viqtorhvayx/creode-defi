@@ -44,7 +44,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         horzLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 200,
+      height: 230,
       timeScale: {
         borderVisible: false,
         timeVisible: true,
@@ -181,7 +181,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="relative w-full flex-grow mt-2 min-h-[200px]">
+      <div className="relative w-full flex-grow mt-2 min-h-[230px]">
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
