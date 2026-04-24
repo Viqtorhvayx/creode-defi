@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useWeb3 } from '../context/Web3Context';
 
 interface BorrowingModuleProps {
@@ -29,7 +30,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   // Interaction State Logic
   const [isClicked, setIsClicked] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const hasInput = amount.length > 0 && Number(amount) > 0;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Reset isClicked if input becomes empty
   useEffect(() => {
@@ -279,9 +285,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </button>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface border border-[var(--border)] rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+      {showModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Decoupled Backdrop: Prevents composite flickering on content hover */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => { setShowModal(false); setIsClicked(false); }}
+          />
+          
+          <div className="relative bg-surface border border-[var(--border)] rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
             <div className="flex justify-between items-center mb-6">
               <h4 className="text-lg font-black uppercase tracking-tight" style={{ color: primaryTextColor }}>
                 Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
@@ -317,7 +329,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               {modalStep === 1 ? 'Confirm Repayment' : 'Confirm Withdrawal'}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
