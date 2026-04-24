@@ -16,7 +16,7 @@ interface BorrowingModuleProps {
  * ensuring it is visually and functionally indistinguishable from the reference source of truth.
  */
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
-  const { borrow } = useWeb3();
+  const { borrow, balance } = useWeb3();
   const [amount, setAmount] = useState("");
   
   // Toggle State Management
@@ -109,6 +109,17 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     alert("Collateral Withdrawn!");
   };
 
+  // Quick Select Logic
+  const handleQuickSelect = (percent: number) => {
+    const numericBalance = Number(balance) || 0;
+    const targetAmount = (numericBalance * (percent / 100)).toFixed(2);
+    setAmount(targetAmount);
+  };
+
+  const handleMaxSelect = () => {
+    setAmount(Number(balance).toFixed(2));
+  };
+
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
@@ -155,6 +166,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
     }
   };
+
+  /**
+   * QuickSelect Button Styling
+   */
+  const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
+    <button
+      onClick={onClick}
+      className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
+    >
+      {label}
+    </button>
+  );
+
+  // Dynamic USD Value Calculation (Simulated HBAR/USD price = 0.0942)
+  const usdValue = (Number(amount) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
@@ -211,6 +237,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 setIsClicked(false);
               }}
             />
+
+            {/* USD Value Display and Quick Select Controls: Replicated from Vault section */}
+            <div className="flex justify-between items-baseline mt-2 px-2">
+              <span className="text-[10px] font-bold" style={{ color: labelColor }}>
+                ${usdValue}
+              </span>
+              <div className="flex gap-1">
+                <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
+                <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
+                <QuickButton label="Max" onClick={handleMaxSelect} />
+              </div>
+            </div>
           </div>
         </div>
 
