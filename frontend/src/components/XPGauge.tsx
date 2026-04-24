@@ -57,11 +57,58 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
         </div>
       </div>
       
-      <div className="h-4 w-full bg-black/5 dark:bg-white/5 rounded-full relative overflow-hidden p-1">
-        <div 
-          className="h-full transition-all duration-1000 ease-out rounded-full"
-          style={{ width: `${xp}%`, backgroundColor: gaugeColor }}
-        />
+      <div className="h-12 w-full bg-black/5 dark:bg-white/5 rounded-xl relative overflow-hidden flex items-center">
+        <svg 
+          viewBox="0 0 400 60" 
+          className="w-full h-full"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={gaugeColor} stopOpacity="0" />
+              <stop offset="50%" stopColor={gaugeColor} stopOpacity="1" />
+              <stop offset="100%" stopColor={gaugeColor} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          
+          <style>
+            {`
+              @keyframes ecg-scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-100px); }
+              }
+              .ecg-line {
+                animation: ecg-scroll ${Math.max(0.8, 2 - (xp / 100))}s linear infinite;
+              }
+            `}
+          </style>
+
+          <g className="ecg-line">
+            {[0, 100, 200, 300, 400, 500].map((offset) => (
+              <path
+                key={offset}
+                d={`M ${offset} 30 
+                   L ${offset + 10} 30 
+                   L ${offset + 12} ${30 - 5 * (xp/100)} 
+                   L ${offset + 14} 30 
+                   L ${offset + 18} ${30 - 25 * (xp/100)} 
+                   L ${offset + 22} ${30 + 15 * (xp/100)} 
+                   L ${offset + 26} 30 
+                   L ${offset + 30} ${30 - 10 * (xp/100)} 
+                   L ${offset + 35} 30 
+                   L ${offset + 100} 30`}
+                fill="none"
+                stroke={gaugeColor}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </g>
+        </svg>
+        
+        {/* Subtle scanline overlay for industrial aesthetic */}
+        <div className="absolute inset-0 pointer-events-none opacity-10 bg-[repeating-linear-gradient(transparent,transparent_2px,rgba(255,255,255,0.05)_2px,rgba(255,255,255,0.05)_4px)]" />
       </div>
 
       <div className="flex justify-between mt-4">
