@@ -293,12 +293,17 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             onClick={() => { setShowModal(false); setIsClicked(false); }}
           />
           
-          <div className="relative bg-surface border border-[var(--border)] rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
-            <div className="flex justify-between items-center mb-6">
-              <h4 className="text-lg font-black uppercase tracking-tight" style={{ color: primaryTextColor }}>
+          <div className="relative bg-white/10 dark:bg-[#151A22]/60 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
+            <div className="flex justify-between items-start mb-6">
+              <h4 className="text-lg font-black tracking-tight" style={{ color: primaryTextColor }}>
                 Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
               </h4>
-              <button onClick={() => { setShowModal(false); setIsClicked(false); }} className="opacity-40 hover:opacity-100 transition-opacity">✕</button>
+              <button 
+                onClick={() => { setShowModal(false); setIsClicked(false); }} 
+                className="opacity-40 hover:opacity-100 transition-opacity mt-[-8px] mr-[-8px] p-2"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="mb-8 p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-[var(--border)]">
@@ -326,7 +331,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               className="w-full btn-action !py-4 font-black uppercase tracking-[0.2em] text-[10px]"
               style={{ borderRadius: '60px' }}
             >
-              {modalStep === 1 ? 'Confirm Repayment' : 'Confirm Withdrawal'}
+              {modalStep === 1 ? 'Confirm Payment' : 'Confirm Withdrawal'}
             </button>
           </div>
         </div>,
