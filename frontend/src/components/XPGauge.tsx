@@ -29,6 +29,18 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
   const secondaryLabelColorLight = 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  // Organic Heartbeat Logic: Generate randomized variations for a realistic EKG feel
+  const [pulseVariations] = React.useState(() => 
+    Array.from({ length: 6 }).map(() => ({
+      height: 0.7 + Math.random() * 0.6, // Variance in peak intensity
+      spacing: 80 + Math.random() * 40,  // Variance in pulse frequency/timing
+      drift: Math.random() * 10          // Subtle horizontal shift
+    }))
+  );
+
+  // Calculate cumulative offsets for randomized spacing
+  let cumulativeOffset = 0;
+
   return (
     <div className="industrial-panel bg-surface">
       <div className="flex justify-between items-end mb-4">
@@ -75,35 +87,41 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
             {`
               @keyframes ecg-scroll {
                 0% { transform: translateX(0); }
-                100% { transform: translateX(-100px); }
+                100% { transform: translateX(-150px); }
               }
               .ecg-line {
-                animation: ecg-scroll ${Math.max(0.8, 2 - (xp / 100))}s linear infinite;
+                animation: ecg-scroll ${Math.max(1.2, 3 - (xp / 50))}s linear infinite;
               }
             `}
           </style>
 
           <g className="ecg-line">
-            {[0, 100, 200, 300, 400, 500].map((offset) => (
-              <path
-                key={offset}
-                d={`M ${offset} 30 
-                   L ${offset + 10} 30 
-                   L ${offset + 12} ${30 - 5 * (xp/100)} 
-                   L ${offset + 14} 30 
-                   L ${offset + 18} ${30 - 25 * (xp/100)} 
-                   L ${offset + 22} ${30 + 15 * (xp/100)} 
-                   L ${offset + 26} 30 
-                   L ${offset + 30} ${30 - 10 * (xp/100)} 
-                   L ${offset + 35} 30 
-                   L ${offset + 100} 30`}
-                fill="none"
-                stroke={gaugeColor}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
+            {pulseVariations.map((v, i) => {
+              const startX = cumulativeOffset;
+              cumulativeOffset += v.spacing;
+              const hScale = v.height * (xp / 100);
+              
+              return (
+                <path
+                  key={i}
+                  d={`M ${startX} 30 
+                     L ${startX + 10 + v.drift} 30 
+                     L ${startX + 12 + v.drift} ${30 - 5 * hScale} 
+                     L ${startX + 14 + v.drift} 30 
+                     L ${startX + 18 + v.drift} ${30 - 25 * hScale} 
+                     L ${startX + 22 + v.drift} ${30 + 15 * hScale} 
+                     L ${startX + 26 + v.drift} 30 
+                     L ${startX + 30 + v.drift} ${30 - 10 * hScale} 
+                     L ${startX + 35 + v.drift} 30 
+                     L ${startX + v.spacing} 30`}
+                  fill="none"
+                  stroke={gaugeColor}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              );
+            })}
           </g>
         </svg>
         
