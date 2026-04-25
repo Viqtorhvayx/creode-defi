@@ -31,14 +31,17 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
 
   // Organic Heartbeat Logic: Generate randomized variations for a realistic EKG feel
   const [pulseVariations] = React.useState(() => 
-    Array.from({ length: 6 }).map(() => ({
-      height: 0.7 + Math.random() * 0.6, // Variance in peak intensity
-      spacing: 80 + Math.random() * 40,  // Variance in pulse frequency/timing
-      drift: Math.random() * 10          // Subtle horizontal shift
+    Array.from({ length: 10 }).map(() => ({
+      pPeak: 2 + Math.random() * 8,      // Significant variance in P-wave
+      qrsPeak: 15 + Math.random() * 30, // Significant variance in QRS spike
+      tPeak: 5 + Math.random() * 15,    // Significant variance in T-wave
+      spacing: 70 + Math.random() * 50,  // Randomized pulse frequency
+      drift: Math.random() * 10          // Subtle horizontal jitter
     }))
   );
 
-  // Calculate cumulative offsets for randomized spacing
+  // Calculate total unit width for a perfectly seamless loop
+  const unitWidth = pulseVariations.reduce((acc, v) => acc + v.spacing, 0);
   let cumulativeOffset = 0;
 
   return (
@@ -71,7 +74,7 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
       
       <div className="h-12 w-full bg-black/5 dark:bg-white/5 rounded-xl relative overflow-hidden flex items-center">
         <svg 
-          viewBox="0 0 400 60" 
+          viewBox={`0 0 ${unitWidth} 60`}
           className="w-full h-full"
           preserveAspectRatio="none"
         >
@@ -87,31 +90,33 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
             {`
               @keyframes ecg-scroll {
                 0% { transform: translateX(0); }
-                100% { transform: translateX(-150px); }
+                100% { transform: translateX(-${unitWidth}px); }
               }
-              .ecg-line {
-                animation: ecg-scroll ${Math.max(1.2, 3 - (xp / 50))}s linear infinite;
+              .ecg-line-container {
+                animation: ecg-scroll ${Math.max(4, 10 - (xp / 10))}s linear infinite;
+                display: flex;
               }
             `}
           </style>
 
-          <g className="ecg-line">
-            {pulseVariations.map((v, i) => {
+          {/* Seamless Loop: Rendering sequence twice and animating by exactly one unitWidth */}
+          <g className="ecg-line-container">
+            {[...pulseVariations, ...pulseVariations].map((v, i) => {
               const startX = cumulativeOffset;
               cumulativeOffset += v.spacing;
-              const hScale = v.height * (xp / 100);
+              const xpScale = xp / 100;
               
               return (
                 <path
                   key={i}
                   d={`M ${startX} 30 
                      L ${startX + 10 + v.drift} 30 
-                     L ${startX + 12 + v.drift} ${30 - 5 * hScale} 
+                     L ${startX + 12 + v.drift} ${30 - v.pPeak * xpScale} 
                      L ${startX + 14 + v.drift} 30 
-                     L ${startX + 18 + v.drift} ${30 - 25 * hScale} 
-                     L ${startX + 22 + v.drift} ${30 + 15 * hScale} 
+                     L ${startX + 18 + v.drift} ${30 - v.qrsPeak * xpScale} 
+                     L ${startX + 22 + v.drift} ${30 + (v.qrsPeak * 0.6) * xpScale} 
                      L ${startX + 26 + v.drift} 30 
-                     L ${startX + 30 + v.drift} ${30 - 10 * hScale} 
+                     L ${startX + 30 + v.drift} ${30 - v.tPeak * xpScale} 
                      L ${startX + 35 + v.drift} 30 
                      L ${startX + v.spacing} 30`}
                   fill="none"
