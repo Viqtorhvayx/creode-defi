@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * @title FormattedNumberInput
+ * @author Viqtorhvayx
+ * @dev Reusable component for real-time thousands-separator formatting.
+ * Handles the display state with commas while allowing the raw, unformatted 
+ * value to be securely processed by Web3 hooks and smart contracts.
+ */
+
 import React, { useRef, useState, useEffect } from 'react';
 
 export const stripCommas = (value: string) => value.replace(/,/g, '');
