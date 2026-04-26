@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
+import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface LockingModuleProps {
   theme?: 'light' | 'dark';
@@ -43,11 +44,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   /**
    * Refined onChange handler to strip leading zeros and prevent negative input.
    */
-  const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
-    val = val.replace(/^0+/, '');
+  const handleDaysChange = (val: string) => {
+    const cleanVal = stripCommas(val);
     setDays(val);
-    const numericDays = parseInt(val) || 0;
+    const numericDays = parseInt(cleanVal) || 0;
     updateDateFromDays(numericDays);
   };
 
@@ -123,8 +123,19 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     </button>
   );
 
+
+
+  const handleQuickSelect = (percent: number) => {
+    const rawValue = (balance * (percent / 100)).toString();
+    setAmount(formatWithCommas(rawValue));
+  };
+
+  const handleMaxSelect = () => {
+    setAmount(formatWithCommas(balance.toString()));
+  };
+
   // Dynamic USD Value Calculation (Simulated HBAR/USD price = 0.0942)
-  const usdValue = (Number(amount) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="industrial-panel bg-surface">
@@ -183,8 +194,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               >
                 Amount to Save (HBAR)
               </label>
-              <input 
-                type="number" 
+              <FormattedNumberInput 
                 placeholder="0.00"
                 className={numericInputClasses}
                 style={{ 
@@ -192,7 +202,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                   color: theme === 'dark' ? '#FFFFFF' : '#000000'
                 }}
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onValueChange={setAmount}
               />
               
               {/* USD Value Display and Quick Select Controls */}
@@ -212,7 +222,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="flex gap-4 mt-20">
             <button 
               onClick={handleDeposit}
-              disabled={!amount || Number(amount) <= 0 || !days || Number(days) <= 0}
+              disabled={!amount || Number(stripCommas(amount)) <= 0 || !days || Number(days) <= 0}
               className={getButtonClasses('deposit')}
             >
               Deposit
@@ -272,9 +282,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               >
                 Duration (Days)
               </label>
-              <input 
-                type="number" 
-                min="1"
+              <FormattedNumberInput 
                 placeholder="0"
                 className={numericInputClasses + " !py-2.5 !h-auto"} 
                 style={{ 
@@ -282,7 +290,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                   color: theme === 'dark' ? '#FFFFFF' : '#000000'
                 }}
                 value={days}
-                onChange={handleDaysChange}
+                onValueChange={handleDaysChange}
               />
             </div>
             <div className="flex flex-col justify-end">

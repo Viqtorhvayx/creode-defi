@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useWeb3 } from '../context/Web3Context';
+import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface BorrowingModuleProps {
   xp: number;
@@ -78,8 +79,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     return '#FF3837';
   };
 
-  const handleActionInitiation = () => {
-    if (!hasInput) return;
+  const handleAction = () => {
+    if (!amount || Number(stripCommas(amount)) <= 0) return;
     setIsClicked(true);
     if (activeTab === 'repay') {
       setShowModal(true);
@@ -91,10 +92,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const handleExecution = async () => {
     try {
+      const rawAmount = stripCommas(amount);
       if (activeTab === 'deposit') {
         alert("Collateral deposited!");
       } else if (activeTab === 'borrow') {
-        await borrow(amount);
+        await borrow(rawAmount);
       }
     } catch (e: any) {
       alert(e.message);
@@ -185,8 +187,22 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     </button>
   );
 
+
+
+  const handleQuickSelect = (percent: number) => {
+    const numericBalance = Number(balance) || 0;
+    const targetAmount = (numericBalance * (percent / 100)).toString();
+    setAmount(formatWithCommas(targetAmount));
+    setIsClicked(false);
+  };
+
+  const handleMaxSelect = () => {
+    setAmount(formatWithCommas(balance.toString()));
+    setIsClicked(false);
+  };
+
   // Dynamic USD Value Calculation (Simulated HBAR/USD price = 0.0942)
-  const usdValue = (Number(amount) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
@@ -228,8 +244,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             {getLabelText()}
           </label>
           <div className="relative">
-            <input 
-              type="number" 
+            <FormattedNumberInput 
               placeholder="0.00"
               className={numericInputClasses}
               style={{ 
@@ -238,8 +253,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 marginTop: '-1px'
               }}
               value={amount}
-              onChange={(e) => {
-                setAmount(e.target.value);
+              onValueChange={(val) => {
+                setAmount(val);
                 setIsClicked(false);
               }}
             />
@@ -276,13 +291,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             Primary Action Button: Indistinguishable from the 'Withdraw' button in LendingSection.
             Uses matched classes and Sentence case labeling ('Borrow').
         */}
-        <button 
-          onClick={handleActionInitiation}
-          disabled={!hasInput}
-          className={getActionButtonClasses()}
-        >
-          {activeTab === 'borrow' ? 'Borrow' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1) + (activeTab === 'repay' ? ' & Withdraw' : '')}
-        </button>
+        <div className="flex gap-4 mt-auto">
+          <button 
+            onClick={handleAction}
+            disabled={!amount || Number(stripCommas(amount)) <= 0}
+            className={getActionButtonClasses()}
+          >
+            {activeTab === 'repay' ? 'Repay & Withdraw' : activeTab === 'borrow' ? 'Borrow HBAR' : 'Deposit Collateral'}
+          </button>
+        </div>
       </div>
 
       {showModal && mounted && createPortal(
@@ -293,32 +310,37 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             onClick={() => { setShowModal(false); setIsClicked(false); }}
           />
           
-          <div className="relative bg-white/10 dark:bg-[#151A22]/60 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
+          <div className="relative bg-black/60 backdrop-blur-md border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
             <div className="flex justify-between items-start mb-6">
-              <h4 className="text-lg font-black tracking-tight" style={{ color: primaryTextColor }}>
+              {/* Hardened Header with Explicit Theme Detection authored by Viqtorhvayx */}
+              <h4 
+                className="text-lg font-black tracking-tight" 
+                style={{ color: theme === 'light' ? '#FFFFFF' : '#FFFFFF' }} // Forced White in Light Mode as strictly requested
+              >
                 Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
               </h4>
               <button 
                 onClick={() => { setShowModal(false); setIsClicked(false); }} 
-                className="opacity-40 hover:opacity-100 transition-opacity mt-[-8px] mr-[-8px] p-2"
+                className="opacity-40 hover:opacity-100 transition-opacity mt-[-12px] mr-[-12px] p-2"
+                style={{ color: theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)' }} // Explicitly reused REPUTATION METRIC theme tokens
               >
                 ✕
               </button>
             </div>
 
-            <div className="mb-8 p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-[var(--border)]">
+            <div className="mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
               {modalStep === 1 ? (
                 <div className="space-y-4">
-                  <p className="text-sm opacity-80" style={{ color: labelColor }}>You are about to repay your active HBAR loan. This will stop the daily XP decay.</p>
-                  <div className="flex justify-between font-bold">
+                  <p className="text-sm opacity-80 text-white/60">You are about to repay your active HBAR loan. This will stop the daily XP decay.</p>
+                  <div className="flex justify-between font-bold text-white">
                     <span>Total Debt</span>
                     <span className="!text-[#00A8E8]">540.22 HBAR</span>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-sm opacity-80" style={{ color: labelColor }}>Repayment confirmed! You can now safely withdraw your collateral.</p>
-                  <div className="flex justify-between font-bold">
+                  <p className="text-sm opacity-80 text-white/60">Repayment confirmed! You can now safely withdraw your collateral.</p>
+                  <div className="flex justify-between font-bold text-white">
                     <span>Collateral Release</span>
                     <span className="!text-emerald-500">1,200.00 USDT</span>
                   </div>
@@ -328,8 +350,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
             <button 
               onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep}
-              className="w-full btn-action !py-4 font-black uppercase tracking-[0.2em] text-[10px]"
-              style={{ borderRadius: '60px' }}
+              className="w-full btn-action !py-4 font-black tracking-[0.2em] text-[10px]"
+              style={{ 
+                borderRadius: '60px',
+                textTransform: 'none', // Strict Title Case preservation: Only "C" and "P" uppercase
+                fontVariant: 'normal'
+              }}
             >
               {modalStep === 1 ? 'Confirm Payment' : 'Confirm Withdrawal'}
             </button>

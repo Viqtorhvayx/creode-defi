@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
+import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface LendingModuleProps {
   points: number;
@@ -24,7 +25,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const handleDeposit = async () => {
     setActiveAction('deposit');
     try {
-      await provideLiquidity(amount);
+      const rawAmount = stripCommas(amount);
+      await provideLiquidity(rawAmount);
       alert("Liquidity deployed successfully!");
     } catch (e: any) {
       alert(e.message);
@@ -43,12 +45,12 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   // Quick Select Logic
   const handleQuickSelect = (percent: number) => {
     const numericBalance = Number(balance) || 0;
-    const targetAmount = (numericBalance * (percent / 100)).toFixed(2);
-    setAmount(targetAmount);
+    const targetAmount = (numericBalance * (percent / 100)).toString();
+    setAmount(formatWithCommas(targetAmount));
   };
 
   const handleMaxSelect = () => {
-    setAmount(Number(balance).toFixed(2));
+    setAmount(formatWithCommas(balance.toString()));
   };
 
   /**
@@ -64,7 +66,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   );
 
   // Dynamic USD Value Calculation (Simulated HBAR/USD price = 0.0942)
-  const usdValue = (Number(amount) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   // Matched intensity for labels
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
@@ -118,8 +120,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           >
             Amount to Provide (HBAR)
           </label>
-          <input 
-            type="number" 
+          <FormattedNumberInput 
             placeholder="0.00"
             className={numericInputClasses}
             style={{ 
@@ -127,7 +128,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
               color: theme === 'dark' ? '#FFFFFF' : '#000000'
             }}
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onValueChange={setAmount}
           />
 
           {/* USD Value Display and Quick Select Controls: Synchronized with Vault section */}
@@ -156,7 +157,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         <div className="flex flex-row gap-4 w-full">
           <button 
             onClick={handleDeposit}
-            disabled={!amount || Number(amount) <= 0}
+            disabled={!amount || Number(stripCommas(amount)) <= 0}
             className={getButtonClasses('deposit')}
           >
             Deposit
