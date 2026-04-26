@@ -104,6 +104,7 @@ export const FormattedNumberInput: React.FC<FormattedNumberInputProps> = ({
       value={value}
       onChange={handleChange}
       type="text"
+      inputMode="decimal"
     />
   );
 };

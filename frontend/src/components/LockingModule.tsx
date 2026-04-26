@@ -192,7 +192,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 className="text-[10px] font-bold uppercase block mb-2"
                 style={{ color: labelColor }}
               >
-                Amount to Save (HBAR)
+                Amount to Lock (HBAR)
               </label>
               <FormattedNumberInput 
                 placeholder="0.00"
