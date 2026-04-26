@@ -11,6 +11,8 @@ interface PriceChartProps {
  * @title PriceChart
  * @author Viqtorhvayx
  * @dev HBAR/USD Market Chart with optimized control layout and precise label casing.
+ * Implements smooth left-to-right entry animation, auto-scaling strict currency 
+ * Y-axis, and dynamic X-axis time formatting.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -45,16 +47,36 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       },
       width: chartContainerRef.current.clientWidth,
       height: 230,
+      localization: {
+        priceFormatter: (price: number) => {
+          return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 4,
+          }).format(price);
+        },
+      },
       timeScale: {
         borderVisible: false,
         timeVisible: true,
         secondsVisible: false,
+        tickMarkFormatter: (time: UTCTimestamp, tickMarkType: any, locale: string) => {
+          const date = new Date(time * 1000);
+          if (activeInterval === '15min' || activeInterval === 'Hour') {
+            return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+          } else {
+            return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
+          }
+        },
       },
       rightPriceScale: {
         borderVisible: false,
+        autoScale: true,
+        alignLabels: true,
         scaleMargins: {
-          top: 0.2,
-          bottom: 0.2,
+          top: 0.1, // Slight padding to prevent top clipping
+          bottom: 0.25, // Room for volume bars
         },
       },
       handleScroll: false,
@@ -112,8 +134,32 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     };
 
     const { data, volumeData } = generateData();
-    areaSeries.setData(data);
-    volumeSeries.setData(volumeData);
+    
+    let animationId: number;
+    const start = performance.now();
+    const duration = 1500; // Smooth 1500ms entry draw animation
+
+    const animateDraw = (timestamp: number) => {
+      const elapsed = timestamp - start;
+      const t = Math.min(elapsed / duration, 1);
+      
+      // Use an ease-out quadratic function for a natural landing
+      const easeOut = t * (2 - t); 
+      
+      const pointsToShow = Math.max(1, Math.floor(data.length * easeOut));
+      
+      areaSeries.setData(data.slice(0, pointsToShow));
+      volumeSeries.setData(volumeData.slice(0, pointsToShow));
+      
+      // Dynamically fit the X-axis so it doesn't bunch up during drawing
+      chart.timeScale().fitContent();
+
+      if (t < 1) {
+        animationId = requestAnimationFrame(animateDraw);
+      }
+    };
+
+    animationId = requestAnimationFrame(animateDraw);
 
     chartRef.current = chart;
     seriesRef.current = areaSeries;
@@ -128,6 +174,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     window.addEventListener('resize', handleResize);
 
     return () => {
+      cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
