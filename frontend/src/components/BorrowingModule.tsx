@@ -342,8 +342,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               </h4>
               <button 
                 onClick={() => { setShowModal(false); setIsClicked(false); }} 
-                className="hover:opacity-80 transition-opacity mt-[-12px] mr-[-12px] p-2"
-                style={{ color: '#FFFFFF' }}
+                className="text-white hover:opacity-80 transition-opacity mt-[-12px] mr-[-12px] p-2"
               >
                 ✕
               </button>
