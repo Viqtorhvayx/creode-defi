@@ -301,8 +301,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((collateralValue / 1000) * 100, 100)}%` }} />
           </div>
-          <p className="text-[9px] mt-2 opacity-60" style={{ color: labelColor }}>
-            *Starting XP is calculated based on Collateralization Ratio.
+          <p className="text-[10px] mt-2" style={{ color: labelColor }}>
+            Starting XP is calculated based on Collateralization Ratio.
           </p>
         </div>
 
