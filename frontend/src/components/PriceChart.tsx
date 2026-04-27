@@ -21,12 +21,21 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
+  const [showHbarInfo, setShowHbarInfo] = useState(false);
 
-  // Simulated metrics for HBAR/USD
   // Raw market metrics for HBAR/USD
   const rawVolume = 1800000;
   const rawLiquidity = 6200000;
   const currentPrice = 0.0942;
+
+  // HBAR Market Statistics
+  const hbarStats = {
+    marketCap: "$782,422,105",
+    ath: "$0.5701",
+    atl: "$0.0098",
+    high24: "$0.0965",
+    low24: "$0.0912"
+  };
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -203,7 +212,41 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   );
 
   return (
-    <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full">
+    <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full relative overflow-visible">
+      {/* Interactive Info Icon - Authored by Viqtorhvayx */}
+      <button 
+        onClick={() => setShowHbarInfo(!showHbarInfo)}
+        className="absolute top-6 right-6 z-[100] transition-all duration-300 hover:scale-110 active:scale-95"
+        style={{ color: labelColor }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </button>
+
+      {/* Floating Info Panel */}
+      {showHbarInfo && (
+        <div className="absolute top-14 right-6 w-56 bg-surface border border-[var(--border)] rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
+          <h5 className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: labelColor }}>Market Statistics</h5>
+          <div className="space-y-2.5">
+            {[
+              { label: 'Market Cap', value: hbarStats.marketCap },
+              { label: 'All Time High', value: hbarStats.ath },
+              { label: 'All Time Low', value: hbarStats.atl },
+              { label: '24hr High', value: hbarStats.high24 },
+              { label: '24hr Low', value: hbarStats.low24 }
+            ].map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center border-b border-[var(--border)] pb-1.5 last:border-0 last:pb-0">
+                <span className="text-[9px] font-bold uppercase opacity-60" style={{ color: labelColor }}>{item.label}</span>
+                <span className="text-[10px] font-black" style={{ color: primaryTextColor }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-start">
         <div className="flex flex-col relative">
           <div className="z-10 bg-surface pb-1">
