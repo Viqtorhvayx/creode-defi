@@ -21,7 +21,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
-  const [showHbarInfo, setShowHbarInfo] = useState(false);
+  const [showChartInfo, setShowChartInfo] = useState(false);
 
   // Raw market metrics for HBAR/USD
   const rawVolume = 1800000;
@@ -215,8 +215,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full relative overflow-visible">
       {/* Interactive Info Icon - Authored by Viqtorhvayx */}
       <button 
-        onClick={() => setShowHbarInfo(!showHbarInfo)}
-        className="absolute top-6 right-6 z-[100] transition-all duration-300 hover:scale-110 active:scale-95"
+        onClick={() => setShowChartInfo(!showChartInfo)}
+        className="absolute top-2 right-2 z-[100] transition-all duration-300 hover:scale-110 active:scale-95 p-2"
         style={{ color: labelColor }}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -226,10 +226,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </svg>
       </button>
 
-      {/* Floating Info Panel */}
-      {showHbarInfo && (
-        <div className="absolute top-14 right-6 w-56 bg-surface border border-[var(--border)] rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
-          <h5 className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: labelColor }}>Market Statistics</h5>
+      {/* Floating Info Panel - Glassmorphism UI Authored by Viqtorhvayx */}
+      {showChartInfo && (
+        <div className="absolute top-8 right-0 w-56 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
+          <h5 className="text-[10px] font-black uppercase tracking-widest mb-3 text-white/90">Market Statistics</h5>
           <div className="space-y-2.5">
             {[
               { label: 'Market Cap', value: hbarStats.marketCap },
@@ -238,9 +238,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
               { label: '24hr High', value: hbarStats.high24 },
               { label: '24hr Low', value: hbarStats.low24 }
             ].map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center border-b border-[var(--border)] pb-1.5 last:border-0 last:pb-0">
-                <span className="text-[9px] font-bold uppercase opacity-60" style={{ color: labelColor }}>{item.label}</span>
-                <span className="text-[10px] font-black" style={{ color: primaryTextColor }}>{item.value}</span>
+              <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-1.5 last:border-0 last:pb-0">
+                <span className="text-[9px] font-bold uppercase text-white/40">{item.label}</span>
+                <span className="text-[10px] font-black text-white">{item.value}</span>
               </div>
             ))}
           </div>
