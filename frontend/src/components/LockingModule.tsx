@@ -77,16 +77,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     alert("Maturity confirmed!");
   };
 
-  // Quick Select Logic
-  const handleQuickSelect = (percent: number) => {
-    const numericBalance = Number(balance) || 0;
-    const targetAmount = (numericBalance * (percent / 100)).toFixed(2);
-    setAmount(targetAmount);
-  };
-
-  const handleMaxSelect = () => {
-    setAmount(Number(balance).toFixed(2));
-  };
+  // Quick Select Logic (Duplicate definitions removed for build success)
 
   // Theme-aware colors
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
