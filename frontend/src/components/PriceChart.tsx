@@ -205,7 +205,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     <div className="industrial-panel bg-surface !p-5 flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div className="flex flex-col relative">
-          <div className="z-10 bg-surface pr-4 pb-1">
+          <div className="z-10 bg-surface pb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
               HBAR / USD
             </span>
@@ -228,8 +228,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="relative w-full flex-grow mt-2 min-h-[230px]">
-        <div ref={chartContainerRef} className="w-full h-full" />
+      <div className="relative w-full flex-grow mt-2 min-h-[230px] flex justify-center items-center">
+        <div ref={chartContainerRef} className="w-full h-full mx-auto" />
       </div>
 
       <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4">
