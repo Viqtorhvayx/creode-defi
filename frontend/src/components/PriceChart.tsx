@@ -232,7 +232,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4 mb-4">
+      <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4 transform -translate-y-4">
         <div className="flex flex-col">
           <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>24H Volume</span>
           <span className="text-xs font-black" style={{ color: primaryTextColor }}>{volumeValue} <span className="text-[9px] font-bold opacity-40">HBAR</span></span>
