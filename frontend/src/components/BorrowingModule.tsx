@@ -262,11 +262,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               }}
             />
             
-            {/* DIAGNOSTIC OVERRIDE: Forced visibility in all tabs for state reconciliation */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-[10px] font-bold z-[100] pointer-events-auto bg-red-600 text-white px-2 py-1 rounded-md shadow-2xl">
+            {/* Premium Collateral Token Selector - Authored by Viqtorhvayx */}
+            {activeTab === 'deposit' && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-[10px] font-bold z-10 pointer-events-auto">
                 <button 
                   onClick={() => setCollateralToken('USDT')}
-                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-white underline' : 'text-white/70'}`}
+                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : ''}`}
+                  style={collateralToken !== 'USDT' ? { color: labelColor } : undefined}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <circle cx="12" cy="12" r="12" fill="#26A17B"/>
@@ -274,10 +276,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                   </svg>
                   USDT
                 </button>
-                <span className="mx-2 text-white/50">|</span>
+                <span className="mx-2" style={{ color: labelColor }}>|</span>
                 <button 
                   onClick={() => setCollateralToken('USDC')}
-                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-white underline' : 'text-white/70'}`}
+                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-[#00A8E8]' : ''}`}
+                  style={collateralToken !== 'USDC' ? { color: labelColor } : undefined}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <circle cx="12" cy="12" r="12" fill="#2775CA"/>
@@ -285,7 +288,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                   </svg>
                   USDC
                 </button>
-            </div>
+              </div>
+            )}
 
             {/* USD Value Display and Quick Select Controls: Replicated from Vault section */}
             <div className="flex justify-between items-baseline mt-2 px-2">
