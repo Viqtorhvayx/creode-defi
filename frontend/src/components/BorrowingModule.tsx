@@ -343,7 +343,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               <button 
                 onClick={() => { setShowModal(false); setIsClicked(false); }} 
                 className="hover:opacity-80 transition-opacity mt-[-12px] mr-[-12px] p-2"
-                style={{ color: theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)' }}
+                style={{ color: '#FFFFFF' }}
               >
                 ✕
               </button>
@@ -371,7 +371,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
             <button 
               onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep}
-              className="w-full btn-action !normal-case !py-4 font-black tracking-[0.2em] text-[10px]"
+              className="w-full btn-action !normal-case !py-4 font-black tracking-[0.2em] text-sm"
               style={{ 
                 borderRadius: '60px',
                 fontVariant: 'normal'
