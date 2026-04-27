@@ -267,8 +267,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-[10px] font-bold z-10 pointer-events-auto">
                 <button 
                   onClick={() => setCollateralToken('USDT')}
-                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : ''}`}
-                  style={collateralToken !== 'USDT' ? { color: labelColor } : undefined}
+                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : 'text-gray-500'}`}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <circle cx="12" cy="12" r="12" fill="#26A17B"/>
@@ -276,11 +275,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                   </svg>
                   USDT
                 </button>
-                <span className="mx-2" style={{ color: labelColor }}>|</span>
+                <span className="mx-2 text-gray-500">|</span>
                 <button 
                   onClick={() => setCollateralToken('USDC')}
-                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-[#00A8E8]' : ''}`}
-                  style={collateralToken !== 'USDC' ? { color: labelColor } : undefined}
+                  className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-[#00A8E8]' : 'text-gray-500'}`}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <circle cx="12" cy="12" r="12" fill="#2775CA"/>
