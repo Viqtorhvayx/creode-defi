@@ -335,15 +335,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             <div className="flex justify-between items-start mb-6">
               {/* Hardened Header with Explicit Theme Detection authored by Viqtorhvayx */}
               <h4 
-                className="text-lg font-black tracking-tight" 
-                style={{ color: theme === 'light' ? '#FFFFFF' : '#FFFFFF' }} // Forced White in Light Mode as strictly requested
+                className={`text-lg font-black tracking-tight ${theme === 'light' ? '!text-[#FFFFFF]' : ''}`}
+                style={{ color: '#FFFFFF' }}
               >
                 Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
               </h4>
               <button 
                 onClick={() => { setShowModal(false); setIsClicked(false); }} 
-                className="opacity-40 hover:opacity-100 transition-opacity mt-[-12px] mr-[-12px] p-2"
-                style={{ color: theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)' }} // Explicitly reused REPUTATION METRIC theme tokens
+                className="hover:opacity-80 transition-opacity mt-[-12px] mr-[-12px] p-2"
+                style={{ color: theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)' }}
               >
                 ✕
               </button>
@@ -371,10 +371,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
             <button 
               onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep}
-              className="w-full btn-action !py-4 font-black tracking-[0.2em] text-[10px]"
+              className="w-full btn-action !normal-case !py-4 font-black tracking-[0.2em] text-[10px]"
               style={{ 
                 borderRadius: '60px',
-                textTransform: 'none', // Strict Title Case preservation: Only "C" and "P" uppercase
                 fontVariant: 'normal'
               }}
             >
