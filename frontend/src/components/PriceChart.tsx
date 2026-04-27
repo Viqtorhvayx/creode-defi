@@ -40,7 +40,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         background: { type: ColorType.Solid, color: backgroundColor },
         textColor,
         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-        padding: { right: 0, left: 0 },
       },
       grid: {
         vertLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
