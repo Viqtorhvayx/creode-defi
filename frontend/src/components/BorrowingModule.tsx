@@ -262,9 +262,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               }}
             />
             
-            {/* Inline Token Selector for Deposits */}
+            {/* Inline Token Selector for Deposits - Hardened CSS for visibility */}
             {activeTab === 'deposit' && (
-              <div className="absolute right-4 inset-y-0 flex items-center text-[10px] font-bold z-10 pointer-events-auto">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-[10px] font-bold z-50 pointer-events-auto">
                 <button 
                   onClick={() => setCollateralToken('USDT')}
                   className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : ''}`}
