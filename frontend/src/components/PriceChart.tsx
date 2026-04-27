@@ -23,8 +23,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
 
   // Simulated metrics for HBAR/USD
-  const volumeValue = "1.8M";
-  const liquidityValue = "$6.2M";
+  // Raw market metrics for HBAR/USD
+  const rawVolume = 1800000;
+  const rawLiquidity = 6200000;
   const currentPrice = 0.0942;
 
   useEffect(() => {
@@ -232,14 +233,18 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4 transform -translate-y-4">
-        <div className="flex flex-col">
+      <div className="flex w-full justify-between items-end border-t border-[var(--border)] pt-4 transform -translate-y-4">
+        <div className="flex flex-col text-left">
           <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>24H Volume</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{volumeValue} <span className="text-[9px] font-bold opacity-40">HBAR</span></span>
+          <span className="text-xs font-black" style={{ color: primaryTextColor }}>
+            {rawVolume.toLocaleString()} <span className="text-[9px] font-bold opacity-40">HBAR</span>
+          </span>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col text-right items-end">
           <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>Liquidity</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{liquidityValue}</span>
+          <span className="text-xs font-black" style={{ color: primaryTextColor }}>
+            ${rawLiquidity.toLocaleString()}
+          </span>
         </div>
       </div>
     </div>
