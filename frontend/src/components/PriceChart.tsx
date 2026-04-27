@@ -234,24 +234,12 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       )}
 
-      <div className="flex justify-between items-start w-full">
-        <div className="flex flex-col relative w-full">
-          <div className="z-10 bg-surface pb-1 flex justify-between items-baseline w-full">
+      <div className="flex justify-between items-baseline w-full mb-2">
+        <div className="flex flex-col relative">
+          <div className="z-10 bg-surface pb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
               HBAR / USD
             </span>
-            {/* Interactive Info Icon - Authored by Viqtorhvayx */}
-            <button 
-              onClick={() => setIsInfoActive(!isInfoActive)}
-              className={`transition-all duration-300 hover:scale-110 active:scale-95 p-1 translate-y-[1px] ${isInfoActive ? 'text-[#00A8E8]' : ''}`}
-              style={{ color: isInfoActive ? '#00A8E8' : labelColor }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-            </button>
           </div>
           <div className="flex items-baseline gap-2 mt-0.5">
               <span className="text-xl font-black" style={{ color: primaryTextColor }}>{currentPrice}</span>
@@ -269,6 +257,19 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             ))}
           </div>
         </div>
+
+        {/* Interactive Info Icon - Authored by Viqtorhvayx */}
+        <button 
+          onClick={() => setIsInfoActive(!isInfoActive)}
+          className={`transition-all duration-300 hover:scale-110 active:scale-95 p-1 relative top-[2px] ${isInfoActive ? 'text-[#00A8E8]' : ''}`}
+          style={{ color: isInfoActive ? '#00A8E8' : labelColor }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
       </div>
 
       <div className="relative w-full flex-grow mt-2 min-h-[230px]">
