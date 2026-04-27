@@ -45,7 +45,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         vertLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
         horzLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
       },
-      width: chartContainerRef.current.clientWidth,
+      width: chartContainerRef.current.offsetWidth,
       height: 230,
       localization: {
         priceFormatter: (price: number) => {
@@ -167,7 +167,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
+        chartRef.current.applyOptions({ width: chartContainerRef.current.offsetWidth });
       }
     };
 
@@ -202,7 +202,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   );
 
   return (
-    <div className="industrial-panel bg-surface !p-5 flex flex-col h-full">
+    <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div className="flex flex-col relative">
           <div className="z-10 bg-surface pb-1">
@@ -228,8 +228,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       </div>
 
-      <div className="relative w-full flex-grow mt-2 min-h-[230px] flex justify-center items-center">
-        <div ref={chartContainerRef} className="w-full h-full mx-auto" />
+      <div className="relative w-full flex-grow mt-2 min-h-[230px]">
+        <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
       <div className="grid grid-cols-2 gap-4 border-t border-[var(--border)] pt-4">
