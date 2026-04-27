@@ -234,8 +234,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </div>
       )}
 
-      <div className="flex justify-between items-start">
-        <div className="flex flex-col relative">
+      <div className="flex justify-between items-start w-full">
+        <div className="flex flex-col relative w-full">
           <div className="z-10 bg-surface pb-1 flex justify-between items-baseline w-full">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
               HBAR / USD
@@ -243,7 +243,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             {/* Interactive Info Icon - Authored by Viqtorhvayx */}
             <button 
               onClick={() => setIsInfoActive(!isInfoActive)}
-              className={`transition-all duration-300 hover:scale-110 active:scale-95 p-1 ${isInfoActive ? 'text-[#00A8E8]' : ''}`}
+              className={`transition-all duration-300 hover:scale-110 active:scale-95 p-1 translate-y-[1px] ${isInfoActive ? 'text-[#00A8E8]' : ''}`}
               style={{ color: isInfoActive ? '#00A8E8' : labelColor }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
