@@ -117,7 +117,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
 
   const handleQuickSelect = (percent: number) => {
-    const rawValue = (balance * (percent / 100)).toString();
+    const numericBalance = Number(balance) || 0;
+    const rawValue = (numericBalance * (percent / 100)).toString();
     setAmount(formatWithCommas(rawValue));
   };
 
