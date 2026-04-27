@@ -83,7 +83,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       handleScale: false,
     });
 
-    const areaSeries = chart.addAreaSeries({
+    const areaSeries = (chart as any).addAreaSeries({
       lineColor,
       topColor: `${lineColor}33`,
       bottomColor: `${lineColor}00`,
@@ -95,7 +95,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       },
     });
 
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = (chart as any).addHistogramSeries({
         color: isDark ? 'rgba(0, 168, 232, 0.1)' : 'rgba(0, 168, 232, 0.05)',
         priceFormat: {
             type: 'volume',
