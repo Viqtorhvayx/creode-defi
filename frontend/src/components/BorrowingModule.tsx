@@ -228,16 +228,31 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
       <div className="space-y-6 flex flex-col flex-grow">
         <div className="mt-1">
-          <div className="flex justify-between items-center mb-1">
-            <label 
-              className="text-[10px] font-bold uppercase block" 
-              style={{ color: labelColor }}
-            >
-              {getLabelText()}
-            </label>
+          <label 
+            className="text-[10px] font-bold uppercase block mb-1" 
+            style={{ color: labelColor }}
+          >
+            {getLabelText()}
+          </label>
+          <div className="relative">
+            <FormattedNumberInput 
+              placeholder="0.00"
+              className={`${numericInputClasses} ${activeTab === 'deposit' ? 'pr-[150px]' : ''}`}
+              style={{ 
+                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                color: theme === 'dark' ? '#FFFFFF' : '#000000',
+                marginTop: '-1px'
+              }}
+              value={amount}
+              onValueChange={(val) => {
+                setAmount(val);
+                setIsClicked(false);
+              }}
+            />
+            
             {/* Premium Collateral Token Selector - Authored by Viqtorhvayx */}
             {activeTab === 'deposit' && (
-              <div className="flex items-center text-[10px] font-bold pointer-events-auto">
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center text-[10px] font-bold z-10 pointer-events-auto">
                 <button 
                   onClick={() => setCollateralToken('USDT')}
                   className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : 'text-gray-500'}`}
@@ -261,22 +276,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 </button>
               </div>
             )}
-          </div>
-          <div className="relative">
-            <FormattedNumberInput 
-              placeholder="0.00"
-              className={numericInputClasses}
-              style={{ 
-                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                color: theme === 'dark' ? '#FFFFFF' : '#000000',
-                marginTop: '-1px'
-              }}
-              value={amount}
-              onValueChange={(val) => {
-                setAmount(val);
-                setIsClicked(false);
-              }}
-            />
 
             {/* USD Value Display and Quick Select Controls: Replicated from Vault section */}
             <div className="flex justify-between items-baseline mt-2 px-2">
