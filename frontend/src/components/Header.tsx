@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 import { Logo } from './Logo';
 
@@ -12,13 +12,12 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with ABSOLUTE native Hedera address enforcement.
- * Strictly forbidden from displaying 0x addresses for Hashpack users.
+ * @dev Navigation component with deep-extracted native Hedera ID display.
+ * Strictly configured to prioritize 0.0.x and suppress EVM fallbacks for Hedera.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, isConnected, connect, disconnect, walletType } = useWeb3();
+  const { address, hederaId, isConnected, connect, disconnect, walletType } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
-  const [nativeHederaId, setNativeHederaId] = useState<string>("");
 
   const handleThemeToggle = () => {
     setIsToggling(true);
@@ -27,65 +26,27 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Strict Identity Translation Hook.
+   * Formatting Logic for native Hedera IDs.
    * Credits: Viqtorhvayx
    */
-  useEffect(() => {
-    const fetchNativeId = async () => {
-      if (!address) {
-        setNativeHederaId("");
-        return;
-      }
-
-      // If already in native format (0.0.x), set it immediately
-      if (address.startsWith("0.0.")) {
-        setNativeHederaId(address);
-        return;
-      }
-
-      // If EVM format (0x...), force fetch translation from Mirror Node
-      if (address.startsWith("0x")) {
-        try {
-          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
-          const data = await res.json();
-          if (data.account) {
-            setNativeHederaId(data.account);
-          } else {
-            // If mirror node hasn't indexed the EVM address yet, stay in resolving state
-            setNativeHederaId(""); 
-          }
-        } catch (err) {
-          console.error("Mirror Node Fetch Failure:", err);
-          setNativeHederaId("");
-        }
-      }
-    };
-
-    fetchNativeId();
-  }, [address]);
-
-  /**
-   * Absolute Formatting Logic.
-   * Credits: Viqtorhvayx
-   */
-  const formatForUI = (id: string) => {
-    if (!id) return "Initializing...";
+  const formatDisplayAddress = (id: string | null) => {
+    if (!id) return "Resolving...";
     
-    // Strict Native Format: 0.0.123...456
+    // Forced Native Hedera Format: 0.0.123...456
     if (id.startsWith("0.0.")) {
       const parts = id.split('.');
-      if (parts.length === 3 && parts[2].length > 5) {
+      if (parts.length === 3 && parts[2].length > 8) {
         return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
       }
-      return id;
+      return id; // Return full address if not too long
     }
     
-    // If we're here and it's not a Hedera context, show EVM
+    // Only show EVM if not a Hedera context
     if (id.startsWith("0x") && !walletType?.includes('hashpack')) {
       return `${id.substring(0, 6)}...${id.substring(id.length - 4)}`;
     }
-
-    return "Resolving ID...";
+    
+    return "Resolving...";
   };
 
   return (
@@ -123,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatForUI(nativeHederaId)}
+                    {formatDisplayAddress(hederaId || address)}
                   </span>
                 </div>
                 <button onClick={disconnect} className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider">
@@ -131,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 </button>
               </div>
             ) : (
-              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
+              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
                 Connect Wallet
               </button>
             )}
