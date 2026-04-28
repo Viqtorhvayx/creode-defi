@@ -12,10 +12,10 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component using centralized native Hedera identity display.
+ * @dev Navigation component with identity resolution status indicators.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { nativeAddress, isConnected, connect, disconnect } = useWeb3();
+  const { nativeAddress, isResolving, isConnected, connect, disconnect } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
 
   const handleThemeToggle = () => {
@@ -25,11 +25,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Formatting utility for the UI.
-   * Credits: Viqtorhvayx
+   * Formatting utility with status awareness.
    */
   const formatDisplayAddress = (addr: string | null) => {
-    if (!addr) return "Resolving...";
+    if (isResolving) return "Resolving Identity...";
+    if (!addr) return "Not Found";
     
     // Native Hedera Truncation: 0.0.123...456
     if (addr.startsWith("0.0.")) {
@@ -82,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             {isConnected ? (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-500">
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
-                  <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
+                  <div className={`w-1.5 h-1.5 rounded-full ${isResolving ? 'bg-yellow-500' : 'bg-[#00A8E8]'} animate-pulse`} />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
                     {formatDisplayAddress(nativeAddress)}
                   </span>

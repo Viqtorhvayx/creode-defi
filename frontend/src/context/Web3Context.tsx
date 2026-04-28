@@ -1,7 +1,7 @@
 /**
  * @title Web3Context
  * @author Viqtorhvayx
- * @dev Hardened Identity Engine with error resilience and direct native ID prioritization.
+ * @dev Hardened Identity Engine with deep trace logging and multi-network resolution.
  */
 
 "use client";
@@ -13,6 +13,7 @@ import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
 interface Web3ContextType {
     address: string | null;
     nativeAddress: string | null;
+    isResolving: boolean;
     isConnected: boolean;
     walletType: string | null;
     balance: string;
@@ -29,6 +30,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { open } = useAppKit();
     
     const [nativeAddress, setNativeAddress] = useState<string | null>(null);
+    const [isResolving, setIsResolving] = useState(false);
     const [balance, setBalance] = useState("0");
     const [walletType, setWalletType] = useState<string | null>(null);
 
@@ -40,38 +42,56 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     /**
-     * Hardened Identity Resolution
-     * This handles the Mirror Node resolution even if WalletConnect returns 403 errors.
+     * Deep Identity Resolution Trace
+     * Credits: Viqtorhvayx
      */
     useEffect(() => {
         const resolveIdentity = async () => {
+            console.log("CREODE TRACE - Connection Detected:", activeAddress);
+            
             if (!activeAddress) {
                 setNativeAddress(null);
+                setIsResolving(false);
                 return;
             }
 
-            // Priority 1: Direct native ID check
             if (activeAddress.startsWith('0.0.')) {
                 setNativeAddress(activeAddress);
+                setIsResolving(false);
                 return;
             }
 
-            // Priority 2: Force Mirror Node translation for EVM formats
             if (activeAddress.startsWith('0x')) {
-                try {
-                    // We attempt Testnet first as it is the most likely development target
-                    const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${activeAddress}`);
-                    const data = await res.json();
-                    if (data.account) {
-                        setNativeAddress(data.account);
-                        return;
+                setIsResolving(true);
+                const cleanAddress = activeAddress.toLowerCase();
+                
+                // We attempt Testnet and Mainnet Mirror Nodes to cover all bases
+                const endpoints = [
+                    `https://testnet.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`,
+                    `https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`
+                ];
+
+                for (const url of endpoints) {
+                    try {
+                        console.log("CREODE TRACE - Fetching Identity from:", url);
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        console.log("CREODE TRACE - Mirror Node Response:", data);
+
+                        if (data.account) {
+                            setNativeAddress(data.account);
+                            console.log("CREODE TRACE - RESOLVED SUCCESS:", data.account);
+                            setIsResolving(false);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn("CREODE TRACE - Node query failed:", url);
                     }
-                } catch (e) {
-                    console.error("CREODE - Identity resolution failed:", e);
                 }
             }
 
             setNativeAddress(activeAddress);
+            setIsResolving(false);
         };
 
         resolveIdentity();
@@ -90,6 +110,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
         <Web3Context.Provider value={{
             address: activeAddress,
             nativeAddress,
+            isResolving,
             isConnected,
             walletType,
             balance,
