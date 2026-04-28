@@ -1,81 +1,98 @@
 /**
- * @title CustomWalletButton (Rebuild 2.0)
+ * @title CustomWalletButton (Optimized Handshake)
  * @author Viqtorhvayx
- * @dev Theme-aware wallet button with strict identity formatting (0.0.x vs 0x...).
+ * @dev Dynamic identity switcher (0.0.x vs 0x...) with Mirror Node integration.
  */
 
 'use client';
 
-import React from 'react';
-import { useWeb3 } from '../context/Web3Context';
+import React, { useState, useEffect } from 'react';
+import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 
-interface CustomWalletButtonProps {
-  theme?: 'light' | 'dark';
-}
-
-export default function CustomWalletButton({ theme = 'dark' }: CustomWalletButtonProps) {
-  const { isConnected, accountId, evmAddress, walletType, connect } = useWeb3();
+export default function CustomWalletButton() {
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { chainId } = useAppKitNetwork();
+  const [displayAddress, setDisplayAddress] = useState<string>("");
+  const [isResolving, setIsResolving] = useState<boolean>(false);
 
   /**
-   * Formatting utility for different wallet types.
+   * Smart Address Resolver
    * Credits: Viqtorhvayx
    */
-  const formatDisplay = () => {
-    if (walletType === 'hashpack' && accountId) {
-      // Native Hedera Truncation: 0.0.123...456
-      if (accountId.startsWith("0.0.")) {
-        const parts = accountId.split('.');
-        if (parts.length === 3 && parts[2].length > 5) {
-          return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
-        }
+  useEffect(() => {
+    const resolveIdentity = async () => {
+      if (!isConnected || !address) {
+        setDisplayAddress("");
+        return;
       }
-      return accountId;
-    }
-    
-    if (walletType === 'evm' && evmAddress) {
-      // Standard EVM Truncation: 0x12...5678
-      return `${evmAddress.substring(0, 6)}...${evmAddress.substring(evmAddress.length - 4)}`;
-    }
 
-    return "Resolving...";
+      // Check if on Hedera (295 = Mainnet, 296 = Testnet)
+      const numericChainId = Number(chainId);
+      const isHedera = numericChainId === 295 || numericChainId === 296;
+
+      if (isHedera && address.startsWith("0x")) {
+        setIsResolving(true);
+        try {
+          const baseUrl = numericChainId === 296 
+            ? "https://testnet.mirrornode.hedera.com" 
+            : "https://mainnet-public.mirrornode.hedera.com";
+          
+          const res = await fetch(`${baseUrl}/api/v1/accounts/${address.toLowerCase()}`);
+          const data = await res.json();
+          
+          if (data && data.account) {
+            setDisplayAddress(data.account);
+          } else {
+            setDisplayAddress(address); // Fallback to EVM if not found
+          }
+        } catch (error) {
+          console.error("Mirror Node Fetch Failed:", error);
+          setDisplayAddress(address);
+        } finally {
+          setIsResolving(false);
+        }
+      } else {
+        // Default EVM display for MetaMask/Others
+        setDisplayAddress(address);
+        setIsResolving(false);
+      }
+    };
+
+    resolveIdentity();
+  }, [address, isConnected, chainId]);
+
+  /**
+   * Truncation Utility
+   */
+  const formatText = (addr: string) => {
+    if (!addr) return "";
+    if (addr.startsWith("0.0.")) {
+      const parts = addr.split('.');
+      if (parts.length === 3 && parts[2].length > 5) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
+      }
+      return addr;
+    }
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
-  // STRICT PRESERVATION of all inline styles and structural CSS
-  const styles: React.CSSProperties = {
-    backgroundColor: isConnected ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)') : '#00A8E8',
-    color: isConnected ? (theme === 'dark' ? '#FFFFFF' : '#000000') : '#FFFFFF',
-    border: `1px solid ${isConnected ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)') : 'transparent'}`,
-    padding: '10px 20px',
-    borderRadius: '12px',
-    fontSize: '11px',
-    fontWeight: '700',
-    fontFamily: 'monospace',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: '160px',
-    boxShadow: isConnected ? 'none' : '0 4px 15px rgba(0, 168, 232, 0.2)',
-  };
-
+  // STRICT PRESERVATION of structural CSS and Tailwind classes
   return (
     <button 
-      style={styles}
-      className="custom-wallet-glow" 
-      onClick={connect}
-      onMouseOver={(e) => {
-        if (!isConnected) e.currentTarget.style.backgroundColor = '#0096d1';
-        else e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-      }}
-      onMouseOut={(e) => {
-        if (!isConnected) e.currentTarget.style.backgroundColor = '#00A8E8';
-        else e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-      }}
+      onClick={() => open()} 
+      className="custom-wallet-glow bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[160px] text-[11px] uppercase tracking-wider shadow-lg shadow-blue-500/20 active:scale-95"
     >
-      {!isConnected ? "Connect Wallet" : formatDisplay()}
+      {!isConnected ? (
+        "Connect Wallet"
+      ) : isResolving ? (
+        <span className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          Resolving...
+        </span>
+      ) : (
+        formatText(displayAddress)
+      )}
     </button>
   );
 }
