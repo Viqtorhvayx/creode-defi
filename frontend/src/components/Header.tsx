@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with identity resolution status indicators.
+ * @dev Navigation component with visual update indicator (v2.1).
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { nativeAddress, isResolving, isConnected, connect, disconnect } = useWeb3();
@@ -24,14 +24,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
-  /**
-   * Formatting utility with status awareness.
-   */
   const formatDisplayAddress = (addr: string | null) => {
     if (isResolving) return "Resolving Identity...";
     if (!addr) return "Not Found";
     
-    // Native Hedera Truncation: 0.0.123...456
     if (addr.startsWith("0.0.")) {
       const parts = addr.split('.');
       if (parts.length === 3 && parts[2].length > 6) {
@@ -40,7 +36,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
       return addr;
     }
     
-    // EVM Fallback Truncation: 0x12...5678
     if (addr.startsWith("0x")) {
       return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     }
@@ -57,7 +52,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <button 
             onClick={handleThemeToggle}
             className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
-            aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
@@ -92,9 +86,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 </button>
               </div>
             ) : (
-              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
-                Connect Wallet
-              </button>
+              <div className="relative">
+                {/* Visual update indicator dot (v2.1) */}
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-cyan-400 rounded-full border-2 border-white dark:border-black z-10" />
+                <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
+                  Connect Wallet
+                </button>
+              </div>
             )}
           </div>
         </div>
