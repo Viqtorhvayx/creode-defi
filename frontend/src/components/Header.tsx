@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
+import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { Logo } from './Logo';
 
 interface HeaderProps {
@@ -10,17 +10,16 @@ interface HeaderProps {
 }
 
 /**
- * @title Header (Custom Wallet Integration)
+ * @title Header (Diagnostic Wallet Integration)
  * @author Viqtorhvayx
- * @dev Fully custom wallet button to override default Reown/W3M component behavior.
- * Strictly displays native Hedera 0.0.x Account IDs.
+ * @dev Custom wallet button with deep trace logging and network-aware identity resolution.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
+  const { chainId } = useAppKitNetwork();
   const [isToggling, setIsToggling] = useState(false);
   
-  // Custom State for Native Hedera Identity
   const [nativeHederaId, setNativeHederaId] = useState<string>("");
   const [isResolving, setIsResolving] = useState<boolean>(false);
 
@@ -31,37 +30,50 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Mirror Node Identity Translator
+   * Diagnostic Identity Resolution
    * Credits: Viqtorhvayx
    */
   useEffect(() => {
     const resolveIdentity = async () => {
+      console.log("CREODE TRACE - Connection State:", { isConnected, address, chainId });
+
       if (!isConnected || !address) {
         setNativeHederaId("");
         setIsResolving(false);
         return;
       }
 
-      // If already native format
       if (address.startsWith("0.0.")) {
         setNativeHederaId(address);
         setIsResolving(false);
         return;
       }
 
-      // If EVM format, fetch native ID from Mirror Node
       if (address.startsWith("0x")) {
         setIsResolving(true);
+        // Detect network for correct Mirror Node endpoint
+        const isMainnet = chainId === 295;
+        const baseUrl = isMainnet 
+          ? "https://mainnet-public.mirrornode.hedera.com" 
+          : "https://testnet.mirrornode.hedera.com";
+        
+        const fetchUrl = `${baseUrl}/api/v1/accounts/${address.toLowerCase()}`;
+        console.log("CREODE TRACE - Fetching from:", fetchUrl);
+
         try {
-          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+          const res = await fetch(fetchUrl);
           const data = await res.json();
+          console.log("CREODE TRACE - Mirror Node Response:", data);
+
           if (data.account) {
             setNativeHederaId(data.account);
+            console.log("CREODE TRACE - Resolved Native ID:", data.account);
           } else {
-            setNativeHederaId(address); // Fallback to raw if not indexed
+            console.warn("CREODE TRACE - No account property in response.");
+            setNativeHederaId(address); 
           }
         } catch (err) {
-          console.error("Identity resolution failed:", err);
+          console.error("CREODE TRACE - Fetch error:", err);
           setNativeHederaId(address);
         } finally {
           setIsResolving(false);
@@ -70,21 +82,17 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     };
 
     resolveIdentity();
-  }, [address, isConnected]);
+  }, [address, isConnected, chainId]);
 
-  /**
-   * Custom Truncation Logic (0.0.12...456)
-   * Credits: Viqtorhvayx
-   */
   const formatAddress = (addr: string) => {
+    if (!addr) return "Resolving...";
     if (addr.startsWith("0.0.")) {
       const parts = addr.split('.');
       if (parts.length === 3 && parts[2].length > 5) {
-        // Format: 0.0.XX...XXX
         return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 2)}...${parts[2].substring(parts[2].length - 3)}`;
       }
+      return addr;
     }
-    // Fallback for EVM
     return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
@@ -97,7 +105,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <button 
             onClick={handleThemeToggle}
             className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
-            aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
@@ -140,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             ) : (
               <button 
                 onClick={() => open()}
-                className="btn-action !px-5 !py-2.5 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]"
+                className="btn-action !px-5 !py-2.5 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]"
                 style={{ borderRadius: '60px' }}
               >
                 Connect Wallet
