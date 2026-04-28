@@ -12,13 +12,13 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with STRICT native Hedera address display (0.0.x).
- * Updated to exclusively render native IDs, suppressing EVM formats for Hedera users.
+ * @dev Navigation component with ABSOLUTE native Hedera address enforcement.
+ * Strictly forbidden from displaying 0x addresses for Hashpack users.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const { address, isConnected, connect, disconnect, walletType } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
-  const [nativeAddress, setNativeAddress] = useState<string>("");
+  const [nativeHederaId, setNativeHederaId] = useState<string>("");
 
   const handleThemeToggle = () => {
     setIsToggling(true);
@@ -27,65 +27,65 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Forced Identity Resolution Hook.
+   * Strict Identity Translation Hook.
    * Credits: Viqtorhvayx
    */
   useEffect(() => {
-    const resolveNativeAddress = async () => {
+    const fetchNativeId = async () => {
       if (!address) {
-        setNativeAddress("");
+        setNativeHederaId("");
         return;
       }
 
-      // 1. Direct check for native format
+      // If already in native format (0.0.x), set it immediately
       if (address.startsWith("0.0.")) {
-        setNativeAddress(address);
+        setNativeHederaId(address);
         return;
       }
 
-      // 2. Strict Mirror Node Fetch for EVM translations
+      // If EVM format (0x...), force fetch translation from Mirror Node
       if (address.startsWith("0x")) {
         try {
-          const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
-          const data = await response.json();
+          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+          const data = await res.json();
           if (data.account) {
-            setNativeAddress(data.account);
+            setNativeHederaId(data.account);
           } else {
-            // If it's a Hedera wallet but mirror node hasn't indexed the EVM address yet
-            setNativeAddress(""); 
+            // If mirror node hasn't indexed the EVM address yet, stay in resolving state
+            setNativeHederaId(""); 
           }
-        } catch (error) {
-          console.error("Mirror Node Fetch Failure:", error);
-          setNativeAddress(""); 
+        } catch (err) {
+          console.error("Mirror Node Fetch Failure:", err);
+          setNativeHederaId("");
         }
       }
     };
 
-    resolveNativeAddress();
+    fetchNativeId();
   }, [address]);
 
   /**
-   * Strict Formatting Logic for 0.0.x strings.
+   * Absolute Formatting Logic.
    * Credits: Viqtorhvayx
    */
-  const formatDisplayAddress = (addr: string) => {
-    if (!addr) return "Resolving...";
+  const formatForUI = (id: string) => {
+    if (!id) return "Initializing...";
     
-    // Forced Native Hedera Format: 0.0.123...789
-    if (addr.startsWith("0.0.")) {
-      const parts = addr.split('.');
-      if (parts.length === 3 && parts[2].length > 6) {
+    // Strict Native Format: 0.0.123...456
+    if (id.startsWith("0.0.")) {
+      const parts = id.split('.');
+      if (parts.length === 3 && parts[2].length > 5) {
         return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
       }
-      return addr;
+      return id;
     }
     
-    // Only show EVM if absolutely not a Hedera context (non-Hashpack)
-    if (addr.startsWith("0x") && !walletType?.includes('hashpack')) {
-      return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    // If we're here and it's not a Hedera context, show EVM
+    if (id.startsWith("0x") && !walletType?.includes('hashpack')) {
+      return `${id.substring(0, 6)}...${id.substring(id.length - 4)}`;
     }
-    
-    return "Resolving...";
+
+    return "Resolving ID...";
   };
 
   return (
@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatDisplayAddress(nativeAddress)}
+                    {formatForUI(nativeHederaId)}
                   </span>
                 </div>
                 <button onClick={disconnect} className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider">
