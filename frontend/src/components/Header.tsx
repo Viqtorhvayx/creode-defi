@@ -12,13 +12,12 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with native Hedera address translation and smart truncation.
+ * @dev Navigation component with STRICT native Hedera address display (0.0.x).
+ * Updated to exclusively render native IDs, suppressing EVM formats for Hedera users.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, isConnected, connect, disconnect } = useWeb3();
+  const { address, isConnected, connect, disconnect, walletType } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
-  
-  // 1. Address Translator State
   const [nativeAddress, setNativeAddress] = useState<string>("");
 
   const handleThemeToggle = () => {
@@ -27,7 +26,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
-  // 2. Mirror Node Fetch Logic
+  /**
+   * Forced Identity Resolution Hook.
+   * Credits: Viqtorhvayx
+   */
   useEffect(() => {
     const resolveNativeAddress = async () => {
       if (!address) {
@@ -35,13 +37,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
         return;
       }
 
-      // If already in native format, update state directly
+      // 1. Direct check for native format
       if (address.startsWith("0.0.")) {
         setNativeAddress(address);
         return;
       }
 
-      // If EVM format, translate via Hedera Mirror Node
+      // 2. Strict Mirror Node Fetch for EVM translations
       if (address.startsWith("0x")) {
         try {
           const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
@@ -49,11 +51,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           if (data.account) {
             setNativeAddress(data.account);
           } else {
-            setNativeAddress(address); // Fallback to raw address
+            // If it's a Hedera wallet but mirror node hasn't indexed the EVM address yet
+            setNativeAddress(""); 
           }
         } catch (error) {
-          console.error("Mirror Node fetch failed:", error);
-          setNativeAddress(address); // Fallback on failure
+          console.error("Mirror Node Fetch Failure:", error);
+          setNativeAddress(""); 
         }
       }
     };
@@ -62,13 +65,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   }, [address]);
 
   /**
-   * 3. Truncation and UI Rendering Logic
+   * Strict Formatting Logic for 0.0.x strings.
    * Credits: Viqtorhvayx
    */
   const formatDisplayAddress = (addr: string) => {
-    if (!addr) return "";
+    if (!addr) return "Resolving...";
     
-    // Native Hedera Format: 0.0.123...789
+    // Forced Native Hedera Format: 0.0.123...789
     if (addr.startsWith("0.0.")) {
       const parts = addr.split('.');
       if (parts.length === 3 && parts[2].length > 6) {
@@ -77,8 +80,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
       return addr;
     }
     
-    // EVM Fallback: 0x1234...5678
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    // Only show EVM if absolutely not a Hedera context (non-Hashpack)
+    if (addr.startsWith("0x") && !walletType?.includes('hashpack')) {
+      return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    }
+    
+    return "Resolving...";
   };
 
   return (
@@ -90,26 +97,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <button 
             onClick={handleThemeToggle}
             className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
-            aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
-              <svg 
-                width="18" height="18" viewBox="0 0 24 24" 
-                fill={isToggling ? "#00A8E8" : "none"} 
-                stroke="#00A8E8" 
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                className="transition-all duration-300"
-              >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
             ) : (
-              <svg 
-                width="18" height="18" viewBox="0 0 24 24" 
-                fill={isToggling ? "#00A8E8" : "none"} 
-                stroke="#00A8E8" 
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                className="transition-all duration-300"
-              >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -129,22 +123,15 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatDisplayAddress(nativeAddress || address || "")}
+                    {formatDisplayAddress(nativeAddress)}
                   </span>
                 </div>
-                <button 
-                  onClick={disconnect}
-                  className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider"
-                >
+                <button onClick={disconnect} className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider">
                   Exit
                 </button>
               </div>
             ) : (
-              <button 
-                onClick={connect}
-                className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]"
-                style={{ borderRadius: '60px' }}
-              >
+              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
                 Connect Wallet
               </button>
             )}
