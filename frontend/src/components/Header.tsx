@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useWeb3 } from '../context/Web3Context';
 import { Logo } from './Logo';
-import CustomWalletButton from './CustomWalletButton';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -12,15 +12,40 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component integrated with CustomWalletButton for hardened Hedera connection.
+ * @dev Navigation component using centralized native Hedera identity display.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
+  const { nativeAddress, isConnected, connect, disconnect } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
 
   const handleThemeToggle = () => {
     setIsToggling(true);
     toggleTheme();
     setTimeout(() => setIsToggling(false), 300);
+  };
+
+  /**
+   * Formatting utility for the UI.
+   * Credits: Viqtorhvayx
+   */
+  const formatDisplayAddress = (addr: string | null) => {
+    if (!addr) return "Resolving...";
+    
+    // Native Hedera Truncation: 0.0.123...456
+    if (addr.startsWith("0.0.")) {
+      const parts = addr.split('.');
+      if (parts.length === 3 && parts[2].length > 6) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
+      }
+      return addr;
+    }
+    
+    // EVM Fallback Truncation: 0x12...5678
+    if (addr.startsWith("0x")) {
+      return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    }
+    
+    return addr;
   };
 
   return (
@@ -54,7 +79,23 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           </button>
 
           <div className="flex items-center gap-3">
-            <CustomWalletButton />
+            {isConnected ? (
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-500">
+                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
+                  <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
+                  <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
+                    {formatDisplayAddress(nativeAddress)}
+                  </span>
+                </div>
+                <button onClick={disconnect} className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider">
+                  Exit
+                </button>
+              </div>
+            ) : (
+              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
+                Connect Wallet
+              </button>
+            )}
           </div>
         </div>
       </nav>
