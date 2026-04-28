@@ -1,7 +1,7 @@
 /**
  * @title AppKitProvider
  * @author Viqtorhvayx
- * @dev Reown AppKit Provider initialization with custom CREODE theme and multi-chain support.
+ * @dev Hardened AppKit Provider with validated metadata and custom CREODE styling.
  */
 
 'use client'
@@ -12,10 +12,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { projectId, networks, wagmiAdapter } from '@/config'
 
-// Setup queryClient
 const queryClient = new QueryClient()
 
-// Create modal
+// Create modal with validated metadata to prevent WalletConnect hanging
 createAppKit({
   adapters: [wagmiAdapter],
   networks,
@@ -23,7 +22,7 @@ createAppKit({
   metadata: {
     name: 'CREODE',
     description: 'Advanced Saving, Lending, and Borrowing platform on Hedera.',
-    url: 'https://creode.defi',
+    url: 'https://frontend-weld-iota-18.vercel.app', // Explicitly matched to deployment URL
     icons: ['https://avatars.githubusercontent.com/u/179241380']
   },
   themeMode: 'dark',
@@ -31,10 +30,7 @@ createAppKit({
     '--w3m-accent': '#00A8E8',
     '--w3m-color-mix': '#00A8E8',
     '--w3m-color-mix-strength': 40,
-    '--w3m-border-radius-master': '1px' // Industrial aesthetic
-  },
-  features: {
-    analytics: true
+    '--w3m-border-radius-master': '1px'
   }
 })
 
