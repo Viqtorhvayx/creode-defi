@@ -1,26 +1,32 @@
 /**
  * @title Web3 Configuration
  * @author Viqtorhvayx
- * @dev Finalized configuration with verified Reown Project ID and EIP-6963 support.
+ * @dev Hardened configuration with transport fallback and SSR disabled to fix HashPack hanging.
  */
 
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { mainnet, arbitrum } from '@reown/appkit/networks'
 import { hedera, hederaTestnet } from 'viem/chains'
-import { http } from 'viem'
+import { http, fallback } from 'viem'
 
-// Verified Project ID from cloud.reown.com
 export const projectId = 'e5ca5702a767d682a832959e7f1c57bb' 
 
-export const networks = [hedera, hederaTestnet, mainnet, arbitrum]
+export const networks = [hederaTestnet, hedera, mainnet, arbitrum]
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks,
-  ssr: true, 
+  // Disable SSR to prevent hydration-based connection hangs
+  ssr: false, 
   transports: {
-    [hedera.id]: http('https://mainnet.hashio.io/api'),
-    [hederaTestnet.id]: http('https://testnet.hashio.io/api')
+    [hedera.id]: fallback([
+      http('https://mainnet.hashio.io/api'),
+      http()
+    ]),
+    [hederaTestnet.id]: fallback([
+      http('https://testnet.hashio.io/api'),
+      http()
+    ])
   }
 })
 

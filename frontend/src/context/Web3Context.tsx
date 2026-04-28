@@ -1,7 +1,7 @@
 /**
  * @title Web3Context
  * @author Viqtorhvayx
- * @dev Hardened Identity Engine with deep trace logging and multi-network resolution.
+ * @dev Centralized Identity Engine with direct session scraping for native Hedera IDs.
  */
 
 "use client";
@@ -42,60 +42,65 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     /**
-     * Deep Identity Resolution Trace
+     * Centralized Identity Engine
      * Credits: Viqtorhvayx
      */
     useEffect(() => {
         const resolveIdentity = async () => {
-            console.log("CREODE TRACE - Connection Detected:", activeAddress);
-            
             if (!activeAddress) {
                 setNativeAddress(null);
                 setIsResolving(false);
                 return;
             }
 
+            // Path 1: Direct native ID check
             if (activeAddress.startsWith('0.0.')) {
                 setNativeAddress(activeAddress);
-                setIsResolving(false);
                 return;
             }
 
-            if (activeAddress.startsWith('0x')) {
-                setIsResolving(true);
-                const cleanAddress = activeAddress.toLowerCase();
-                
-                // We attempt Testnet and Mainnet Mirror Nodes to cover all bases
-                const endpoints = [
-                    `https://testnet.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`,
-                    `https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`
-                ];
-
-                for (const url of endpoints) {
-                    try {
-                        console.log("CREODE TRACE - Fetching Identity from:", url);
-                        const res = await fetch(url);
-                        const data = await res.json();
-                        console.log("CREODE TRACE - Mirror Node Response:", data);
-
-                        if (data.account) {
-                            setNativeAddress(data.account);
-                            console.log("CREODE TRACE - RESOLVED SUCCESS:", data.account);
-                            setIsResolving(false);
+            // Path 2: Direct Provider Scraping (The Fast Path)
+            if (connector && connector.name.toLowerCase().includes('hashpack')) {
+                try {
+                    const provider: any = await connector.getProvider();
+                    // HashPack often stores the accountId directly in the session namespaces
+                    const namespaces = provider?.session?.namespaces;
+                    if (namespaces?.hedera?.accounts) {
+                        const accountWithChain = namespaces.hedera.accounts[0];
+                        const extractedId = accountWithChain.split(':').pop();
+                        if (extractedId && extractedId.startsWith('0.0.')) {
+                            setNativeAddress(extractedId);
+                            console.log("CREODE - Identity resolved from session:", extractedId);
                             return;
                         }
-                    } catch (e) {
-                        console.warn("CREODE TRACE - Node query failed:", url);
                     }
+                } catch (e) {
+                    console.warn("CREODE - Direct session scraping failed.");
+                }
+            }
+
+            // Path 3: Mirror Node Fallback (The Accurate Path)
+            if (activeAddress.startsWith('0x')) {
+                setIsResolving(true);
+                try {
+                    const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${activeAddress}`);
+                    const data = await res.json();
+                    if (data.account) {
+                        setNativeAddress(data.account);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("CREODE - Mirror Node resolution failed.");
+                } finally {
+                    setIsResolving(false);
                 }
             }
 
             setNativeAddress(activeAddress);
-            setIsResolving(false);
         };
 
         resolveIdentity();
-    }, [activeAddress]);
+    }, [activeAddress, connector]);
 
     useEffect(() => {
         if (balanceData) setBalance(balanceData.formatted);
