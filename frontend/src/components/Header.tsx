@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useWeb3 } from '../context/Web3Context';
+import React, { useState, useEffect } from 'react';
+import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
 import { Logo } from './Logo';
 
 interface HeaderProps {
@@ -10,14 +10,19 @@ interface HeaderProps {
 }
 
 /**
- * @title Header
+ * @title Header (Custom Wallet Integration)
  * @author Viqtorhvayx
- * @dev Navigation component with deep-extracted native Hedera ID display.
- * Strictly configured to prioritize 0.0.x and suppress EVM fallbacks for Hedera.
+ * @dev Fully custom wallet button to override default Reown/W3M component behavior.
+ * Strictly displays native Hedera 0.0.x Account IDs.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, hederaId, isConnected, connect, disconnect, walletType } = useWeb3();
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
   const [isToggling, setIsToggling] = useState(false);
+  
+  // Custom State for Native Hedera Identity
+  const [nativeHederaId, setNativeHederaId] = useState<string>("");
+  const [isResolving, setIsResolving] = useState<boolean>(false);
 
   const handleThemeToggle = () => {
     setIsToggling(true);
@@ -26,27 +31,61 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Formatting Logic for native Hedera IDs.
+   * Mirror Node Identity Translator
    * Credits: Viqtorhvayx
    */
-  const formatDisplayAddress = (id: string | null) => {
-    if (!id) return "Resolving...";
-    
-    // Forced Native Hedera Format: 0.0.123...456
-    if (id.startsWith("0.0.")) {
-      const parts = id.split('.');
-      if (parts.length === 3 && parts[2].length > 8) {
-        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
+  useEffect(() => {
+    const resolveIdentity = async () => {
+      if (!isConnected || !address) {
+        setNativeHederaId("");
+        setIsResolving(false);
+        return;
       }
-      return id; // Return full address if not too long
+
+      // If already native format
+      if (address.startsWith("0.0.")) {
+        setNativeHederaId(address);
+        setIsResolving(false);
+        return;
+      }
+
+      // If EVM format, fetch native ID from Mirror Node
+      if (address.startsWith("0x")) {
+        setIsResolving(true);
+        try {
+          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+          const data = await res.json();
+          if (data.account) {
+            setNativeHederaId(data.account);
+          } else {
+            setNativeHederaId(address); // Fallback to raw if not indexed
+          }
+        } catch (err) {
+          console.error("Identity resolution failed:", err);
+          setNativeHederaId(address);
+        } finally {
+          setIsResolving(false);
+        }
+      }
+    };
+
+    resolveIdentity();
+  }, [address, isConnected]);
+
+  /**
+   * Custom Truncation Logic (0.0.12...456)
+   * Credits: Viqtorhvayx
+   */
+  const formatAddress = (addr: string) => {
+    if (addr.startsWith("0.0.")) {
+      const parts = addr.split('.');
+      if (parts.length === 3 && parts[2].length > 5) {
+        // Format: 0.0.XX...XXX
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 2)}...${parts[2].substring(parts[2].length - 3)}`;
+      }
     }
-    
-    // Only show EVM if not a Hedera context
-    if (id.startsWith("0x") && !walletType?.includes('hashpack')) {
-      return `${id.substring(0, 6)}...${id.substring(id.length - 4)}`;
-    }
-    
-    return "Resolving...";
+    // Fallback for EVM
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
   return (
@@ -58,6 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <button 
             onClick={handleThemeToggle}
             className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
+            aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
@@ -81,18 +121,28 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <div className="flex items-center gap-3">
             {isConnected ? (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-500">
-                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
+                <button 
+                  onClick={() => open()}
+                  className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-[var(--border)] hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200"
+                >
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatDisplayAddress(hederaId || address)}
+                    {isResolving ? "Resolving..." : formatAddress(nativeHederaId || address || "")}
                   </span>
-                </div>
-                <button onClick={disconnect} className="text-[9px] font-black text-red-500 uppercase hover:underline tracking-wider">
-                  Exit
+                </button>
+                <button 
+                  onClick={() => open({ view: 'Account' })}
+                  className="text-[9px] font-black text-[#00A8E8] uppercase hover:underline tracking-wider"
+                >
+                  Account
                 </button>
               </div>
             ) : (
-              <button onClick={connect} className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]" style={{ borderRadius: '60px' }}>
+              <button 
+                onClick={() => open()}
+                className="btn-action !px-5 !py-2.5 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]"
+                style={{ borderRadius: '60px' }}
+              >
                 Connect Wallet
               </button>
             )}
