@@ -12,10 +12,10 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with refined vertical alignment and explicit theme passing to Logo.
+ * @dev Navigation component with forced Hedera Account ID formatting and truncation.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, isConnected, connect, disconnect, walletType } = useWeb3();
+  const { address, hederaId, isConnected, connect, disconnect } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
 
   const handleThemeToggle = () => {
@@ -24,15 +24,29 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
-  const formatAddress = (addr: string | null, type: string | null) => {
+  /**
+   * Exact Formatting Function requested by Viqtorhvayx.
+   * Ensures native Hedera and EVM fallbacks are handled with strict truncation.
+   */
+  const formatHederaAddress = (addr: string | null) => {
     if (!addr) return "";
-    if (type?.includes('hashpack') || addr.startsWith('0.0.')) return addr; 
-    return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`;
+    
+    // Handle native Hedera format (e.g., 0.0.123456)
+    if (addr.startsWith("0.0.")) {
+      // Truncate to keep the prefix and the last 3 digits
+      return `${addr.slice(0, 5)}...${addr.slice(-3)}`; 
+    }
+    
+    // Fallback for EVM/0x addresses if Wagmi hasn't converted it yet
+    if (addr.startsWith("0x")) {
+      return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    }
+    
+    return addr;
   };
 
   return (
     <header className="mb-12">
-      {/* Navigation Bar: Perfectly horizontally aligned and shifted up via reduced bottom margin */}
       <nav className="flex justify-between items-center">
         <Logo theme={theme} />
         
@@ -79,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatAddress(address, walletType)}
+                    {formatHederaAddress(hederaId || address)}
                   </span>
                 </div>
                 <button 
@@ -92,7 +106,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             ) : (
               <button 
                 onClick={connect}
-                /* Applied subtle blue undershadow matched to existing design system (shadow-[0_4px_15px_rgba(0,168,232,0.15)]) */
                 className="btn-action !px-4 !py-2 !text-xs shadow-[0_4px_15px_rgba(0,168,232,0.15)]"
                 style={{ borderRadius: '60px' }}
               >

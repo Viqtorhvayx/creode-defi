@@ -4,7 +4,7 @@ import "./globals.css";
 /**
  * @title RootLayout
  * @author Viqtorhvayx
- * @dev Root layout for CREODE DeFi. Removes global text color cascade to allow precise color targeting.
+ * @dev Root layout for CREODE DeFi. Advanced wallet infrastructure powered by Reown AppKit.
  */
 
 export const metadata: Metadata = {
