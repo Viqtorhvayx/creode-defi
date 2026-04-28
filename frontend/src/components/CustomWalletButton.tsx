@@ -1,105 +1,98 @@
 /**
  * @title CustomWalletButton
  * @author Viqtorhvayx
- * @dev Hardened wallet button with direct session extraction for native Hedera IDs (0.0.x).
+ * @dev Force native Hedera ID display by bypassing AppKit web components.
  */
 
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
-import { useAccount } from 'wagmi';
-import { useEffect, useState } from 'react';
 
 export default function CustomWalletButton() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
-  const { connector } = useAccount();
-  const { chainId } = useAppKitNetwork(); 
-  const [nativeAddress, setNativeAddress] = useState("");
-  const [isFetching, setIsFetching] = useState(false);
+  const { chainId } = useAppKitNetwork();
+  const [nativeAddress, setNativeAddress] = useState<string>("");
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
+  /**
+   * Identity Resolution Hook
+   * Credits: Viqtorhvayx
+   */
   useEffect(() => {
-    const fetchHederaAddress = async () => {
-      // Clear state on disconnect
+    const resolveIdentity = async () => {
       if (!isConnected || !address) {
         setNativeAddress("");
         return;
       }
 
-      // 1. Direct Session Extraction (Priority Path)
-      if (connector && connector.name.toLowerCase().includes('hashpack')) {
-        try {
-          const provider: any = await connector.getProvider();
-          console.log("CREODE WALLET RESPONSE:", provider); // Diagnostic Log
-
-          // Extract accountId from WalletConnect v2 namespaces
-          const namespaces = provider?.session?.namespaces;
-          if (namespaces?.hedera?.accounts) {
-            const accountWithChain = namespaces.hedera.accounts[0]; // e.g., hedera:296:0.0.12345
-            const extractedId = accountWithChain.split(':').pop();
-            if (extractedId && extractedId.startsWith('0.0.')) {
-              setNativeAddress(extractedId);
-              return;
-            }
-          }
-
-          // Fallback extraction from provider session properties
-          const sessionId = provider?.session?.accountIds?.[0] || provider?.accountIds?.[0];
-          if (sessionId && sessionId.toString().startsWith('0.0.')) {
-            setNativeAddress(sessionId.toString());
-            return;
-          }
-        } catch (e) {
-          console.warn("CREODE - Direct session extraction failed, falling back to mirror node.");
-        }
+      // If already native, set it
+      if (address.startsWith("0.0.")) {
+        setNativeAddress(address);
+        return;
       }
 
-      // 2. Mirror Node Fetch (Fallback Path for EVM addresses)
+      // If EVM format, force resolution via Mirror Node
       if (address.startsWith("0x")) {
         setIsFetching(true);
         try {
+          // Detect network (296 = Testnet, 295 = Mainnet)
           const isTestnet = chainId === 296 || String(chainId).includes("296");
           const baseUrl = isTestnet 
             ? "https://testnet.mirrornode.hedera.com" 
             : "https://mainnet-public.mirrornode.hedera.com";
-            
-          const response = await fetch(`${baseUrl}/api/v1/accounts/${address}`);
+          
+          const response = await fetch(`${baseUrl}/api/v1/accounts/${address.toLowerCase()}`);
           const data = await response.json();
           
           if (data && data.account) {
             setNativeAddress(data.account);
           } else {
-            setNativeAddress(address); // Fallback to raw if not indexed
+            setNativeAddress(address); // Fallback
           }
         } catch (error) {
           console.error("Mirror Node Fetch Error:", error);
-          setNativeAddress(address);
+          setNativeAddress(address); // Fallback
         } finally {
           setIsFetching(false);
         }
-      } else {
-        setNativeAddress(address);
       }
     };
 
-    fetchHederaAddress();
-  }, [address, isConnected, chainId, connector]);
+    resolveIdentity();
+  }, [address, isConnected, chainId]);
 
-  // Clean truncation formatting for the UI
-  const displayAddress = nativeAddress?.startsWith("0.0.") 
-    ? (nativeAddress.length > 12 
-        ? `${nativeAddress.slice(0, 6)}...${nativeAddress.slice(-4)}` 
-        : nativeAddress)
-    : nativeAddress?.startsWith("0x")
-    ? `${nativeAddress.slice(0, 6)}...${nativeAddress.slice(-4)}`
-    : nativeAddress;
+  /**
+   * Formatting Truncation
+   */
+  const formatDisplay = (addr: string) => {
+    if (!addr) return "";
+    if (addr.startsWith("0.0.")) {
+      const parts = addr.split('.');
+      if (parts.length === 3 && parts[2].length > 5) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 2)}...${parts[2].substring(parts[2].length - 3)}`;
+      }
+      return addr;
+    }
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  };
 
   return (
     <button 
       onClick={() => open()} 
-      className="bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center min-w-[140px] text-xs uppercase tracking-wider"
+      className="bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center min-w-[150px] text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95"
     >
-      {!isConnected ? "Connect Wallet" : isFetching ? "Loading..." : displayAddress}
+      {!isConnected ? (
+        "Connect Wallet"
+      ) : isFetching ? (
+        <span className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          Resolving...
+        </span>
+      ) : (
+        formatDisplay(nativeAddress || address || "")
+      )}
     </button>
   );
 }
