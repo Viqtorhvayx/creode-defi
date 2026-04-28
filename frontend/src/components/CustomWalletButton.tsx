@@ -1,7 +1,7 @@
 /**
  * @title CustomWalletButton
  * @author Viqtorhvayx
- * @dev Force native Hedera ID display by bypassing AppKit web components.
+ * @dev Force native Hedera ID display with explicit theme-aware inline styling.
  */
 
 'use client';
@@ -9,7 +9,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 
-export default function CustomWalletButton() {
+interface CustomWalletButtonProps {
+  theme?: 'light' | 'dark';
+}
+
+export default function CustomWalletButton({ theme = 'dark' }: CustomWalletButtonProps) {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetwork();
@@ -27,17 +31,14 @@ export default function CustomWalletButton() {
         return;
       }
 
-      // If already native, set it
       if (address.startsWith("0.0.")) {
         setNativeAddress(address);
         return;
       }
 
-      // If EVM format, force resolution via Mirror Node
       if (address.startsWith("0x")) {
         setIsFetching(true);
         try {
-          // Detect network (296 = Testnet, 295 = Mainnet)
           const isTestnet = chainId === 296 || String(chainId).includes("296");
           const baseUrl = isTestnet 
             ? "https://testnet.mirrornode.hedera.com" 
@@ -49,11 +50,11 @@ export default function CustomWalletButton() {
           if (data && data.account) {
             setNativeAddress(data.account);
           } else {
-            setNativeAddress(address); // Fallback
+            setNativeAddress(address);
           }
         } catch (error) {
           console.error("Mirror Node Fetch Error:", error);
-          setNativeAddress(address); // Fallback
+          setNativeAddress(address);
         } finally {
           setIsFetching(false);
         }
@@ -70,24 +71,55 @@ export default function CustomWalletButton() {
     if (!addr) return "";
     if (addr.startsWith("0.0.")) {
       const parts = addr.split('.');
-      if (parts.length === 3 && parts[2].length > 5) {
-        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 2)}...${parts[2].substring(parts[2].length - 3)}`;
+      if (parts.length === 3 && parts[2].length > 6) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
       }
       return addr;
     }
     return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
+  // Explicit Inline Styles for Theme Consistency
+  const styles: React.CSSProperties = {
+    backgroundColor: isConnected ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)') : '#00A8E8',
+    color: isConnected ? (theme === 'dark' ? '#FFFFFF' : '#000000') : '#FFFFFF',
+    border: `1px solid ${isConnected ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)') : 'transparent'}`,
+    padding: '10px 20px',
+    borderRadius: '12px',
+    fontSize: '11px',
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '160px',
+    boxShadow: isConnected ? 'none' : '0 4px 15px rgba(0, 168, 232, 0.2)',
+  };
+
   return (
     <button 
       onClick={() => open()} 
-      className="bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center min-w-[150px] text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95"
+      style={styles}
+      onMouseOver={(e) => {
+        e.currentTarget.style.backgroundColor = isConnected 
+          ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)')
+          : '#0096d1';
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.backgroundColor = isConnected 
+          ? (theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)')
+          : '#00A8E8';
+      }}
     >
       {!isConnected ? (
         "Connect Wallet"
       ) : isFetching ? (
-        <span className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '6px', height: '6px', backgroundColor: '#00A8E8', borderRadius: '50%' }} />
           Resolving...
         </span>
       ) : (

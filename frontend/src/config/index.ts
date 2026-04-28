@@ -16,8 +16,7 @@ export const networks = [hederaTestnet, hedera, mainnet, arbitrum]
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks,
-  // EIP-6963 discovery is enabled by default in WagmiAdapter 
-  // but we set ssr: false to ensure immediate injection
+  // EIP-6963 discovery with SSR disabled to prevent hydration-based hangs
   ssr: false, 
   transports: {
     [hedera.id]: fallback([http('https://mainnet.hashio.io/api'), http()]),

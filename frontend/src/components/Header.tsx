@@ -12,7 +12,7 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component integrated with CustomWalletButton for collision-resistant Hedera identity.
+ * @dev Navigation component integrated with Theme-Aware CustomWalletButton.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const [isToggling, setIsToggling] = useState(false);
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           </button>
 
           <div className="flex items-center gap-3">
-            <CustomWalletButton />
+            <CustomWalletButton theme={theme} />
           </div>
         </div>
       </nav>
