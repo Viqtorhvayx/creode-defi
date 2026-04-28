@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
+import React, { useState } from 'react';
 import { Logo } from './Logo';
+import CustomWalletButton from './CustomWalletButton';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -10,90 +10,17 @@ interface HeaderProps {
 }
 
 /**
- * @title Header (Diagnostic Wallet Integration)
+ * @title Header
  * @author Viqtorhvayx
- * @dev Custom wallet button with deep trace logging and network-aware identity resolution.
+ * @dev Navigation component integrated with CustomWalletButton for hardened Hedera connection.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { open } = useAppKit();
-  const { address, isConnected } = useAppKitAccount();
-  const { chainId } = useAppKitNetwork();
   const [isToggling, setIsToggling] = useState(false);
-  
-  const [nativeHederaId, setNativeHederaId] = useState<string>("");
-  const [isResolving, setIsResolving] = useState<boolean>(false);
 
   const handleThemeToggle = () => {
     setIsToggling(true);
     toggleTheme();
     setTimeout(() => setIsToggling(false), 300);
-  };
-
-  /**
-   * Diagnostic Identity Resolution
-   * Credits: Viqtorhvayx
-   */
-  useEffect(() => {
-    const resolveIdentity = async () => {
-      console.log("CREODE TRACE - Connection State:", { isConnected, address, chainId });
-
-      if (!isConnected || !address) {
-        setNativeHederaId("");
-        setIsResolving(false);
-        return;
-      }
-
-      if (address.startsWith("0.0.")) {
-        setNativeHederaId(address);
-        setIsResolving(false);
-        return;
-      }
-
-      if (address.startsWith("0x")) {
-        setIsResolving(true);
-        // Detect network for correct Mirror Node endpoint
-        const isMainnet = chainId === 295;
-        const baseUrl = isMainnet 
-          ? "https://mainnet-public.mirrornode.hedera.com" 
-          : "https://testnet.mirrornode.hedera.com";
-        
-        const fetchUrl = `${baseUrl}/api/v1/accounts/${address.toLowerCase()}`;
-        console.log("CREODE TRACE - Fetching from:", fetchUrl);
-
-        try {
-          const res = await fetch(fetchUrl);
-          const data = await res.json();
-          console.log("CREODE TRACE - Mirror Node Response:", data);
-
-          if (data.account) {
-            setNativeHederaId(data.account);
-            console.log("CREODE TRACE - Resolved Native ID:", data.account);
-          } else {
-            console.warn("CREODE TRACE - No account property in response.");
-            setNativeHederaId(address); 
-          }
-        } catch (err) {
-          console.error("CREODE TRACE - Fetch error:", err);
-          setNativeHederaId(address);
-        } finally {
-          setIsResolving(false);
-        }
-      }
-    };
-
-    resolveIdentity();
-  }, [address, isConnected, chainId]);
-
-  const formatAddress = (addr: string) => {
-    if (!addr) return "Resolving...";
-    if (addr.startsWith("0.0.")) {
-      const parts = addr.split('.');
-      if (parts.length === 3 && parts[2].length > 5) {
-        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 2)}...${parts[2].substring(parts[2].length - 3)}`;
-      }
-      return addr;
-    }
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
   return (
@@ -105,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           <button 
             onClick={handleThemeToggle}
             className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
+            aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
@@ -126,33 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           </button>
 
           <div className="flex items-center gap-3">
-            {isConnected ? (
-              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-500">
-                <button 
-                  onClick={() => open()}
-                  className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-[var(--border)] hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200"
-                >
-                  <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
-                  <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {isResolving ? "Resolving..." : formatAddress(nativeHederaId || address || "")}
-                  </span>
-                </button>
-                <button 
-                  onClick={() => open({ view: 'Account' })}
-                  className="text-[9px] font-black text-[#00A8E8] uppercase hover:underline tracking-wider"
-                >
-                  Account
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={() => open()}
-                className="btn-action !px-5 !py-2.5 !text-xs shadow-[0_4px_15_rgba(0,168,232,0.15)]"
-                style={{ borderRadius: '60px' }}
-              >
-                Connect Wallet
-              </button>
-            )}
+            <CustomWalletButton />
           </div>
         </div>
       </nav>
