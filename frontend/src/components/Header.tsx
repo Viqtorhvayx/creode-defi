@@ -12,10 +12,10 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with forced Hedera Account ID formatting and truncation.
+ * @dev Navigation component with forced native Hedera address rendering.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, hederaId, isConnected, connect, disconnect } = useWeb3();
+  const { address, nativeHederaAddress, isConnected, connect, disconnect } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
 
   const handleThemeToggle = () => {
@@ -25,24 +25,29 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   /**
-   * Exact Formatting Function requested by Viqtorhvayx.
-   * Ensures native Hedera and EVM fallbacks are handled with strict truncation.
+   * Formatting utility for the UI.
+   * Prioritizes nativeHederaAddress (0.0.x) and applies truncation.
+   * Credits: Viqtorhvayx
    */
-  const formatHederaAddress = (addr: string | null) => {
-    if (!addr) return "";
+  const formatDisplayAddress = (native: string | null, raw: string | null) => {
+    const target = native || raw;
+    if (!target) return "";
     
-    // Handle native Hedera format (e.g., 0.0.123456)
-    if (addr.startsWith("0.0.")) {
-      // Truncate to keep the prefix and the last 3 digits
-      return `${addr.slice(0, 5)}...${addr.slice(-3)}`; 
+    // Native Hedera Truncation: 0.0.x...xxx
+    if (target.startsWith("0.0.")) {
+      const parts = target.split('.');
+      if (parts.length === 3 && parts[2].length > 5) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 1)}...${parts[2].substring(parts[2].length - 3)}`;
+      }
+      return target;
     }
     
-    // Fallback for EVM/0x addresses if Wagmi hasn't converted it yet
-    if (addr.startsWith("0x")) {
-      return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    // EVM Fallback Truncation: 0x12...5678
+    if (target.startsWith("0x")) {
+      return `${target.slice(0, 6)}...${target.slice(-4)}`;
     }
     
-    return addr;
+    return target;
   };
 
   return (
@@ -93,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatHederaAddress(hederaId || address)}
+                    {formatDisplayAddress(nativeHederaAddress, address)}
                   </span>
                 </div>
                 <button 

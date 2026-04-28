@@ -1,7 +1,7 @@
 /**
  * @title Web3Context
  * @author Viqtorhvayx
- * @dev Hardened state management with deep debug logging for native Hedera ID extraction.
+ * @dev State management with forced Mirror Node fetch for native Hedera ID resolution.
  */
 
 "use client";
@@ -14,7 +14,7 @@ import abis from './abis.json';
 
 interface Web3ContextType {
     address: string | null;
-    hederaId: string | null;
+    nativeHederaAddress: string | null;
     isConnected: boolean;
     walletType: string | null;
     balance: string;
@@ -39,7 +39,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { disconnect: wagmiDisconnect } = useDisconnect();
     const { open } = useAppKit();
     
-    const [hederaId, setHederaId] = useState<string | null>(null);
+    const [nativeHederaAddress, setNativeHederaAddress] = useState<string | null>(null);
     const [balance, setBalance] = useState("0");
     const [walletType, setWalletType] = useState<string | null>(null);
 
@@ -51,77 +51,39 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     /**
-     * Converts an EVM address to a native Hedera Account ID via Mirror Node.
-     * Credits: Viqtorhvayx
-     */
-    const fetchHederaId = useCallback(async (evmAddr: string) => {
-        if (!evmAddr) return;
-        
-        // If already in Hedera format, set it immediately
-        if (evmAddr.startsWith('0.0.')) {
-            setHederaId(evmAddr);
-            return;
-        }
-
-        if (!evmAddr.startsWith('0x')) return;
-
-        try {
-            console.log("CREODE - Fetching Hedera ID for EVM address:", evmAddr);
-            const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${evmAddr}`);
-            const data = await response.json();
-            if (data.account) {
-                console.log("CREODE - Mirror Node returned Account ID:", data.account);
-                setHederaId(data.account);
-            }
-        } catch (error) {
-            console.error("CREODE - Mirror Node fetch error:", error);
-            setHederaId(null);
-        }
-    }, []);
-
-    /**
-     * Hardened Account Sync with Debug Logs
+     * Force fetch native 0.0.x ID from Mirror Node.
      * Credits: Viqtorhvayx
      */
     useEffect(() => {
-        const syncAccountId = async () => {
-            console.log("CREODE DEBUG - Syncing Account ID...");
-            console.log("CREODE DEBUG - Wagmi Address:", wagmiAddress);
-            console.log("CREODE DEBUG - AppKit Address:", appKitAddress);
-
+        const resolveHederaId = async () => {
             if (!activeAddress) {
-                setHederaId(null);
+                setNativeHederaAddress(null);
                 return;
             }
 
-            // Attempt direct extraction from HashPack Connector (Immediate Path)
-            if (connector && connector.name.toLowerCase().includes('hashpack')) {
-                try {
-                    const provider: any = await connector.getProvider();
-                    console.log("CREODE DEBUG - HashPack Provider Object:", provider);
-                    
-                    // Comprehensive scrape for account IDs in provider session
-                    const nativeId = 
-                        provider?.session?.accountIds?.[0] || 
-                        provider?.hcData?.pairingData?.accountIds?.[0] ||
-                        provider?.accountIds?.[0];
-
-                    if (nativeId && nativeId.toString().startsWith('0.0.')) {
-                        console.log("CREODE DEBUG - Found Native ID in provider:", nativeId);
-                        setHederaId(nativeId.toString());
-                        return;
-                    }
-                } catch (e) {
-                    console.warn("CREODE - Direct ID extraction failed:", e);
-                }
+            // If already in Hedera format, use it directly
+            if (activeAddress.startsWith('0.0.')) {
+                setNativeHederaAddress(activeAddress);
+                return;
             }
 
-            // Fallback to Mirror Node if no native ID found in provider
-            fetchHederaId(activeAddress);
+            // Force Mirror Node fetch for EVM (0x) addresses
+            if (activeAddress.startsWith('0x')) {
+                try {
+                    const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${activeAddress}`);
+                    const data = await response.json();
+                    if (data.account) {
+                        setNativeHederaAddress(data.account);
+                    }
+                } catch (error) {
+                    console.error("CREODE - Mirror Node resolution failed:", error);
+                    setNativeHederaAddress(null);
+                }
+            }
         };
 
-        syncAccountId();
-    }, [activeAddress, connector, fetchHederaId, wagmiAddress, appKitAddress]);
+        resolveHederaId();
+    }, [activeAddress]);
 
     useEffect(() => {
         if (balanceData) {
@@ -185,7 +147,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return (
         <Web3Context.Provider value={{
             address: activeAddress,
-            hederaId,
+            nativeHederaAddress,
             isConnected,
             walletType,
             balance,
