@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 import { Logo } from './Logo';
 
@@ -12,11 +12,14 @@ interface HeaderProps {
 /**
  * @title Header
  * @author Viqtorhvayx
- * @dev Navigation component with forced native Hedera address rendering.
+ * @dev Navigation component with native Hedera address translation and smart truncation.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-  const { address, nativeHederaAddress, isConnected, connect, disconnect } = useWeb3();
+  const { address, isConnected, connect, disconnect } = useWeb3();
   const [isToggling, setIsToggling] = useState(false);
+  
+  // 1. Address Translator State
+  const [nativeAddress, setNativeAddress] = useState<string>("");
 
   const handleThemeToggle = () => {
     setIsToggling(true);
@@ -24,30 +27,58 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
+  // 2. Mirror Node Fetch Logic
+  useEffect(() => {
+    const resolveNativeAddress = async () => {
+      if (!address) {
+        setNativeAddress("");
+        return;
+      }
+
+      // If already in native format, update state directly
+      if (address.startsWith("0.0.")) {
+        setNativeAddress(address);
+        return;
+      }
+
+      // If EVM format, translate via Hedera Mirror Node
+      if (address.startsWith("0x")) {
+        try {
+          const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+          const data = await response.json();
+          if (data.account) {
+            setNativeAddress(data.account);
+          } else {
+            setNativeAddress(address); // Fallback to raw address
+          }
+        } catch (error) {
+          console.error("Mirror Node fetch failed:", error);
+          setNativeAddress(address); // Fallback on failure
+        }
+      }
+    };
+
+    resolveNativeAddress();
+  }, [address]);
+
   /**
-   * Formatting utility for the UI.
-   * Prioritizes nativeHederaAddress (0.0.x) and applies truncation.
+   * 3. Truncation and UI Rendering Logic
    * Credits: Viqtorhvayx
    */
-  const formatDisplayAddress = (native: string | null, raw: string | null) => {
-    const target = native || raw;
-    if (!target) return "";
+  const formatDisplayAddress = (addr: string) => {
+    if (!addr) return "";
     
-    // Native Hedera Truncation: 0.0.x...xxx
-    if (target.startsWith("0.0.")) {
-      const parts = target.split('.');
-      if (parts.length === 3 && parts[2].length > 5) {
-        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 1)}...${parts[2].substring(parts[2].length - 3)}`;
+    // Native Hedera Format: 0.0.123...789
+    if (addr.startsWith("0.0.")) {
+      const parts = addr.split('.');
+      if (parts.length === 3 && parts[2].length > 6) {
+        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
       }
-      return target;
+      return addr;
     }
     
-    // EVM Fallback Truncation: 0x12...5678
-    if (target.startsWith("0x")) {
-      return `${target.slice(0, 6)}...${target.slice(-4)}`;
-    }
-    
-    return target;
+    // EVM Fallback: 0x1234...5678
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
 
   return (
@@ -98,7 +129,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-[var(--border)]">
                   <div className="w-1.5 h-1.5 bg-[#00A8E8] rounded-full animate-pulse" />
                   <span className="text-[10px] font-bold text-black/60 dark:text-white font-mono">
-                    {formatDisplayAddress(nativeHederaAddress, address)}
+                    {formatDisplayAddress(nativeAddress || address || "")}
                   </span>
                 </div>
                 <button 
