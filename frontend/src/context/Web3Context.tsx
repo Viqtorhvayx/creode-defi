@@ -1,16 +1,14 @@
 /**
  * @title Web3Context
  * @author Viqtorhvayx
- * @dev Centralized Identity Engine for native Hedera ID resolution.
+ * @dev Hardened Identity Engine with error resilience and direct native ID prioritization.
  */
 
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { ethers } from 'ethers';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAccount, useDisconnect, useBalance } from 'wagmi';
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
-import abis from './abis.json';
 
 interface Web3ContextType {
     address: string | null;
@@ -20,14 +18,13 @@ interface Web3ContextType {
     balance: string;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
-    isConnecting: boolean;
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
 export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { address: appKitAddress, isConnected: isAppKitConnected } = useAppKitAccount();
-    const { address: wagmiAddress, isConnected: isWagmiConnected, isConnecting, connector } = useAccount();
+    const { address: wagmiAddress, isConnected: isWagmiConnected, connector } = useAccount();
     const { disconnect: wagmiDisconnect } = useDisconnect();
     const { open } = useAppKit();
     
@@ -39,12 +36,12 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const activeAddress = wagmiAddress || appKitAddress || null;
 
     const { data: balanceData } = useBalance({ 
-        address: (wagmiAddress || (appKitAddress?.startsWith('0x') ? appKitAddress : undefined)) as `0x${string}` 
+        address: (activeAddress?.startsWith('0x') ? activeAddress : undefined) as `0x${string}` 
     });
 
     /**
-     * Centralized Identity Resolution
-     * Credits: Viqtorhvayx
+     * Hardened Identity Resolution
+     * This handles the Mirror Node resolution even if WalletConnect returns 403 errors.
      */
     useEffect(() => {
         const resolveIdentity = async () => {
@@ -53,50 +50,32 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 return;
             }
 
-            // 1. Direct Scrape for native ID (0.0.x)
+            // Priority 1: Direct native ID check
             if (activeAddress.startsWith('0.0.')) {
                 setNativeAddress(activeAddress);
                 return;
             }
 
-            // 2. Connector-Specific Extraction (HashPack Path)
-            if (connector && connector.name.toLowerCase().includes('hashpack')) {
-                try {
-                    const provider: any = await connector.getProvider();
-                    const namespaces = provider?.session?.namespaces;
-                    if (namespaces?.hedera?.accounts) {
-                        const accountId = namespaces.hedera.accounts[0].split(':').pop();
-                        if (accountId && accountId.startsWith('0.0.')) {
-                            setNativeAddress(accountId);
-                            console.log("CREODE IDENTITY RESOLVED (Session):", accountId);
-                            return;
-                        }
-                    }
-                } catch (e) {
-                    console.warn("Direct extraction failed, using fallback.");
-                }
-            }
-
-            // 3. Mirror Node Translation (EVM Path)
+            // Priority 2: Force Mirror Node translation for EVM formats
             if (activeAddress.startsWith('0x')) {
                 try {
+                    // We attempt Testnet first as it is the most likely development target
                     const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${activeAddress}`);
                     const data = await res.json();
                     if (data.account) {
                         setNativeAddress(data.account);
-                        console.log("CREODE IDENTITY RESOLVED (Mirror Node):", data.account);
                         return;
                     }
                 } catch (e) {
-                    console.error("Mirror Node fetch failed:", e);
+                    console.error("CREODE - Identity resolution failed:", e);
                 }
             }
 
-            setNativeAddress(activeAddress); // Final fallback
+            setNativeAddress(activeAddress);
         };
 
         resolveIdentity();
-    }, [activeAddress, connector]);
+    }, [activeAddress]);
 
     useEffect(() => {
         if (balanceData) setBalance(balanceData.formatted);
@@ -115,8 +94,7 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
             walletType,
             balance,
             connect,
-            disconnect,
-            isConnecting
+            disconnect
         }}>
             {children}
         </Web3Context.Provider>
