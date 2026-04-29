@@ -51,7 +51,7 @@ createAppKit({
     '--w3m-accent': '#00A8E8',
     '--w3m-border-radius-master': '1px'
   }
-})
+} as any)
 
 const queryClient = new QueryClient()
 
