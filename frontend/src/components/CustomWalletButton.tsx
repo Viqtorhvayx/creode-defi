@@ -1,7 +1,7 @@
 /**
- * @title CustomWalletButton (Full Identity Refinement)
+ * @title CustomWalletButton (Deep Diagnostics)
  * @author Viqtorhvayx
- * @dev Displays full native Hedera ID with a glowing green status indicator.
+ * @dev Added verbose logging to diagnose why the native address is not resolving.
  */
 
 'use client';
@@ -17,38 +17,47 @@ export default function CustomWalletButton() {
   const [isResolving, setIsResolving] = useState<boolean>(false);
 
   /**
-   * Testnet Address Resolver
+   * Deep Diagnostic Resolver
    * Credits: Viqtorhvayx
    */
   useEffect(() => {
     const resolveIdentity = async () => {
+      console.log("CREODE DEBUG - Connection Status:", { isConnected, address, chainId });
+
       if (!isConnected || !address) {
         setDisplayAddress("");
         return;
       }
 
-      const numericChainId = Number(chainId);
-      const isHederaTestnet = numericChainId === 296;
+      // Handle both Number (296) and Hex (0x128) for Hedera Testnet
+      const isHederaTestnet = String(chainId) === "296" || String(chainId) === "0x128";
 
       if (isHederaTestnet && address.startsWith("0x")) {
+        console.log("CREODE DEBUG - Hedera Testnet Detected. Resolving native ID...");
         setIsResolving(true);
         try {
-          const baseUrl = "https://testnet.mirrornode.hedera.com";
-          const res = await fetch(`${baseUrl}/api/v1/accounts/${address.toLowerCase()}`);
+          const url = `https://testnet.mirrornode.hedera.com/api/v1/accounts/${address.toLowerCase()}`;
+          console.log("CREODE DEBUG - Fetching from Mirror Node:", url);
+          
+          const res = await fetch(url);
           const data = await res.json();
+          console.log("CREODE DEBUG - Mirror Node Data:", data);
           
           if (data && data.account) {
             setDisplayAddress(data.account);
+            console.log("CREODE DEBUG - Success! Resolved to:", data.account);
           } else {
+            console.warn("CREODE DEBUG - Mirror Node found no account for this address.");
             setDisplayAddress(address);
           }
         } catch (error) {
-          console.error("Testnet Mirror Node Fetch Failed:", error);
+          console.error("CREODE DEBUG - Mirror Node Fetch Failed:", error);
           setDisplayAddress(address);
         } finally {
           setIsResolving(false);
         }
       } else {
+        console.log("CREODE DEBUG - Non-Hedera or Native ID detected. Using raw address.");
         setDisplayAddress(address);
         setIsResolving(false);
       }
@@ -57,41 +66,37 @@ export default function CustomWalletButton() {
     resolveIdentity();
   }, [address, isConnected, chainId]);
 
-  /**
-   * Smart Formatting Utility
-   * Credits: Viqtorhvayx
-   */
   const renderAddressContent = () => {
     if (isResolving) {
       return (
         <span className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          Resolving...
+          Resolving Identity...
         </span>
       );
     }
 
-    // Full Address Display for Hedera (No Truncation)
     if (displayAddress.startsWith("0.0.")) {
       return (
         <div className="flex items-center">
           <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
-          <span className="font-mono text-[10px] tracking-normal uppercase">{displayAddress}</span>
+          <span className="font-mono text-[10px] uppercase tracking-normal">{displayAddress}</span>
         </div>
       );
     }
 
-    // Standard Truncation for EVM Fallback
-    const truncated = `${displayAddress.substring(0, 6)}...${displayAddress.substring(displayAddress.length - 4)}`;
+    const truncated = displayAddress.length > 13 
+      ? `${displayAddress.substring(0, 6)}...${displayAddress.substring(displayAddress.length - 4)}`
+      : displayAddress;
+
     return (
       <div className="flex items-center">
         <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
-        <span className="font-mono text-[10px] tracking-normal uppercase">{truncated}</span>
+        <span className="font-mono text-[10px] uppercase tracking-normal">{truncated}</span>
       </div>
     );
   };
 
-  // STRICT PRESERVATION of structural CSS and Tailwind classes
   return (
     <button 
       onClick={() => open()} 
