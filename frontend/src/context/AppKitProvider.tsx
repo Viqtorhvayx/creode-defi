@@ -24,6 +24,9 @@ createAppKit({
     url: 'https://frontend-weld-iota-18.vercel.app',
     icons: ['https://avatars.githubusercontent.com/u/179241380']
   },
+  features: {
+    verify: false
+  },
   themeMode: 'dark',
   themeVariables: {
     '--w3m-accent': '#00A8E8',
