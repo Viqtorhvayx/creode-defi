@@ -1,7 +1,7 @@
 /**
- * @title AppKitProvider (v2.2 Force Update)
+ * @title AppKitProvider (Rebuild 2.0)
  * @author Viqtorhvayx
- * @dev Renamed application to force Reown bridge re-authentication.
+ * @dev Hardened provider initialization for Reown AppKit.
  */
 
 'use client'
@@ -19,8 +19,8 @@ createAppKit({
   networks,
   projectId,
   metadata: {
-    name: 'CREODE v2.2',
-    description: 'Advanced DeFi platform on Hedera (Force Update v2.2).',
+    name: 'CREODE',
+    description: 'Advanced Saving, Lending, and Borrowing platform on Hedera.',
     url: 'https://frontend-weld-iota-18.vercel.app',
     icons: ['https://avatars.githubusercontent.com/u/179241380']
   },

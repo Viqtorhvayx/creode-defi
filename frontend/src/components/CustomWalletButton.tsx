@@ -1,7 +1,7 @@
 /**
- * @title CustomWalletButton (Deep Diagnostics)
+ * @title CustomWalletButton for CREODE dApp
  * @author Viqtorhvayx
- * @dev Added verbose logging to diagnose why the native address is not resolving.
+ * @dev Updated to reflect refined connected state UI with full native address display.
  */
 
 'use client';
@@ -13,52 +13,43 @@ export default function CustomWalletButton() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetwork();
-  const [displayAddress, setDisplayAddress] = useState<string>("");
+  const [nativeAddress, setNativeAddress] = useState<string>("");
   const [isResolving, setIsResolving] = useState<boolean>(false);
 
   /**
-   * Deep Diagnostic Resolver
+   * Hedera Testnet Identity Resolver
+   * Fetches the native 0.0.x account ID from the Mirror Node.
    * Credits: Viqtorhvayx
    */
   useEffect(() => {
     const resolveIdentity = async () => {
-      console.log("CREODE DEBUG - Connection Status:", { isConnected, address, chainId });
-
       if (!isConnected || !address) {
-        setDisplayAddress("");
+        setNativeAddress("");
         return;
       }
 
-      // Handle both Number (296) and Hex (0x128) for Hedera Testnet
+      // Check for Hedera Testnet (296 or 0x128)
       const isHederaTestnet = String(chainId) === "296" || String(chainId) === "0x128";
 
       if (isHederaTestnet && address.startsWith("0x")) {
-        console.log("CREODE DEBUG - Hedera Testnet Detected. Resolving native ID...");
         setIsResolving(true);
         try {
-          const url = `https://testnet.mirrornode.hedera.com/api/v1/accounts/${address.toLowerCase()}`;
-          console.log("CREODE DEBUG - Fetching from Mirror Node:", url);
-          
-          const res = await fetch(url);
+          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address.toLowerCase()}`);
           const data = await res.json();
-          console.log("CREODE DEBUG - Mirror Node Data:", data);
           
           if (data && data.account) {
-            setDisplayAddress(data.account);
-            console.log("CREODE DEBUG - Success! Resolved to:", data.account);
+            setNativeAddress(data.account);
           } else {
-            console.warn("CREODE DEBUG - Mirror Node found no account for this address.");
-            setDisplayAddress(address);
+            setNativeAddress(address);
           }
         } catch (error) {
-          console.error("CREODE DEBUG - Mirror Node Fetch Failed:", error);
-          setDisplayAddress(address);
+          console.error("Mirror Node Fetch Failed:", error);
+          setNativeAddress(address);
         } finally {
           setIsResolving(false);
         }
       } else {
-        console.log("CREODE DEBUG - Non-Hedera or Native ID detected. Using raw address.");
-        setDisplayAddress(address);
+        setNativeAddress(address);
         setIsResolving(false);
       }
     };
@@ -66,43 +57,41 @@ export default function CustomWalletButton() {
     resolveIdentity();
   }, [address, isConnected, chainId]);
 
-  const renderAddressContent = () => {
+  const renderConnectedState = () => {
     if (isResolving) {
       return (
-        <span className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          Resolving Identity...
-        </span>
-      );
-    }
-
-    if (displayAddress.startsWith("0.0.")) {
-      return (
-        <div className="flex items-center">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
-          <span className="font-mono text-[10px] uppercase tracking-normal">{displayAddress}</span>
+          <span>Resolving...</span>
         </div>
       );
     }
 
-    const truncated = displayAddress.length > 13 
-      ? `${displayAddress.substring(0, 6)}...${displayAddress.substring(displayAddress.length - 4)}`
-      : displayAddress;
+    // Logic: If it's a native Hedera address (0.0.x), display it in full.
+    // Otherwise, apply standard truncation for EVM/Hex addresses to fit UI.
+    const isNativeId = nativeAddress.startsWith("0.0.");
+    const finalDisplayAddress = isNativeId 
+      ? nativeAddress 
+      : `${nativeAddress.substring(0, 6)}...${nativeAddress.substring(nativeAddress.length - 4)}`;
 
     return (
-      <div className="flex items-center">
+      <div className="flex items-center justify-center">
+        {/* Glowing Green Status Dot */}
         <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
-        <span className="font-mono text-[10px] uppercase tracking-normal">{truncated}</span>
+        <span className="font-mono text-[10px] uppercase tracking-normal">
+          {finalDisplayAddress}
+        </span>
       </div>
     );
   };
 
   return (
     <button 
+      id="custom-wallet-button"
       onClick={() => open()} 
       className="custom-wallet-glow bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[160px] text-[11px] uppercase tracking-wider shadow-lg shadow-blue-500/20 active:scale-95"
     >
-      {!isConnected ? "Connect Wallet" : renderAddressContent()}
+      {!isConnected ? "Connect Wallet" : renderConnectedState()}
     </button>
   );
 }
