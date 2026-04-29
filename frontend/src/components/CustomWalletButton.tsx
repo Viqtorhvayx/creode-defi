@@ -1,7 +1,7 @@
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: Robust dual-support wallet button. Strictly enforces Hedera 0.0.x display.
- * Uses direct session extraction and Mirror Node fallback for maximum accuracy.
+ * Description: High-speed dual-support wallet button. 
+ * Optimized to prevent "Syncing" traps with instant EVM fallback and rapid resolution logic.
  */
 
 "use client";
@@ -21,26 +21,33 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
 
   useEffect(() => {
     const resolveIdentity = async () => {
-      // 1. Reset if disconnected
+      // 1. Instant Exit if disconnected
       if (!isConnected || !address) {
         setDisplayAddress("");
+        setIsResolving(false);
         return;
       }
+
+      // Pre-calculate truncated address for instant fallbacks
+      const truncatedFallback = address.length > 13 
+        ? `${address.slice(0, 6)}...${address.slice(-4)}`
+        : address;
 
       // 2. Identify Hedera Network (Decimal 296, Hex 0x128)
       const cid = String(chainId);
       const isHedera = cid === "296" || cid.toLowerCase() === "0x128" || cid.includes("296");
 
       if (isHedera) {
-        // Path A: Address is already native 0.0.x
+        // Path A: Address is already native 0.0.x (Instant)
         if (address.startsWith("0.0.")) {
           setDisplayAddress(address);
+          setIsResolving(false);
           return;
         }
 
         setIsResolving(true);
         
-        // Path B: Attempt direct session extraction (Most reliable for HashPack)
+        // Path B: Attempt rapid session extraction (HashPack native bridge)
         try {
           const provider: any = await connector?.getProvider();
           const accounts = provider?.session?.namespaces?.hedera?.accounts;
@@ -53,21 +60,24 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
             }
           }
         } catch (e) {
-          console.warn("Session extraction failed, falling back to Mirror Node.");
+          // Non-blocking fail
         }
 
-        // Path C: Mirror Node Fallback for 0x addresses on Hedera
+        // Path C: Mirror Node Fallback with Instant Fail-Safe - Engineered by Viqtorhvayx
         if (address.startsWith("0x")) {
           try {
-            const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+            // High-speed fetch with non-hanging logic
+            const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`, {
+              signal: AbortSignal.timeout(3000) // 3s timeout to prevent UI hang
+            });
             const data = await res.json();
             if (data && data.account) {
               setDisplayAddress(data.account);
             } else {
-              setDisplayAddress("Syncing...");
+              setDisplayAddress(truncatedFallback);
             }
           } catch (e) {
-            setDisplayAddress("Syncing...");
+            setDisplayAddress(truncatedFallback);
           } finally {
             setIsResolving(false);
           }
@@ -75,11 +85,9 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         }
       }
 
-      // 3. Logic for standard EVM (MetaMask on Sepolia, etc.)
-      const truncated = address.length > 13 
-        ? `${address.slice(0, 6)}...${address.slice(-4)}`
-        : address;
-      setDisplayAddress(truncated);
+      // 3. Logic for standard EVM or fallback
+      setDisplayAddress(truncatedFallback);
+      setIsResolving(false);
     };
 
     resolveIdentity();
@@ -96,7 +104,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       ) : isResolving ? (
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span>Resolving...</span>
+          <span>Translating...</span>
         </div>
       ) : (
         <div className="flex items-center space-x-2">
