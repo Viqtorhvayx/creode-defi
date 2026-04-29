@@ -1,7 +1,7 @@
 /**
- * @title CustomWalletButton (Optimized Handshake)
+ * @title CustomWalletButton (Strict Testnet)
  * @author Viqtorhvayx
- * @dev Dynamic identity switcher (0.0.x vs 0x...) with Mirror Node integration.
+ * @dev Dynamic identity switcher strictly for Testnet (0.0.x vs 0x...).
  */
 
 'use client';
@@ -17,7 +17,7 @@ export default function CustomWalletButton() {
   const [isResolving, setIsResolving] = useState<boolean>(false);
 
   /**
-   * Smart Address Resolver
+   * Testnet Address Resolver
    * Credits: Viqtorhvayx
    */
   useEffect(() => {
@@ -27,33 +27,30 @@ export default function CustomWalletButton() {
         return;
       }
 
-      // Check if on Hedera (295 = Mainnet, 296 = Testnet)
+      // Check if on Hedera Testnet (Chain ID 296)
       const numericChainId = Number(chainId);
-      const isHedera = numericChainId === 295 || numericChainId === 296;
+      const isHederaTestnet = numericChainId === 296;
 
-      if (isHedera && address.startsWith("0x")) {
+      if (isHederaTestnet && address.startsWith("0x")) {
         setIsResolving(true);
         try {
-          const baseUrl = numericChainId === 296 
-            ? "https://testnet.mirrornode.hedera.com" 
-            : "https://mainnet-public.mirrornode.hedera.com";
-          
+          const baseUrl = "https://testnet.mirrornode.hedera.com";
           const res = await fetch(`${baseUrl}/api/v1/accounts/${address.toLowerCase()}`);
           const data = await res.json();
           
           if (data && data.account) {
             setDisplayAddress(data.account);
           } else {
-            setDisplayAddress(address); // Fallback to EVM if not found
+            setDisplayAddress(address); // Fallback to EVM
           }
         } catch (error) {
-          console.error("Mirror Node Fetch Failed:", error);
+          console.error("Testnet Mirror Node Fetch Failed:", error);
           setDisplayAddress(address);
         } finally {
           setIsResolving(false);
         }
       } else {
-        // Default EVM display for MetaMask/Others
+        // Standard EVM Testnet display
         setDisplayAddress(address);
         setIsResolving(false);
       }
