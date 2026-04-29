@@ -10,9 +10,9 @@ interface HeaderProps {
 }
 
 /**
- * @title Header
+ * @title Header (v2.2 Force Update)
  * @author Viqtorhvayx
- * @dev Navigation component integrated with Theme-Aware CustomWalletButton.
+ * @dev Added v2.2 badge to verify that the browser is not serving a cached version.
  */
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   const [isToggling, setIsToggling] = useState(false);
@@ -26,7 +26,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   return (
     <header className="mb-12">
       <nav className="flex justify-between items-center">
-        <Logo theme={theme} />
+        <div className="flex items-center gap-3">
+          <Logo theme={theme} />
+          <span className="text-[9px] font-black bg-[#00A8E8]/10 text-[#00A8E8] px-1.5 py-0.5 rounded border border-[#00A8E8]/20 tracking-tighter">
+            V2.2
+          </span>
+        </div>
         
         <div className="flex items-center gap-4">
           <button 
@@ -54,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           </button>
 
           <div className="flex items-center gap-3">
-            <CustomWalletButton theme={theme} />
+            <CustomWalletButton />
           </div>
         </div>
       </nav>
