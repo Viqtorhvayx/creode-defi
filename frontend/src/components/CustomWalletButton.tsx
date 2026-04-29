@@ -1,7 +1,7 @@
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: High-speed dual-support wallet button. 
- * Optimized to prevent "Syncing" traps with instant EVM fallback and rapid resolution logic.
+ * Description: Ultra-reliable wallet button. Strictly enforces Hedera native 0.0.x ID display.
+ * Engineered with a multi-path resolution engine to bypass EVM-only rendering.
  */
 
 "use client";
@@ -28,64 +28,63 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         return;
       }
 
-      // Pre-calculate truncated address for instant fallbacks
+      // Pre-calculate truncated address for fallback
       const truncatedFallback = address.length > 13 
         ? `${address.slice(0, 6)}...${address.slice(-4)}`
         : address;
 
-      // 2. Identify Hedera Network (Decimal 296, Hex 0x128)
-      const cid = String(chainId);
-      const isHedera = cid === "296" || cid.toLowerCase() === "0x128" || cid.includes("296");
+      // 2. Multi-Path Hedera Native ID Resolution
+      
+      // Path A: The address is already a native ID (Common for HashPack sessions)
+      if (address.startsWith("0.0.")) {
+        setDisplayAddress(address);
+        setIsResolving(false);
+        return;
+      }
 
-      if (isHedera) {
-        // Path A: Address is already native 0.0.x (Instant)
-        if (address.startsWith("0.0.")) {
-          setDisplayAddress(address);
-          setIsResolving(false);
-          return;
-        }
+      setIsResolving(true);
 
-        setIsResolving(true);
+      // Path B: Direct Session Extraction (Primary for HashPack/WalletConnect)
+      try {
+        const provider: any = await connector?.getProvider();
+        // Check both EIP-6963 and standard WalletConnect session namespaces
+        const accounts = provider?.session?.namespaces?.hedera?.accounts || 
+                        provider?.session?.namespaces?.['hedera:296']?.accounts;
         
-        // Path B: Attempt rapid session extraction (HashPack native bridge)
+        if (accounts && accounts[0]) {
+          const id = accounts[0].split(':').pop();
+          if (id && id.startsWith("0.0.")) {
+            setDisplayAddress(id);
+            setIsResolving(false);
+            return;
+          }
+        }
+      } catch (e) {
+        // Non-blocking fail
+      }
+
+      // Path C: Universal Mirror Node Translation (For MetaMask on Hedera or HashPack EVM mode)
+      if (address.startsWith("0x")) {
         try {
-          const provider: any = await connector?.getProvider();
-          const accounts = provider?.session?.namespaces?.hedera?.accounts;
-          if (accounts && accounts[0]) {
-            const id = accounts[0].split(':').pop();
-            if (id && id.startsWith("0.0.")) {
-              setDisplayAddress(id);
+          // Query the testnet mirror node using the EVM address
+          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`, {
+            signal: AbortSignal.timeout(5000) // Increased to 5s for reliability
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.account) {
+              setDisplayAddress(data.account); // Success: Resolved 0.0.x
               setIsResolving(false);
               return;
             }
           }
         } catch (e) {
-          // Non-blocking fail
-        }
-
-        // Path C: Mirror Node Fallback with Instant Fail-Safe - Engineered by Viqtorhvayx
-        if (address.startsWith("0x")) {
-          try {
-            // High-speed fetch with non-hanging logic
-            const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`, {
-              signal: AbortSignal.timeout(3000) // 3s timeout to prevent UI hang
-            });
-            const data = await res.json();
-            if (data && data.account) {
-              setDisplayAddress(data.account);
-            } else {
-              setDisplayAddress(truncatedFallback);
-            }
-          } catch (e) {
-            setDisplayAddress(truncatedFallback);
-          } finally {
-            setIsResolving(false);
-          }
-          return;
+          console.warn("Mirror Node resolution failed:", e);
         }
       }
 
-      // 3. Logic for standard EVM or fallback
+      // 3. Final Fallback (If all native paths fail, show truncated EVM)
       setDisplayAddress(truncatedFallback);
       setIsResolving(false);
     };
@@ -110,7 +109,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         <div className="flex items-center space-x-2">
           {/* Glowing Green Status Dot */}
           <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
-          {/* Wallet Address (Full 0.0.x or Truncated 0x) */}
+          {/* Native Hedera ID (0.0.x) preferred */}
           <span className="font-mono text-[10px] tracking-normal">{displayAddress}</span>
         </div>
       )}
