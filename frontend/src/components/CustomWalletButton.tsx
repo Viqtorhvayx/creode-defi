@@ -1,6 +1,7 @@
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: Dual-support wallet button for Hedera Testnet (full 0.0.x address) and EVM.
+ * Description: Dual-support wallet button for Hedera Testnet (Strict 0.0.x) and EVM.
+ * Optimized for robust Chain ID detection and native identity enforcement.
  */
 
 "use client";
@@ -32,8 +33,8 @@ export default function CustomWalletButton() {
 
       // 3. If it's an EVM 0x address, check if we need to translate it
       if (address.startsWith("0x")) {
-        // Hedera Testnet Chain ID is 296
-        const isHederaTestnet = chainId === 296 || String(chainId).includes("296");
+        // Hedera Testnet Chain ID detection (Decimal 296, Hex 0x128)
+        const isHederaTestnet = Number(chainId) === 296 || String(chainId).toLowerCase() === "0x128" || String(chainId) === "296";
         
         if (isHederaTestnet) {
           setIsFetching(true);
@@ -45,17 +46,18 @@ export default function CustomWalletButton() {
               // Success: Set the full, un-truncated 0.0.x address
               setDisplayAddress(data.account);
             } else {
-              // Mirror node failed, fallback to truncated EVM
-              setDisplayAddress(`${address.slice(0, 6)}...${address.slice(-4)}`);
+              // On Hedera, we never show the 0x address. Display syncing status if fetch fails.
+              setDisplayAddress("Syncing Account...");
             }
           } catch (error) {
             console.error("Mirror Node Error:", error);
-            setDisplayAddress(`${address.slice(0, 6)}...${address.slice(-4)}`);
+            // Strict enforcement: Never fallback to 0x on Hedera network
+            setDisplayAddress("Syncing Account...");
           } finally {
             setIsFetching(false);
           }
         } else {
-          // It's a standard EVM chain (like Sepolia or MetaMask), truncate it normally
+          // Standard EVM chain (Sepolia, etc.): Truncate address normally
           setDisplayAddress(`${address.slice(0, 6)}...${address.slice(-4)}`);
         }
       }
