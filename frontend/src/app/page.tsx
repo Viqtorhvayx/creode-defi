@@ -146,6 +146,15 @@ export default function Dashboard() {
               </svg>
             </a>
           </div>
+
+          {/* Testnet Disclaimer: Engineered for transparency and security compliance */}
+          <div className="mt-8 max-w-2xl text-center">
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 leading-relaxed" style={{ color: primaryTextColor }}>
+              Disclaimer: This decentralized application is strictly for the Hedera Testnet. 
+              All transactions are executed using test assets with no real-world value. 
+              This interface is intended for experimental purposes only.
+            </p>
+          </div>
         </footer>
       </div>
     </main>
