@@ -1,7 +1,7 @@
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: Optimized dual-support wallet button for Hedera (Native ID) and EVM.
- * Strictly enforces 0.0.x display for Hedera Testnet users.
+ * Description: Robust dual-support wallet button. Strictly enforces Hedera 0.0.x display.
+ * Uses direct session extraction and Mirror Node fallback for maximum accuracy.
  */
 
 "use client";
@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 export default function CustomWalletButton() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
-  const { chainId } = useAppKitNetwork();
+  const { chainId } = useAppKitNetwork(); 
   const { connector } = useAccount();
   
   const [displayAddress, setDisplayAddress] = useState("");
@@ -21,48 +21,65 @@ export default function CustomWalletButton() {
 
   useEffect(() => {
     const resolveIdentity = async () => {
-      // 1. Reset state if disconnected
+      // 1. Reset if disconnected
       if (!isConnected || !address) {
         setDisplayAddress("");
         return;
       }
 
-      // 2. Identify Network (Decimal 296 or Hex 0x128)
-      const isHederaTestnet = Number(chainId) === 296 || String(chainId).toLowerCase() === "0x128" || String(chainId) === "296";
+      // 2. Identify Hedera Network (Decimal 296, Hex 0x128)
+      const cid = String(chainId);
+      const isHedera = cid === "296" || cid.toLowerCase() === "0x128" || cid.includes("296");
 
-      // 3. Logic for Hedera Native Identity
-      if (isHederaTestnet) {
-        // If it's already a native ID (starts with 0.0.)
+      if (isHedera) {
+        // Path A: Address is already native 0.0.x
         if (address.startsWith("0.0.")) {
           setDisplayAddress(address);
           return;
         }
 
-        // If it's an EVM address on Hedera, we MUST resolve the 0.0.x
+        setIsResolving(true);
+        
+        // Path B: Attempt direct session extraction (Most reliable for HashPack)
+        try {
+          const provider: any = await connector?.getProvider();
+          const accounts = provider?.session?.namespaces?.hedera?.accounts;
+          if (accounts && accounts[0]) {
+            const id = accounts[0].split(':').pop();
+            if (id && id.startsWith("0.0.")) {
+              setDisplayAddress(id);
+              setIsResolving(false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn("Session extraction failed, falling back to Mirror Node.");
+        }
+
+        // Path C: Mirror Node Fallback for 0x addresses on Hedera
         if (address.startsWith("0x")) {
-          setIsResolving(true);
           try {
-            const response = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
-            const data = await response.json();
-            
+            const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`);
+            const data = await res.json();
             if (data && data.account) {
               setDisplayAddress(data.account);
             } else {
-              // Fallback for Hedera: Never show 0x. Show syncing status instead.
               setDisplayAddress("Syncing...");
             }
-          } catch (error) {
-            console.error("Mirror Node resolution failed:", error);
+          } catch (e) {
             setDisplayAddress("Syncing...");
           } finally {
             setIsResolving(false);
           }
+          return;
         }
-      } else {
-        // 4. Logic for standard EVM (MetaMask on Sepolia, etc.)
-        const truncated = `${address.slice(0, 6)}...${address.slice(-4)}`;
-        setDisplayAddress(truncated);
       }
+
+      // 3. Logic for standard EVM (MetaMask on Sepolia, etc.)
+      const truncated = address.length > 13 
+        ? `${address.slice(0, 6)}...${address.slice(-4)}`
+        : address;
+      setDisplayAddress(truncated);
     };
 
     resolveIdentity();
