@@ -1,7 +1,7 @@
 /**
- * @title CustomWalletButton (Strict Testnet)
+ * @title CustomWalletButton (Full Identity Refinement)
  * @author Viqtorhvayx
- * @dev Dynamic identity switcher strictly for Testnet (0.0.x vs 0x...).
+ * @dev Displays full native Hedera ID with a glowing green status indicator.
  */
 
 'use client';
@@ -27,7 +27,6 @@ export default function CustomWalletButton() {
         return;
       }
 
-      // Check if on Hedera Testnet (Chain ID 296)
       const numericChainId = Number(chainId);
       const isHederaTestnet = numericChainId === 296;
 
@@ -41,7 +40,7 @@ export default function CustomWalletButton() {
           if (data && data.account) {
             setDisplayAddress(data.account);
           } else {
-            setDisplayAddress(address); // Fallback to EVM
+            setDisplayAddress(address);
           }
         } catch (error) {
           console.error("Testnet Mirror Node Fetch Failed:", error);
@@ -50,7 +49,6 @@ export default function CustomWalletButton() {
           setIsResolving(false);
         }
       } else {
-        // Standard EVM Testnet display
         setDisplayAddress(address);
         setIsResolving(false);
       }
@@ -60,18 +58,37 @@ export default function CustomWalletButton() {
   }, [address, isConnected, chainId]);
 
   /**
-   * Truncation Utility
+   * Smart Formatting Utility
+   * Credits: Viqtorhvayx
    */
-  const formatText = (addr: string) => {
-    if (!addr) return "";
-    if (addr.startsWith("0.0.")) {
-      const parts = addr.split('.');
-      if (parts.length === 3 && parts[2].length > 5) {
-        return `${parts[0]}.${parts[1]}.${parts[2].substring(0, 3)}...${parts[2].substring(parts[2].length - 3)}`;
-      }
-      return addr;
+  const renderAddressContent = () => {
+    if (isResolving) {
+      return (
+        <span className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          Resolving...
+        </span>
+      );
     }
-    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+
+    // Full Address Display for Hedera (No Truncation)
+    if (displayAddress.startsWith("0.0.")) {
+      return (
+        <div className="flex items-center">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
+          <span className="font-mono text-[10px] tracking-normal uppercase">{displayAddress}</span>
+        </div>
+      );
+    }
+
+    // Standard Truncation for EVM Fallback
+    const truncated = `${displayAddress.substring(0, 6)}...${displayAddress.substring(displayAddress.length - 4)}`;
+    return (
+      <div className="flex items-center">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] mr-2 shadow-[0_0_8px_#00FF00]"></span>
+        <span className="font-mono text-[10px] tracking-normal uppercase">{truncated}</span>
+      </div>
+    );
   };
 
   // STRICT PRESERVATION of structural CSS and Tailwind classes
@@ -80,16 +97,7 @@ export default function CustomWalletButton() {
       onClick={() => open()} 
       className="custom-wallet-glow bg-[#00A8E8] hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[160px] text-[11px] uppercase tracking-wider shadow-lg shadow-blue-500/20 active:scale-95"
     >
-      {!isConnected ? (
-        "Connect Wallet"
-      ) : isResolving ? (
-        <span className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          Resolving...
-        </span>
-      ) : (
-        formatText(displayAddress)
-      )}
+      {!isConnected ? "Connect Wallet" : renderAddressContent()}
     </button>
   );
 }
