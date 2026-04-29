@@ -18,6 +18,8 @@ export default function Dashboard() {
   const { balance } = useWeb3();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
+  const [activeTab, setActiveTab] = useState("ACTIVITY");
+  
   // Simulated XP and Points
   const userXP = 45; 
   const userPoints = 1250;
@@ -90,8 +92,32 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Industrial Tab Navigation Section: Precision-aligned between Reputation Metric and Market Chart */}
+            <div className="flex gap-8 mt-10 mb-2 px-1">
+              <button 
+                onClick={() => setActiveTab("ACTIVITY")}
+                className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "ACTIVITY" ? "!text-accent-blue" : ""}`}
+                style={{ color: activeTab === "ACTIVITY" ? "var(--accent-blue)" : secondaryLabelColor }}
+              >
+                Activity
+                {activeTab === "ACTIVITY" && (
+                  <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
+                )}
+              </button>
+              <button 
+                onClick={() => setActiveTab("VIEW TRANSACTION")}
+                className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "VIEW TRANSACTION" ? "!text-accent-blue" : ""}`}
+                style={{ color: activeTab === "VIEW TRANSACTION" ? "var(--accent-blue)" : secondaryLabelColor }}
+              >
+                View Transaction
+                {activeTab === "VIEW TRANSACTION" && (
+                  <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
+                )}
+              </button>
+            </div>
+
             {/* Integrated HBAR Market Chart: Precision-aligned to match Lending Pool height */}
-            <div className="mt-8 h-[400px]">
+            <div className="mt-6 h-[400px]">
               <PriceChart theme={theme} />
             </div>
           </div>

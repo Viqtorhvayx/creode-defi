@@ -10,7 +10,7 @@ import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/rea
 import { useAccount } from 'wagmi';
 import { useEffect, useState } from 'react';
 
-export default function CustomWalletButton() {
+export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark' }) {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetwork(); 

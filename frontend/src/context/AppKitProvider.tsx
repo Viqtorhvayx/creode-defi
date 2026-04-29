@@ -16,7 +16,7 @@ const queryClient = new QueryClient()
 
 createAppKit({
   adapters: [wagmiAdapter],
-  networks,
+  networks: networks as any,
   projectId,
   metadata: {
     name: 'CREODE',
@@ -33,7 +33,10 @@ createAppKit({
 
 export function AppKitProvider({ children }: { children: ReactNode }) {
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+    <WagmiProvider 
+      // @ts-ignore - Version mismatch in Wagmi/AppKit types
+      config={wagmiAdapter.wagmiConfig}
+    >
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )

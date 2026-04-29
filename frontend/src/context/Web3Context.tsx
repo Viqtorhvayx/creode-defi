@@ -21,6 +21,9 @@ interface Web3ContextType {
     balance: string;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
+    lockAssets: (amount: string, unlockDate: number) => Promise<void>;
+    provideLiquidity: (amount: string) => Promise<void>;
+    borrow: (amount: string) => Promise<void>;
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
@@ -123,6 +126,18 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setWalletType(null);
     };
 
+    const lockAssets = async (amount: string, unlockDate: number) => {
+        console.log(`Locking ${amount} until ${unlockDate}`);
+    };
+
+    const provideLiquidity = async (amount: string) => {
+        console.log(`Providing ${amount} liquidity`);
+    };
+
+    const borrow = async (amount: string) => {
+        console.log(`Borrowing ${amount}`);
+    };
+
     return (
         <Web3Context.Provider value={{
             address: activeAddress,
@@ -132,7 +147,10 @@ export const Web3Provider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isConnected,
             balance,
             connect,
-            disconnect
+            disconnect,
+            lockAssets,
+            provideLiquidity,
+            borrow
         }}>
             {children}
         </Web3Context.Provider>
