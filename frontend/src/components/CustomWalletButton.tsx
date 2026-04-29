@@ -1,96 +1,69 @@
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: Ultra-reliable wallet button. Strictly enforces Hedera native 0.0.x ID display.
- * Engineered with a multi-path resolution engine to bypass EVM-only rendering.
+ * Description: Specialized wallet button that enforces Hedera native 0.0.x ID display.
+ * Strictly implements Mirror Node translation logic to bypass EVM hex rendering.
  */
 
 "use client";
 
 import { useAppKit, useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
-import { useAccount } from 'wagmi';
 import { useEffect, useState } from 'react';
 
 export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark' }) {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { chainId } = useAppKitNetwork(); 
-  const { connector } = useAccount();
   
   const [displayAddress, setDisplayAddress] = useState("");
-  const [isResolving, setIsResolving] = useState(false);
 
   useEffect(() => {
-    const resolveIdentity = async () => {
-      // 1. Instant Exit if disconnected
+    const resolveNativeId = async () => {
       if (!isConnected || !address) {
         setDisplayAddress("");
-        setIsResolving(false);
         return;
       }
 
-      // Pre-calculate truncated address for fallback
-      const truncatedFallback = address.length > 13 
-        ? `${address.slice(0, 6)}...${address.slice(-4)}`
-        : address;
+      // Identify Hedera Networks
+      const cid = String(chainId);
+      const isHederaTestnet = cid === "296" || cid === "0x128";
+      const isHederaMainnet = cid === "295" || cid === "0x127";
 
-      // 2. Multi-Path Hedera Native ID Resolution
-      
-      // Path A: The address is already a native ID (Common for HashPack sessions)
-      if (address.startsWith("0.0.")) {
-        setDisplayAddress(address);
-        setIsResolving(false);
-        return;
-      }
-
-      setIsResolving(true);
-
-      // Path B: Direct Session Extraction (Primary for HashPack/WalletConnect)
-      try {
-        const provider: any = await connector?.getProvider();
-        // Check both EIP-6963 and standard WalletConnect session namespaces
-        const accounts = provider?.session?.namespaces?.hedera?.accounts || 
-                        provider?.session?.namespaces?.['hedera:296']?.accounts;
+      if ((isHederaTestnet || isHederaMainnet) && address.startsWith("0x")) {
+        setDisplayAddress("Syncing ID...");
         
-        if (accounts && accounts[0]) {
-          const id = accounts[0].split(':').pop();
-          if (id && id.startsWith("0.0.")) {
-            setDisplayAddress(id);
-            setIsResolving(false);
-            return;
-          }
-        }
-      } catch (e) {
-        // Non-blocking fail
-      }
-
-      // Path C: Universal Mirror Node Translation (For MetaMask on Hedera or HashPack EVM mode)
-      if (address.startsWith("0x")) {
         try {
-          // Query the testnet mirror node using the EVM address
-          const res = await fetch(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${address}`, {
-            signal: AbortSignal.timeout(5000) // Increased to 5s for reliability
-          });
+          const baseUrl = isHederaMainnet 
+            ? "https://mainnet-public.mirrornode.hedera.com" 
+            : "https://testnet.mirrornode.hedera.com";
           
+          const res = await fetch(`${baseUrl}/api/v1/accounts/${address}`);
           if (res.ok) {
             const data = await res.json();
             if (data && data.account) {
-              setDisplayAddress(data.account); // Success: Resolved 0.0.x
-              setIsResolving(false);
+              // Successfully resolved native 0.0.x ID
+              setDisplayAddress(data.account);
               return;
             }
           }
-        } catch (e) {
-          console.warn("Mirror Node resolution failed:", e);
+          // If fetch fails or no account found, do not default to 0x if on Hedera as per requirement
+          setDisplayAddress("ID Unresolved");
+        } catch (error) {
+          setDisplayAddress("Sync Error");
         }
+      } else if (address.startsWith("0.0.")) {
+        // Already a native ID
+        setDisplayAddress(address);
+      } else {
+        // Standard EVM Truncation for non-Hedera networks
+        const truncated = address.length > 13 
+          ? `${address.slice(0, 6)}...${address.slice(-4)}`
+          : address;
+        setDisplayAddress(truncated);
       }
-
-      // 3. Final Fallback (If all native paths fail, show truncated EVM)
-      setDisplayAddress(truncatedFallback);
-      setIsResolving(false);
     };
 
-    resolveIdentity();
-  }, [address, isConnected, chainId, connector]);
+    resolveNativeId();
+  }, [address, isConnected, chainId]);
 
   return (
     <button 
@@ -100,16 +73,11 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
     >
       {!isConnected ? (
         "Connect Wallet"
-      ) : isResolving ? (
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span>Translating...</span>
-        </div>
       ) : (
         <div className="flex items-center space-x-2">
           {/* Glowing Green Status Dot */}
           <span className="w-2.5 h-2.5 rounded-full bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
-          {/* Native Hedera ID (0.0.x) preferred */}
+          {/* Resolved Display Address (Native ID or Truncated 0x) */}
           <span className="font-mono text-[10px] tracking-normal">{displayAddress}</span>
         </div>
       )}
