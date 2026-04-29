@@ -38,7 +38,7 @@ createAppKit({
   metadata: {
     name: 'CREODE',
     description: 'Advanced Saving, Lending, and Borrowing platform on Hedera.',
-    url: 'https://frontend-weld-iota-18.vercel.app', // Strictly matched to origin
+    url: 'https://creode.vercel.app', // Matched to current live domain
     icons: ['https://avatars.githubusercontent.com/u/179241380']
   },
   enableVerify: false, // Root-level bypass for domain verification
