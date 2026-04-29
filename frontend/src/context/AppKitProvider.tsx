@@ -26,7 +26,7 @@ createAppKit({
   },
   features: {
     verify: false
-  },
+  } as any,
   themeMode: 'dark',
   themeVariables: {
     '--w3m-accent': '#00A8E8',
