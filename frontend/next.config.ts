@@ -1,3 +1,4 @@
+// Build: 2026-04-30T17:21 — Cache bust for Vercel CDN
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
