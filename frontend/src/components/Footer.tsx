@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
       {/* Center: Status Pills */}
       <div className="hidden md:flex items-center space-x-3">
         {/* Network Pill */}
-        <div className="flex items-center space-x-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center space-x-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
           <div className="relative flex h-1.5 w-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00A8E8] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00A8E8] shadow-[0_0_8px_#00A8E8]"></span>
@@ -31,7 +31,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Relay Pill */}
-        <div className="flex items-center space-x-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center space-x-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
           <div className="relative flex h-1.5 w-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF00] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
