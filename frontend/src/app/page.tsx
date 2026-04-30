@@ -130,9 +130,9 @@ export default function Dashboard() {
         </div>
 
         <footer className="mt-24 border-t border-[var(--border)] pt-12 pb-24 flex flex-col items-center gap-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: primaryTextColor }}>Built by Team</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#00A8E8]">BUILT BY TEAM</p>
           <div className="flex gap-4">
-            <a href="https://x.com/creode" target="_blank" rel="noopener noreferrer" className="hover:text-[#00A8E8] transition-colors duration-300" style={{ color: primaryTextColor }}>
+            <a href="https://x.com/creode" target="_blank" rel="noopener noreferrer" className="text-[#00A8E8] hover:opacity-80 transition-all duration-300">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
