@@ -1,9 +1,9 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: AppKitProvider (Type-Safe Edition)
- * Description: Unified Reown AppKit infrastructure. 
- *              Fixed: TypeScript 'readonly' array mismatch for networks.
+ * Component: AppKitProvider (Restored & Hardened)
+ * Description: Restored the mounted guard and browser-safe initialization.
+ *              Fixed: TypeScript 'any' casting for networks to satisfy WagmiAdapter.
  */
 
 import React, { ReactNode, useState, useEffect } from 'react';
@@ -15,9 +15,7 @@ import { WagmiProvider } from 'wagmi';
 import { http } from 'viem';
 
 const projectId = 'e5ca5702a767d682a832959e7f1c57bb';
-
-// Fix: Explicitly type as a mutable array to satisfy WagmiAdapter requirements
-const networks = [hederaTestnet, sepolia] as any;
+const networks = [hederaTestnet, sepolia] as any; // Cast to any to bypass strict Wagmi mapping issues
 
 const wagmiAdapter = new WagmiAdapter({
   projectId,
@@ -29,26 +27,29 @@ const wagmiAdapter = new WagmiAdapter({
   },
 });
 
-createAppKit({
-  adapters: [wagmiAdapter],
-  networks: networks,
-  projectId,
-  metadata: {
-    name: 'CREODE Protocol',
-    description: 'Advanced Saving, Lending, and Borrowing on Hedera.',
-    url: 'https://frontend-weld-iota-18.vercel.app',
-    icons: ['https://avatars.githubusercontent.com/u/179241380'],
-  },
-  enableVerify: false,
-  features: {
-    analytics: false,
-  },
-  themeMode: 'dark',
-  themeVariables: {
-    '--w3m-accent': '#00A8E8',
-    '--w3m-border-radius-master': '2px',
-  },
-} as any);
+// Browser-safe initialization
+if (typeof window !== 'undefined') {
+  createAppKit({
+    adapters: [wagmiAdapter],
+    networks,
+    projectId,
+    metadata: {
+      name: 'CREODE Protocol',
+      description: 'Advanced Saving, Lending, and Borrowing on Hedera.',
+      url: 'https://frontend-weld-iota-18.vercel.app',
+      icons: ['https://avatars.githubusercontent.com/u/179241380'],
+    },
+    enableVerify: false,
+    features: {
+      analytics: false,
+    },
+    themeMode: 'dark',
+    themeVariables: {
+      '--w3m-accent': '#00A8E8',
+      '--w3m-border-radius-master': '2px',
+    },
+  } as any);
+}
 
 const queryClient = new QueryClient();
 
