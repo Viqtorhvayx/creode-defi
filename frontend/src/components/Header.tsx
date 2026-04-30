@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Logo } from './Logo';
+import CustomWalletButton from './CustomWalletButton';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -51,9 +52,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
               </svg>
             )}
           </button>
+
+          <div className="flex items-center gap-3">
+            <CustomWalletButton theme={theme} />
+          </div>
         </div>
       </nav>
     </header>
   );
 };
-
