@@ -78,14 +78,15 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     }
 
-    // 3. EVM MAPPING FIX: Corrected Mirror Node Query
+    // 3. EVM MAPPING FIX: Corrected Mirror Node Query with Case Sensitivity Fix
     if (rawAddress.startsWith('0x')) {
+      const truncatedEVM = `${rawAddress.slice(0, 6)}...${rawAddress.slice(-4)}`;
       setAccountId("Resolving ID...");
       
       try {
         const network = chainId === 295 ? 'mainnet' : 'testnet';
-        // Corrected Endpoint: Filter by account.evm_address
-        const endpoint = `https://${network}.mirrornode.hedera.com/api/v1/accounts?account.evm_address=${rawAddress}`;
+        // Case Sensitivity Fix: .toLowerCase() is mandatory for Mirror Node API
+        const endpoint = `https://${network}.mirrornode.hedera.com/api/v1/accounts?account.evm_address=${rawAddress.toLowerCase()}`;
         
         console.log(`[WalletContext] Querying Mirror Node: ${endpoint}`);
         
@@ -98,15 +99,15 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             // Success: Map found
             setAccountId(data.accounts[0].account);
           } else {
-            // Success: Query complete, but no link exists
-            setAccountId("No Hedera account linked");
+            // Fallback: Display truncated EVM if no native ID is linked
+            setAccountId(truncatedEVM);
           }
         } else {
-          setAccountId("No Hedera account linked");
+          setAccountId(truncatedEVM);
         }
       } catch (error) {
         console.error("[WalletContext] Mirror Node error:", error);
-        setAccountId("No Hedera account linked");
+        setAccountId(truncatedEVM);
       }
     } else if (rawAddress.startsWith('0.0.')) {
         setAccountId(rawAddress);
