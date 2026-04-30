@@ -1,9 +1,10 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: WalletContext (Mirror Node Edition)
- * Description: Centralized wallet state using direct Hedera Testnet Mirror Node
- *              for guaranteed 0.0.x ID resolution without a backend dependency.
+ * Component: WalletContext (Final Edition)
+ * Description: Centralized wallet state. Reads from the single Wagmi adapter.
+ *              Resolves native 0.0.x ID via direct Hedera Testnet Mirror Node.
+ *              No backend API dependency.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -26,7 +27,7 @@ interface WalletContextType {
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { address: rawAddress, isConnected, connector } = useAccount();
+  const { address: rawAddress, isConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useAppKit();
 
@@ -36,8 +37,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [balanceSymbol] = useState<string>("HBAR");
 
   /**
-   * Direct Mirror Node Identity Resolution
-   * Replaces the broken /api/wallet backend call with a guaranteed resolution path.
+   * Mirror Node Identity Resolution
+   * Direct fetch — no backend API required.
    * Credits: Viqtorhvayx
    */
   const resolveIdentity = useCallback(async () => {
@@ -48,46 +49,48 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
-    console.log(`[WalletContext] Address received: ${rawAddress}`);
+    console.log(`[WalletContext] Resolving address: ${rawAddress}`);
 
-    // If already native Hedera format
+    // Already native Hedera format
     if (rawAddress.startsWith('0.0.')) {
       setAccountId(rawAddress);
       setWalletType('hashpack');
-      console.log(`[WalletContext] Native ID detected: ${rawAddress}`);
       return;
     }
 
-    // EVM address - attempt Mirror Node resolution for Hedera
+    // EVM address — query Hedera Testnet Mirror Node
     if (rawAddress.startsWith('0x')) {
       try {
         const url = `https://testnet.mirrornode.hedera.com/api/v1/accounts/${rawAddress.toLowerCase()}`;
-        console.log(`[WalletContext] Querying Mirror Node: ${url}`);
+        console.log(`[WalletContext] Mirror Node fetch: ${url}`);
 
         const res = await fetch(url);
+
+        if (!res.ok) {
+          // Not a Hedera account — treat as standard EVM wallet
+          console.warn(`[WalletContext] Mirror Node returned ${res.status}. Treating as EVM wallet.`);
+          setAccountId(rawAddress);
+          setWalletType('evm');
+          return;
+        }
+
         const data = await res.json();
-        console.log(`[WalletContext] Mirror Node Response:`, data);
+        console.log(`[WalletContext] Mirror Node response:`, data);
 
         if (data && data.account) {
-          // Successfully resolved native Hedera ID
           setAccountId(data.account);
           setWalletType('hashpack');
-          
-          // Also fetch HBAR balance if available
           if (data.balance?.balance !== undefined) {
             const hbar = (data.balance.balance / 1e8).toFixed(4);
             setBalance(hbar);
           }
-          console.log(`[WalletContext] Resolved to native ID: ${data.account}`);
+          console.log(`[WalletContext] Resolved → ${data.account}`);
         } else {
-          // Standard EVM wallet (MetaMask on non-Hedera network)
           setAccountId(rawAddress);
           setWalletType('evm');
-          console.log(`[WalletContext] EVM wallet, no Hedera account found.`);
         }
       } catch (error) {
         console.error("[WalletContext] Mirror Node fetch failed:", error);
-        // Fallback: show raw address
         setAccountId(rawAddress);
         setWalletType('evm');
       }
@@ -102,19 +105,19 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       await open();
     } catch (err) {
-      console.error("[WalletContext] Connection failed:", err);
+      console.error("[WalletContext] open() failed:", err);
     }
   };
 
   const disconnect = async () => {
     try {
-      console.log("[WalletContext] Disconnecting...");
       await wagmiDisconnect();
       setAccountId(null);
       setWalletType(null);
       setBalance("0.00");
       localStorage.removeItem('walletconnect');
       localStorage.removeItem('WCM_RECENT_WALLET');
+      console.log("[WalletContext] Disconnected and state cleared.");
     } catch (err) {
       console.error("[WalletContext] Disconnect failed:", err);
     }
@@ -129,7 +132,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       balance,
       balanceSymbol,
       connect,
-      disconnect
+      disconnect,
     }}>
       {children}
     </WalletContext.Provider>

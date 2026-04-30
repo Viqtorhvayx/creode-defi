@@ -1,56 +1,53 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: AppKitProvider (Clean Rebuild)
- * Project ID Updated: e5ca5702a767d682a832959e7f1c57bb
- * Description: Unified Reown AppKit infrastructure for Hedera and EVM support.
+ * Component: AppKitProvider (Unified Single Adapter)
+ * Description: Single source of truth for Wagmi + Reown AppKit.
+ *              Fixed: metadata.url, ssr: false, single adapter instance.
  */
 
 import React, { ReactNode } from 'react';
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { hederaTestnet, sepolia, mainnet } from '@reown/appkit/networks';
+import { hederaTestnet, sepolia } from '@reown/appkit/networks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { http } from 'viem';
 
-// 1. Project Configuration
 const projectId = 'e5ca5702a767d682a832959e7f1c57bb';
-const networks = [hederaTestnet, sepolia, mainnet];
 
-// 2. Initialize Wagmi Adapter
+const networks = [hederaTestnet, sepolia] as [typeof hederaTestnet, ...any[]];
+
+// Single Wagmi adapter instance — no duplicate in config/index.ts
 const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks,
-  ssr: true,
+  ssr: false, // Must be false — HashPack is browser-only
   transports: {
     [hederaTestnet.id]: http('https://testnet.hashio.io/api'),
     [sepolia.id]: http(),
-    [mainnet.id]: http()
-  }
+  },
 });
 
-// 3. Initialize Reown AppKit
 createAppKit({
   adapters: [wagmiAdapter],
-  networks: networks as [any, ...any[]],
+  networks,
   projectId,
   metadata: {
     name: 'CREODE Protocol',
     description: 'Advanced Saving, Lending, and Borrowing on Hedera.',
-    url: 'https://creode.vercel.app',
-    icons: ['https://avatars.githubusercontent.com/u/179241380']
+    url: 'https://frontend-weld-iota-18.vercel.app', // Fixed: exact Vercel domain
+    icons: ['https://avatars.githubusercontent.com/u/179241380'],
   },
   enableVerify: false,
   features: {
-    verify: false,
-    analytics: true
+    analytics: false, // Disabled to prevent 403 pulse errors
   },
   themeMode: 'dark',
   themeVariables: {
     '--w3m-accent': '#00A8E8',
-    '--w3m-border-radius-master': '2px'
-  }
+    '--w3m-border-radius-master': '2px',
+  },
 } as any);
 
 const queryClient = new QueryClient();
@@ -64,3 +61,6 @@ export function AppKitProvider({ children }: { children: ReactNode }) {
     </WagmiProvider>
   );
 }
+
+// Export wagmiConfig for any component that needs it directly
+export { wagmiAdapter };
