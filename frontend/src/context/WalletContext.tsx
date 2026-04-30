@@ -1,9 +1,9 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: WalletContext (Native Enforcement Rebuild)
- * Description: Mandatory Hedera Native Identity Resolution Engine.
- * Enforces 0.0.x Account ID format for ALL wallets (HashPack & MetaMask).
+ * Component: WalletContext (Identity Resolution Fix)
+ * Description: Corrected Identity Resolution Engine.
+ * Fixes "ID UNRESOLVED" by isolating HashPack logic and correcting Mirror Node parsing for EVM.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -14,8 +14,8 @@ type WalletType = 'hashpack' | 'evm' | null;
 
 interface WalletContextType {
   isConnected: boolean;
-  address: string | null; // Raw address (internal)
-  accountId: string | null; // Strictly enforced Hedera 0.0.x
+  address: string | null; 
+  accountId: string | null; 
   walletType: WalletType;
   balance: string;
   balanceSymbol: string;
@@ -34,15 +34,13 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletType, setWalletType] = useState<WalletType>(null);
 
-  // Balance hook - always uses the EVM address internally for compatibility
   const { data: balanceData } = useBalance({
     address: (rawAddress?.startsWith('0x') ? rawAddress : undefined) as `0x${string}`
   });
 
   /**
-   * Strictly Enforced Identity Resolution Engine
-   * Maps 0x aliases to 0.0.x Native IDs via Mirror Node
-   * Credits: Viqtorhvayx
+   * Corrected Identity Resolution Engine
+   * Strictly credits: Viqtorhvayx
    */
   const resolveNativeIdentity = useCallback(async () => {
     if (!isConnected || !rawAddress) {
@@ -51,40 +49,67 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
+    // 1. Precise Wallet Type Detection
     const type: WalletType = connector?.name.toLowerCase().includes('hashpack') ? 'hashpack' : 'evm';
     setWalletType(type);
 
-    // Scenario A: Address is already in Native Format (Common in direct HashPack sessions)
-    if (rawAddress.startsWith('0.0.')) {
-      setAccountId(rawAddress);
-      return;
+    console.log(`[WalletContext] Detected Type: ${type}, Address: ${rawAddress}`);
+
+    // 2. HASHPACK SEPARATE HANDLING: Bypass mapping if already native or from HashPack
+    if (type === 'hashpack') {
+      if (rawAddress.startsWith('0.0.')) {
+        setAccountId(rawAddress);
+        return;
+      }
+      
+      // Attempt session extraction if HashPack gives 0x (fallback)
+      try {
+        const provider: any = await connector?.getProvider();
+        const accounts = provider?.session?.namespaces?.hedera?.accounts;
+        if (accounts && accounts[0]) {
+          const id = accounts[0].split(':').pop();
+          if (id && id.startsWith('0.0.')) {
+            setAccountId(id);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("[WalletContext] HashPack session extraction failed.");
+      }
     }
 
-    // Scenario B: Address is in EVM Format (MetaMask or HashPack EVM session)
+    // 3. EVM MAPPING FIX: Corrected Mirror Node Query
     if (rawAddress.startsWith('0x')) {
       setAccountId("Resolving ID...");
       
       try {
-        // Detect network for correct Mirror Node endpoint
         const network = chainId === 295 ? 'mainnet' : 'testnet';
-        const res = await fetch(`https://${network}.mirrornode.hedera.com/api/v1/accounts/${rawAddress}`);
+        // Corrected Endpoint: Filter by account.evm_address
+        const endpoint = `https://${network}.mirrornode.hedera.com/api/v1/accounts?account.evm_address=${rawAddress}`;
         
+        console.log(`[WalletContext] Querying Mirror Node: ${endpoint}`);
+        
+        const res = await fetch(endpoint);
         if (res.ok) {
           const data = await res.json();
-          if (data && data.account) {
-            // Success: Map EVM address to Native Hedera ID
-            setAccountId(data.account);
+          console.log(`[WalletContext] Mirror Node Response:`, data);
+
+          if (data.accounts && data.accounts.length > 0) {
+            // Success: Map found
+            setAccountId(data.accounts[0].account);
           } else {
-            // Failure: Address exists but has no linked Hedera Account
-            setAccountId("No Hedera Account");
+            // Success: Query complete, but no link exists
+            setAccountId("No Hedera account linked");
           }
         } else {
-          setAccountId("No Hedera Account");
+          setAccountId("No Hedera account linked");
         }
       } catch (error) {
-        console.error("Mirror Node resolution failed:", error);
-        setAccountId("Sync Error");
+        console.error("[WalletContext] Mirror Node error:", error);
+        setAccountId("No Hedera account linked");
       }
+    } else if (rawAddress.startsWith('0.0.')) {
+        setAccountId(rawAddress);
     }
   }, [isConnected, rawAddress, connector, chainId]);
 
