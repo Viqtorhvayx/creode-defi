@@ -1,13 +1,13 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: WalletContext (Hardened Engine)
- * Description: Production-grade Identity and Balance Engine for CREODE.
- * Features: Concurrent resolution, request timeouts, and guaranteed state cleanup.
+ * Component: WalletContext (Backend-Synchronized Edition)
+ * Description: Centralized identity and balance state management powered by a backend API.
+ * Ensures that 0.0.x IDs and correct HBAR balances are always resolved.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { useAccount, useDisconnect, useChainId } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 
 type WalletType = 'hashpack' | 'evm' | null;
@@ -29,34 +29,16 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const { address: rawAddress, isConnected, connector } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useAppKit();
-  const chainId = useChainId();
 
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletType, setWalletType] = useState<WalletType>(null);
   const [balance, setBalance] = useState<string>("0.00");
-  const [balanceSymbol, setBalanceSymbol] = useState<string>("HBAR");
+  const [balanceSymbol] = useState<string>("HBAR");
 
   /**
-   * Hardened Fetch Helper
+   * Sync Wallet State with Backend
    */
-  const fetchWithTimeout = async (url: string, timeout = 5000) => {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    try {
-      const response = await fetch(url, { signal: controller.signal });
-      clearTimeout(id);
-      return response;
-    } catch (e) {
-      clearTimeout(id);
-      throw e;
-    }
-  };
-
-  /**
-   * Universal Resolver
-   * Credits: Viqtorhvayx
-   */
-  const resolveWalletState = useCallback(async () => {
+  const syncWithBackend = useCallback(async () => {
     if (!isConnected || !rawAddress) {
       setAccountId(null);
       setWalletType(null);
@@ -64,43 +46,27 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
-    const type: WalletType = connector?.name.toLowerCase().includes('hashpack') ? 'hashpack' : 'evm';
-    setWalletType(type);
-    const network = chainId === 295 ? 'mainnet' : 'testnet';
-    const cleanAddress = rawAddress.toLowerCase();
-    const truncatedEVM = `${rawAddress.slice(0, 6)}...${rawAddress.slice(-4)}`;
-
     try {
-      // 1. Identity Resolution
-      if (rawAddress.startsWith('0.0.')) {
-        setAccountId(rawAddress);
+      console.log(`[WalletContext] Syncing ${rawAddress} with backend...`);
+      const res = await fetch(`/api/wallet/${rawAddress}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAccountId(data.accountId);
+        setBalance(data.balance);
+        setWalletType(data.walletType);
       } else {
-        const idRes = await fetchWithTimeout(`https://${network}.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`);
-        if (idRes.ok) {
-          const idData = await idRes.json();
-          setAccountId(idData.account || truncatedEVM);
-        } else {
-          setAccountId(truncatedEVM);
-        }
-      }
-
-      // 2. Balance Resolution
-      const balRes = await fetchWithTimeout(`https://${network}.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`);
-      if (balRes.ok) {
-        const balData = await balRes.json();
-        if (balData.balance?.balance !== undefined) {
-          setBalance((balData.balance.balance / 100000000).toFixed(2));
-        }
+        // Fallback if API fails
+        const truncated = `${rawAddress.slice(0, 6)}...${rawAddress.slice(-4)}`;
+        setAccountId(rawAddress.startsWith('0x') ? truncated : rawAddress);
       }
     } catch (error) {
-      console.error("[WalletContext] Resolver timed out or failed:", error);
-      if (rawAddress.startsWith('0x')) setAccountId(truncatedEVM);
+      console.error("[WalletContext] Backend sync failed:", error);
     }
-  }, [isConnected, rawAddress, connector, chainId]);
+  }, [isConnected, rawAddress]);
 
   useEffect(() => {
-    resolveWalletState();
-  }, [resolveWalletState]);
+    syncWithBackend();
+  }, [syncWithBackend]);
 
   const connect = async () => {
     try {
@@ -112,19 +78,18 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const disconnect = async () => {
     try {
-      console.log("[WalletContext] Executing mandatory disconnect...");
+      console.log("[WalletContext] Hard disconnect initiated...");
       await wagmiDisconnect();
       
-      // Force immediate state wipe
+      // Cleanup local state
       setAccountId(null);
       setWalletType(null);
       setBalance("0.00");
       
-      // Cleanup AppKit session if lingering
+      // Clear persistent storage to prevent ghost sessions
       localStorage.removeItem('walletconnect');
       localStorage.removeItem('WCM_RECENT_WALLET');
       
-      console.log("[WalletContext] Disconnect complete.");
     } catch (err) {
       console.error("[WalletContext] Disconnect failed:", err);
     }
