@@ -1,13 +1,13 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: WalletContext (Identity Resolution Fix)
- * Description: Corrected Identity Resolution Engine.
- * Fixes "ID UNRESOLVED" by isolating HashPack logic and correcting Mirror Node parsing for EVM.
+ * Component: WalletContext (Industrial Grade Fix)
+ * Description: Robust Identity and Balance Engine for CREODE.
+ * Fixes "ID UNRESOLVED" and "0.00 HBAR" issues for both HashPack and EVM wallets.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { useAccount, useDisconnect, useBalance, useChainId } from 'wagmi';
+import { useAccount, useDisconnect, useChainId } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
 
 type WalletType = 'hashpack' | 'evm' | null;
@@ -33,99 +33,82 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletType, setWalletType] = useState<WalletType>(null);
-
-  const { data: balanceData } = useBalance({
-    address: (rawAddress?.startsWith('0x') ? rawAddress : undefined) as `0x${string}`
-  });
+  const [balance, setBalance] = useState<string>("0.00");
+  const [balanceSymbol, setBalanceSymbol] = useState<string>("HBAR");
 
   /**
-   * Corrected Identity Resolution Engine
-   * Strictly credits: Viqtorhvayx
+   * Universal Identity & Balance Resolver
+   * Credits: Viqtorhvayx
    */
-  const resolveNativeIdentity = useCallback(async () => {
+  const resolveWalletState = useCallback(async () => {
     if (!isConnected || !rawAddress) {
       setAccountId(null);
       setWalletType(null);
+      setBalance("0.00");
       return;
     }
 
-    // 1. Precise Wallet Type Detection
     const type: WalletType = connector?.name.toLowerCase().includes('hashpack') ? 'hashpack' : 'evm';
     setWalletType(type);
+    const network = chainId === 295 ? 'mainnet' : 'testnet';
+    const cleanAddress = rawAddress.toLowerCase();
+    const truncatedEVM = `${rawAddress.slice(0, 6)}...${rawAddress.slice(-4)}`;
 
-    console.log(`[WalletContext] Detected Type: ${type}, Address: ${rawAddress}`);
+    console.log(`[WalletContext] Resolving State: ${type} | ${rawAddress}`);
 
-    // 2. HASHPACK SEPARATE HANDLING: Bypass mapping if already native or from HashPack
-    if (type === 'hashpack') {
+    try {
+      // 1. Direct Identity Resolution
       if (rawAddress.startsWith('0.0.')) {
         setAccountId(rawAddress);
-        return;
-      }
-      
-      // Attempt session extraction if HashPack gives 0x (fallback)
-      try {
-        const provider: any = await connector?.getProvider();
-        const accounts = provider?.session?.namespaces?.hedera?.accounts;
-        if (accounts && accounts[0]) {
-          const id = accounts[0].split(':').pop();
-          if (id && id.startsWith('0.0.')) {
-            setAccountId(id);
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn("[WalletContext] HashPack session extraction failed.");
-      }
-    }
-
-    // 3. EVM MAPPING FIX: Corrected Mirror Node Query with Case Sensitivity Fix
-    if (rawAddress.startsWith('0x')) {
-      const truncatedEVM = `${rawAddress.slice(0, 6)}...${rawAddress.slice(-4)}`;
-      setAccountId("Resolving ID...");
-      
-      try {
-        const network = chainId === 295 ? 'mainnet' : 'testnet';
-        // Case Sensitivity Fix: .toLowerCase() is mandatory for Mirror Node API
-        const endpoint = `https://${network}.mirrornode.hedera.com/api/v1/accounts?account.evm_address=${rawAddress.toLowerCase()}`;
-        
-        console.log(`[WalletContext] Querying Mirror Node: ${endpoint}`);
-        
-        const res = await fetch(endpoint);
-        if (res.ok) {
-          const data = await res.json();
-          console.log(`[WalletContext] Mirror Node Response:`, data);
-
-          if (data.accounts && data.accounts.length > 0) {
-            // Success: Map found
-            setAccountId(data.accounts[0].account);
+      } else {
+        // Attempt Mirror Node Mapping for EVM
+        const idRes = await fetch(`https://${network}.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`);
+        if (idRes.ok) {
+          const idData = await idRes.json();
+          if (idData.account) {
+            setAccountId(idData.account);
           } else {
-            // Fallback: Display truncated EVM if no native ID is linked
             setAccountId(truncatedEVM);
           }
         } else {
           setAccountId(truncatedEVM);
         }
-      } catch (error) {
-        console.error("[WalletContext] Mirror Node error:", error);
-        setAccountId(truncatedEVM);
       }
-    } else if (rawAddress.startsWith('0.0.')) {
-        setAccountId(rawAddress);
+
+      // 2. Universal Balance Resolution (Mirror Node is most reliable for both formats)
+      const balRes = await fetch(`https://${network}.mirrornode.hedera.com/api/v1/accounts/${cleanAddress}`);
+      if (balRes.ok) {
+        const balData = await balRes.json();
+        if (balData.balance && balData.balance.balance !== undefined) {
+          // Hedera balance is in tinybars (10^8)
+          const hbarBalance = (balData.balance.balance / 100000000).toFixed(2);
+          setBalance(hbarBalance);
+        }
+      }
+    } catch (error) {
+      console.error("[WalletContext] Resolution error:", error);
+      if (rawAddress.startsWith('0x')) setAccountId(truncatedEVM);
     }
   }, [isConnected, rawAddress, connector, chainId]);
 
   useEffect(() => {
-    resolveNativeIdentity();
-  }, [resolveNativeIdentity]);
+    resolveWalletState();
+  }, [resolveWalletState]);
 
   const connect = async () => {
     await open();
   };
 
   const disconnect = async () => {
-    await wagmiDisconnect();
-    setAccountId(null);
-    setWalletType(null);
+    try {
+      await wagmiDisconnect();
+      // Explicit cleanup
+      setAccountId(null);
+      setWalletType(null);
+      setBalance("0.00");
+    } catch (err) {
+      console.error("[WalletContext] Disconnect failed:", err);
+    }
   };
 
   return (
@@ -134,8 +117,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       address: rawAddress || null,
       accountId,
       walletType,
-      balance: balanceData ? Number(balanceData.formatted).toFixed(2) : "0.00",
-      balanceSymbol: balanceData?.symbol || "HBAR",
+      balance,
+      balanceSymbol,
       connect,
       disconnect
     }}>
