@@ -141,7 +141,7 @@ export default function Dashboard() {
 
           <div className="mt-8 max-w-2xl text-center">
             <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 leading-relaxed" style={{ color: primaryTextColor }}>
-              Disclaimer: Hedera Testnet only. Test assets carry no real value. For experimental use only.
+              CREODE is currently in Testnet. All activity is simulated.
             </p>
           </div>
         </footer>
