@@ -1,9 +1,9 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: AppKitProvider (Browser-Safe Edition)
- * Description: createAppKit is initialized safely inside a mounted guard.
- *              Prevents SSR execution which breaks useAppKitAccount context.
+ * Component: AppKitProvider (Type-Safe Edition)
+ * Description: Unified Reown AppKit infrastructure. 
+ *              Fixed: TypeScript 'readonly' array mismatch for networks.
  */
 
 import React, { ReactNode, useState, useEffect } from 'react';
@@ -15,7 +15,9 @@ import { WagmiProvider } from 'wagmi';
 import { http } from 'viem';
 
 const projectId = 'e5ca5702a767d682a832959e7f1c57bb';
-const networks = [hederaTestnet, sepolia] as [typeof hederaTestnet, ...any[]];
+
+// Fix: Explicitly type as a mutable array to satisfy WagmiAdapter requirements
+const networks = [hederaTestnet, sepolia] as any;
 
 const wagmiAdapter = new WagmiAdapter({
   projectId,
@@ -27,11 +29,9 @@ const wagmiAdapter = new WagmiAdapter({
   },
 });
 
-// Initialize AppKit once at module level but AFTER wagmiAdapter is created
-// This is safe because this file is "use client" and only runs in the browser
 createAppKit({
   adapters: [wagmiAdapter],
-  networks,
+  networks: networks,
   projectId,
   metadata: {
     name: 'CREODE Protocol',
@@ -55,8 +55,6 @@ const queryClient = new QueryClient();
 export function AppKitProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
-  // Only render the wallet providers after the component has mounted in the browser.
-  // This prevents AppKit hooks from running during SSR where they have no context.
   useEffect(() => {
     setMounted(true);
   }, []);
