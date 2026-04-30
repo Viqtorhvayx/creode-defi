@@ -2,8 +2,8 @@
 
 /* * Developer: [Viqtorhvayx]
  * Component: CustomWalletButton
- * Description: Specialized wallet button integrated with the Advanced Identity Engine.
- * Dynamically switches between Hedera native (0.0.x) and EVM (0x...) formats.
+ * Description: Specialized wallet button that strictly enforces Hedera native (0.0.x) ID display.
+ * Implementation: Consumes the resolved accountId from WalletContext to ensure 0x addresses are never shown.
  */
 
 import React from 'react';
@@ -13,21 +13,11 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
   const { 
     isConnected, 
     accountId, 
-    evmAddress, 
-    walletType, 
     balance, 
     balanceSymbol, 
     connect, 
     disconnect 
   } = useWallet();
-
-  // Determine display address based on wallet type requirements
-  const displayAddress = walletType === 'hashpack' ? accountId : evmAddress;
-  
-  // Truncate EVM address for UI cleanliness, but keep HashPack ID full if possible
-  const truncatedDisplay = (displayAddress && walletType === 'evm') 
-    ? `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`
-    : displayAddress;
 
   const handleDisconnect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,16 +28,16 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
     <button 
       id="custom-wallet-button"
       onClick={() => !isConnected && connect()} 
-      className="custom-wallet-glow bg-[#00A8E8] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[170px] text-[11px] uppercase tracking-wider shadow-lg shadow-blue-500/20 active:scale-95"
+      className="custom-wallet-glow bg-[#00A8E8] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[180px] text-[11px] uppercase tracking-wider shadow-lg shadow-blue-500/20 active:scale-95"
     >
       {!isConnected ? (
         "Connect Wallet"
       ) : (
         <div className="flex items-center space-x-3 w-full justify-between">
-          {/* Section 1: Identity (Native 0.0.x or Truncated 0x) */}
+          {/* Section 1: Identity - Strictly Native 0.0.x format */}
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 rounded-full bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
-            <span className="font-mono text-[10px] tracking-tight">{truncatedDisplay}</span>
+            <span className="font-mono text-[10px] tracking-tight">{accountId}</span>
           </div>
 
           {/* Divider */}
