@@ -1,15 +1,15 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: WalletContext (Final Edition)
- * Description: Centralized wallet state. Reads from the single Wagmi adapter.
- *              Resolves native 0.0.x ID via direct Hedera Testnet Mirror Node.
- *              No backend API dependency.
+ * Component: WalletContext (Definitive Fix)
+ * Description: Uses useAppKitAccount as the source of truth for isConnected.
+ *              Wagmi's useAccount alone does NOT reliably reflect HashPack's
+ *              EIP-6963 connection state — AppKit's own hook must be used.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
-import { useAppKit } from '@reown/appkit/react';
+import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
 
 type WalletType = 'hashpack' | 'evm' | null;
 
@@ -27,9 +27,18 @@ interface WalletContextType {
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { address: rawAddress, isConnected } = useAccount();
+  // useAppKitAccount is the source of truth for connection state.
+  // It reflects AppKit's internal state immediately upon connection.
+  const { address: appKitAddress, isConnected: appKitConnected } = useAppKitAccount();
+
+  // useAccount provides Wagmi-level data as a secondary source.
+  const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useAppKit();
+
+  // Combine both: if EITHER reports connected, we are connected.
+  const isConnected = appKitConnected || wagmiConnected;
+  const rawAddress = wagmiAddress || appKitAddress || null;
 
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletType, setWalletType] = useState<WalletType>(null);
@@ -38,7 +47,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   /**
    * Mirror Node Identity Resolution
-   * Direct fetch — no backend API required.
+   * Triggers whenever AppKit or Wagmi detects a new address.
    * Credits: Viqtorhvayx
    */
   const resolveIdentity = useCallback(async () => {
@@ -49,7 +58,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
-    console.log(`[WalletContext] Resolving address: ${rawAddress}`);
+    console.log(`[WalletContext] isConnected: ${isConnected}, address: ${rawAddress}`);
 
     // Already native Hedera format
     if (rawAddress.startsWith('0.0.')) {
@@ -58,7 +67,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       return;
     }
 
-    // EVM address — query Hedera Testnet Mirror Node
+    // EVM address — query Hedera Testnet Mirror Node to find native ID
     if (rawAddress.startsWith('0x')) {
       try {
         const url = `https://testnet.mirrornode.hedera.com/api/v1/accounts/${rawAddress.toLowerCase()}`;
@@ -67,8 +76,8 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const res = await fetch(url);
 
         if (!res.ok) {
-          // Not a Hedera account — treat as standard EVM wallet
-          console.warn(`[WalletContext] Mirror Node returned ${res.status}. Treating as EVM wallet.`);
+          // Not a Hedera account (e.g. MetaMask on Sepolia)
+          console.warn(`[WalletContext] Not a Hedera account (HTTP ${res.status}). Treating as EVM.`);
           setAccountId(rawAddress);
           setWalletType('evm');
           return;
@@ -77,12 +86,11 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const data = await res.json();
         console.log(`[WalletContext] Mirror Node response:`, data);
 
-        if (data && data.account) {
+        if (data?.account) {
           setAccountId(data.account);
           setWalletType('hashpack');
           if (data.balance?.balance !== undefined) {
-            const hbar = (data.balance.balance / 1e8).toFixed(4);
-            setBalance(hbar);
+            setBalance((data.balance.balance / 1e8).toFixed(4));
           }
           console.log(`[WalletContext] Resolved → ${data.account}`);
         } else {
@@ -126,7 +134,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   return (
     <WalletContext.Provider value={{
       isConnected,
-      address: rawAddress || null,
+      address: rawAddress,
       accountId,
       walletType,
       balance,
