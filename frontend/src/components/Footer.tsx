@@ -5,11 +5,11 @@ import React from 'react';
 /**
  * @title Footer
  * @author Viqtorhvayx
- * @dev Premium industrial Footer component with network status indicators and social links.
+ * @dev Refined floating Footer with brand-aligned status colors and enhanced vertical presence.
  */
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full h-16 bg-transparent border-none flex items-center justify-between px-8 pb-8 select-none">
+    <footer className="w-full bg-transparent border-none flex items-center justify-between px-8 py-12 mt-20 select-none">
       {/* Left: Copyright */}
       <div className="flex items-center">
         <span className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em]">
@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00A8E8] shadow-[0_0_8px_#00A8E8]"></span>
           </div>
           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
-            Network: <span className="text-white">Hedera Testnet</span>
+            Network: <span className="text-[#00A8E8]">Hedera Testnet</span>
           </span>
         </div>
 
@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
           </div>
           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
-            Relay: <span className="text-white">Connected</span>
+            Relay: <span className="text-[#00A8E8]">Connected</span>
           </span>
         </div>
       </div>

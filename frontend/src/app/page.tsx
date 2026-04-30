@@ -46,94 +46,93 @@ export default function Dashboard() {
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
-    <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
-      <div className="max-w-7xl mx-auto">
-        <Header theme={theme} toggleTheme={toggleTheme} />
+    <>
+      <main className="flex-grow min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto">
+          <Header theme={theme} toggleTheme={toggleTheme} />
 
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
-          <div className="industrial-panel">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: secondaryLabelColor }}>
-              Vault Liquidity
-            </h4>
-            <div className="text-2xl font-bold" style={{ color: primaryTextColor }}>
-              {balance} 
-              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>{balanceSymbol}</span>
+          {/* Overview Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
+            <div className="industrial-panel">
+              <h4 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: secondaryLabelColor }}>
+                Vault Liquidity
+              </h4>
+              <div className="text-2xl font-bold" style={{ color: primaryTextColor }}>
+                {balance} 
+                <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>{balanceSymbol}</span>
+              </div>
+            </div>
+            
+            <div className="industrial-panel flex flex-col items-start">
+              <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1" style={{ color: secondaryLabelColor }}>
+                Standard Yield
+              </h4>
+              <div className="text-[19px] font-black !text-[#10B981] leading-none tracking-[-0.015em] flex items-baseline">
+                0.30%
+                <span className="text-[9px] font-bold ml-1 tracking-tight" style={{ color: primaryTextColor }}>/21days</span>
+              </div>
             </div>
           </div>
-          
-          <div className="industrial-panel flex flex-col items-start">
-            <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] mb-1" style={{ color: secondaryLabelColor }}>
-              Standard Yield
-            </h4>
-            <div className="text-[19px] font-black !text-[#10B981] leading-none tracking-[-0.015em] flex items-baseline">
-              0.30%
-              <span className="text-[9px] font-bold ml-1 tracking-tight" style={{ color: primaryTextColor }}>/21days</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Main Interface Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-4 flex flex-col h-full">
-            <div className="space-y-8 flex-grow">
-              <XPGauge xp={userXP} theme={theme} />
-              
-              <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
-                  System Notification
-                </h3>
-                <p className="text-sm font-medium leading-relaxed">
-                  Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
-                </p>
+          {/* Main Interface Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <div className="lg:col-span-4 flex flex-col h-full">
+              <div className="space-y-8 flex-grow">
+                <XPGauge xp={userXP} theme={theme} />
+                
+                <div className="industrial-panel bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: theme === 'dark' ? matchedDarkIntensity : 'rgba(255, 255, 255, 0.6)' }}>
+                    System Notification
+                  </h3>
+                  <p className="text-sm font-medium leading-relaxed">
+                    Reputation scoring is calculated every 24 hours. Maintaining high XP unlocks prioritized credit lines and reduced collateral requirements.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-8 mt-10 mb-2 px-1">
+                <button 
+                  onClick={() => setActiveTab("ACTIVITY")}
+                  className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "ACTIVITY" ? "!text-accent-blue" : ""}`}
+                  style={{ color: activeTab === "ACTIVITY" ? "var(--accent-blue)" : secondaryLabelColor }}
+                >
+                  Activity
+                  {activeTab === "ACTIVITY" && (
+                    <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
+                  )}
+                </button>
+                <button 
+                  onClick={() => setActiveTab("VIEW TRANSACTION")}
+                  className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "VIEW TRANSACTION" ? "!text-accent-blue" : ""}`}
+                  style={{ color: activeTab === "VIEW TRANSACTION" ? "var(--accent-blue)" : secondaryLabelColor }}
+                >
+                  View Transaction
+                  {activeTab === "VIEW TRANSACTION" && (
+                    <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-6 h-[400px]">
+                <PriceChart theme={theme} />
               </div>
             </div>
 
-            <div className="flex gap-8 mt-10 mb-2 px-1">
-              <button 
-                onClick={() => setActiveTab("ACTIVITY")}
-                className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "ACTIVITY" ? "!text-accent-blue" : ""}`}
-                style={{ color: activeTab === "ACTIVITY" ? "var(--accent-blue)" : secondaryLabelColor }}
-              >
-                Activity
-                {activeTab === "ACTIVITY" && (
-                  <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
-                )}
-              </button>
-              <button 
-                onClick={() => setActiveTab("VIEW TRANSACTION")}
-                className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative cursor-pointer ${activeTab === "VIEW TRANSACTION" ? "!text-accent-blue" : ""}`}
-                style={{ color: activeTab === "VIEW TRANSACTION" ? "var(--accent-blue)" : secondaryLabelColor }}
-              >
-                View Transaction
-                {activeTab === "VIEW TRANSACTION" && (
-                  <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-accent-blue shadow-[0_0_10px_#00A8E8] transition-all duration-300" />
-                )}
-              </button>
-            </div>
-
-            <div className="mt-6 h-[400px]">
-              <PriceChart theme={theme} />
-            </div>
-          </div>
-
-          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="md:col-span-2">
-              <LockingModule theme={theme} />
-            </div>
-            <div className="h-[400px]">
-              <LendingModule points={userPoints} theme={theme} />
-            </div>
-            <div className="h-[400px]">
-              <BorrowingModule xp={userXP} theme={theme} />
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="md:col-span-2">
+                <LockingModule theme={theme} />
+              </div>
+              <div className="h-[400px]">
+                <LendingModule points={userPoints} theme={theme} />
+              </div>
+              <div className="h-[400px]">
+                <BorrowingModule xp={userXP} theme={theme} />
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-24">
-          <Footer />
-        </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }

@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-background transition-colors duration-500">
+      <body className="antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col">
         <AppKitProvider>
           <WalletProvider>
             {children}
