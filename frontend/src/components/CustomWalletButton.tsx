@@ -1,12 +1,12 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: CustomWalletButton (Ultimate Edition)
- * Description: High-reliability wallet interface with unmissable disconnect control.
- * Features: Immediate execution, state synchronization, and industrial-grade UX.
+ * Component: CustomWalletButton (Strict Modal Suppression Edition)
+ * Description: High-reliability wallet interface with strict state-gated modal control.
+ * Features: Guaranteed suppression of AppKit modal when connected, ensuring only the dropdown appears.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWallet } from '../context/WalletContext';
 
 export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark' }) {
@@ -31,31 +31,42 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
     };
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const handleToggle = (e: React.MouseEvent) => {
+  /**
+   * Strictly Gated Toggle Handler
+   * Ensures the connection modal is NEVER triggered while a session is active.
+   */
+  const handleToggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    console.log(`[CustomWalletButton] Triggered. isConnected: ${isConnected}`);
+
     if (isConnected) {
-      setIsOpen(!isOpen);
+      // Logic: If already connected, only toggle the local dropdown. 
+      // Do NOT trigger any external wallet modal.
+      setIsOpen(prev => !prev);
     } else {
+      // Logic: Only trigger connection flow if explicitly disconnected.
       connect();
     }
-  };
+  }, [isConnected, connect]);
 
+  /**
+   * Hardened Disconnect
+   */
   const handleDisconnect = async (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Stop event from bubbling to parent toggle
+    e.stopPropagation();
     
-    console.log("[CustomWalletButton] User triggered disconnect.");
-    setIsOpen(false); // Close UI immediately
+    setIsOpen(false);
+    console.log("[CustomWalletButton] Disconnecting...");
     
     try {
       await disconnect();
-      alert("Wallet Disconnected Successfully");
     } catch (err) {
       console.error("[CustomWalletButton] Disconnect failed:", err);
     }
@@ -63,11 +74,12 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>
-      {/* Main UI Button */}
-      <button 
-        id="custom-wallet-button"
+      {/* Main UI Button - Using a div with onClick to avoid any browser/library button behaviors */}
+      <div 
+        role="button"
+        tabIndex={0}
         onClick={handleToggle} 
-        className="custom-wallet-glow bg-[#00A8E8] hover:bg-[#0092c8] text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[190px] text-[11px] uppercase tracking-wider shadow-lg shadow-[#00A8E8]/20 active:scale-95 select-none"
+        className="custom-wallet-glow bg-[#00A8E8] hover:bg-[#0092c8] text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center min-w-[190px] text-[11px] uppercase tracking-wider shadow-lg shadow-[#00A8E8]/20 active:scale-95 cursor-pointer select-none"
       >
         {!isConnected ? (
           "Connect Wallet"
@@ -90,13 +102,12 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
             </svg>
           </div>
         )}
-      </button>
+      </div>
 
       {/* Industrial Dropdown Menu */}
       {isConnected && isOpen && (
         <div className="absolute top-[calc(100%+12px)] right-0 w-[280px] z-[99999] animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            {/* Identity Info */}
             <div className="mb-5">
               <p className="text-[9px] font-black text-[#00A8E8] uppercase tracking-[0.2em] mb-2 opacity-60">Account ID</p>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3">
@@ -104,7 +115,6 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
               </div>
             </div>
 
-            {/* Balance Info */}
             <div className="mb-6">
               <p className="text-[9px] font-black text-[#00A8E8] uppercase tracking-[0.2em] mb-2 opacity-60">Portfolio Balance</p>
               <div className="flex items-baseline space-x-1.5">
@@ -115,7 +125,6 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
 
             <div className="h-[1px] w-full bg-white/5 mb-5"></div>
 
-            {/* CRITICAL: DISCONNECT BUTTON */}
             <button 
               onClick={handleDisconnect}
               className="w-full flex items-center justify-between px-5 py-4 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all duration-300 active:scale-95 group shadow-lg shadow-red-500/20"
