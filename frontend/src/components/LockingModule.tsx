@@ -1,12 +1,12 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: LockingModule (Refactored)
- * Description: Time-lock savings vault integrated with direct Wagmi state.
+ * Component: LockingModule
+ * Description: Time-lock savings vault integrated with the Advanced Identity Engine.
  */
 
 import React, { useState, useEffect } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface LockingModuleProps {
@@ -14,12 +14,7 @@ interface LockingModuleProps {
 }
 
 export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
-  const { address } = useAccount();
-  const { data: balanceData } = useBalance({ 
-    address: address as `0x${string}` 
-  });
-  
-  const balance = balanceData ? balanceData.formatted : "0";
+  const { balance, balanceSymbol } = useWallet();
   const [amount, setAmount] = useState("");
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | 'set'>('deposit');
 
@@ -49,7 +44,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const handleDeposit = async () => {
     setActiveAction('deposit');
-    console.log(`Locking ${amount} HBAR for ${days} days`);
     alert("Lock-up initialized!");
   };
 
@@ -71,12 +65,9 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
     const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95";
-    
-    if (isActive) {
-      return `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`;
-    } else {
-      return `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
-    }
+    return isActive 
+      ? `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
+      : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
   };
 
   const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
@@ -121,20 +112,20 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
             <div className="space-y-3 mb-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{deposited.toLocaleString()} HBAR</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{deposited.toLocaleString()} {balanceSymbol}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>Earnings</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{earnings.toLocaleString()} HBAR</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{earnings.toLocaleString()} {balanceSymbol}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold" style={{ color: labelColor }}>TVL</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{tvl.toLocaleString()} HBAR</span>
+                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{tvl.toLocaleString()} {balanceSymbol}</span>
               </div>
             </div>
 
             <div className="relative">
-              <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock (HBAR)</label>
+              <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock ({balanceSymbol})</label>
               <FormattedNumberInput 
                 placeholder="0.00"
                 className={numericInputClasses}

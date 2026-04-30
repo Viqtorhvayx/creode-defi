@@ -1,12 +1,12 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: LendingModule (Refactored)
- * Description: Liquidity provision module integrated with direct Wagmi state.
+ * Component: LendingModule
+ * Description: Liquidity provision module integrated with the Advanced Identity Engine.
  */
 
 import React, { useState } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface LendingModuleProps {
@@ -15,18 +15,12 @@ interface LendingModuleProps {
 }
 
 export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) => {
-  const { address } = useAccount();
-  const { data: balanceData } = useBalance({ 
-    address: address as `0x${string}` 
-  });
-  
-  const balance = balanceData ? balanceData.formatted : "0";
+  const { balance, balanceSymbol } = useWallet();
   const [amount, setAmount] = useState("");
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw'>('deposit');
 
   const handleDeposit = async () => {
     setActiveAction('deposit');
-    console.log(`Providing ${amount} HBAR liquidity`);
     alert("Liquidity deployed successfully!");
   };
 
@@ -82,7 +76,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
       <div className="space-y-6 flex flex-col flex-grow">
         <div className="mt-8">
-          <label className="text-[10px] font-bold uppercase block mb-1" style={{ color: labelColor }}>Amount to Provide (HBAR)</label>
+          <label className="text-[10px] font-bold uppercase block mb-1" style={{ color: labelColor }}>Amount to Provide ({balanceSymbol})</label>
           <FormattedNumberInput 
             placeholder="0.00"
             className={numericInputClasses}
@@ -105,7 +99,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <p className="text-[10px] font-medium leading-relaxed" style={{ color: labelColor }}>
-            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per HBAR every 24 hours. Points determine eligibility for future protocol incentives.
+            By providing liquidity, users earn <span className="!text-[#00A8E8] font-bold">lending points</span> per {balanceSymbol} every 24 hours. Points determine eligibility for future protocol incentives.
           </p>
         </div>
 

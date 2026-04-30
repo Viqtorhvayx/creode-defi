@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppKitProvider } from "@/context/AppKitProvider";
+import { WalletProvider } from "@/context/WalletContext";
 
 /**
- * @title RootLayout (Clean Architecture)
+ * @title RootLayout (Advanced Wallet Architecture)
  * @author Viqtorhvayx
- * @dev Root layout for CREODE DeFi. Unified wallet infrastructure via Reown AppKit.
+ * @dev Root layout for CREODE DeFi. Integrated with AppKit and the Advanced Identity Engine.
  */
 
 export const metadata: Metadata = {
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background transition-colors duration-500">
         <AppKitProvider>
-          {children}
+          <WalletProvider>
+            {children}
+          </WalletProvider>
         </AppKitProvider>
       </body>
     </html>

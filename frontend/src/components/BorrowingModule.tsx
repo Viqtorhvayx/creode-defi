@@ -1,13 +1,13 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: BorrowingModule (Refactored)
- * Description: Credit facility module integrated with direct Wagmi state.
+ * Component: BorrowingModule
+ * Description: Credit facility module integrated with the Advanced Identity Engine.
  */
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useAccount, useBalance } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 
 interface BorrowingModuleProps {
@@ -16,12 +16,7 @@ interface BorrowingModuleProps {
 }
 
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
-  const { address } = useAccount();
-  const { data: balanceData } = useBalance({ 
-    address: address as `0x${string}` 
-  });
-  
-  const balance = balanceData ? balanceData.formatted : "0";
+  const { balance, balanceSymbol } = useWallet();
   const [collateralAmount, setCollateralAmount] = useState("");
   
   const collateralValue = Number(stripCommas(collateralAmount)) || 0;
@@ -58,8 +53,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const getLabelText = () => {
     switch (activeTab) {
       case 'deposit': return "Deposit Collateral";
-      case 'borrow': return "Borrow HBAR";
-      case 'repay': return "Repay HBAR / Withdraw Collateral";
+      case 'borrow': return `Borrow ${balanceSymbol}`;
+      case 'repay': return `Repay ${balanceSymbol} / Withdraw Collateral`;
       default: return "Amount";
     }
   };
@@ -83,7 +78,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   const handleExecution = async () => {
-    console.log(`Borrowing ${collateralAmount} with ${collateralToken} collateral`);
     alert("Transaction initialized!");
   };
 
@@ -213,7 +207,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Maximum Borrowing Limit</span>
-            <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{calculatedHbarLimit.toFixed(2)} HBAR</span>
+            <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{calculatedHbarLimit.toFixed(2)} {balanceSymbol}</span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((collateralValue / 1000) * 100, 100)}%` }} />
@@ -223,7 +217,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
         <div className="flex gap-4 mt-auto">
           <button onClick={handleAction} disabled={!collateralAmount || Number(stripCommas(collateralAmount)) <= 0} className={getActionButtonClasses()}>
-            {activeTab === 'repay' ? 'Repay & Withdraw' : activeTab === 'borrow' ? 'Borrow HBAR' : 'Deposit Collateral'}
+            {activeTab === 'repay' ? 'Repay & Withdraw' : activeTab === 'borrow' ? `Borrow ${balanceSymbol}` : 'Deposit Collateral'}
           </button>
         </div>
       </div>
@@ -234,15 +228,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           <div className="relative bg-black/60 backdrop-blur-md border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
             <div className="flex justify-between items-start mb-6">
               <h4 className={`text-lg font-black tracking-tight`} style={{ color: '#FFFFFF' }}>
-                Step {modalStep}: {modalStep === 1 ? 'HBAR Repayment' : 'Collateral Release'}
+                Step {modalStep}: {modalStep === 1 ? `${balanceSymbol} Repayment` : 'Collateral Release'}
               </h4>
               <button onClick={() => { setShowModal(false); setIsClicked(false); }} className="text-white hover:opacity-80 transition-opacity mt-[-12px] mr-[-12px] p-2">✕</button>
             </div>
             <div className="mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
               {modalStep === 1 ? (
                 <div className="space-y-4">
-                  <p className="text-sm opacity-80 text-white/60">You are about to repay your active HBAR loan. This will stop the daily XP decay.</p>
-                  <div className="flex justify-between font-bold text-white"><span>Total Debt</span><span className="!text-[#00A8E8]">540.22 HBAR</span></div>
+                  <p className="text-sm opacity-80 text-white/60">You are about to repay your active {balanceSymbol} loan. This will stop the daily XP decay.</p>
+                  <div className="flex justify-between font-bold text-white"><span>Total Debt</span><span className="!text-[#00A8E8]">540.22 {balanceSymbol}</span></div>
                 </div>
               ) : (
                 <div className="space-y-4">

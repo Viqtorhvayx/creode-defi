@@ -1,12 +1,12 @@
 "use client";
 
 /* * Developer: [Viqtorhvayx]
- * Component: Dashboard (Refactored)
- * Description: Main protocol dashboard using direct Wagmi integration for real-time data.
+ * Component: Dashboard
+ * Description: Main protocol dashboard integrated with the Advanced Identity Engine.
  */
 
 import React, { useState, useEffect } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
 import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
@@ -15,15 +15,10 @@ import { BorrowingModule } from '../components/BorrowingModule';
 import { PriceChart } from '../components/PriceChart';
 
 export default function Dashboard() {
-  const { address } = useAccount();
-  const { data: balanceData } = useBalance({ 
-    address: address as `0x${string}` 
-  });
-  
+  const { balance, balanceSymbol } = useWallet();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [activeTab, setActiveTab] = useState("ACTIVITY");
   
-  // Simulated XP and Points (To be integrated with Reputation Engine later)
   const userXP = 45; 
   const userPoints = 1250;
 
@@ -49,8 +44,6 @@ export default function Dashboard() {
   const secondaryLabelColor = theme === 'dark' ? matchedDarkIntensity : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
-  const displayBalance = balanceData ? Number(balanceData.formatted).toFixed(2) : "0.00";
-
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
@@ -63,8 +56,8 @@ export default function Dashboard() {
               Vault Liquidity
             </h4>
             <div className="text-2xl font-bold" style={{ color: primaryTextColor }}>
-              {displayBalance} 
-              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>HBAR</span>
+              {balance} 
+              <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>{balanceSymbol}</span>
             </div>
           </div>
           
@@ -136,7 +129,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-24 border-t border-[var(--border)] pt-12 pb-24 flex flex-col items-center gap-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: primaryTextColor }}>Built by Team</p>
           <div className="flex gap-4">
