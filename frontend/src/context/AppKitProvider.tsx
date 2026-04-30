@@ -1,69 +1,71 @@
-/**
- * @title AppKitProvider (ECDSA Hardened)
- * @author Viqtorhvayx
- * @dev Consolidates Web3 configuration for absolute reliability. 
- * Strictly disables WalletConnect Verify to bypass HashPack "Malicious dApp" flagging.
+"use client";
+
+/* * Developer: [Viqtorhvayx]
+ * Component: AppKitProvider (Clean Rebuild)
+ * Description: Unified Reown AppKit infrastructure for Hedera and EVM support.
+ * Features: EIP-6963 Discovery, Hardened Security, and multi-network adapter.
  */
 
-'use client'
+import React, { ReactNode } from 'react';
+import { createAppKit } from '@reown/appkit/react';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { hederaTestnet, sepolia, mainnet } from '@reown/appkit/networks';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { http } from 'viem';
 
-import React, { ReactNode } from 'react'
-import { createAppKit } from '@reown/appkit/react'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { hederaTestnet, sepolia } from '@reown/appkit/networks'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider } from 'wagmi'
-import { http } from 'viem'
+// 1. Project Configuration
+const projectId = 'e5ca5702a767d682a832959e7f1c57bb';
+const networks = [hederaTestnet, sepolia, mainnet];
 
-// 1. Project Identity Configuration
-const projectId = 'e5ca5702a767d682a832959e7f1c57bb'
-const networks = [hederaTestnet, sepolia]
-
-// 2. Initialize Wagmi Adapter with explicit RPCs for Hedera ECDSA support
+// 2. Initialize Wagmi Adapter
+// Supports EIP-6963 discovery for HashPack, MetaMask, and others
 const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks,
   ssr: true,
   transports: {
     [hederaTestnet.id]: http('https://testnet.hashio.io/api'),
-    [sepolia.id]: http()
+    [sepolia.id]: http(),
+    [mainnet.id]: http()
   }
-})
+});
 
-// 3. Initialize AppKit with Hardened Security Bypass
+// 3. Initialize Reown AppKit Singleton
 createAppKit({
   adapters: [wagmiAdapter],
   networks: networks as [any, ...any[]],
   projectId,
   metadata: {
-    name: 'CREODE',
-    description: 'Advanced Saving, Lending, and Borrowing platform on Hedera.',
-    url: 'https://creode.vercel.app', // Matched to current live domain
+    name: 'CREODE Protocol',
+    description: 'Advanced Saving, Lending, and Borrowing on Hedera.',
+    url: 'https://creode.vercel.app',
     icons: ['https://avatars.githubusercontent.com/u/179241380']
   },
-  enableVerify: false, // Root-level bypass for domain verification
+  enableVerify: false, // Bypass domain verification to prevent HashPack flagging
   features: {
-    verify: false, // Features-level bypass
+    verify: false,
     analytics: true
-  } as any,
+  },
   themeMode: 'dark',
   themeVariables: {
     '--w3m-accent': '#00A8E8',
-    '--w3m-border-radius-master': '1px'
+    '--w3m-border-radius-master': '2px'
   }
-} as any)
+} as any);
 
-const queryClient = new QueryClient()
+
+const queryClient = new QueryClient();
 
 export function AppKitProvider({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider 
-      // @ts-ignore - Supressing version mismatch in Wagmi/AppKit types for build success
+      // @ts-ignore - Suppressing version mismatch in Wagmi/AppKit types for build success
       config={wagmiAdapter.wagmiConfig}
     >
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>
     </WagmiProvider>
-  )
+  );
 }

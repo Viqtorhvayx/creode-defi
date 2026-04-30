@@ -1,7 +1,12 @@
 "use client";
 
+/* * Developer: [Viqtorhvayx]
+ * Component: Dashboard (Refactored)
+ * Description: Main protocol dashboard using direct Wagmi integration for real-time data.
+ */
+
 import React, { useState, useEffect } from 'react';
-import { useWeb3 } from '../context/Web3Context';
+import { useAccount, useBalance } from 'wagmi';
 import { Header } from '../components/Header';
 import { XPGauge } from '../components/XPGauge';
 import { LockingModule } from '../components/LockingModule';
@@ -9,22 +14,19 @@ import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
 import { PriceChart } from '../components/PriceChart';
 
-/**
- * @title Dashboard
- * @author Viqtorhvayx
- * @dev Main dashboard for CREODE Protocol. Aligned Price Chart baseline with Lending Module.
- */
 export default function Dashboard() {
-  const { balance } = useWeb3();
+  const { address } = useAccount();
+  const { data: balanceData } = useBalance({ 
+    address: address as `0x${string}` 
+  });
+  
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-
   const [activeTab, setActiveTab] = useState("ACTIVITY");
   
-  // Simulated XP and Points
+  // Simulated XP and Points (To be integrated with Reputation Engine later)
   const userXP = 45; 
   const userPoints = 1250;
 
-  // Theme management: Defaulting to Dark for premium state-of-the-art experience
   useEffect(() => {
     const savedTheme = localStorage.getItem('creode-theme') as 'light' | 'dark' | null;
     if (savedTheme) {
@@ -47,6 +49,8 @@ export default function Dashboard() {
   const secondaryLabelColor = theme === 'dark' ? matchedDarkIntensity : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  const displayBalance = balanceData ? Number(balanceData.formatted).toFixed(2) : "0.00";
+
   return (
     <main className="min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
@@ -59,7 +63,7 @@ export default function Dashboard() {
               Vault Liquidity
             </h4>
             <div className="text-2xl font-bold" style={{ color: primaryTextColor }}>
-              {Number(balance).toFixed(2)} 
+              {displayBalance} 
               <span className="text-sm font-medium ml-1" style={{ color: primaryTextColor }}>HBAR</span>
             </div>
           </div>
@@ -77,7 +81,6 @@ export default function Dashboard() {
 
         {/* Main Interface Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left Column: XP, System Notification & Price Chart */}
           <div className="lg:col-span-4 flex flex-col h-full">
             <div className="space-y-8 flex-grow">
               <XPGauge xp={userXP} theme={theme} />
@@ -92,7 +95,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Industrial Tab Navigation Section: Precision-aligned between Reputation Metric and Market Chart */}
             <div className="flex gap-8 mt-10 mb-2 px-1">
               <button 
                 onClick={() => setActiveTab("ACTIVITY")}
@@ -116,13 +118,11 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {/* Integrated HBAR Market Chart: Precision-aligned to match Lending Pool height */}
             <div className="mt-6 h-[400px]">
               <PriceChart theme={theme} />
             </div>
           </div>
 
-          {/* Right Column: Functional Modules */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="md:col-span-2">
               <LockingModule theme={theme} />
@@ -147,7 +147,6 @@ export default function Dashboard() {
             </a>
           </div>
 
-          {/* Testnet Disclaimer: Engineered for transparency and security compliance */}
           <div className="mt-8 max-w-2xl text-center">
             <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 leading-relaxed" style={{ color: primaryTextColor }}>
               Disclaimer: This decentralized application is strictly for the Hedera Testnet. 
