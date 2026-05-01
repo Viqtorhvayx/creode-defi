@@ -79,7 +79,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         role="button"
         tabIndex={0}
         onClick={handleToggle} 
-        className={`flex items-center justify-center min-w-[140px] h-10 py-2 px-4 font-bold transition-all duration-300 rounded-lg hover:-translate-y-1 active:scale-95 text-sm cursor-pointer select-none border border-transparent ${
+        className={`flex items-center justify-center min-w-[160px] h-[40px] px-4 font-bold transition-all duration-300 rounded-lg hover:-translate-y-1 active:scale-95 text-sm cursor-pointer select-none border border-transparent ${
           !isConnected 
             ? 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20' 
             : 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20'
@@ -88,7 +88,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         {!isConnected ? (
           "Connect Wallet"
         ) : (
-          <div className="flex items-center justify-between w-full pointer-events-none space-x-3">
+          <div className="flex items-center justify-between w-full pointer-events-none space-x-2">
             {/* White Wallet Icon */}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
               <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
