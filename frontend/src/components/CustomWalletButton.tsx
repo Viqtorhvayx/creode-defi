@@ -79,7 +79,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         role="button"
         tabIndex={0}
         onClick={handleToggle} 
-        className={`flex items-center justify-center min-w-[180px] !py-2.5 px-8 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[11px] uppercase tracking-wider cursor-pointer select-none border border-transparent ${
+        className={`flex items-center justify-center min-w-[140px] h-10 py-2 px-4 font-bold transition-all duration-300 rounded-lg hover:-translate-y-1 active:scale-95 text-sm cursor-pointer select-none border border-transparent ${
           !isConnected 
             ? 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20' 
             : 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20'
