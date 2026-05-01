@@ -53,7 +53,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       }`}
     >
       {!isConnected ? (
-        <span className="text-[11px] uppercase tracking-wider">Connect Wallet</span>
+        <span className="text-[11px] tracking-wider">Connect Wallet</span>
       ) : (
         <div className="flex items-center space-x-3">
           {/* Glowing Status Dot */}
