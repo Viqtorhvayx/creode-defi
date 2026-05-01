@@ -79,30 +79,34 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         role="button"
         tabIndex={0}
         onClick={handleToggle} 
-        className={`flex items-center justify-center min-w-[150px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95 text-[11px] uppercase tracking-wider cursor-pointer select-none ${
+        className={`flex items-center justify-center min-w-[170px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[11px] uppercase tracking-wider cursor-pointer select-none border border-transparent ${
           !isConnected 
-            ? 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20' 
-            : 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20'
+            ? 'bg-[#00A8E8]/5 text-[#00A8E8] shadow-[inset_0_0_10px_rgba(0,168,232,0.4)] hover:bg-[#00A8E8]/10' 
+            : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 shadow-md shadow-[#00A8E8]/10'
         }`}
       >
         {!isConnected ? (
           "Connect Wallet"
         ) : (
-          <div className="flex items-center space-x-2 w-full justify-between pointer-events-none">
-            <div className="flex items-center space-x-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF00] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
-              </span>
-              <span className="font-mono text-[10px] tracking-tight">
-                {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
-              </span>
-            </div>
+          <div className="flex items-center justify-between w-full px-1 pointer-events-none">
+            {/* Blue Wallet Icon */}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00A8E8]">
+              <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+              <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+              <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
+            </svg>
+
+            {/* Wallet ID */}
+            <span className="font-mono text-[10px] tracking-tight text-[#00A8E8] mx-2">
+              {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
+            </span>
+
+            {/* Blue Dropdown Icon */}
             <svg 
-              className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-              width="10" height="6" viewBox="0 0 10 6" fill="none"
+              className={`transition-transform duration-300 text-[#00A8E8] ${isOpen ? 'rotate-180' : ''}`}
+              width="12" height="8" viewBox="0 0 10 6" fill="none"
             >
-              <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
         )}
