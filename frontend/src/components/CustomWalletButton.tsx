@@ -49,7 +49,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-2xl border ${
         !isConnected 
           ? "bg-[#00A8E8] border-white/10 hover:bg-[#0092c8] text-white px-5 py-2 font-bold shadow-lg shadow-[#00A8E8]/20" 
-          : "bg-black/10 dark:bg-white/5 backdrop-blur-md border-white/10 text-white px-4 py-2 hover:bg-black/20 dark:hover:bg-white/10 shadow-2xl"
+          : "bg-[#00A8E8]/10 backdrop-blur-md border-[#00A8E8]/20 text-white px-4 py-2 hover:bg-[#00A8E8]/20 shadow-2xl shadow-[#00A8E8]/10"
       }`}
     >
       {!isConnected ? (
