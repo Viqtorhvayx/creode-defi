@@ -46,7 +46,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       role="button"
       tabIndex={0}
       onClick={handleConnect}
-      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-xl border border-white/10 ${
+      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-2xl border border-white/10 ${
         !isConnected 
           ? "bg-[#00A8E8] hover:bg-[#0092c8] text-white px-5 py-2 font-bold shadow-lg shadow-[#00A8E8]/20" 
           : "bg-black/20 dark:bg-white/5 text-white px-4 py-2 hover:bg-black/30 dark:hover:bg-white/10"
