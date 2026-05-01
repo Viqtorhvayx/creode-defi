@@ -72,7 +72,7 @@ export const XPGauge: React.FC<XPGaugeProps> = ({ xp, theme }) => {
         </div>
       </div>
       
-      <div className="h-12 w-full bg-black/5 dark:bg-white/5 rounded-2xl relative overflow-hidden flex items-center">
+      <div className="h-12 w-full bg-black/5 dark:bg-white/5 rounded-xl relative overflow-hidden flex items-center">
         <svg 
           viewBox={`0 0 ${unitWidth} 60`}
           className="w-full h-full"

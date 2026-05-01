@@ -42,7 +42,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className="text-[8px] font-black transition-all duration-300 rounded-2xl !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
+      className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
     >
       {label}
     </button>
@@ -51,11 +51,11 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-2xl p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 
   const getButtonClasses = (action: 'deposit' | 'withdraw') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-2xl text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
     return isActive 
       ? `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
