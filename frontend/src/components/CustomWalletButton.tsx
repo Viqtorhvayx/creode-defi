@@ -79,32 +79,32 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
         role="button"
         tabIndex={0}
         onClick={handleToggle} 
-        className={`flex items-center justify-center min-w-[170px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[11px] uppercase tracking-wider cursor-pointer select-none border border-transparent ${
+        className={`flex items-center justify-center min-w-[180px] !py-2.5 px-8 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 active:scale-95 text-[11px] uppercase tracking-wider cursor-pointer select-none border border-transparent ${
           !isConnected 
-            ? 'bg-[#00A8E8]/5 text-[#00A8E8] shadow-[inset_0_0_10px_rgba(0,168,232,0.4)] hover:bg-[#00A8E8]/10' 
-            : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 shadow-md shadow-[#00A8E8]/10'
+            ? 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20' 
+            : 'bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20'
         }`}
       >
         {!isConnected ? (
           "Connect Wallet"
         ) : (
-          <div className="flex items-center justify-between w-full px-1 pointer-events-none">
-            {/* Blue Wallet Icon */}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00A8E8]">
+          <div className="flex items-center justify-between w-full pointer-events-none space-x-3">
+            {/* White Wallet Icon */}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white">
               <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
               <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
               <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
             </svg>
 
             {/* Wallet ID */}
-            <span className="font-mono text-[10px] tracking-tight text-[#00A8E8] mx-2">
+            <span className="font-mono text-[10px] tracking-tight text-white flex-grow text-center">
               {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
             </span>
 
-            {/* Blue Dropdown Icon */}
+            {/* White Dropdown Icon */}
             <svg 
-              className={`transition-transform duration-300 text-[#00A8E8] ${isOpen ? 'rotate-180' : ''}`}
-              width="12" height="8" viewBox="0 0 10 6" fill="none"
+              className={`transition-transform duration-300 text-white ${isOpen ? 'rotate-180' : ''}`}
+              width="10" height="6" viewBox="0 0 10 6" fill="none"
             >
               <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
