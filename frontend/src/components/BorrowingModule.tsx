@@ -97,7 +97,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+  const numericInputClasses = "w-full rounded-2xl p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
   const maxXPColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
 
   const getTabClasses = (tab: 'deposit' | 'borrow' | 'repay') => {
@@ -105,14 +105,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
     const isRepayButton = tab === 'repay';
     const fontSize = isRepayButton ? 'text-[9px]' : 'text-[10px]';
     const wrapControl = isRepayButton ? 'whitespace-nowrap' : '';
-    const base = `flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-[60px] ${fontSize} ${wrapControl} tracking-tight px-1`;
+    const base = `flex-1 !py-1.5 !h-auto font-bold transition-all duration-300 rounded-2xl ${fontSize} ${wrapControl} tracking-tight px-1`;
     return isActive 
       ? `${base} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${base} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
   };
 
   const getActionButtonClasses = () => {
-    const baseClasses = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const baseClasses = "w-full !py-2.5 !h-auto font-bold transition-all duration-300 rounded-2xl text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
     return (hasInput && isClicked)
       ? `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
@@ -121,7 +121,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
+      className="text-[8px] font-black transition-all duration-300 rounded-2xl !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
     >
       {label}
     </button>
@@ -157,7 +157,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
       </div>
 
-      <div className="flex gap-2 mb-2 bg-black/5 dark:bg-white/5 p-1 rounded-[60px]">
+      <div className="flex gap-2 mb-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Deposit</button>
         <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Borrow</button>
         <button onClick={() => setActiveTab('repay')} className={getTabClasses('repay')}>Repay & Withdraw</button>
@@ -209,7 +209,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Maximum Borrowing Limit</span>
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{calculatedHbarLimit.toFixed(2)} {balanceSymbol}</span>
           </div>
-          <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-2xl overflow-hidden">
             <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((collateralValue / 1000) * 100, 100)}%` }} />
           </div>
           <p className="text-[10px] mt-2" style={{ color: labelColor }}>Starting XP is calculated based on Collateralization Ratio.</p>
@@ -225,7 +225,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       {showModal && mounted && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { setShowModal(false); setIsClicked(false); }} />
-          <div className="relative bg-black/60 backdrop-blur-md border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
+          <div className="relative bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300 transform-gpu">
             <div className="flex justify-between items-start mb-6">
               <h4 className={`text-lg font-black tracking-tight`} style={{ color: '#FFFFFF' }}>
                 Step {modalStep}: {modalStep === 1 ? `${balanceSymbol} Repayment` : 'Collateral Release'}
@@ -245,7 +245,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 </div>
               )}
             </div>
-            <button onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep} className="w-full btn-action !normal-case !py-4 font-black tracking-[0.2em] text-sm" style={{ borderRadius: '60px', fontVariant: 'normal' }}>
+            <button onClick={modalStep === 1 ? handleRepayStep : handleWithdrawStep} className="w-full btn-action !normal-case !py-4 font-black tracking-[0.2em] text-sm" style={{ borderRadius: 'var(--radius-2xl)', fontVariant: 'normal' }}>
               {modalStep === 1 ? 'Confirm Payment' : 'Confirm Withdrawal'}
             </button>
           </div>

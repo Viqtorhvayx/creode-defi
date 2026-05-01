@@ -201,7 +201,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter ${
+      className={`text-[8px] font-black transition-all duration-300 rounded-2xl !py-1 !h-auto px-2 tracking-tighter ${
         active 
           ? 'bg-[#00A8E8] text-white shadow-md shadow-[#00A8E8]/20' 
           : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20'

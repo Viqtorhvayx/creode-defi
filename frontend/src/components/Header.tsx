@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
         <div className="flex items-center gap-4">
           <button 
             onClick={handleThemeToggle}
-            className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
+            className="p-2.5 bg-black/5 dark:bg-white/5 rounded-2xl hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (

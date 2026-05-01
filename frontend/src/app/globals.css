@@ -59,17 +59,17 @@ body {
 
 @utility industrial-input {
   /* Enforce white background and black text in BOTH modes for high contrast numerical display */
-  @apply w-full bg-white! border border-black/10 rounded-xl p-3 text-black! outline-none focus:border-accent-blue transition-colors;
+  @apply w-full bg-white! border border-black/10 rounded-2xl p-3 text-black! outline-none focus:border-accent-blue transition-colors;
 }
 
 @utility btn-action {
   /* Updated border-radius to 60px as per architectural requirement */
-  @apply bg-accent-blue text-white font-bold rounded-[60px] px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50;
+  @apply bg-accent-blue text-white font-bold rounded-2xl px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50;
 }
 
 @utility btn-wallet {
   /* Updated border-radius to 60px as per architectural requirement */
-  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white font-bold rounded-[60px] px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
+  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white font-bold rounded-2xl px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
 }
 
 @utility btn-wallet-active {
