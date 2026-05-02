@@ -57,7 +57,7 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
       {/* Modern Brand Typography - Prefixed by the SVG 'C' */}
       <span 
         className="text-xl font-bold tracking-wide transition-colors duration-300 -ml-1.5"
-        style={{ color: brandTextColor }}
+        style={{ color: brandBlue }}
       >
         reode
       </span>
