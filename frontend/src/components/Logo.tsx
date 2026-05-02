@@ -45,13 +45,6 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
         </span>
       </div>
       
-      {/* Tagline: Explicitly set via inline style for theme detection. Matched to 'SYSTEM NOTIFICATION' in Dark Mode. */}
-      <p 
-        className="text-[10px] font-bold uppercase tracking-[0.2em] mt-1 ml-0.5"
-        style={{ color: taglineColor }}
-      >
-        STRUCTURED CREDIT INFRASTRUCTURE
-      </p>
     </div>
   );
 };
