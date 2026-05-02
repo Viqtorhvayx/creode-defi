@@ -96,7 +96,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             onValueChange={setAmount}
           />
           <div className="flex justify-between items-baseline mt-2 px-2">
-            <span className="text-[10px] font-bold" style={{ color: labelColor }}>{usdValue}</span>
+            <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
             <div className="flex gap-1">
               <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
               <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
