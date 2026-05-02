@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   return (
-    <header className="mb-12">
+    <header className="pt-2 pb-10 mb-16">
       <nav className="flex justify-between items-center">
         <Logo theme={theme} />
         
