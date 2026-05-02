@@ -18,8 +18,8 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
   const brandBlue = "#00A8E8";
 
   return (
-    <Link href="/" className="flex items-center gap-3 select-none group transition-transform duration-300 active:scale-95">
-      {/* Modern Abstract 'C' Node SVG */}
+    <Link href="/" className="flex items-center gap-0 select-none group transition-transform duration-300 active:scale-95">
+      {/* Modern Abstract 'C' Node SVG - Acts as the capital 'C' */}
       <div className="relative h-9 w-9">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
           <defs>
@@ -54,12 +54,12 @@ export const Logo: React.FC<LogoProps> = ({ theme }) => {
         </svg>
       </div>
 
-      {/* Modern Brand Typography */}
+      {/* Modern Brand Typography - Prefixed by the SVG 'C' */}
       <span 
-        className="text-xl font-bold tracking-wide transition-colors duration-300"
+        className="text-xl font-bold tracking-wide transition-colors duration-300 -ml-1.5"
         style={{ color: brandTextColor }}
       >
-        Creode
+        reode
       </span>
     </Link>
   );
