@@ -68,10 +68,12 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         const response = await fetch(COINGECKO_URL);
         if (response.ok) {
           const data = await response.json();
-          const hbar = data['hedera-hashgraph'];
-          setVolume24h(formatCompact(hbar.usd_24h_vol));
-          setMarketCap(formatCompact(hbar.usd_market_cap));
-          setPriceChange24h(hbar.usd_24h_change);
+          if (data['hedera-hashgraph']) {
+            const hbar = data['hedera-hashgraph'];
+            setVolume24h(formatCompact(hbar.usd_24h_vol));
+            setMarketCap(formatCompact(hbar.usd_market_cap));
+            setPriceChange24h(hbar.usd_24h_change);
+          }
         }
       } catch (err) { console.error("CoinGecko Error:", err); }
     };
@@ -245,3 +247,4 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       </div>
     </div>
   );
+};
