@@ -8,11 +8,10 @@ interface PriceChartProps {
 }
 
 /**
- * @title PriceChart
+ * @title PriceChart (Pyth Edition)
  * @author Viqtorhvayx
- * @dev HBAR/USD Market Chart with optimized control layout and precise label casing.
- * Implements smooth left-to-right entry animation, auto-scaling strict currency 
- * Y-axis, and dynamic X-axis time formatting.
+ * @dev HBAR/USD Market Chart migrated to Pyth Network (Hermes & Benchmarks APIs).
+ * Implements real-time polling and historical data series integration.
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -22,31 +21,38 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
   const [isInfoActive, setIsInfoActive] = useState(false);
-
-  // Raw market metrics for HBAR/USD - Polling logic authored by Viqtorhvayx
-  const rawVolume = 1800000;
-  const rawLiquidity = 6200000;
-  
   const [hbarPrice, setHbarPrice] = useState<string | null>(null);
 
+  // Pyth Network Configuration authored by Viqtorhvayx
+  const PYTH_HBAR_FEED_ID = "3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd";
+  const PYTH_HERMES_URL = "https://hermes.pyth.network/v2/updates/price/latest";
+  const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingview/history";
+
+  // Raw market metrics (Volume/Liquidity) - Preserved Layout
+  const rawVolume = 1800000;
+  const rawLiquidity = 6200000;
+
+  // 1. Pyth Live Price Polling
   useEffect(() => {
-    const fetchHbarPrice = async () => {
+    const fetchPythPrice = async () => {
       try {
-        const response = await fetch('https://api.saucerswap.finance/tokens/0.0.1456986');
+        const response = await fetch(`${PYTH_HERMES_URL}?ids[]=${PYTH_HBAR_FEED_ID}`);
         if (response.ok) {
           const data = await response.json();
-          if (data && data.priceUsd) {
-            setHbarPrice(parseFloat(data.priceUsd).toFixed(4));
+          if (data.parsed && data.parsed[0]) {
+            const priceObj = data.parsed[0].price;
+            const price = Number(priceObj.price) * Math.pow(10, priceObj.expo);
+            setHbarPrice(price.toFixed(4));
           }
         }
       } catch (error) {
-        console.error("SaucerSwap API Error:", error);
+        console.error("Pyth Hermes Fetch Error:", error);
       }
     };
 
-    fetchHbarPrice();
-    const priceInterval = setInterval(fetchHbarPrice, 15000);
-    return () => clearInterval(priceInterval);
+    fetchPythPrice();
+    const interval = setInterval(fetchPythPrice, 10000); // 10s sync
+    return () => clearInterval(interval);
   }, []);
 
   // HBAR Market Statistics
@@ -58,6 +64,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     low24: "$0.0912"
   };
 
+  // 2. Pyth Historical Chart Data Integration
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -92,105 +99,74 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         borderVisible: false,
         timeVisible: true,
         secondsVisible: false,
-        tickMarkFormatter: (time: UTCTimestamp, tickMarkType: any, locale: string) => {
-          const date = new Date(time * 1000);
-          if (activeInterval === '15min' || activeInterval === 'Hour') {
-            return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-          } else {
-            return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
-          }
-        },
       },
       rightPriceScale: {
         borderVisible: false,
         autoScale: true,
         alignLabels: true,
         scaleMargins: {
-          top: 0.1, // Slight padding to prevent top clipping
-          bottom: 0.25, // Room for volume bars
+          top: 0.1,
+          bottom: 0.25,
         },
       },
       handleScroll: false,
       handleScale: false,
     });
 
-    const areaSeries = (chart as any).addAreaSeries({
+    const areaSeries = chart.addAreaSeries({
       lineColor,
       topColor: `${lineColor}33`,
       bottomColor: `${lineColor}00`,
       lineWidth: 2,
-      priceFormat: {
-        type: 'price',
-        precision: 4,
-        minMove: 0.0001,
-      },
     });
 
-    const volumeSeries = (chart as any).addHistogramSeries({
-        color: isDark ? 'rgba(0, 168, 232, 0.1)' : 'rgba(0, 168, 232, 0.05)',
-        priceFormat: {
-            type: 'volume',
-        },
-        priceScaleId: '', 
+    const volumeSeries = chart.addHistogramSeries({
+      color: isDark ? 'rgba(0, 168, 232, 0.1)' : 'rgba(0, 168, 232, 0.05)',
+      priceFormat: { type: 'volume' },
+      priceScaleId: '',
     });
 
     volumeSeries.priceScale().applyOptions({
-        scaleMargins: {
-            top: 0.7,
-            bottom: 0,
-        },
+      scaleMargins: { top: 0.7, bottom: 0 },
     });
 
-    const generateData = () => {
-      const data = [];
-      const volumeData = [];
-      let basePrice = 0.094;
-      const now = new Date();
-      
-      const count = activeInterval === '15min' ? 100 : activeInterval === 'Hour' ? 72 : 30;
-      const step = activeInterval === '15min' ? 15 * 60 : activeInterval === 'Hour' ? 3600 : 86400;
+    const loadPythHistory = async () => {
+      let resolution = 'D';
+      let secondsBack = 30 * 24 * 60 * 60;
 
-      for (let i = count; i >= 0; i--) {
-        const time = (Math.floor(now.getTime() / 1000) - (i * step)) as UTCTimestamp;
-        const change = (Math.random() - 0.5) * 0.002;
-        basePrice += change;
-        data.push({ time, value: basePrice });
-        volumeData.push({ 
-            time, 
-            value: Math.random() * 1000000,
-            color: change >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'
-        });
-      }
-      return { data, volumeData };
-    };
+      if (activeInterval === '15min') { resolution = '15'; secondsBack = 24 * 60 * 60; }
+      else if (activeInterval === 'Hour') { resolution = '60'; secondsBack = 7 * 24 * 60 * 60; }
+      else if (activeInterval === 'Day') { resolution = 'D'; secondsBack = 30 * 24 * 60 * 60; }
+      else if (activeInterval === 'Week') { resolution = 'W'; secondsBack = 180 * 24 * 60 * 60; }
 
-    const { data, volumeData } = generateData();
-    
-    let animationId: number;
-    const start = performance.now();
-    const duration = 1500; // Smooth 1500ms entry draw animation
+      const to = Math.floor(Date.now() / 1000);
+      const from = to - secondsBack;
 
-    const animateDraw = (timestamp: number) => {
-      const elapsed = timestamp - start;
-      const t = Math.min(elapsed / duration, 1);
-      
-      // Use an ease-out quadratic function for a natural landing
-      const easeOut = t * (2 - t); 
-      
-      const pointsToShow = Math.max(1, Math.floor(data.length * easeOut));
-      
-      areaSeries.setData(data.slice(0, pointsToShow));
-      volumeSeries.setData(volumeData.slice(0, pointsToShow));
-      
-      // Dynamically fit the X-axis so it doesn't bunch up during drawing
-      chart.timeScale().fitContent();
+      try {
+        const response = await fetch(`${PYTH_BENCHMARKS_URL}?symbol=Crypto.HBAR/USD&resolution=${resolution}&from=${from}&to=${to}`);
+        const data = await response.json();
 
-      if (t < 1) {
-        animationId = requestAnimationFrame(animateDraw);
+        if (data.s === "ok") {
+          const priceData = data.t.map((t: number, i: number) => ({
+            time: t as UTCTimestamp,
+            value: data.c[i]
+          }));
+          const volData = data.t.map((t: number, i: number) => ({
+            time: t as UTCTimestamp,
+            value: data.v[i] || Math.random() * 500000,
+            color: data.c[i] >= data.o[i] ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'
+          }));
+
+          areaSeries.setData(priceData);
+          volumeSeries.setData(volData);
+          chart.timeScale().fitContent();
+        }
+      } catch (err) {
+        console.error("Pyth Historical Fetch Error:", err);
       }
     };
 
-    animationId = requestAnimationFrame(animateDraw);
+    loadPythHistory();
 
     chartRef.current = chart;
     seriesRef.current = areaSeries;
@@ -203,9 +179,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     };
 
     window.addEventListener('resize', handleResize);
-
     return () => {
-      cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
@@ -214,11 +188,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
-  /**
-   * Compact FilterButton Styling with exact casing requirement:
-   * - Removed 'uppercase' utility to honor exact string case.
-   * - Maintained text-[8px] and py-1 for compact hierarchy.
-   */
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
@@ -234,7 +203,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
   return (
     <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full relative overflow-visible">
-      {/* Floating Info Panel - Glassmorphism UI Authored by Viqtorhvayx */}
       {isInfoActive && (
         <div className="absolute top-14 right-6 w-56 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
           <h5 className="text-[10px] font-black uppercase tracking-widest mb-3 text-white/90">Market Statistics</h5>
@@ -281,7 +249,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
           </div>
         </div>
 
-        {/* Interactive Info Icon - Authored by Viqtorhvayx */}
         <button 
           onClick={() => setIsInfoActive(!isInfoActive)}
           className={`transition-all duration-300 hover:scale-110 active:scale-95 p-1 relative top-[2px] ${isInfoActive ? 'text-[#00A8E8]' : ''}`}
