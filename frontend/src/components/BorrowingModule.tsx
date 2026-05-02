@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
+import { usePythPrice } from '../hooks/usePythPrice';
 
 interface BorrowingModuleProps {
   xp: number;
@@ -17,10 +18,10 @@ interface BorrowingModuleProps {
 
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP, theme }) => {
   const { balance, balanceSymbol } = useWallet();
-  const [collateralAmount, setCollateralAmount] = useState("");
+  const [hbarInput, setHbarInput] = useState("");
   
-  const collateralValue = Number(stripCommas(collateralAmount)) || 0;
-  const calculatedHbarLimit = (collateralValue * 0.75) / 0.10;
+  const hbarInputNumeric = Number(stripCommas(hbarInput)) || 0;
+  const calculatedHbarLimit = (hbarInputNumeric * 0.75) / 0.10;
   
   const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('borrow');
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +29,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [isRepaid, setIsRepaid] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const hasInput = collateralAmount.length > 0 && Number(stripCommas(collateralAmount)) > 0;
+  const hasInput = hbarInput.length > 0 && Number(stripCommas(hbarInput)) > 0;
   const [collateralToken, setCollateralToken] = useState<'USDT' | 'USDC'>('USDT');
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   };
 
   const handleAction = () => {
-    if (!collateralAmount || Number(stripCommas(collateralAmount)) <= 0) return;
+    if (!hbarInput || Number(stripCommas(hbarInput)) <= 0) return;
     setIsClicked(true);
     if (activeTab === 'repay') {
       setShowModal(true);
@@ -130,16 +131,23 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const handleQuickSelect = (percent: number) => {
     const numericBalance = Number(balance) || 0;
     const targetAmount = (numericBalance * (percent / 100)).toString();
-    setCollateralAmount(formatWithCommas(targetAmount));
+    setHbarInput(formatWithCommas(targetAmount));
     setIsClicked(false);
   };
 
   const handleMaxSelect = () => {
-    setCollateralAmount(formatWithCommas(balance));
+    setHbarInput(formatWithCommas(balance));
     setIsClicked(false);
   };
 
-  const usdValue = (Number(stripCommas(collateralAmount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const hbarPrice = usePythPrice();
+
+  const usdValue = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format((Number(stripCommas(hbarInput)) || 0) * hbarPrice);
 
   return (
     <div className="industrial-panel bg-surface flex flex-col h-full relative">
@@ -190,11 +198,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               placeholder="0.00"
               className={numericInputClasses}
               style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
-              value={collateralAmount}
-              onValueChange={(val) => { setCollateralAmount(val); setIsClicked(false); }}
+              value={hbarInput}
+              onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
             />
             <div className="flex justify-between items-baseline mt-2 px-2">
-              <span className="text-[10px] font-bold" style={{ color: labelColor }}>${usdValue}</span>
+              <span className="text-[10px] font-bold" style={{ color: labelColor }}>{usdValue}</span>
               <div className="flex gap-1">
                 <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
                 <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
@@ -210,13 +218,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{calculatedHbarLimit.toFixed(2)} {balanceSymbol}</span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((collateralValue / 1000) * 100, 100)}%` }} />
+            <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((hbarInputNumeric / 1000) * 100, 100)}%` }} />
           </div>
           <p className="text-[10px] mt-2" style={{ color: labelColor }}>Starting XP is calculated based on Collateralization Ratio.</p>
         </div>
 
         <div className="flex gap-4 mt-auto">
-          <button onClick={handleAction} disabled={!collateralAmount || Number(stripCommas(collateralAmount)) <= 0} className={getActionButtonClasses()}>
+          <button onClick={handleAction} disabled={!hbarInput || Number(stripCommas(hbarInput)) <= 0} className={getActionButtonClasses()}>
             {activeTab === 'repay' ? 'Repay & Withdraw' : activeTab === 'borrow' ? `Borrow ${balanceSymbol}` : 'Deposit Collateral'}
           </button>
         </div>
