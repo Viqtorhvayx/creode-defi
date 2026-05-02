@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
+import { usePythPrice } from '../hooks/usePythPrice';
 
 interface LockingModuleProps {
   theme?: 'light' | 'dark';
@@ -89,7 +90,14 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     setAmount(formatWithCommas(balance));
   };
 
-  const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const hbarPrice = usePythPrice();
+
+  const usdValue = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
 
   return (
     <div className="industrial-panel bg-surface">
@@ -137,7 +145,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 onValueChange={setAmount}
               />
               <div className="flex justify-between items-baseline mt-2 px-2">
-                <span className="text-[10px] font-bold" style={{ color: labelColor }}>${usdValue}</span>
+                <span className="text-[10px] font-bold" style={{ color: labelColor }}>{usdValue}</span>
                 <div className="flex gap-1">
                   <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
                   <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
