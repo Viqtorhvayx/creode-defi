@@ -23,10 +23,31 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
   const [isInfoActive, setIsInfoActive] = useState(false);
 
-  // Raw market metrics for HBAR/USD
+  // Raw market metrics for HBAR/USD - Polling logic authored by Viqtorhvayx
   const rawVolume = 1800000;
   const rawLiquidity = 6200000;
-  const currentPrice = 0.0942;
+  
+  const [hbarPrice, setHbarPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHbarPrice = async () => {
+      try {
+        const response = await fetch('https://api.saucerswap.finance/tokens/0.0.1456986');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.priceUsd) {
+            setHbarPrice(parseFloat(data.priceUsd).toFixed(4));
+          }
+        }
+      } catch (error) {
+        console.error("SaucerSwap API Error:", error);
+      }
+    };
+
+    fetchHbarPrice();
+    const priceInterval = setInterval(fetchHbarPrice, 15000);
+    return () => clearInterval(priceInterval);
+  }, []);
 
   // HBAR Market Statistics
   const hbarStats = {
@@ -242,7 +263,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             </span>
           </div>
           <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl font-black" style={{ color: primaryTextColor }}>{currentPrice}</span>
+              <span className="text-xl font-black" style={{ color: primaryTextColor }}>
+                {hbarPrice ? `$${hbarPrice}` : "..."}
+              </span>
               <span className="text-[10px] font-bold !text-[#10B981]">+1.24%</span>
           </div>
 
