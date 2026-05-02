@@ -46,10 +46,10 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       role="button"
       tabIndex={0}
       onClick={handleConnect}
-      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-2xl border ${
+      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-2xl border border-white/5 ${
         !isConnected 
           ? "bg-[#00A8E8] border-white/10 hover:bg-[#0092c8] text-white px-5 py-2 font-bold shadow-lg shadow-[#00A8E8]/20" 
-          : "bg-[#121212] border-[#00A8E8]/30 text-white px-4 py-2 hover:bg-[#1A1A1A] shadow-[0_4px_12px_rgba(0,168,232,0.15)]"
+          : "bg-black/5 dark:bg-white/5 text-[#00A8E8] px-4 py-2 hover:bg-black/10 dark:hover:bg-white/10 shadow-sm"
       }`}
     >
       {!isConnected ? (
@@ -65,23 +65,23 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
           </div>
 
           {/* Account ID Resolution */}
-          <span className="font-mono text-[10px] tracking-tight opacity-90">
+          <span className="font-mono text-[10px] tracking-tight text-[#00A8E8] font-bold">
             {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
           </span>
 
           {/* Divider */}
-          <div className="h-3 w-[1px] bg-white/20"></div>
+          <div className="h-3 w-[1px] bg-[#00A8E8]/20"></div>
 
           {/* Inline Balance */}
           <div className="flex items-baseline space-x-1">
-            <span className="text-[11px] font-black">{balance}</span>
-            <span className="text-[8px] font-bold text-[#00A8E8]">{balanceSymbol}</span>
+            <span className="text-[11px] font-black text-[#00A8E8]">{balance}</span>
+            <span className="text-[8px] font-bold text-[#00A8E8]/60">{balanceSymbol}</span>
           </div>
 
           {/* Hardened Disconnect Button */}
           <button 
             onClick={handleDisconnect}
-            className="ml-1 p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/40 hover:text-red-500 transition-all duration-300 group"
+            className="ml-1 p-1.5 rounded-lg bg-[#00A8E8]/5 hover:bg-red-500/10 text-[#00A8E8] hover:text-red-500 transition-all duration-300 group"
             title="Disconnect Wallet"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
