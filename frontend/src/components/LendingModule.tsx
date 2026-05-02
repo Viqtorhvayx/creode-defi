@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
+import { usePythPrice } from '../hooks/usePythPrice';
 
 interface LendingModuleProps {
   points: number;
@@ -48,7 +49,14 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
     </button>
   );
 
-  const usdValue = (Number(stripCommas(amount)) * 0.0942).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const hbarPrice = usePythPrice();
+
+  const usdValue = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
   const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
@@ -88,7 +96,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             onValueChange={setAmount}
           />
           <div className="flex justify-between items-baseline mt-2 px-2">
-            <span className="text-[10px] font-bold" style={{ color: labelColor }}>${usdValue}</span>
+            <span className="text-[10px] font-bold" style={{ color: labelColor }}>{usdValue}</span>
             <div className="flex gap-1">
               <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
               <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
