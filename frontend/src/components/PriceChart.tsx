@@ -8,9 +8,9 @@ interface PriceChartProps {
 }
 
 /**
- * @title PriceChart (Hybrid Architecture)
+ * @title PriceChart (Live WebSocket Architecture)
  * @author Viqtorhvayx
- * @dev HBAR/USD Market Module powered by Pyth Network (Price/Chart) and CoinGecko (Volume/Cap).
+ * @dev HBAR/USD Market Module powered by Pyth Network (Live Stream) and CoinGecko (Stats).
  */
 export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const [marketCap, setMarketCap] = useState<string | null>(null);
 
   const PYTH_HBAR_FEED_ID = "3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd";
-  const PYTH_HERMES_URL = "https://hermes.pyth.network/v2/updates/price/latest";
+  const PYTH_WS_URL = "wss://hermes.pyth.network/ws";
   const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingview/history";
   const COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true";
 
@@ -41,24 +41,59 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     return `$${val.toFixed(2)}`;
   };
 
-  // 1. Pyth Live Price Fetching
+  // 1. Pyth Live Price Streaming (WebSocket) authored by Viqtorhvayx
   useEffect(() => {
-    const fetchPythPrice = async () => {
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout>;
+
+    const connect = () => {
       try {
-        const response = await fetch(`${PYTH_HERMES_URL}?ids[]=${PYTH_HBAR_FEED_ID}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.parsed && data.parsed[0]) {
-            const priceObj = data.parsed[0].price;
-            const price = Number(priceObj.price) * Math.pow(10, priceObj.expo);
-            setHbarPrice(price.toFixed(4));
+        ws = new WebSocket(PYTH_WS_URL);
+
+        ws.onopen = () => {
+          if (ws?.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: "subscribe",
+              ids: [PYTH_HBAR_FEED_ID]
+            }));
           }
-        }
-      } catch (err) { console.error("Pyth Error:", err); }
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === "price_update" && data.price_feed?.id === PYTH_HBAR_FEED_ID) {
+              const priceObj = data.price_feed.price;
+              const price = Number(priceObj.price) * Math.pow(10, priceObj.expo);
+              setHbarPrice(price.toFixed(5));
+            }
+          } catch (err) {
+            console.error("Pyth WS Message Parse Error:", err);
+          }
+        };
+
+        ws.onerror = (err) => {
+          console.error("Pyth WebSocket Error:", err);
+        };
+
+        ws.onclose = () => {
+          reconnectTimeout = setTimeout(connect, 5000);
+        };
+      } catch (err) {
+        console.error("Pyth WebSocket Connection Error:", err);
+        reconnectTimeout = setTimeout(connect, 5000);
+      }
     };
-    fetchPythPrice();
-    const interval = setInterval(fetchPythPrice, 10000);
-    return () => clearInterval(interval);
+
+    connect();
+
+    return () => {
+      if (ws) {
+        ws.onclose = null; 
+        ws.close();
+      }
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    };
   }, []);
 
   // 2. CoinGecko Market Metrics Fetching (Volume/Cap/Change)
@@ -107,7 +142,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         priceFormatter: (price: number) => {
           return new Intl.NumberFormat('en-US', {
             style: 'currency', currency: 'USD',
-            minimumFractionDigits: 4, maximumFractionDigits: 4,
+            minimumFractionDigits: 5, maximumFractionDigits: 5,
           }).format(price);
         },
       },
