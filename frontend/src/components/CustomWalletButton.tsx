@@ -46,7 +46,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       role="button"
       tabIndex={0}
       onClick={handleConnect}
-      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-2xl border border-[#00A8E8]/10 font-bold hover:-translate-y-1 hover:shadow-md active:scale-95 ${
+      className={`transition-all duration-300 min-h-[40px] flex items-center justify-center cursor-pointer select-none rounded-[60px] border border-[#00A8E8]/10 font-bold hover:-translate-y-1 hover:shadow-md active:scale-95 px-6 py-2.5 ${
         !isConnected 
           ? "bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20" 
           : "bg-[#00A8E8]/10 text-[#00A8E8]"
@@ -55,19 +55,17 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       {!isConnected ? (
         <span className="text-[11px] tracking-wider">Connect Wallet</span>
       ) : (
-        <div className="flex items-center space-x-3">
-          {/* Glowing Status Dot */}
-          <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          {/* Status & ID Group */}
+          <div className="flex items-center space-x-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF00] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF00] shadow-[0_0_8px_#00FF00]"></span>
             </span>
+            <span className="font-mono text-[10px] tracking-tight text-[#00A8E8] font-bold">
+              {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
+            </span>
           </div>
-
-          {/* Account ID Resolution */}
-          <span className="font-mono text-[10px] tracking-tight text-[#00A8E8] font-bold">
-            {accountId && accountId.length > 12 ? `${accountId.slice(0, 8)}...` : accountId}
-          </span>
 
           {/* Divider */}
           <div className="h-3 w-[1px] bg-[#00A8E8]/20"></div>
@@ -81,7 +79,7 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
           {/* Hardened Disconnect Button */}
           <button 
             onClick={handleDisconnect}
-            className="ml-1 p-1.5 rounded-lg bg-[#00A8E8]/5 hover:bg-red-500/10 text-[#00A8E8] hover:text-red-500 transition-all duration-300 group"
+            className="p-1.5 rounded-lg bg-[#00A8E8]/5 hover:bg-red-500/10 text-[#00A8E8] hover:text-red-500 transition-all duration-300 group"
             title="Disconnect Wallet"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
