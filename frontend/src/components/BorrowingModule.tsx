@@ -172,35 +172,55 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-6 flex flex-col flex-grow">
-        <div className="mt-1">
-          <div className="flex justify-between items-center mb-1">
-            <label className="text-[10px] font-bold uppercase block" style={{ color: labelColor }}>{getLabelText()}</label>
-            {activeTab === 'deposit' && (
-              <div className="flex items-center text-[10px] font-bold pointer-events-auto">
-                <button onClick={() => setCollateralToken('USDT')} className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : 'text-gray-500'}`}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
-                    <circle cx="12" cy="12" r="12" fill="#26A17B"/><path d="M13.43 10.45V18.5H10.57V10.45H7V8.5H17V10.45H13.43Z" fill="white"/>
-                  </svg>
-                  USDT
-                </button>
-                <span className="mx-2 text-gray-500">|</span>
-                <button onClick={() => setCollateralToken('USDC')} className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-[#00A8E8]' : 'text-gray-500'}`}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
-                    <circle cx="12" cy="12" r="12" fill="#2775CA"/><path d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM11.5 14.5V15.5H12.5V14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5C14.5 12.9477 14.0523 12.5 13.5 12.5H10.5C9.94772 12.5 9.5 12.0523 9.5 11.5C9.5 10.9477 9.94772 10.5 10.5 10.5H11.5V9.5H12.5V10.5H13.5V11.5H14.5V10.5C14.5 9.39543 13.6046 8.5 12.5 8.5V7.5H11.5V8.5H10.5C9.39543 8.5 8.5 9.39543 8.5 10.5C8.5 11.6046 9.39543 12.5 10.5 12.5H13.5C14.0523 12.5 14.5 12.9477 14.5 13.5C14.5 14.0523 14.0523 14.5 13.5 14.5H12.5V15.5H11.5V14.5H10.5V13.5H9.5V14.5C9.5 15.6046 10.3954 16.5 11.5 16.5V15.5H12.5V14.5H11.5Z" fill="white" />
-                  </svg>
-                  USDC
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="relative">
-            <FormattedNumberInput 
-              placeholder="0.00"
-              className={numericInputClasses}
-              style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
-              value={hbarInput}
-              onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
-            />
+          <div className="mt-1">
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-[10px] font-bold uppercase block" style={{ color: labelColor }}>{getLabelText()}</label>
+              {activeTab === 'deposit' && (
+                <div className="flex items-center text-[10px] font-bold pointer-events-auto">
+                  <button onClick={() => setCollateralToken('USDT')} className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDT' ? 'text-[#00A8E8]' : 'text-gray-500'}`}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                      <circle cx="12" cy="12" r="12" fill="#26A17B"/><path d="M13.43 10.45V18.5H10.57V10.45H7V8.5H17V10.45H13.43Z" fill="white"/>
+                    </svg>
+                    USDT
+                  </button>
+                  <span className="mx-2 text-gray-500">|</span>
+                  <button onClick={() => setCollateralToken('USDC')} className={`flex items-center transition-colors hover:opacity-80 ${collateralToken === 'USDC' ? 'text-[#00A8E8]' : 'text-gray-500'}`}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                      <circle cx="12" cy="12" r="12" fill="#2775CA"/><path d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM11.5 14.5V15.5H12.5V14.5H13.5C14.0523 14.5 14.5 14.0523 14.5 13.5C14.5 12.9477 14.0523 12.5 13.5 12.5H10.5C9.94772 12.5 9.5 12.0523 9.5 11.5C9.5 10.9477 9.94772 10.5 10.5 10.5H11.5V9.5H12.5V10.5H13.5V11.5H14.5V10.5C14.5 9.39543 13.6046 8.5 12.5 8.5V7.5H11.5V8.5H10.5C9.39543 8.5 8.5 9.39543 8.5 10.5C8.5 11.6046 9.39543 12.5 10.5 12.5H13.5C14.0523 12.5 14.5 12.9477 14.5 13.5C14.5 14.0523 14.0523 14.5 13.5 14.5H12.5V15.5H11.5V14.5H10.5V13.5H9.5V14.5C9.5 15.6046 10.3954 16.5 11.5 16.5V15.5H12.5V14.5H11.5Z" fill="white" />
+                    </svg>
+                    USDC
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="relative flex items-center">
+              <FormattedNumberInput 
+                placeholder="0.00"
+                className={numericInputClasses + (activeTab !== 'deposit' ? " pr-28" : "")}
+                style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
+                value={hbarInput}
+                onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
+              />
+              {activeTab !== 'deposit' && (
+                <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
+                  <div 
+                    className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
+                    style={{ backgroundColor: '#000000' }}
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      fill="currentColor" 
+                      className="w-[11px] h-[11px]" 
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
+                    </svg>
+                  </div>
+                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
+                </div>
+              )}
+            </div>
             <div className="flex justify-between items-baseline mt-2 px-2">
               <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
               <div className="flex gap-1">
@@ -210,7 +230,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               </div>
             </div>
           </div>
-        </div>
 
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
