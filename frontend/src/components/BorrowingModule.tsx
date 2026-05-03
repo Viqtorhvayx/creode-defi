@@ -211,7 +211,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
                   {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
                   {isDropdownOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-36 p-2 rounded-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-950/40 border border-white/20 dark:border-slate-500/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                    <div className="absolute top-full mt-2 right-0 min-w-[120px] rounded-2xl backdrop-filter backdrop-blur-2xl bg-white/20 dark:bg-slate-900/40 border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] z-[100] p-2 animate-in fade-in zoom-in duration-200">
                       {(['USDT', 'USDC'] as const).map((token) => (
                         <div 
                           key={token}
@@ -220,7 +220,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                             setCollateralToken(token);
                             setIsDropdownOpen(false);
                           }}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/10 dark:hover:bg-white/5 transition-colors cursor-pointer ${collateralToken === token ? 'bg-[#00A8E8]/10' : ''}`}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/30 dark:hover:bg-white/10 transition-all duration-200 ease-in-out cursor-pointer ${collateralToken === token ? 'bg-white/20 dark:bg-white/5' : ''}`}
                         >
                           {token === 'USDT' ? (
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 shrink-0">
