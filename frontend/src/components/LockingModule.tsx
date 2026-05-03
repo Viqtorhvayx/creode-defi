@@ -148,14 +148,14 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
                   <div 
                     className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
-                    style={{ backgroundColor: theme === 'dark' ? '#FFFFFF' : '#000000' }}
+                    style={{ backgroundColor: '#000000' }}
                   >
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
                       viewBox="0 0 24 24" 
                       fill="currentColor" 
                       className="w-[11px] h-[11px]" 
-                      style={{ color: theme === 'dark' ? '#000000' : '#FFFFFF' }}
+                      style={{ color: '#FFFFFF' }}
                     >
                       <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
                     </svg>
