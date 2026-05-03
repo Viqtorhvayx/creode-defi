@@ -134,16 +134,25 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
             <div className="relative">
               <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock ({balanceSymbol})</label>
-              <FormattedNumberInput 
-                placeholder="0.00"
-                className={numericInputClasses}
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                }}
-                value={amount}
-                onValueChange={setAmount}
-              />
+              <div className="relative flex items-center">
+                <FormattedNumberInput 
+                  placeholder="0.00"
+                  className={numericInputClasses + " pr-28"}
+                  style={{ 
+                    backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                    color: theme === 'dark' ? '#FFFFFF' : '#000000'
+                  }}
+                  value={amount}
+                  onValueChange={setAmount}
+                />
+                <div className="absolute right-5 flex items-center gap-2 pointer-events-none">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill={theme === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)'}/>
+                    <path d="M7 17V7H8.5V11.25H15.5V7H17V17H15.5V12.75H8.5V17H7Z" fill={theme === 'dark' ? '#000000' : '#FFFFFF'}/>
+                  </svg>
+                  <span className="text-[10px] font-black tracking-widest" style={{ color: labelColor }}>HBAR</span>
+                </div>
+              </div>
               <div className="flex justify-between items-baseline mt-2 px-2">
                 <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
                 <div className="flex gap-1">
