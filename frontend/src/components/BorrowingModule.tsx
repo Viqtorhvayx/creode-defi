@@ -290,19 +290,25 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 )}
               </div>
               
-              {/* Real-time USD Value authored by Viqtorhvayx */}
-              {activeTab === 'deposit' && (
-                <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 pl-4 transition-all animate-in fade-in slide-in-from-top-1 duration-300">
-                  ~ ${isPriceLoading ? '...' : (hbarInputNumeric * (assetPrice || 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {/* Aligned Valuation & Quick Actions authored by Viqtorhvayx */}
+              <div className="flex items-baseline justify-between mt-2 w-full px-2">
+                <div>
+                  {activeTab === 'deposit' && (
+                    <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 transition-all animate-in fade-in slide-in-from-top-1 duration-300">
+                      ~ ${isPriceLoading ? '...' : (hbarInputNumeric * (assetPrice || 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                  )}
+                  {activeTab !== 'deposit' && (
+                    <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 transition-all animate-in fade-in slide-in-from-top-1 duration-300">
+                      ~ {usdValue}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex justify-between items-baseline mt-2 px-2">
-              <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
-              <div className="flex gap-1">
-                <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
-                <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
-                <QuickButton label="Max" onClick={handleMaxSelect} />
+                <div className="flex gap-1">
+                  <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
+                  <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
+                  <QuickButton label="Max" onClick={handleMaxSelect} />
+                </div>
               </div>
             </div>
           </div>
