@@ -85,16 +85,35 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       <div className="space-y-6 flex flex-col flex-grow">
         <div className="mt-8">
           <label className="text-[10px] font-bold uppercase block mb-1" style={{ color: labelColor }}>Amount to Provide ({balanceSymbol})</label>
-          <FormattedNumberInput 
-            placeholder="0.00"
-            className={numericInputClasses}
-            style={{ 
-              backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-              color: theme === 'dark' ? '#FFFFFF' : '#000000'
-            }}
-            value={amount}
-            onValueChange={setAmount}
-          />
+          <div className="relative flex items-center">
+            <FormattedNumberInput 
+              placeholder="0.00"
+              className={numericInputClasses + " pr-28"}
+              style={{ 
+                backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
+                color: theme === 'dark' ? '#FFFFFF' : '#000000'
+              }}
+              value={amount}
+              onValueChange={setAmount}
+            />
+            <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
+              <div 
+                className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
+                style={{ backgroundColor: '#000000' }}
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="currentColor" 
+                  className="w-[11px] h-[11px]" 
+                  style={{ color: '#FFFFFF' }}
+                >
+                  <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
+            </div>
+          </div>
           <div className="flex justify-between items-baseline mt-2 px-2">
             <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
             <div className="flex gap-1">
