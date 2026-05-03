@@ -146,12 +146,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                   onValueChange={setAmount}
                 />
                 <div className="absolute right-5 flex items-center gap-2 pointer-events-none">
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'}`}>
+                  <div className={`flex items-center justify-center w-[18px] h-[18px] rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'}`}>
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
                       viewBox="0 0 24 24" 
                       fill="currentColor" 
-                      className="w-3 h-3" 
+                      className="w-[11px] h-[11px]" 
                       style={{ color: theme === 'dark' ? '#000000' : '#FFFFFF' }}
                     >
                       <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
