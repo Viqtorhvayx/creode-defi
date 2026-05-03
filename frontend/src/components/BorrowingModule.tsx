@@ -35,7 +35,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   
   /* Pyth Asset Pricing & LTV Engine authored by Viqtorhvayx */
   const [assetPrice, setAssetPrice] = useState<number | null>(null);
-  const [hbarPrice, setHbarPrice] = useState<number | null>(null);
+  const [pythHbarPrice, setPythHbarPrice] = useState<number | null>(null);
   const [isPriceLoading, setIsPriceLoading] = useState(false);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           const hbData = data.parsed.find((p: any) => p.id === hbarFeed);
           
           if (colData) setAssetPrice(Number(colData.price.price) * Math.pow(10, colData.price.expo));
-          if (hbData) setHbarPrice(Number(hbData.price.price) * Math.pow(10, hbData.price.expo));
+          if (hbData) setPythHbarPrice(Number(hbData.price.price) * Math.pow(10, hbData.price.expo));
         }
       } catch (error) {
         console.error("Pyth Hermes Multi-Fetch Error:", error);
@@ -71,7 +71,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const collateralUsdValue = hbarInputNumeric * (assetPrice || 0);
   const maxBorrowUsd = collateralUsdValue * MAX_LTV;
-  const maxBorrowHbar = hbarPrice ? (maxBorrowUsd / hbarPrice) : 0;
+  const maxBorrowHbar = pythHbarPrice ? (maxBorrowUsd / pythHbarPrice) : 0;
 
   useEffect(() => {
     setMounted(true);
