@@ -11,8 +11,9 @@ import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
 import ABIS from '@/context/abis.json';
 
-// Deployed address for the native HBAR Vault (Update after deployment)
-const VAULT_ADDRESS = "0x2d553c56de9153dc98d853f8ec15850b5afd004c"; 
+// IMPORTANT: The address below MUST be the deployed CreodeVault.sol contract address.
+// Do NOT use the Treasury wallet address (0x2d553c56de9153dc98d853f8ec15850b5afd004c) here.
+const VAULT_ADDRESS = "PASTE_DEPLOYED_SMART_CONTRACT_ADDRESS_HERE"; 
 
 /**
  * Hook to interact with the CreodeVault smart contract.
