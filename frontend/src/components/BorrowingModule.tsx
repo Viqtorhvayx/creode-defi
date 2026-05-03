@@ -209,9 +209,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                     <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
 
-                  {/* Glassmorphic Dropdown Menu */}
+                  {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
                   {isDropdownOpen && (
-                    <div className="absolute top-full mt-2 right-0 w-32 rounded-xl backdrop-blur-md bg-white/30 dark:bg-black/60 border border-white/20 shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                    <div className="absolute top-full mt-2 right-0 w-36 p-2 rounded-2xl backdrop-blur-2xl bg-white/10 dark:bg-slate-950/40 border border-white/20 dark:border-slate-500/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
                       {(['USDT', 'USDC'] as const).map((token) => (
                         <div 
                           key={token}
@@ -220,10 +220,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                             setCollateralToken(token);
                             setIsDropdownOpen(false);
                           }}
-                          className={`flex items-center gap-2 px-3 py-2.5 hover:bg-white/20 dark:hover:bg-white/10 transition-colors ${collateralToken === token ? 'bg-[#00A8E8]/10' : ''}`}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/10 dark:hover:bg-white/5 transition-colors cursor-pointer ${collateralToken === token ? 'bg-[#00A8E8]/10' : ''}`}
                         >
                           {token === 'USDT' ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-4 h-4 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5 shrink-0">
                               <circle cx="16" cy="16" r="16" fill="#26A17B"/>
                               <path d="M17.922 13.793v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" fill="#FFFFFF"/>
                             </svg>
