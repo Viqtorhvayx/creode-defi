@@ -295,12 +295,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                 <div>
                   {activeTab === 'deposit' && (
                     <div className="text-[10px] font-bold text-[#00A8E8] transition-all animate-in fade-in slide-in-from-top-1 duration-300">
-                      ~ ${isPriceLoading ? '...' : (hbarInputNumeric * (assetPrice || 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${isPriceLoading ? '...' : (hbarInputNumeric * (assetPrice || 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                   )}
                   {activeTab !== 'deposit' && (
                     <div className="text-[10px] font-bold text-[#00A8E8] transition-all animate-in fade-in slide-in-from-top-1 duration-300">
-                      ~ {usdValue}
+                      {usdValue}
                     </div>
                   )}
                 </div>
