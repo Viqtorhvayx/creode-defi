@@ -157,7 +157,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                       <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
                     </svg>
                   </div>
-                  <span className="text-[10px] font-black tracking-widest" style={{ color: primaryTextColor }}>HBAR</span>
+                  <span className="text-[10px] font-black tracking-widest" style={{ color: labelColor }}>HBAR</span>
                 </div>
               </div>
               <div className="flex justify-between items-baseline mt-2 px-2">
