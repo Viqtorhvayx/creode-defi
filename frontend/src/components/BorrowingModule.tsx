@@ -205,7 +205,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
                   {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
                   {isDropdownOpen && (
-                    <div className="absolute top-full mt-2 right-0 min-w-[120px] bg-black/40 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[100] p-2 animate-in fade-in zoom-in duration-200">
+                    <div className="absolute top-full mt-2 right-0 min-w-[120px] bg-black/40 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[100] p-1.5 flex flex-col gap-1.5 animate-in fade-in zoom-in duration-200">
                       {(['USDT', 'USDC'] as const).map((token) => (
                         <div 
                           key={token}
@@ -214,7 +214,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                             setCollateralToken(token);
                             setIsDropdownOpen(false);
                           }}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/30 dark:hover:bg-white/10 transition-all duration-200 ease-in-out cursor-pointer ${collateralToken === token ? 'bg-white/20 dark:bg-white/5' : ''}`}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-500/20 dark:hover:bg-blue-400/20 transition-colors duration-200 cursor-pointer ${collateralToken === token ? 'bg-blue-500/30 dark:bg-blue-400/30' : ''}`}
                         >
                           {token === 'USDT' ? (
                             <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" className="w-5 h-5 rounded-full shrink-0" />
