@@ -51,8 +51,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         const data = await response.json();
         
         if (data.parsed) {
-          const colData = data.parsed.find((p: any) => p.id === collateralFeed);
-          const hbData = data.parsed.find((p: any) => p.id === hbarFeed);
+          const colData = data.parsed.find((p: any) => p.id.includes(collateralFeed));
+          const hbData = data.parsed.find((p: any) => p.id.includes(hbarFeed));
           
           if (colData) setAssetPrice(Number(colData.price.price) * Math.pow(10, colData.price.expo));
           if (hbData) setPythHbarPrice(Number(hbData.price.price) * Math.pow(10, hbData.price.expo));
