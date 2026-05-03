@@ -211,7 +211,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
                   {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
                   {isDropdownOpen && (
-                    <div className="absolute top-full mt-2 right-0 min-w-[120px] rounded-2xl backdrop-filter backdrop-blur-2xl bg-white/20 dark:bg-slate-900/40 border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] z-[100] p-2 animate-in fade-in zoom-in duration-200">
+                    <div className="absolute top-full mt-2 right-0 min-w-[120px] bg-black/40 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[100] p-2 animate-in fade-in zoom-in duration-200">
                       {(['USDT', 'USDC'] as const).map((token) => (
                         <div 
                           key={token}
