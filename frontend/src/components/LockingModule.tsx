@@ -145,7 +145,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                   value={amount}
                   onValueChange={setAmount}
                 />
-                <div className="absolute right-5 flex items-center gap-2 pointer-events-none">
+                <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
                   <div 
                     className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
                     style={{ backgroundColor: theme === 'dark' ? '#FFFFFF' : '#000000' }}
@@ -160,7 +160,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                       <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
                     </svg>
                   </div>
-                  <span className="text-[10px] font-black tracking-widest" style={{ color: labelColor }}>HBAR</span>
+                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
                 </div>
               </div>
               <div className="flex justify-between items-baseline mt-2 px-2">
