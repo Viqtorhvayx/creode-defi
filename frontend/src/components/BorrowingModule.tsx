@@ -21,7 +21,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [hbarInput, setHbarInput] = useState("");
   
   const hbarInputNumeric = Number(stripCommas(hbarInput)) || 0;
-  const calculatedHbarLimit = (hbarInputNumeric * 0.75) / 0.10;
+  const MAX_LTV = 0.65;
   
   const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('deposit');
   const [showModal, setShowModal] = useState(false);
@@ -33,36 +33,45 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
    const [collateralToken, setCollateralToken] = useState<'USDT' | 'USDC'>('USDT');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
-  /* Pyth Asset Pricing authored by Viqtorhvayx */
+  /* Pyth Asset Pricing & LTV Engine authored by Viqtorhvayx */
   const [assetPrice, setAssetPrice] = useState<number | null>(null);
+  const [hbarPrice, setHbarPrice] = useState<number | null>(null);
   const [isPriceLoading, setIsPriceLoading] = useState(false);
 
   useEffect(() => {
-    const fetchStablePrice = async () => {
+    const fetchPythPrices = async () => {
       setIsPriceLoading(true);
-      const feedId = collateralToken === 'USDT' 
+      const collateralFeed = collateralToken === 'USDT' 
         ? '2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b' 
         : 'eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a';
+      const hbarFeed = '37284b23838dbab8c3394d6e9dc7649ff451ceb7ef38e553da1548b11186dfbd';
       
       try {
-        const response = await fetch(`https://hermes.pyth.network/v2/updates/price/latest?ids[]=${feedId}`);
+        const response = await fetch(`https://hermes.pyth.network/v2/updates/price/latest?ids[]=${collateralFeed}&ids[]=${hbarFeed}`);
         const data = await response.json();
-        if (data.parsed && data.parsed.length > 0) {
-          const p = data.parsed[0].price;
-          const price = Number(p.price) * Math.pow(10, p.expo);
-          setAssetPrice(price);
+        
+        if (data.parsed) {
+          const colData = data.parsed.find((p: any) => p.id === collateralFeed);
+          const hbData = data.parsed.find((p: any) => p.id === hbarFeed);
+          
+          if (colData) setAssetPrice(Number(colData.price.price) * Math.pow(10, colData.price.expo));
+          if (hbData) setHbarPrice(Number(hbData.price.price) * Math.pow(10, hbData.price.expo));
         }
       } catch (error) {
-        console.error("Pyth Fetch Error:", error);
+        console.error("Pyth Hermes Multi-Fetch Error:", error);
       } finally {
         setIsPriceLoading(false);
       }
     };
 
-    if (activeTab === 'deposit') {
-      fetchStablePrice();
+    if (activeTab === 'deposit' || activeTab === 'borrow') {
+      fetchPythPrices();
     }
   }, [collateralToken, activeTab]);
+
+  const collateralUsdValue = hbarInputNumeric * (assetPrice || 0);
+  const maxBorrowUsd = collateralUsdValue * MAX_LTV;
+  const maxBorrowHbar = hbarPrice ? (maxBorrowUsd / hbarPrice) : 0;
 
   useEffect(() => {
     setMounted(true);
@@ -301,7 +310,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <div className="bg-black/[0.02] dark:bg-white/[0.02] rounded-xl py-2 px-4 border border-[var(--border)] mt-auto">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Maximum Borrowing Limit</span>
-            <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>{calculatedHbarLimit.toFixed(2)} {balanceSymbol}</span>
+            <span className="text-[11px] font-black" style={{ color: primaryTextColor }}>
+              {isPriceLoading ? '... HBAR' : `${maxBorrowHbar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} HBAR`}
+            </span>
           </div>
           <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <div className="h-full bg-[#00A8E8]" style={{ width: `${Math.min((hbarInputNumeric / 1000) * 100, 100)}%` }} />
