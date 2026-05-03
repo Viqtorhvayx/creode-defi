@@ -29,8 +29,12 @@ export const useCreodeVault = () => {
       throw new Error("Wallet not connected. Please connect your wallet first.");
     }
     
+    // Validate address to avoid ENS resolution errors on non-ENS networks (like Hedera)
+    if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
+      throw new Error("Vault Contract Address is not configured. Please paste the deployed contract address in useCreodeVault.ts.");
+    }
+    
     // Bridge Viem/Wagmi wallet client to Ethers.js v6
-    // Note: transport is the EIP-1193 provider from the wallet
     const { transport } = walletClient;
     const provider = new ethers.BrowserProvider(transport);
     const signer = await provider.getSigner();
