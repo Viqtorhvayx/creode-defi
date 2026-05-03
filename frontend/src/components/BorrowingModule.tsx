@@ -196,12 +196,26 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             <div className="relative flex items-center">
               <FormattedNumberInput 
                 placeholder="0.00"
-                className={numericInputClasses + (activeTab !== 'deposit' ? " pr-28" : "")}
+                className={numericInputClasses + " pr-32"}
                 style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
                 value={hbarInput}
                 onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
               />
-              {activeTab !== 'deposit' && (
+              
+              {/* Conditional Badges authored by Viqtorhvayx */}
+              {activeTab === 'deposit' ? (
+                /* USDT Dropdown Badge */
+                <div className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" className="w-4 h-4 text-[#26A17B]">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M16 32C7.163 32 0 24.837 0 16S7.163 0 16 0s16 7.163 16 16-7.163 16-16 16zm1.922-18.207v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" />
+                  </svg>
+                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">USDT</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#00A8E8]">
+                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              ) : (
+                /* Static HBAR Badge */
                 <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
                   <div 
                     className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
