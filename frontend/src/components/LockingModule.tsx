@@ -5,7 +5,7 @@
  * Description: Time-lock savings vault integrated with the Advanced Identity Engine.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
@@ -24,23 +24,22 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [tvl, setTvl] = useState(125000.00);
 
   const [days, setDays] = useState<string>("21"); 
-  const [maturityDate, setMaturityDate] = useState<string>("");
 
-  useEffect(() => {
-    updateDateFromDays(21);
-  }, []);
-
-  const updateDateFromDays = (d: number) => {
+  /* Dynamic Maturity Engine authored by Viqtorhvayx */
+  const calculatedMaturity = useMemo(() => {
+    const numericDays = parseInt(stripCommas(days));
+    if (isNaN(numericDays) || numericDays <= 0) return "Select duration";
     const date = new Date();
-    date.setDate(date.getDate() + d);
-    setMaturityDate(date.toISOString().split('T')[0]);
-  };
+    date.setDate(date.getDate() + numericDays);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  }, [days]);
 
   const handleDaysChange = (val: string) => {
-    const cleanVal = stripCommas(val);
     setDays(val);
-    const numericDays = parseInt(cleanVal) || 0;
-    updateDateFromDays(numericDays);
   };
 
   const handleDeposit = async () => {
@@ -193,8 +192,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 <span className="text-[11px] font-black !text-red-500">5.00%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Calculated Maturity</span>
-                <span className="text-[11px] font-bold" style={{ color: primaryTextColor }}>{new Date(maturityDate).toLocaleDateString()}</span>
+                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Calculated Maturity Date</span>
+                <span className="text-[11px] font-black !text-[#00A8E8]">{calculatedMaturity}</span>
               </div>
             </div>
           </div>
