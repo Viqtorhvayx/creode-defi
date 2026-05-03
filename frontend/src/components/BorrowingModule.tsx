@@ -23,7 +23,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const hbarInputNumeric = Number(stripCommas(hbarInput)) || 0;
   const calculatedHbarLimit = (hbarInputNumeric * 0.75) / 0.10;
   
-  const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('borrow');
+  const [activeTab, setActiveTab] = useState<'deposit' | 'borrow' | 'repay'>('deposit');
   const [showModal, setShowModal] = useState(false);
   const [modalStep, setModalStep] = useState<1 | 2>(1);
   const [isRepaid, setIsRepaid] = useState(false);
@@ -31,6 +31,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [mounted, setMounted] = useState(false);
   const hasInput = hbarInput.length > 0 && Number(stripCommas(hbarInput)) > 0;
   const [collateralToken, setCollateralToken] = useState<'USDT' | 'USDC'>('USDT');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -187,19 +188,59 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               
               {/* Conditional Badges authored by Viqtorhvayx */}
               {activeTab === 'deposit' ? (
-                /* USDT Dropdown Badge - Official Circular Logo by Viqtorhvayx */
-                <div className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-[18px] h-[18px]">
-                    <circle cx="16" cy="16" r="16" fill="#26A17B"/>
-                    <path d="M17.922 13.793v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" fill="#FFFFFF"/>
-                  </svg>
-                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">USDT</span>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#00A8E8]">
+                /* Interactive Asset Dropdown authored by Viqtorhvayx */
+                <div 
+                  className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  {collateralToken === 'USDT' ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-[18px] h-[18px] shrink-0">
+                      <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+                      <path d="M17.922 13.793v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" fill="#FFFFFF"/>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-[18px] h-[18px] shrink-0">
+                      <circle cx="16" cy="16" r="16" fill="#2775CA"/>
+                      <path d="M18.775 14.887a3.421 3.421 0 0 0 .151-.998 3.036 3.036 0 0 0-.616-1.83 2.946 2.946 0 0 0-1.688-1.077 3.522 3.522 0 0 0-.825-.098c-.146 0-.29.006-.432.018V10.9h.432c.112.001.218-.01.32-.02.482-.047.881-.225 1.151-.51.27-.286.417-.678.417-1.114V8.026A1.171 1.171 0 0 0 17.3 6.9h-1.571V6.3a1.171 1.171 0 0 0-1.172-1.172H13.6A1.171 1.171 0 0 0 12.428 6.3v.6h-.6a1.171 1.171 0 0 0-1.172 1.172v1.229c0 .436.147.828.417 1.114s.669.463 1.151.51c.102.01.208.021.32.02v.004c.143 0 .285-.008.432-.018v.004h-.432a3.522 3.522 0 0 0 .825.098 2.946 2.946 0 0 0 1.688 1.077 3.036 3.036 0 0 0 .616 1.83 3.421 3.421 0 0 0-.151.998V16.7h.802v-1.813h1.365V16.7h.802v-1.813h1.365V16.7h.802v-1.813zm-2.029 3.013a3.421 3.421 0 0 0-.151.998 3.036 3.036 0 0 0 .616 1.83 2.946 2.946 0 0 0 1.688 1.077 3.522 3.522 0 0 0 .825.098c.146 0 .29-.006.432-.018V21.1h-.432a3.522 3.522 0 0 0-.825-.098 2.946 2.946 0 0 0-1.688-1.077 3.036 3.036 0 0 0-.616-1.83 3.421 3.421 0 0 0 .151-.998V15.3h-.802z" fill="#FFFFFF"/>
+                    </svg>
+                  )}
+                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{collateralToken}</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`text-[#00A8E8] transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
                     <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
+
+                  {/* Glassmorphic Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute top-full mt-2 right-0 w-32 rounded-xl backdrop-blur-md bg-white/30 dark:bg-black/60 border border-white/20 shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+                      {(['USDT', 'USDC'] as const).map((token) => (
+                        <div 
+                          key={token}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCollateralToken(token);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`flex items-center gap-2 px-3 py-2.5 hover:bg-white/20 dark:hover:bg-white/10 transition-colors ${collateralToken === token ? 'bg-[#00A8E8]/10' : ''}`}
+                        >
+                          {token === 'USDT' ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-4 h-4 shrink-0">
+                              <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+                              <path d="M17.922 13.793v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" fill="#FFFFFF"/>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-4 h-4 shrink-0">
+                              <circle cx="16" cy="16" r="16" fill="#2775CA"/>
+                              <path d="M18.775 14.887a3.421 3.421 0 0 0 .151-.998 3.036 3.036 0 0 0-.616-1.83 2.946 2.946 0 0 0-1.688-1.077 3.522 3.522 0 0 0-.825-.098c-.146 0-.29.006-.432.018V10.9h.432c.112.001.218-.01.32-.02.482-.047.881-.225 1.151-.51.27-.286.417-.678.417-1.114V8.026A1.171 1.171 0 0 0 17.3 6.9h-1.571V6.3a1.171 1.171 0 0 0-1.172-1.172H13.6A1.171 1.171 0 0 0 12.428 6.3v.6h-.6a1.171 1.171 0 0 0-1.172 1.172v1.229c0 .436.147.828.417 1.114s.669.463 1.151.51c.102.01.208.021.32.02v.004c.143 0 .285-.008.432-.018v.004h-.432a3.522 3.522 0 0 0 .825.098 2.946 2.946 0 0 0 1.688 1.077 3.036 3.036 0 0 0 .616 1.83 3.421 3.421 0 0 0-.151.998V16.7h.802v-1.813h1.365V16.7h.802v-1.813h1.365V16.7h.802v-1.813zm-2.029 3.013a3.421 3.421 0 0 0-.151.998 3.036 3.036 0 0 0 .616 1.83 2.946 2.946 0 0 0 1.688 1.077 3.522 3.522 0 0 0 .825.098c.146 0 .29-.006.432-.018V21.1h-.432a3.522 3.522 0 0 0-.825-.098 2.946 2.946 0 0 0-1.688-1.077 3.036 3.036 0 0 0-.616-1.83 3.421 3.421 0 0 0 .151-.998V15.3h-.802z" fill="#FFFFFF"/>
+                            </svg>
+                          )}
+                          <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{token}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
-                /* Static HBAR Badge */
+                /* Static HBAR Badge authored by Viqtorhvayx */
                 <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
                   <div 
                     className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
