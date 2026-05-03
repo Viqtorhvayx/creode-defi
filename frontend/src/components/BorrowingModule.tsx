@@ -204,11 +204,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               
               {/* Conditional Badges authored by Viqtorhvayx */}
               {activeTab === 'deposit' ? (
-                /* USDT Dropdown Badge - Corrected Pentagon Logo by Viqtorhvayx */
+                /* USDT Dropdown Badge - Official Circular Logo by Viqtorhvayx */
                 <div className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-[18px] h-[18px]">
-                    <polygon points="50,5 95,38 78,92 22,92 5,38" fill="#26A17B"/>
-                    <path d="M50 25c-15.6 0-28.2 3.1-28.2 7 0 3.3 9.3 6 21.7 6.8v16.1h13V38.8c12.4-.8 21.7-3.5 21.7-6.8 0-3.9-12.6-7-28.2-7zm6.5 10.4c-1.1.2-4.1.3-6.5.3s-5.4-.1-6.5-.3V28.9h13v6.5zm0 2.2V68h13V37.6c-4 .3-8.1.4-13 .4s-9-.1-13-.4V68h13V37.6z" fill="#FFFFFF"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-[18px] h-[18px]">
+                    <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+                    <path d="M17.922 13.793v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v5.882h3.904v-5.882c4.399-.203 7.707-1.074 7.707-2.118 0-1.044-3.308-1.916-7.707-2.118zm0 1.875v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.887.173 6.788.85 6.788 1.659 0 .808-2.901 1.485-6.788 1.656z" fill="#FFFFFF"/>
                   </svg>
                   <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">USDT</span>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#00A8E8]">
