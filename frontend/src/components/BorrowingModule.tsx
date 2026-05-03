@@ -198,7 +198,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                   ) : (
                     <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
                   )}
-                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{collateralToken}</span>
+                  <span className="text-[10px] font-black tracking-widest text-white">{collateralToken}</span>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`text-[#00A8E8] transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
                     <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -221,7 +221,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
                           ) : (
                             <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
                           )}
-                          <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{token}</span>
+                          <span className="text-[10px] font-black tracking-widest text-white">{token}</span>
                         </div>
                       ))}
                     </div>
