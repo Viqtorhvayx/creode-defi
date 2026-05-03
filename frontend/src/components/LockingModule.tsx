@@ -12,10 +12,9 @@ import { usePythPrice } from '../hooks/usePythPrice';
 import { ethers } from 'ethers';
 
 const VAULT_ABI = [
-  "function deposit(uint256 _durationInDays) external payable",
-  "function withdraw() external",
-  "function balances(address) view returns (uint256)",
-  "function unlockTimes(address) view returns (uint256)"
+  "function saveHBAR(uint256 _durationInDays) external payable",
+  "function withdrawSavedHBAR() external",
+  "function vaultData(address) view returns (uint256 principal, uint256 durationInDays, uint256 unlockTime)"
 ];
 const VAULT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Localhost/Testnet Placeholder
 
@@ -66,11 +65,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       const contract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, signer);
       
       const parsedAmount = ethers.parseEther(stripCommas(amount));
-      const tx = await contract.deposit(parseInt(days), { value: parsedAmount });
+      const tx = await contract.saveHBAR(parseInt(days), { value: parsedAmount });
       
       console.log("Transaction sent:", tx.hash);
       await tx.wait();
-      alert("Lock-up confirmed on-chain!");
+      alert("Savings lock-up confirmed on the protocol!");
     } catch (err: any) {
       console.error("Deposit Error:", err);
       alert(err.reason || "Transaction failed or rejected.");
@@ -89,10 +88,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, signer);
       
-      const tx = await contract.withdraw();
+      const tx = await contract.withdrawSavedHBAR();
       console.log("Withdrawal sent:", tx.hash);
       await tx.wait();
-      alert("Withdrawal/Penalty resolution confirmed!");
+      alert("Principal + Yield resolution confirmed!");
     } catch (err: any) {
       console.error("Withdrawal Error:", err);
       alert(err.reason || "Withdrawal failed or rejected.");
