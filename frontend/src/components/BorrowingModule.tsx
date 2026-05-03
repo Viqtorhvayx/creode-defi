@@ -30,8 +30,39 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [isClicked, setIsClicked] = useState(false);
   const [mounted, setMounted] = useState(false);
   const hasInput = hbarInput.length > 0 && Number(stripCommas(hbarInput)) > 0;
-  const [collateralToken, setCollateralToken] = useState<'USDT' | 'USDC'>('USDT');
+   const [collateralToken, setCollateralToken] = useState<'USDT' | 'USDC'>('USDT');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  /* Pyth Asset Pricing authored by Viqtorhvayx */
+  const [assetPrice, setAssetPrice] = useState<number | null>(null);
+  const [isPriceLoading, setIsPriceLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchStablePrice = async () => {
+      setIsPriceLoading(true);
+      const feedId = collateralToken === 'USDT' 
+        ? '2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b' 
+        : 'eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a';
+      
+      try {
+        const response = await fetch(`https://hermes.pyth.network/v2/updates/price/latest?ids[]=${feedId}`);
+        const data = await response.json();
+        if (data.parsed && data.parsed.length > 0) {
+          const p = data.parsed[0].price;
+          const price = Number(p.price) * Math.pow(10, p.expo);
+          setAssetPrice(price);
+        }
+      } catch (error) {
+        console.error("Pyth Fetch Error:", error);
+      } finally {
+        setIsPriceLoading(false);
+      }
+    };
+
+    if (activeTab === 'deposit') {
+      fetchStablePrice();
+    }
+  }, [collateralToken, activeTab]);
 
   useEffect(() => {
     setMounted(true);
@@ -177,74 +208,83 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             <div className="flex justify-between items-center mb-1">
               <label className="text-[10px] font-bold uppercase block" style={{ color: labelColor }}>{getLabelText()}</label>
             </div>
-            <div className="relative flex items-center">
-              <FormattedNumberInput 
-                placeholder="0.00"
-                className={numericInputClasses + " pr-32"}
-                style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
-                value={hbarInput}
-                onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
-              />
-              
-              {/* Conditional Badges authored by Viqtorhvayx */}
-              {activeTab === 'deposit' ? (
-                /* Interactive Asset Dropdown authored by Viqtorhvayx */
-                <div 
-                  className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  {collateralToken === 'USDT' ? (
-                    <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" className="w-5 h-5 rounded-full shrink-0" />
-                  ) : (
-                    <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
-                  )}
-                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{collateralToken}</span>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`text-[#00A8E8] transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-
-                  {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
-                  {isDropdownOpen && (
-                    <div className="absolute top-full mt-2 right-0 min-w-[120px] bg-black/40 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[100] p-1.5 flex flex-col gap-1.5 animate-in fade-in zoom-in duration-200">
-                      {(['USDT', 'USDC'] as const).map((token) => (
-                        <div 
-                          key={token}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCollateralToken(token);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-500/20 dark:hover:bg-blue-400/20 transition-colors duration-200 cursor-pointer ${collateralToken === token ? 'bg-blue-500/30 dark:bg-blue-400/30' : ''}`}
-                        >
-                          {token === 'USDT' ? (
-                            <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" className="w-5 h-5 rounded-full shrink-0" />
-                          ) : (
-                            <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
-                          )}
-                          <span className="text-[10px] font-black tracking-widest text-white">{token}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Static HBAR Badge authored by Viqtorhvayx */
-                <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
+            <div className="relative flex flex-col">
+              <div className="relative flex items-center">
+                <FormattedNumberInput 
+                  placeholder="0.00"
+                  className={numericInputClasses + " pr-32"}
+                  style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: theme === 'dark' ? '#FFFFFF' : '#000000', marginTop: '-1px' }}
+                  value={hbarInput}
+                  onValueChange={(val) => { setHbarInput(val); setIsClicked(false); }}
+                />
+                
+                {/* Conditional Badges authored by Viqtorhvayx */}
+                {activeTab === 'deposit' ? (
+                  /* Interactive Asset Dropdown authored by Viqtorhvayx */
                   <div 
-                    className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
-                    style={{ backgroundColor: '#000000' }}
+                    className="absolute right-3 flex items-center gap-1.5 cursor-pointer bg-[#00A8E8]/10 rounded-[60px] px-2.5 py-1 border border-[#00A8E8]/5 transition-hover hover:bg-[#00A8E8]/20 pointer-events-auto"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      fill="currentColor" 
-                      className="w-[11px] h-[11px]" 
-                      style={{ color: '#FFFFFF' }}
-                    >
-                      <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
+                    {collateralToken === 'USDT' ? (
+                      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" className="w-5 h-5 rounded-full shrink-0" />
+                    ) : (
+                      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
+                    )}
+                    <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">{collateralToken}</span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`text-[#00A8E8] transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
+
+                    {/* Synchronized Glassmorphic Dropdown Menu authored by Viqtorhvayx */}
+                    {isDropdownOpen && (
+                      <div className="absolute top-full mt-2 right-0 min-w-[120px] bg-black/40 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[100] p-1.5 flex flex-col gap-1.5 animate-in fade-in zoom-in duration-200">
+                        {(['USDT', 'USDC'] as const).map((token) => (
+                          <div 
+                            key={token}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCollateralToken(token);
+                              setIsDropdownOpen(false);
+                            }}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-500/20 dark:hover:bg-blue-400/20 transition-colors duration-200 cursor-pointer ${collateralToken === token ? 'bg-blue-500/30 dark:bg-blue-400/30' : ''}`}
+                          >
+                            {token === 'USDT' ? (
+                              <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" className="w-5 h-5 rounded-full shrink-0" />
+                            ) : (
+                              <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" className="w-5 h-5 rounded-full shrink-0" />
+                            )}
+                            <span className="text-[10px] font-black tracking-widest text-white">{token}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
+                ) : (
+                  /* Static HBAR Badge authored by Viqtorhvayx */
+                  <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
+                    <div 
+                      className="flex items-center justify-center w-[18px] h-[18px] rounded-full"
+                      style={{ backgroundColor: '#000000' }}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className="w-[11px] h-[11px]" 
+                        style={{ color: '#FFFFFF' }}
+                      >
+                        <path fillRule="evenodd" clipRule="evenodd" d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Real-time USD Value authored by Viqtorhvayx */}
+              {activeTab === 'deposit' && (
+                <div className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 pl-4 transition-all animate-in fade-in slide-in-from-top-1 duration-300">
+                  ~ ${isPriceLoading ? '...' : (hbarInputNumeric * (assetPrice || 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               )}
             </div>
