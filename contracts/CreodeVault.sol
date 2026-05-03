@@ -1,157 +1,70 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import "./CreodeXP.sol";
+pragma solidity ^0.8.0;
 
 /**
  * @title CreodeVault
  * @author Viqtorhvayx
- * @dev Main DeFi hub for CREODE on Hedera Testnet.
- * Features: Saving, Lending, and an overhauled XP-Based Borrowing Infrastructure.
+ * @dev Time-locked HBAR staking vault with early withdrawal penalty fee.
  */
 contract CreodeVault {
-    // --- State Variables ---
-    address public treasury;
-    address public owner;
-    CreodeXP public xpContract;
+    // User account data mappings
+    mapping(address => uint256) public balances;
+    mapping(address => uint256) public unlockTimes;
 
-    struct LockSession {
-        uint256 amount;
-        uint256 unlockTime;
-        bool isHbar;
-        address tokenAddress;
-        bool withdrawn;
-    }
-
-    struct BorrowPosition {
-        uint256 collateralAmount;
-        address collateralToken;
-        uint256 borrowedAmount;
-        uint256 borrowTime;
-        bool active;
-    }
-
-    mapping(address => LockSession[]) public userLocks;
-    mapping(address => uint256) public lendingPoints;
-    mapping(address => BorrowPosition) public borrowPositions;
-
-    uint256 public constant EARLY_WITHDRAWAL_PENALTY = 5; 
-    uint256 public constant HBAR_STAKING_YIELD = 30; 
-    uint256 public constant YIELD_INTERVAL = 3 weeks;
+    // Hardcoded Treasury address authored by Viqtorhvayx
+    address public constant TREASURY = 0x2d553C56De9153dc98D853f8EC15850b5aFd004c;
 
     event Deposited(address indexed user, uint256 amount, uint256 unlockTime);
-    event Borrowed(address indexed user, uint256 amount, uint256 collateral);
-    event Repaid(address indexed user, uint256 amount);
-    event CollateralWithdrawn(address indexed user, uint256 amount);
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Unauthorized: Only Viqtorhvayx");
-        _;
-    }
-
-    constructor(address _xpContract, address _treasury) {
-        owner = msg.sender;
-        xpContract = CreodeXP(_xpContract);
-        treasury = _treasury;
-    }
-
-    // --- BORROWING OVERHAUL ---
+    event Withdrawn(address indexed user, uint256 amount, bool penalized);
 
     /**
-     * @dev Borrow HBAR using Stablecoin as collateral.
-     * Starting XP is proportional to the Collateralization Ratio.
+     * @dev Deposit HBAR with a specified lock duration in days.
+     * @param _durationInDays The number of days the funds should be locked.
      */
-    function borrowHbar(uint256 _collateralAmount, address _collateralToken, uint256 _borrowAmount) external {
-        require(!xpContract.isUserLocked(msg.sender), "Borrowing locked: Low XP");
-        require(!borrowPositions[msg.sender].active, "Existing position active");
-
-        // Calculate Collateralization Ratio (CR)
-        // Simplified: assuming 1:1 value for logic demonstration
-        uint256 ratio = (_collateralAmount * 100) / _borrowAmount;
-        require(ratio >= 150, "Collateral below 150%");
-
-        // Dynamic Starting XP: More collateral = higher initial reputation health
-        int8 xpDelta = int8(uint8(ratio / 10)); // e.g., 200% ratio = +20 XP bonus
-        xpContract.updateXP(msg.sender, xpDelta);
-
-        borrowPositions[msg.sender] = BorrowPosition({
-            collateralAmount: _collateralAmount,
-            collateralToken: _collateralToken,
-            borrowedAmount: _borrowAmount,
-            borrowTime: block.timestamp,
-            active: true
-        });
-
-        // Trigger XP Decay activation in XP contract
-        xpContract.setIsBorrowing(msg.sender, true);
-
-        emit Borrowed(msg.sender, _borrowAmount, _collateralAmount);
-    }
-
-    /**
-     * @dev Step 1: Repay borrowed HBAR.
-     * Repayment stops XP decay.
-     */
-    function repayHbar() external payable {
-        BorrowPosition storage pos = borrowPositions[msg.sender];
-        require(pos.active, "No active loan");
-        require(msg.value >= pos.borrowedAmount, "Insufficient repayment");
-
-        // Stop XP decay immediately
-        xpContract.setIsBorrowing(msg.sender, false);
+    function deposit(uint256 _durationInDays) external payable {
+        require(msg.value > 0, "Deposit amount must be greater than zero");
         
-        // Grant XP boost for responsible repayment
-        xpContract.updateXP(msg.sender, 5);
-
-        pos.borrowedAmount = 0;
+        balances[msg.sender] += msg.value;
+        unlockTimes[msg.sender] = block.timestamp + (_durationInDays * 1 days);
         
-        emit Repaid(msg.sender, msg.value);
+        emit Deposited(msg.sender, msg.value, unlockTimes[msg.sender]);
     }
 
     /**
-     * @dev Step 2: Withdraw Collateral.
-     * Only possible after Step 1 (Repayment) is fully settled.
+     * @dev Withdraw HBAR balance. Applies a 5% penalty if withdrawn before maturity.
      */
-    function withdrawCollateral() external {
-        BorrowPosition storage pos = borrowPositions[msg.sender];
-        require(pos.active, "No position found");
-        require(pos.borrowedAmount == 0, "Debt must be cleared first");
+    function withdraw() external {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No balance to withdraw");
 
-        uint256 amount = pos.collateralAmount;
-        address token = pos.collateralToken;
+        bool isEarly = block.timestamp < unlockTimes[msg.sender];
+        
+        // Reset state before transfer to prevent reentrancy authored by Viqtorhvayx
+        balances[msg.sender] = 0;
+        unlockTimes[msg.sender] = 0;
 
-        // Reset position
-        pos.active = false;
-        pos.collateralAmount = 0;
+        if (isEarly) {
+            uint256 penalty = (amount * 5) / 100;
+            uint256 refundAmount = amount - penalty;
 
-        // Logic for returning token collateral (HTS / ERC20)
-        _transferFunds(msg.sender, amount, false, token);
+            // Transfer penalty to treasury
+            (bool treasurySuccess, ) = payable(TREASURY).call{value: penalty}("");
+            require(treasurySuccess, "Treasury transfer failed");
 
-        emit CollateralWithdrawn(msg.sender, amount);
-    }
-
-    // --- Existing Core Logic ---
-
-    function lockHbar(uint256 _durationSeconds) external payable {
-        require(msg.value > 0, "Amount must be > 0");
-        uint256 unlockTime = block.timestamp + _durationSeconds;
-        userLocks[msg.sender].push(LockSession({
-            amount: msg.value,
-            unlockTime: unlockTime,
-            isHbar: true,
-            tokenAddress: address(0),
-            withdrawn: false
-        }));
-        emit Deposited(msg.sender, msg.value, unlockTime);
-    }
-
-    function _transferFunds(address _to, uint256 _amount, bool _isHbar, address _token) internal {
-        if (_isHbar) {
-            payable(_to).transfer(_amount);
+            // Transfer remaining funds to user
+            (bool userSuccess, ) = payable(msg.sender).call{value: refundAmount}("");
+            require(userSuccess, "User refund failed");
+            
+            emit Withdrawn(msg.sender, refundAmount, true);
         } else {
-            // Token transfer logic
+            // Full withdrawal after maturity
+            (bool success, ) = payable(msg.sender).call{value: amount}("");
+            require(success, "Withdrawal failed");
+            
+            emit Withdrawn(msg.sender, amount, false);
         }
     }
 
+    // Fallback function to accept HBAR
     receive() external payable {}
 }

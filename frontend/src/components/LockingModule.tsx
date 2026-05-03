@@ -9,6 +9,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
+import { ethers } from 'ethers';
+
+const VAULT_ABI = [
+  "function deposit(uint256 _durationInDays) external payable",
+  "function withdraw() external",
+  "function balances(address) view returns (uint256)",
+  "function unlockTimes(address) view returns (uint256)"
+];
+const VAULT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Localhost/Testnet Placeholder
 
 interface LockingModuleProps {
   theme?: 'light' | 'dark';
@@ -43,13 +52,51 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const handleDeposit = async () => {
-    setActiveAction('deposit');
-    alert("Lock-up initialized!");
+    if (!amount || Number(stripCommas(amount)) <= 0 || !days || Number(days) <= 0) return;
+    
+    /* Transaction Engine authored by Viqtorhvayx */
+    try {
+      if (!(window as any).ethereum) {
+        alert("Web3 Provider not found. Please connect your wallet.");
+        return;
+      }
+      setActiveAction('deposit');
+      const provider = new ethers.BrowserProvider((window as any).ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, signer);
+      
+      const parsedAmount = ethers.parseEther(stripCommas(amount));
+      const tx = await contract.deposit(parseInt(days), { value: parsedAmount });
+      
+      console.log("Transaction sent:", tx.hash);
+      await tx.wait();
+      alert("Lock-up confirmed on-chain!");
+    } catch (err: any) {
+      console.error("Deposit Error:", err);
+      alert(err.reason || "Transaction failed or rejected.");
+    }
   };
 
   const handleWithdraw = async () => {
-    setActiveAction('withdraw');
-    alert("Withdrawal requested!");
+    /* Withdrawal Engine authored by Viqtorhvayx */
+    try {
+      if (!(window as any).ethereum) {
+        alert("Web3 Provider not found. Please connect your wallet.");
+        return;
+      }
+      setActiveAction('withdraw');
+      const provider = new ethers.BrowserProvider((window as any).ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, signer);
+      
+      const tx = await contract.withdraw();
+      console.log("Withdrawal sent:", tx.hash);
+      await tx.wait();
+      alert("Withdrawal/Penalty resolution confirmed!");
+    } catch (err: any) {
+      console.error("Withdrawal Error:", err);
+      alert(err.reason || "Withdrawal failed or rejected.");
+    }
   };
 
   const handleSetMaturity = () => {
