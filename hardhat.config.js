@@ -7,7 +7,7 @@ export default {
   networks: {
     hedera: {
       url: "https://testnet.hashio.io/api",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: process.env.HEDERA_PRIVATE_KEY ? [process.env.HEDERA_PRIVATE_KEY] : [],
     },
   },
 };

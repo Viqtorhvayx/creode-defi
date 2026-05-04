@@ -1,48 +1,89 @@
 /* * Developer: [Viqtorhvayx]
  * Script: One-Click Hedera Contract Deployer
- * Description: Deploys Vault.sol directly to Hedera Testnet using the Hashgraph SDK.
+ * Description: Compiles Vault.sol and deploys directly to Hedera Testnet.
  */
 
-const { 
+import { 
     Client, 
     PrivateKey, 
-    ContractCreateFlow 
-} = require("@hashgraph/sdk");
-const fs = require("fs");
-const path = require("path");
+    ContractCreateFlow,
+    Hbar,
+    AccountBalanceQuery
+} from "@hashgraph/sdk";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import solc from "solc";
+import "dotenv/config";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function main() {
     // 1. CONFIGURE YOUR TESTNET CREDENTIALS HERE
-    const myAccountId = "YOUR_TESTNET_ACCOUNT_ID"; // e.g. 0.0.12345
-    const myPrivateKey = "YOUR_TESTNET_PRIVATE_KEY";
+    const myAccountId = process.env.HEDERA_ACCOUNT_ID;
+    const myPrivateKey = process.env.HEDERA_PRIVATE_KEY.startsWith("0x") 
+        ? process.env.HEDERA_PRIVATE_KEY.slice(2) 
+        : process.env.HEDERA_PRIVATE_KEY;
 
-    if (!myAccountId || !myPrivateKey || myAccountId === "YOUR_TESTNET_ACCOUNT_ID") {
-        console.error("ERROR: Please provide your Hedera Account ID and Private Key in deploy.js");
+    if (!myAccountId || !myPrivateKey) {
+        console.error("ERROR: Please provide HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY in your .env file or environment.");
         process.exit(1);
     }
 
+    // 2. COMPILE THE CONTRACT
+    console.log("Compiling Vault.sol...");
+    const contractPath = path.join(__dirname, "../contracts/Vault.sol");
+    const source = fs.readFileSync(contractPath, "utf8");
+
+    const input = {
+        language: 'Solidity',
+        sources: {
+            'Vault.sol': {
+                content: source,
+            },
+        },
+        settings: {
+            outputSelection: {
+                '*': {
+                    '*': ['abi', 'evm.bytecode'],
+                },
+            },
+        },
+    };
+
+    const output = JSON.parse(solc.compile(JSON.stringify(input)));
+
+    if (output.errors) {
+        output.errors.forEach((err) => {
+            console.error(err.formattedMessage);
+        });
+        if (output.errors.some(err => err.severity === 'error')) {
+            process.exit(1);
+        }
+    }
+
+    const contractData = output.contracts['Vault.sol']['Vault'];
+    const bytecode = contractData.evm.bytecode.object;
+
+    console.log("Compilation successful!");
+
+    // 3. DEPLOY TO HEDERA
     const client = Client.forTestnet();
-    client.setOperator(myAccountId, PrivateKey.fromString(myPrivateKey));
+    client.setOperator(myAccountId, PrivateKey.fromStringECDSA(myPrivateKey));
+    client.setDefaultMaxTransactionFee(new Hbar(100)); // Ensure enough fee for file creation + deployment
 
-    // 2. READ THE BYTECODE
-    // Note: You must compile Vault.sol to get the .bin file first.
-    // Use 'solcjs --bin contracts/Vault.sol' to generate it.
-    const bytecodePath = path.join(__dirname, "../contracts/Vault.bin");
-    
-    if (!fs.existsSync(bytecodePath)) {
-        console.error("ERROR: Vault.bin not found. Please compile the contract first using:");
-        console.log("npx solcjs --bin contracts/Vault.sol --base-path .");
-        process.exit(1);
-    }
-
-    const contractBytecode = fs.readFileSync(bytecodePath);
+    console.log("Checking operator balance...");
+    const balance = await new AccountBalanceQuery()
+        .setAccountId(myAccountId)
+        .execute(client);
+    console.log(`Operator Balance: ${balance.hbars.toString()}`);
 
     console.log("Deploying Vault to Hedera Testnet...");
 
-    // ContractCreateFlow handles the multi-step process (file create + contract create)
     const contractCreate = new ContractCreateFlow()
-        .setGas(500000)
-        .setBytecode(contractBytecode);
+        .setGas(2000000)
+        .setBytecode(bytecode);
 
     const txResponse = await contractCreate.execute(client);
     const receipt = await txResponse.getReceipt(client);

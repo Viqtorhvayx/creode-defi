@@ -3,7 +3,7 @@
 /* * Developer: [Viqtorhvayx]
  * Hook: useCreodeVault
  * Description: Clean ethers.js interface for the zero-dependency Vault.
- *              Optimized for Hedera Testnet connectivity.
+ *              Optimized for Hedera Testnet connectivity with 0.1% success fee.
  */
 
 import { useState, useCallback } from 'react';
@@ -16,14 +16,16 @@ import { useWalletClient } from 'wagmi';
  * 2. Copy the 'EVM Address' from the success log.
  * 3. PASTE THE ADDRESS BELOW.
  */
-const VAULT_ADDRESS = "PASTE_DEPLOYED_EVM_ADDRESS_HERE"; 
+const VAULT_ADDRESS = process.env.NEXT_PUBLIC_VAULT_ADDRESS || ""; 
 
-// Human-Readable ABI for the Zero-Dependency Vault
+// Human-Readable ABI for the Zero-Dependency Vault authored by Viqtorhvayx
 const contractABI = [
   "function depositHBAR(uint256 _durationInDays) external payable",
   "function withdrawHBAR(uint256 _amount) external",
   "function getBalance(address _user) view returns (uint256)",
-  "function getUnlockTime(address _user) view returns (uint256)"
+  "function getUnlockTime(address _user) view returns (uint256)",
+  "event HBARDeposited(address indexed user, uint256 amount, uint256 unlockTime)",
+  "event HBARWithdrawn(address indexed user, uint256 amount, bool isEarly)"
 ];
 
 export const useCreodeVault = () => {
@@ -44,30 +46,35 @@ export const useCreodeVault = () => {
   }, [walletClient]);
 
   /**
-   * Secure handleDeposit
+   * depositHBAR: Transfers funds to the time-locked vault.
+   * Includes a mandatory 0.1% transaction fee logic for protocol success.
    */
   const deposit = async (amountHBAR: string, durationDays: string | number) => {
     setIsPending(true);
     setError(null);
     try {
       const contract = await getContract();
-      const value = ethers.parseEther(amountHBAR);
+      const baseValue = ethers.parseEther(amountHBAR);
+      
+      // CRITICAL: Set transaction fee at 0.1% for success as requested
+      const protocolFee = (baseValue * 1n) / 1000n; // 0.1% calculation
+      const finalValue = baseValue + protocolFee;
+      
       const days = BigInt(durationDays);
       
-      console.log(`[Creode] Depositing ${amountHBAR} HBAR for ${durationDays} days...`);
+      console.log(`[Creode] Depositing ${amountHBAR} HBAR (+0.1% fee) for ${durationDays} days...`);
       
-      // Hedera Transaction Fee Optimization: Using a robust gas limit for success
       const tx = await contract.depositHBAR(days, { 
-        value,
-        gasLimit: 300000 
+        value: finalValue,
+        gasLimit: 400000 // Optimized gas limit for Hedera
       });
       
       const receipt = await tx.wait();
-      console.log(`[Creode] Success! Hash: ${receipt.hash}`);
+      console.log(`[Creode] Deposit Success! Hash: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Transaction rejected.";
-      console.error(`[Creode] Error:`, err);
+      const msg = err.reason || err.message || "Transaction failed.";
+      console.error(`[Creode] Deposit Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -76,7 +83,8 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * Secure handleWithdraw
+   * withdrawHBAR: Retrieves funds from the vault.
+   * Note: 5% penalty applies if withdrawn before maturity.
    */
   const withdraw = async (amountHBAR: string) => {
     setIsPending(true);
@@ -88,15 +96,15 @@ export const useCreodeVault = () => {
       console.log(`[Creode] Withdrawing ${amountHBAR} HBAR...`);
       
       const tx = await contract.withdrawHBAR(amount, {
-        gasLimit: 300000
+        gasLimit: 400000 // Optimized gas limit for Hedera
       });
       
       const receipt = await tx.wait();
-      console.log(`[Creode] Success! Hash: ${receipt.hash}`);
+      console.log(`[Creode] Withdrawal Success! Hash: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Transaction rejected.";
-      console.error(`[Creode] Error:`, err);
+      const msg = err.reason || err.message || "Transaction failed.";
+      console.error(`[Creode] Withdrawal Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -105,7 +113,7 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * Data Sync Logic
+   * getVaultData: Fetches real-time balance and lock status.
    */
   const getVaultData = async (address: string) => {
     try {
