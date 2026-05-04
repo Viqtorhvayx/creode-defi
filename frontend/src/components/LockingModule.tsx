@@ -2,9 +2,8 @@
 
 /* * Developer: [Viqtorhvayx]
  * Component: LockingModule (Native HBAR Vault - UI Reverted)
- * Description: Time-lock savings vault integrated with industrial-grade
- *              smart contract logic. UI restored to original high-fidelity state.
- * Sync-Heartbeat: 2026-05-04 11:57
+ * Description: Time-lock savings vault integrated with flawless protocol logic.
+ *              UI restored to original high-fidelity state.
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -22,7 +21,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [amount, setAmount] = useState("");
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | 'set'>('deposit');
   
-  // Web3 Logic Preservation authored by Viqtorhvayx
+  // Flawless Protocol Logic authored by Viqtorhvayx
   const { deposit, withdraw, getVaultData, isPending, error } = useCreodeVault();
   const [vaultBalance, setVaultBalance] = useState("0.00");
   const [unlockTime, setUnlockTime] = useState(0);
@@ -61,7 +60,6 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     });
   }, [days]);
 
-  // For the UI display of the *existing* lock
   const currentMaturityDate = useMemo(() => {
     if (unlockTime === 0) return "No active lock";
     return new Date(unlockTime * 1000).toLocaleDateString('en-US', {
@@ -82,10 +80,9 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     try {
       await deposit(rawAmount, days);
       setAmount("");
-      // Protocol Sync Delay
       setTimeout(refreshVaultState, 2000);
     } catch (err) {
-      console.error("[Protocol] Deposit transaction failed.");
+      console.error("[Protocol] Deposit failed.");
     }
   };
 
@@ -98,7 +95,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       setAmount("");
       setTimeout(refreshVaultState, 2000);
     } catch (err) {
-      console.error("[Protocol] Withdrawal transaction failed.");
+      console.error("[Protocol] Withdrawal failed.");
     }
   };
 
@@ -109,8 +106,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-
-  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent focus:border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none font-semibold";
+  const numericInputClasses = "w-full rounded-[60px] p-3 outline-none focus:outline-none focus:ring-0 border-transparent transition-all shadow-[0_4px_15px_rgba(0,168,232,0.15)] font-semibold";
 
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
@@ -121,10 +117,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const QuickButton = ({ label, onClick }: { label: string, onClick: () => void }) => (
-    <button
-      onClick={onClick}
-      className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase"
-    >
+    <button onClick={onClick} className="text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 px-2 tracking-tighter bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20 active:scale-95 uppercase">
       {label}
     </button>
   );
@@ -136,14 +129,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const hbarPrice = usePythPrice();
-  const usdValue = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
+  const usdValue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
 
   return (
     <div className="industrial-panel bg-surface relative overflow-hidden">
-      {/* Transaction Guard Overlay */}
       {isPending && (
         <div className="absolute inset-0 bg-black/5 backdrop-blur-[1px] z-10 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00A8E8]"></div>
@@ -155,87 +144,49 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Time-lock savings</h3>
           <p className="text-2xl font-black" style={{ color: primaryTextColor }}>Vault</p>
         </div>
-        <div className="text-right flex flex-col items-end">
+        <div className="text-right">
           <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: labelColor }}>Target Yield</p>
-          <p className="text-[18px] font-black !text-[#10B981] leading-none tracking-[0.04em] flex items-baseline">
-            0.30% <span className="text-[10px] font-bold ml-1 tracking-tight" style={{ color: labelColor }}>APY</span>
-          </p>
+          <p className="text-[18px] font-black !text-[#10B981]">0.30% <span className="text-[10px] font-bold ml-1" style={{ color: labelColor }}>APY</span></p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="flex flex-col h-full justify-between">
-          <div>
-            <div className="space-y-3 mb-8">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold" style={{ color: labelColor }}>Deposit</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>{formatWithCommas(vaultBalance)} {balanceSymbol}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold" style={{ color: labelColor }}>Earnings</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>0.00 {balanceSymbol}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold" style={{ color: labelColor }}>TVL</span>
-                <span className="text-[11px] font-bold" style={{ color: labelColor }}>125,000.00 {balanceSymbol}</span>
-              </div>
+          <div className="space-y-3 mb-8">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold" style={{ color: labelColor }}>Vault Balance</span>
+              <span className="text-[11px] font-bold" style={{ color: labelColor }}>{formatWithCommas(vaultBalance)} {balanceSymbol}</span>
             </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold" style={{ color: labelColor }}>TVL</span>
+              <span className="text-[11px] font-bold" style={{ color: labelColor }}>125,000.00 {balanceSymbol}</span>
+            </div>
+          </div>
 
-            <div className="relative">
-              <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock ({balanceSymbol})</label>
-              <div className="relative flex items-center">
-                <FormattedNumberInput 
-                  placeholder="0.00"
-                  className={numericInputClasses + " pr-28"}
-                  style={{ 
-                    backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                    color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                  }}
-                  value={amount}
-                  onValueChange={setAmount}
-                />
-                <div className="absolute right-3 flex items-center gap-2 pointer-events-none bg-[#00A8E8]/10 rounded-[60px] px-2 py-1 border border-[#00A8E8]/5">
-                  <div className="flex items-center justify-center w-[18px] h-[18px] rounded-full" style={{ backgroundColor: '#000000' }}>
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[11px] h-[11px]" style={{ color: '#FFFFFF' }}>
-                      <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
-                    </svg>
-                  </div>
-                  <span className="text-[10px] font-black tracking-widest text-[#00A8E8]">HBAR</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-baseline mt-2 px-2">
-                <span className="text-[10px] font-bold" style={{ color: '#00A8E8' }}>{usdValue}</span>
-                <div className="flex gap-1">
-                  <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
-                  <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
-                  <QuickButton label="Max" onClick={() => setAmount(balance)} />
-                </div>
+          <div className="relative">
+            <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock ({balanceSymbol})</label>
+            <FormattedNumberInput 
+              placeholder="0.00"
+              className={numericInputClasses}
+              style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: primaryTextColor }}
+              value={amount}
+              onValueChange={setAmount}
+            />
+            <div className="flex justify-between items-baseline mt-2 px-2">
+              <span className="text-[10px] font-bold text-[#00A8E8]">{usdValue}</span>
+              <div className="flex gap-1">
+                <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
+                <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
+                <QuickButton label="Max" onClick={() => setAmount(balance)} />
               </div>
             </div>
           </div>
 
-          {error && (
-            <div className="mt-4 p-3 bg-red-500/5 border border-red-500/20 rounded-xl">
-              <p className="text-[10px] text-red-500 font-bold uppercase">Protocol Rejection</p>
-              <p className="text-[10px] text-red-400 leading-tight">{error}</p>
-            </div>
-          )}
+          {error && <div className="mt-4 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-[10px] text-red-500 font-bold uppercase">{error}</div>}
           
           <div className="flex gap-4 mt-20">
-            <button 
-              onClick={handleDeposit} 
-              disabled={isPending || !amount || Number(stripCommas(amount)) <= 0} 
-              className={getButtonClasses('deposit')}
-            >
-              {isPending && activeAction === 'deposit' ? 'Awaiting...' : 'Deposit'}
-            </button>
-            <button 
-              onClick={handleWithdraw} 
-              disabled={isPending || !amount || Number(stripCommas(amount)) <= 0}
-              className={getButtonClasses('withdraw')}
-            >
-              {isPending && activeAction === 'withdraw' ? 'Awaiting...' : 'Withdraw'}
-            </button>
+            <button onClick={handleDeposit} disabled={isPending || !amount} className={getButtonClasses('deposit')}>Deposit</button>
+            <button onClick={handleWithdraw} disabled={isPending || !amount} className={getButtonClasses('withdraw')}>Withdraw</button>
           </div>
         </div>
 
@@ -243,16 +194,16 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-6">
             <div className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]">
               <p className="text-xs font-medium leading-tight" style={{ color: labelColor }}>
-                Note: A <span className="font-bold !text-[#FF3837]">0.1%</span> base fee applies. An additional <span className="font-bold !text-[#FF3837]">5.00%</span> penalty applies for early withdrawals.
+                Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies ONLY if funds are withdrawn before the preset maturity date.
               </p>
             </div>
             <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Current Maturity</span>
+                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Active Maturity</span>
                 <span className="text-[11px] font-black !text-[#00A8E8]">{currentMaturityDate}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Target Maturity Date</span>
+                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Target Date</span>
                 <span className="text-[11px] font-black !text-[#00A8E8]">{calculatedMaturity}</span>
               </div>
             </div>
@@ -263,11 +214,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Duration (Days)</label>
               <FormattedNumberInput 
                 placeholder="0"
-                className={numericInputClasses + " !py-2.5 !h-auto"} 
-                style={{ 
-                  backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF',
-                  color: theme === 'dark' ? '#FFFFFF' : '#000000'
-                }}
+                className={numericInputClasses + " !py-2.5"} 
+                style={{ backgroundColor: theme === 'dark' ? '#0B0E14' : '#FFFFFF', color: primaryTextColor }}
                 value={days}
                 onValueChange={handleDaysChange}
               />

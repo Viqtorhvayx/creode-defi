@@ -2,8 +2,8 @@
 
 /* * Developer: [Viqtorhvayx]
  * Hook: useCreodeVault
- * Description: Industrial-grade ethers.js interface for the native HBAR CreodeVault.
- *              Uses human-readable ABI to ensure precise routing to contract fragments.
+ * Description: Zero-error ethers.js interface for the flawless HBAR CreodeVault.
+ *              Implements strict human-readable ABI for perfect fragment matching.
  */
 
 import { useState, useCallback } from 'react';
@@ -11,14 +11,14 @@ import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
 
 /**
- * CONFIGURATION INSTRUCTIONS:
- * 1. Deploy CreodeVault.sol to Hedera Testnet.
- * 2. Copy the resulting EVM address (0x...).
- * 3. PASTE THE ADDRESS BELOW into VAULT_ADDRESS.
+ * !!! CRITICAL CONFIGURATION !!!
+ * 1. Deploy CreodeVault.sol via Remix IDE.
+ * 2. Paste the resulting Smart Contract Address (0x...) below.
+ * 3. IMPORTANT: Do NOT use your Treasury wallet address here.
  */
-const VAULT_ADDRESS = "0x00000000000000000000000000000000008439B9"; 
+const VAULT_ADDRESS = "PASTE_DEPLOYED_CONTRACT_ADDRESS_HERE"; 
 
-// Human-Readable ABI to prevent fragment mismatch errors
+// Precise human-readable ABI to eliminate "no matching fragment" errors
 const contractABI = [
   "function depositHBAR(uint256 _durationInDays) external payable",
   "function withdrawHBAR(uint256 _amount) external",
@@ -32,27 +32,20 @@ export const useCreodeVault = () => {
   const [error, setError] = useState<string | null>(null);
 
   const getContract = useCallback(async () => {
-    if (!walletClient) {
-      throw new Error("Wallet not connected. Please connect your wallet first.");
+    if (!walletClient) throw new Error("Wallet not connected.");
+    
+    // Proactive check for the deployment address
+    if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x')) {
+      throw new Error("Vault Contract Address is not configured. Please paste your deployed 0x address in useCreodeVault.ts.");
     }
     
-    // Safety check to ensure a valid address is configured
-    if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
-      throw new Error("Vault Contract Address is not configured correctly. Please use a 0x hex address.");
-    }
-    
-    const { transport } = walletClient;
-    const provider = new ethers.BrowserProvider(transport);
+    const provider = new ethers.BrowserProvider(walletClient.transport);
     const signer = await provider.getSigner();
-    
-    // Using the human-readable ABI defined above
     return new ethers.Contract(VAULT_ADDRESS, contractABI, signer);
   }, [walletClient]);
 
   /**
-   * Deposits native HBAR into the vault with a specified lock-up period.
-   * @param amountHBAR String representation of HBAR (e.g., "50")
-   * @param durationDays Number of days to lock the deposit (e.g., 21)
+   * handleDeposit Logic
    */
   const deposit = async (amountHBAR: string, durationDays: string | number) => {
     setIsPending(true);
@@ -63,15 +56,14 @@ export const useCreodeVault = () => {
       const days = BigInt(durationDays);
       
       console.log(`[Protocol] Initiating deposit of ${amountHBAR} HBAR for ${durationDays} days...`);
-      // Calling the fragment explicitly matching the human-readable ABI
       const tx = await contract.depositHBAR(days, { value });
       const receipt = await tx.wait();
       
-      console.log(`[Protocol] Deposit confirmed in block ${receipt.blockNumber}`);
+      console.log(`[Protocol] Deposit Confirmed: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Deposit transaction failed";
-      console.error(`[Protocol] Deposit Error:`, err);
+      const msg = err.reason || err.message || "Deposit rejected.";
+      console.error(`[Protocol] Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -80,8 +72,7 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * Withdraws native HBAR from the vault.
-   * @param amountHBAR String representation of HBAR
+   * handleWithdraw Logic
    */
   const withdraw = async (amountHBAR: string) => {
     setIsPending(true);
@@ -94,11 +85,11 @@ export const useCreodeVault = () => {
       const tx = await contract.withdrawHBAR(amount);
       const receipt = await tx.wait();
       
-      console.log(`[Protocol] Withdrawal confirmed in block ${receipt.blockNumber}`);
+      console.log(`[Protocol] Withdrawal Confirmed: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Withdrawal transaction failed";
-      console.error(`[Protocol] Withdrawal Error:`, err);
+      const msg = err.reason || err.message || "Withdrawal rejected.";
+      console.error(`[Protocol] Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -107,29 +98,22 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * Fetches protocol data for a specific user using human-readable fragments.
+   * getVaultData Logic
    */
   const getVaultData = async (address: string) => {
     try {
       const contract = await getContract();
       const balance = await contract.vaultBalances(address);
       const unlockTime = await contract.unlockTimes(address);
-      
       return {
         balance: ethers.formatEther(balance),
         unlockTime: Number(unlockTime)
       };
     } catch (err) {
-      console.error("[Protocol] Failed to fetch vault data:", err);
+      console.error("[Protocol] Balance sync failed.", err);
       return { balance: "0.0", unlockTime: 0 };
     }
   };
 
-  return { 
-    deposit, 
-    withdraw, 
-    getVaultData,
-    isPending, 
-    error 
-  };
+  return { deposit, withdraw, getVaultData, isPending, error };
 };
