@@ -3,24 +3,28 @@
 /* * Developer: [Viqtorhvayx]
  * Hook: useCreodeVault
  * Description: Industrial-grade ethers.js interface for the native HBAR CreodeVault.
- *              Handles time-locked deposits and early withdrawal penalty routing.
+ *              Uses human-readable ABI to ensure precise routing to contract fragments.
  */
 
 import { useState, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
-import ABIS from '@/context/abis.json';
 
 /**
  * CONFIGURATION INSTRUCTIONS:
  * 1. Deploy CreodeVault.sol to Hedera Testnet.
  * 2. Copy the resulting EVM address (0x...).
  * 3. PASTE THE ADDRESS BELOW into VAULT_ADDRESS.
- * IMPORTANT: This must be the CONTRACT address, not your Treasury wallet address.
  */
-// PLACEHOLDER: Replace with your deployed CreodeVault.sol address (EVM 0x format)
-// This hex corresponds to Hedera Account 0.0.8665513
 const VAULT_ADDRESS = "0x00000000000000000000000000000000008439B9"; 
+
+// Human-Readable ABI to prevent fragment mismatch errors
+const contractABI = [
+  "function depositHBAR(uint256 _durationInDays) external payable",
+  "function withdrawHBAR(uint256 _amount) external",
+  "function vaultBalances(address) view returns (uint256)",
+  "function unlockTimes(address) view returns (uint256)"
+];
 
 export const useCreodeVault = () => {
   const { data: walletClient } = useWalletClient();
@@ -34,14 +38,15 @@ export const useCreodeVault = () => {
     
     // Safety check to ensure a valid address is configured
     if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
-      throw new Error("Vault Contract Address is not configured. Please deploy CreodeVault.sol and update useCreodeVault.ts with the 0x address.");
+      throw new Error("Vault Contract Address is not configured correctly. Please use a 0x hex address.");
     }
     
     const { transport } = walletClient;
     const provider = new ethers.BrowserProvider(transport);
     const signer = await provider.getSigner();
     
-    return new ethers.Contract(VAULT_ADDRESS, ABIS.CreodeVault, signer);
+    // Using the human-readable ABI defined above
+    return new ethers.Contract(VAULT_ADDRESS, contractABI, signer);
   }, [walletClient]);
 
   /**
@@ -58,6 +63,7 @@ export const useCreodeVault = () => {
       const days = BigInt(durationDays);
       
       console.log(`[Protocol] Initiating deposit of ${amountHBAR} HBAR for ${durationDays} days...`);
+      // Calling the fragment explicitly matching the human-readable ABI
       const tx = await contract.depositHBAR(days, { value });
       const receipt = await tx.wait();
       
@@ -101,7 +107,7 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * Fetches protocol data for a specific user.
+   * Fetches protocol data for a specific user using human-readable fragments.
    */
   const getVaultData = async (address: string) => {
     try {
