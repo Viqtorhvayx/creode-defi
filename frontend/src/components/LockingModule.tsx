@@ -4,6 +4,7 @@
  * Component: LockingModule (Native HBAR Vault - UI Reverted)
  * Description: Time-lock savings vault integrated with industrial-grade
  *              smart contract logic. UI restored to original high-fidelity state.
+ * Sync-Heartbeat: 2026-05-04 11:55
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
