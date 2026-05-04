@@ -2,8 +2,8 @@
 
 /* * Developer: [Viqtorhvayx]
  * Hook: useCreodeVault
- * Description: Zero-error ethers.js interface for the flawless HBAR CreodeVault.
- *              Implements strict human-readable ABI for perfect fragment matching.
+ * Description: Clean ethers.js interface for the zero-dependency Vault.
+ *              Optimized for Hedera Testnet connectivity.
  */
 
 import { useState, useCallback } from 'react';
@@ -11,19 +11,19 @@ import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
 
 /**
- * !!! CRITICAL CONFIGURATION !!!
- * 1. Deploy CreodeVault.sol via Remix IDE.
- * 2. Paste the resulting Smart Contract Address (0x...) below.
- * 3. IMPORTANT: Do NOT use your Treasury wallet address here.
+ * !!! ONE-CLICK DEPLOYER SYNC !!!
+ * 1. Run 'node scripts/deploy.js' in your terminal.
+ * 2. Copy the 'EVM Address' from the success log.
+ * 3. PASTE THE ADDRESS BELOW.
  */
-const VAULT_ADDRESS = "PASTE_DEPLOYED_CONTRACT_ADDRESS_HERE"; 
+const VAULT_ADDRESS = "PASTE_DEPLOYED_EVM_ADDRESS_HERE"; 
 
-// Precise human-readable ABI to eliminate "no matching fragment" errors
+// Human-Readable ABI for the Zero-Dependency Vault
 const contractABI = [
   "function depositHBAR(uint256 _durationInDays) external payable",
   "function withdrawHBAR(uint256 _amount) external",
-  "function vaultBalances(address) view returns (uint256)",
-  "function unlockTimes(address) view returns (uint256)"
+  "function getBalance(address _user) view returns (uint256)",
+  "function getUnlockTime(address _user) view returns (uint256)"
 ];
 
 export const useCreodeVault = () => {
@@ -34,9 +34,8 @@ export const useCreodeVault = () => {
   const getContract = useCallback(async () => {
     if (!walletClient) throw new Error("Wallet not connected.");
     
-    // Proactive check for the deployment address
-    if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x')) {
-      throw new Error("Vault Contract Address is not configured. Please paste your deployed 0x address in useCreodeVault.ts.");
+    if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
+      throw new Error("Vault address not configured. Please run deploy.js and update useCreodeVault.ts.");
     }
     
     const provider = new ethers.BrowserProvider(walletClient.transport);
@@ -45,7 +44,7 @@ export const useCreodeVault = () => {
   }, [walletClient]);
 
   /**
-   * handleDeposit Logic
+   * Secure handleDeposit
    */
   const deposit = async (amountHBAR: string, durationDays: string | number) => {
     setIsPending(true);
@@ -55,15 +54,20 @@ export const useCreodeVault = () => {
       const value = ethers.parseEther(amountHBAR);
       const days = BigInt(durationDays);
       
-      console.log(`[Protocol] Initiating deposit of ${amountHBAR} HBAR for ${durationDays} days...`);
-      const tx = await contract.depositHBAR(days, { value });
-      const receipt = await tx.wait();
+      console.log(`[Creode] Depositing ${amountHBAR} HBAR for ${durationDays} days...`);
       
-      console.log(`[Protocol] Deposit Confirmed: ${receipt.hash}`);
+      // Hedera Transaction Fee Optimization: Using a robust gas limit for success
+      const tx = await contract.depositHBAR(days, { 
+        value,
+        gasLimit: 300000 
+      });
+      
+      const receipt = await tx.wait();
+      console.log(`[Creode] Success! Hash: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Deposit rejected.";
-      console.error(`[Protocol] Error:`, err);
+      const msg = err.reason || err.message || "Transaction rejected.";
+      console.error(`[Creode] Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -72,7 +76,7 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * handleWithdraw Logic
+   * Secure handleWithdraw
    */
   const withdraw = async (amountHBAR: string) => {
     setIsPending(true);
@@ -81,15 +85,18 @@ export const useCreodeVault = () => {
       const contract = await getContract();
       const amount = ethers.parseEther(amountHBAR);
       
-      console.log(`[Protocol] Initiating withdrawal of ${amountHBAR} HBAR...`);
-      const tx = await contract.withdrawHBAR(amount);
-      const receipt = await tx.wait();
+      console.log(`[Creode] Withdrawing ${amountHBAR} HBAR...`);
       
-      console.log(`[Protocol] Withdrawal Confirmed: ${receipt.hash}`);
+      const tx = await contract.withdrawHBAR(amount, {
+        gasLimit: 300000
+      });
+      
+      const receipt = await tx.wait();
+      console.log(`[Creode] Success! Hash: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Withdrawal rejected.";
-      console.error(`[Protocol] Error:`, err);
+      const msg = err.reason || err.message || "Transaction rejected.";
+      console.error(`[Creode] Error:`, err);
       setError(msg);
       throw err;
     } finally {
@@ -98,19 +105,19 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * getVaultData Logic
+   * Data Sync Logic
    */
   const getVaultData = async (address: string) => {
     try {
       const contract = await getContract();
-      const balance = await contract.vaultBalances(address);
-      const unlockTime = await contract.unlockTimes(address);
+      const balance = await contract.getBalance(address);
+      const unlockTime = await contract.getUnlockTime(address);
       return {
         balance: ethers.formatEther(balance),
         unlockTime: Number(unlockTime)
       };
     } catch (err) {
-      console.error("[Protocol] Balance sync failed.", err);
+      console.error("[Creode] Data sync failed.", err);
       return { balance: "0.0", unlockTime: 0 };
     }
   };
