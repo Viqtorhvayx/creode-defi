@@ -153,15 +153,18 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="flex flex-col h-full justify-between">
           <div className="space-y-1 mb-8">
-            <p className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>
-              Deposit: <span className="font-black" style={{ color: primaryTextColor }}>0.00 {balanceSymbol}</span>
-            </p>
-            <p className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>
-              Earnings: <span className="font-black" style={{ color: primaryTextColor }}>0.00 {balanceSymbol}</span>
-            </p>
-            <p className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>
-              TVL: <span className="font-black" style={{ color: primaryTextColor }}>125,000.00 {balanceSymbol}</span>
-            </p>
+            <div className="flex justify-between items-center w-full">
+              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>Deposit</span>
+              <span className="text-[10px] font-black" style={{ color: primaryTextColor }}>0.00 {balanceSymbol}</span>
+            </div>
+            <div className="flex justify-between items-center w-full">
+              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>Earnings</span>
+              <span className="text-[10px] font-black" style={{ color: primaryTextColor }}>0.00 {balanceSymbol}</span>
+            </div>
+            <div className="flex justify-between items-center w-full">
+              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>TVL</span>
+              <span className="text-[10px] font-black" style={{ color: primaryTextColor }}>125,000.00 {balanceSymbol}</span>
+            </div>
           </div>
 
           <div className="relative">
