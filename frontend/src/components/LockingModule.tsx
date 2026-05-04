@@ -4,10 +4,10 @@
  * Component: LockingModule (Native HBAR Vault - UI Reverted)
  * Description: Time-lock savings vault integrated with industrial-grade
  *              smart contract logic. UI restored to original high-fidelity state.
- * Sync-Heartbeat: 2026-05-04 11:55
+ * Sync-Heartbeat: 2026-05-04 11:57
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
@@ -23,25 +23,28 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | 'set'>('deposit');
   
   // Web3 Logic Preservation authored by Viqtorhvayx
-  const { deposit, withdraw, getVaultBalance, isPending, error } = useCreodeVault();
+  const { deposit, withdraw, getVaultData, isPending, error } = useCreodeVault();
   const [vaultBalance, setVaultBalance] = useState("0.00");
+  const [unlockTime, setUnlockTime] = useState(0);
 
-  const refreshVaultBalance = async () => {
+  const refreshVaultState = useCallback(async () => {
     if (address) {
       try {
-        const bal = await getVaultBalance(address);
-        setVaultBalance(bal);
+        const data = await getVaultData(address);
+        setVaultBalance(data.balance);
+        setUnlockTime(data.unlockTime);
       } catch (err) {
-        console.error("[Protocol] Balance sync failed:", err);
+        console.error("[Protocol] State sync failed:", err);
       }
     } else {
       setVaultBalance("0.00");
+      setUnlockTime(0);
     }
-  };
+  }, [address, getVaultData]);
 
   useEffect(() => {
-    refreshVaultBalance();
-  }, [address]);
+    refreshVaultState();
+  }, [address, refreshVaultState]);
 
   const [days, setDays] = useState<string>("21"); 
 
@@ -58,6 +61,16 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     });
   }, [days]);
 
+  // For the UI display of the *existing* lock
+  const currentMaturityDate = useMemo(() => {
+    if (unlockTime === 0) return "No active lock";
+    return new Date(unlockTime * 1000).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }, [unlockTime]);
+
   const handleDaysChange = (val: string) => {
     setDays(val);
   };
@@ -67,10 +80,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     if (!rawAmount || Number(rawAmount) <= 0) return;
     setActiveAction('deposit');
     try {
-      await deposit(rawAmount);
+      await deposit(rawAmount, days);
       setAmount("");
       // Protocol Sync Delay
-      setTimeout(refreshVaultBalance, 1500);
+      setTimeout(refreshVaultState, 2000);
     } catch (err) {
       console.error("[Protocol] Deposit transaction failed.");
     }
@@ -83,7 +96,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     try {
       await withdraw(rawAmount);
       setAmount("");
-      setTimeout(refreshVaultBalance, 1500);
+      setTimeout(refreshVaultState, 2000);
     } catch (err) {
       console.error("[Protocol] Withdrawal transaction failed.");
     }
@@ -230,16 +243,16 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-6">
             <div className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]">
               <p className="text-xs font-medium leading-tight" style={{ color: labelColor }}>
-                Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies if funds are withdrawn before the preset maturity date.
+                Note: A <span className="font-bold !text-[#FF3837]">0.1%</span> base fee applies. An additional <span className="font-bold !text-[#FF3837]">5.00%</span> penalty applies for early withdrawals.
               </p>
             </div>
             <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Early Withdrawal Fee</span>
-                <span className="text-[11px] font-black !text-red-500">5.00%</span>
+                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Current Maturity</span>
+                <span className="text-[11px] font-black !text-[#00A8E8]">{currentMaturityDate}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Calculated Maturity Date</span>
+                <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Target Maturity Date</span>
                 <span className="text-[11px] font-black !text-[#00A8E8]">{calculatedMaturity}</span>
               </div>
             </div>
