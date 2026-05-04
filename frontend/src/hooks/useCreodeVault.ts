@@ -13,7 +13,8 @@ import ABIS from '@/context/abis.json';
 
 // IMPORTANT: The address below MUST be the deployed CreodeVault.sol contract address.
 // Do NOT use the Treasury wallet address (0x2d553c56de9153dc98d853f8ec15850b5afd004c) here.
-const VAULT_ADDRESS = "PASTE_DEPLOYED_SMART_CONTRACT_ADDRESS_HERE"; 
+// PLACEHOLDER: Replace with your deployed CreodeVault.sol address (e.g., 0.0.8665513 converted to 0x...)
+const VAULT_ADDRESS = "0.0.8665513"; 
 
 /**
  * Hook to interact with the CreodeVault smart contract.
