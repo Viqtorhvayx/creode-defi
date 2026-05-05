@@ -83,11 +83,10 @@ export const useCreodeVault = () => {
       // Check if maturity is already set for this user
       const vaultInfo = await contract.vaults(userAddress);
       
-      // 1. Force Set Maturity if not locked (or principal is 0 and user wants to change it)
+      // 1. Ensure Maturity is locked before simulating deposit
+      // (HashPack often fails simulation if we auto-set and deposit in the same block)
       if (!vaultInfo.isMaturitySet) {
-        console.log(`[Creode] Auto-setting maturity to ${durationDays} days...`);
-        const setTx = await contract.setMaturity(BigInt(durationDays));
-        await setTx.wait();
+        throw new Error("PLEASE CLICK 'SET' TO LOCK YOUR DURATION BEFORE DEPOSITING.");
       }
 
       // 2. Deposit Funds
