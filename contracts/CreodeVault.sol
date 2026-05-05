@@ -1,79 +1,150 @@
 // SPDX-License-Identifier: MIT
-// Creator: Viqtorhvayx
-// Project: CREODE Vault (Native HBAR Time-Locked Savings)
+// Creator: [Viqtorhvayx]
+// Project: CREODE Vault (HBAR Time-Locked Savings with APY)
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
 /**
  * @title CreodeVault
- * @notice Flawless time-locked savings vault for native HBAR.
- * @dev Implements a strict 5% early withdrawal penalty directed to the protocol treasury.
- * Created by Viqtorhvayx
+ * @notice A professional, zero-dependency HBAR vault with maturity locks and static yield.
+ * @dev Authored by [Viqtorhvayx]
  */
-contract CreodeVault is ReentrancyGuard {
+contract CreodeVault {
+    // Reentrancy Guard
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    uint256 private _status;
+
+    modifier nonReentrant() {
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+        _status = _ENTERED;
+        _;
+        _status = _NOT_ENTERED;
+    }
+
     // Official Treasury address (Hedera Account 0.0.8665514)
-    address public constant TREASURY = 0x2d553C56De9153dc98D853f8EC15850b5aFd004c;
+    address public constant TREASURY = 0x2d553C56de9153dC98d853f8ec15850b5AFD004c;
     
-    // User data tracking
-    mapping(address => uint256) public vaultBalances;
-    mapping(address => uint256) public unlockTimes;
+    // Constants
+    uint256 public constant PROTOCOL_FEE_BASIS_POINTS = 10; // 0.1%
+    uint256 public constant EARLY_WITHDRAWAL_PENALTY_BASIS_POINTS = 500; // 5%
+    uint256 public constant APY_BASIS_POINTS = 30; // 0.30%
+    uint256 public constant SECONDS_IN_YEAR = 31536000;
 
-    // Events for frontend synchronization
-    event Deposited(address indexed user, uint256 amount, uint256 unlockTime);
-    event Withdrawn(address indexed user, uint256 amount, uint256 feePaid);
+    struct UserVault {
+        uint256 principal;
+        uint256 depositTimestamp;
+        uint256 maturityTimestamp;
+        bool isMaturitySet;
+    }
 
-    /**
-     * @notice Deposit native HBAR and set a maturity duration.
-     * @param _durationInDays Number of days until maturity.
-     */
-    function depositHBAR(uint256 _durationInDays) external payable nonReentrant {
-        require(msg.value > 0, "Deposit amount must be greater than 0");
-        
-        vaultBalances[msg.sender] += msg.value;
-        unlockTimes[msg.sender] = block.timestamp + (_durationInDays * 1 days);
-        
-        emit Deposited(msg.sender, msg.value, unlockTimes[msg.sender]);
+    mapping(address => UserVault) public vaults;
+
+    event MaturitySet(address indexed user, uint256 maturityDate);
+    event Deposited(address indexed user, uint256 amount, uint256 fee);
+    event Withdrawn(address indexed user, uint256 amount, uint256 yield, uint256 penalty);
+
+    constructor() {
+        _status = _NOT_ENTERED;
     }
 
     /**
-     * @notice Withdraw HBAR. If early, a 5% penalty is assessed.
-     * @param _amount The amount to withdraw (tinybars).
+     * @notice Set the maturity date for the vault. Must be done before deposit.
+     * @param durationDays Number of days to lock funds.
      */
-    function withdrawHBAR(uint256 _amount) external nonReentrant {
-        require(vaultBalances[msg.sender] >= _amount, "Insufficient saved HBAR");
+    function setMaturity(uint256 durationDays) external {
+        require(durationDays > 0, "Duration must be positive");
+        require(vaults[msg.sender].principal == 0, "Cannot change maturity with active deposit");
         
+        vaults[msg.sender].maturityTimestamp = block.timestamp + (durationDays * 1 days);
+        vaults[msg.sender].isMaturitySet = true;
+        
+        emit MaturitySet(msg.sender, vaults[msg.sender].maturityTimestamp);
+    }
+
+    /**
+     * @notice Deposit native HBAR. Maturity must be set first.
+     */
+    function deposit() external payable nonReentrant {
+        require(msg.value > 0, "Deposit must be > 0");
+        require(vaults[msg.sender].isMaturitySet, "Must set maturity before depositing");
+
+        uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
+        uint256 netDeposit = msg.value - protocolFee;
+
+        // Transfer fee to treasury
+        (bool successFee, ) = payable(TREASURY).call{value: protocolFee}("");
+        require(successFee, "Fee transfer failed");
+
+        vaults[msg.sender].principal += netDeposit;
+        vaults[msg.sender].depositTimestamp = block.timestamp;
+
+        emit Deposited(msg.sender, netDeposit, protocolFee);
+    }
+
+    /**
+     * @notice Calculate current earnings based on 0.30% static APY.
+     */
+    function calculateEarnings(address user) public view returns (uint256) {
+        UserVault memory v = vaults[user];
+        if (v.principal == 0) return 0;
+        
+        uint256 timeElapsed = block.timestamp - v.depositTimestamp;
+        // earnings = (principal * APY * time) / (10000 * secondsInYear)
+        return (v.principal * APY_BASIS_POINTS * timeElapsed) / (10000 * SECONDS_IN_YEAR);
+    }
+
+    /**
+     * @notice Withdraw principal + earnings. 5% penalty applies if before maturity.
+     */
+    function withdraw() external nonReentrant {
+        UserVault storage v = vaults[msg.sender];
+        require(v.principal > 0, "Nothing to withdraw");
+
+        uint256 earnings = calculateEarnings(msg.sender);
+        uint256 totalBeforePenalty = v.principal + earnings;
         uint256 penalty = 0;
-        uint256 userReturn = _amount;
+        uint256 finalAmount = totalBeforePenalty;
 
-        // Apply 5% penalty if maturity date has not been reached
-        if (block.timestamp < unlockTimes[msg.sender]) {
-            penalty = (_amount * 5) / 100;
-            userReturn = _amount - penalty;
+        if (block.timestamp < v.maturityTimestamp) {
+            penalty = (v.principal * EARLY_WITHDRAWAL_PENALTY_BASIS_POINTS) / 10000;
+            finalAmount = totalBeforePenalty - penalty;
         }
 
-        // Effects: Update state before external transfers
-        vaultBalances[msg.sender] -= _amount;
-        
-        // Interaction: Send return to user
-        (bool successUser, ) = payable(msg.sender).call{value: userReturn}("");
-        require(successUser, "HBAR Return Failed");
+        // Reset vault before transfers
+        uint256 principalToReset = v.principal;
+        v.principal = 0;
+        v.isMaturitySet = false;
 
-        // Interaction: Send penalty to Treasury (if applicable)
+        // Transfer penalty to treasury
         if (penalty > 0) {
-            (bool successTreasury, ) = payable(TREASURY).call{value: penalty}("");
-            require(successTreasury, "Penalty Transfer Failed");
+            (bool successPenalty, ) = payable(TREASURY).call{value: penalty}("");
+            require(successPenalty, "Penalty transfer failed");
         }
-        
-        emit Withdrawn(msg.sender, _amount, penalty);
+
+        // Transfer funds to user
+        (bool successUser, ) = payable(msg.sender).call{value: finalAmount}("");
+        require(successUser, "User transfer failed");
+
+        emit Withdrawn(msg.sender, principalToReset, earnings, penalty);
     }
 
     /**
-     * @dev Fallback to receive HBAR. Defaults to 30-day maturity.
+     * @dev Receive fallback. Defaults to 30-day maturity if not set.
      */
     receive() external payable {
-        vaultBalances[msg.sender] += msg.value;
-        unlockTimes[msg.sender] = block.timestamp + (30 days);
+        if (!vaults[msg.sender].isMaturitySet) {
+            vaults[msg.sender].maturityTimestamp = block.timestamp + 30 days;
+            vaults[msg.sender].isMaturitySet = true;
+        }
+        
+        uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
+        uint256 netDeposit = msg.value - protocolFee;
+        
+        (bool successFee, ) = payable(TREASURY).call{value: protocolFee}("");
+        require(successFee, "Fee transfer failed");
+
+        vaults[msg.sender].principal += netDeposit;
+        vaults[msg.sender].depositTimestamp = block.timestamp;
     }
 }

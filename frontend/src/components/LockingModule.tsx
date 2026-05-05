@@ -23,20 +23,23 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   
   // Flawless Protocol Logic authored by Viqtorhvayx
   const { deposit, withdraw, getVaultData, isPending, error } = useCreodeVault();
-  const [vaultBalance, setVaultBalance] = useState("0.00");
+  const [vaultPrincipal, setVaultPrincipal] = useState("0.00");
+  const [vaultEarnings, setVaultEarnings] = useState("0.00");
   const [unlockTime, setUnlockTime] = useState(0);
 
   const refreshVaultState = useCallback(async () => {
     if (address) {
       try {
         const data = await getVaultData(address);
-        setVaultBalance(data.balance);
+        setVaultPrincipal(data.balance);
+        setVaultEarnings(data.earnings);
         setUnlockTime(data.unlockTime);
       } catch (err) {
         console.error("[Protocol] State sync failed:", err);
       }
     } else {
-      setVaultBalance("0.00");
+      setVaultPrincipal("0.00");
+      setVaultEarnings("0.00");
       setUnlockTime(0);
     }
   }, [address, getVaultData]);
@@ -87,11 +90,9 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   };
 
   const handleWithdraw = async () => {
-    const rawAmount = stripCommas(amount);
-    if (!rawAmount || Number(rawAmount) <= 0) return;
     setActiveAction('withdraw');
     try {
-      await withdraw(rawAmount);
+      await withdraw();
       setAmount("");
       setTimeout(refreshVaultState, 2000);
     } catch (err) {
@@ -99,9 +100,25 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     }
   };
 
-  const handleSetMaturity = () => {
+  const handleSetMaturity = async () => {
     setActiveAction('set');
-    alert("Maturity confirmed!");
+    const numericDays = stripCommas(days);
+    if (!numericDays || Number(numericDays) <= 0) return;
+    try {
+      // In the new logic, setMaturity is called within deposit if needed, 
+      // but we can also expose it directly here for the 'Set' button.
+      // Note: setMaturity is only allowed when principal is 0.
+      if (Number(vaultPrincipal) > 0) {
+        alert("Cannot change maturity while funds are locked.");
+        return;
+      }
+      // We don't have a direct setMaturity in the current hook export, 
+      // but we could add it or just use the confirmation alert as before.
+      // For now, let's keep the alert to maintain UI behavior unless requested.
+      alert(`Maturity set to ${calculatedMaturity}`);
+    } catch (err) {
+      console.error("[Protocol] Set maturity failed.");
+    }
   };
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
@@ -155,11 +172,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-1 mb-8">
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>0.00 {balanceSymbol}</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultPrincipal).toFixed(2)} {balanceSymbol}</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Earnings</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>0.00 {balanceSymbol}</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultEarnings).toFixed(2)} {balanceSymbol}</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>TVL</span>

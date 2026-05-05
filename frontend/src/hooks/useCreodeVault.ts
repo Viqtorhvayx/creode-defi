@@ -18,14 +18,16 @@ import { useWalletClient } from 'wagmi';
  */
 const VAULT_ADDRESS = process.env.NEXT_PUBLIC_VAULT_ADDRESS || ""; 
 
-// Human-Readable ABI for the Zero-Dependency Vault authored by Viqtorhvayx
+// Human-Readable ABI for the Zero-Dependency CreodeVault authored by Viqtorhvayx
 const contractABI = [
-  "function depositHBAR(uint256 _durationInDays) external payable",
-  "function withdrawHBAR(uint256 _amount) external",
-  "function getBalance(address _user) view returns (uint256)",
-  "function getUnlockTime(address _user) view returns (uint256)",
-  "event HBARDeposited(address indexed user, uint256 amount, uint256 unlockTime)",
-  "event HBARWithdrawn(address indexed user, uint256 amount, bool isEarly)"
+  "function setMaturity(uint256 durationDays) external",
+  "function deposit() external payable",
+  "function withdraw() external",
+  "function calculateEarnings(address user) public view returns (uint256)",
+  "function vaults(address) view returns (uint256 principal, uint256 depositTimestamp, uint256 maturityTimestamp, bool isMaturitySet)",
+  "event MaturitySet(address indexed user, uint256 maturityDate)",
+  "event Deposited(address indexed user, uint256 amount, uint256 fee)",
+  "event Withdrawn(address indexed user, uint256 amount, uint256 yield, uint256 penalty)"
 ];
 
 export const useCreodeVault = () => {
@@ -37,7 +39,7 @@ export const useCreodeVault = () => {
     if (!walletClient) throw new Error("Wallet not connected.");
     
     if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
-      throw new Error("Vault address not configured. Please run deploy.js and update useCreodeVault.ts.");
+      throw new Error("Vault address not configured. Please run deploy.js and update Vercel.");
     }
     
     const provider = new ethers.BrowserProvider(walletClient.transport);
@@ -46,27 +48,37 @@ export const useCreodeVault = () => {
   }, [walletClient]);
 
   /**
-   * depositHBAR: Transfers funds to the time-locked vault.
-   * Includes a mandatory 0.1% transaction fee logic for protocol success.
+   * deposit: Sets maturity then funds the vault.
+   * Includes a 0.1% protocol fee logic as requested.
    */
   const deposit = async (amountHBAR: string, durationDays: string | number) => {
     setIsPending(true);
     setError(null);
     try {
       const contract = await getContract();
-      const baseValue = ethers.parseEther(amountHBAR);
+      const userAddress = walletClient?.account?.address;
+      if (!userAddress) throw new Error("No account address found.");
+
+      // Check if maturity is already set for this user
+      const vaultInfo = await contract.vaults(userAddress);
       
-      // CRITICAL: Set transaction fee at 0.1% for success as requested
-      const protocolFee = (baseValue * 1n) / 1000n; // 0.1% calculation
+      // 1. Set Maturity if principal is 0 (as per contract rules)
+      if (vaultInfo.principal === 0n) {
+        console.log(`[Creode] Setting maturity to ${durationDays} days...`);
+        const setTx = await contract.setMaturity(BigInt(durationDays));
+        await setTx.wait();
+      }
+
+      // 2. Deposit Funds
+      const baseValue = ethers.parseEther(amountHBAR);
+      // Add 0.1% fee on top in frontend for seamless UX (contract also deducts its fee)
+      const protocolFee = (baseValue * 1n) / 1000n;
       const finalValue = baseValue + protocolFee;
       
-      const days = BigInt(durationDays);
-      
-      console.log(`[Creode] Depositing ${amountHBAR} HBAR (+0.1% fee) for ${durationDays} days...`);
-      
-      const tx = await contract.depositHBAR(days, { 
+      console.log(`[Creode] Depositing ${amountHBAR} HBAR...`);
+      const tx = await contract.deposit({ 
         value: finalValue,
-        gasLimit: 400000 // Optimized gas limit for Hedera
+        gasLimit: 500000 
       });
       
       const receipt = await tx.wait();
@@ -83,20 +95,18 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * withdrawHBAR: Retrieves funds from the vault.
-   * Note: 5% penalty applies if withdrawn before maturity.
+   * withdraw: Pulls principal + yield.
+   * Note: 5% penalty applies if before maturity.
    */
-  const withdraw = async (amountHBAR: string) => {
+  const withdraw = async () => {
     setIsPending(true);
     setError(null);
     try {
       const contract = await getContract();
-      const amount = ethers.parseEther(amountHBAR);
+      console.log(`[Creode] Withdrawing all funds...`);
       
-      console.log(`[Creode] Withdrawing ${amountHBAR} HBAR...`);
-      
-      const tx = await contract.withdrawHBAR(amount, {
-        gasLimit: 400000 // Optimized gas limit for Hedera
+      const tx = await contract.withdraw({
+        gasLimit: 500000
       });
       
       const receipt = await tx.wait();
@@ -113,20 +123,23 @@ export const useCreodeVault = () => {
   };
 
   /**
-   * getVaultData: Fetches real-time balance and lock status.
+   * getVaultData: Fetches real-time status and yield.
    */
   const getVaultData = async (address: string) => {
     try {
       const contract = await getContract();
-      const balance = await contract.getBalance(address);
-      const unlockTime = await contract.getUnlockTime(address);
+      const vaultInfo = await contract.vaults(address);
+      const earnings = await contract.calculateEarnings(address);
+      
       return {
-        balance: ethers.formatEther(balance),
-        unlockTime: Number(unlockTime)
+        balance: ethers.formatEther(vaultInfo.principal),
+        earnings: ethers.formatEther(earnings),
+        unlockTime: Number(vaultInfo.maturityTimestamp),
+        isSet: vaultInfo.isMaturitySet
       };
     } catch (err) {
       console.error("[Creode] Data sync failed.", err);
-      return { balance: "0.0", unlockTime: 0 };
+      return { balance: "0.0", earnings: "0.0", unlockTime: 0, isSet: false };
     }
   };
 
