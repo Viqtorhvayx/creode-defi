@@ -1,5 +1,5 @@
 {
-  "address": "0x0000000000000000000000000000000000873daf",
+  "address": "0x00000000000000000000000000000000008740c1",
   "abi": [
     {
       "inputs": [],
@@ -147,6 +147,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "accumulatedFees",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -163,6 +176,13 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "claimFees",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {

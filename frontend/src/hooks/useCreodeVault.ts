@@ -25,6 +25,8 @@ const contractABI = [
   "function withdraw() external",
   "function calculateEarnings(address user) public view returns (uint256)",
   "function vaults(address) view returns (uint256 principal, uint256 depositTimestamp, uint256 maturityTimestamp, bool isMaturitySet)",
+  "function claimFees() external",
+  "function accumulatedFees() view returns (uint256)",
   "event MaturitySet(address indexed user, uint256 maturityDate)",
   "event Deposited(address indexed user, uint256 amount, uint256 fee)",
   "event Withdrawn(address indexed user, uint256 amount, uint256 yield, uint256 penalty)"

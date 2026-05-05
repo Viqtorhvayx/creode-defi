@@ -31,6 +31,8 @@ contract CreodeVault {
     uint256 public constant APY_BASIS_POINTS = 30; // 0.30%
     uint256 public constant SECONDS_IN_YEAR = 31536000;
 
+    uint256 public accumulatedFees;
+
     struct UserVault {
         uint256 principal;
         uint256 depositTimestamp;
@@ -72,9 +74,8 @@ contract CreodeVault {
         uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
         uint256 netDeposit = msg.value - protocolFee;
 
-        // Transfer fee to treasury
-        (bool successFee, ) = payable(TREASURY).call{value: protocolFee}("");
-        require(successFee, "Fee transfer failed");
+        // Accumulate fee instead of sending immediately to avoid .call revert issues
+        accumulatedFees += protocolFee;
 
         vaults[msg.sender].principal += netDeposit;
         vaults[msg.sender].depositTimestamp = block.timestamp;
@@ -109,6 +110,8 @@ contract CreodeVault {
         if (block.timestamp < v.maturityTimestamp) {
             penalty = (v.principal * EARLY_WITHDRAWAL_PENALTY_BASIS_POINTS) / 10000;
             finalAmount = totalBeforePenalty - penalty;
+            // Accumulate penalty instead of sending immediately
+            accumulatedFees += penalty;
         }
 
         // Reset vault before transfers
@@ -116,17 +119,22 @@ contract CreodeVault {
         v.principal = 0;
         v.isMaturitySet = false;
 
-        // Transfer penalty to treasury
-        if (penalty > 0) {
-            (bool successPenalty, ) = payable(TREASURY).call{value: penalty}("");
-            require(successPenalty, "Penalty transfer failed");
-        }
-
         // Transfer funds to user
         (bool successUser, ) = payable(msg.sender).call{value: finalAmount}("");
         require(successUser, "User transfer failed");
 
         emit Withdrawn(msg.sender, principalToReset, earnings, penalty);
+    }
+
+    /**
+     * @notice Allows anyone to trigger sending the accumulated fees to the treasury
+     */
+    function claimFees() external nonReentrant {
+        uint256 fees = accumulatedFees;
+        require(fees > 0, "No fees to claim");
+        accumulatedFees = 0;
+        (bool success, ) = payable(TREASURY).call{value: fees}("");
+        require(success, "Fee transfer failed");
     }
 
     /**
@@ -141,8 +149,7 @@ contract CreodeVault {
         uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
         uint256 netDeposit = msg.value - protocolFee;
         
-        (bool successFee, ) = payable(TREASURY).call{value: protocolFee}("");
-        require(successFee, "Fee transfer failed");
+        accumulatedFees += protocolFee;
 
         vaults[msg.sender].principal += netDeposit;
         vaults[msg.sender].depositTimestamp = block.timestamp;
