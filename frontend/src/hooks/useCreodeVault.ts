@@ -48,8 +48,29 @@ export const useCreodeVault = () => {
   }, [walletClient]);
 
   /**
-   * deposit: Sets maturity then funds the vault.
-   * Includes a 0.1% protocol fee logic as requested.
+   * setMaturity: Explicitly locks in the duration.
+   */
+  const setMaturity = async (durationDays: string | number) => {
+    setIsPending(true);
+    setError(null);
+    try {
+      const contract = await getContract();
+      console.log(`[Creode] Setting maturity to ${durationDays} days...`);
+      const tx = await contract.setMaturity(BigInt(durationDays));
+      const receipt = await tx.wait();
+      console.log(`[Creode] Maturity locked!`);
+      return receipt;
+    } catch (err: any) {
+      const msg = err.reason || err.message || "Set Maturity failed.";
+      setError(msg);
+      throw err;
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  /**
+   * deposit: Ensures maturity is set then funds the vault.
    */
   const deposit = async (amountHBAR: string, durationDays: string | number) => {
     setIsPending(true);
@@ -62,32 +83,36 @@ export const useCreodeVault = () => {
       // Check if maturity is already set for this user
       const vaultInfo = await contract.vaults(userAddress);
       
-      // 1. Set Maturity if principal is 0 (as per contract rules)
-      if (vaultInfo.principal === 0n) {
-        console.log(`[Creode] Setting maturity to ${durationDays} days...`);
+      // 1. Force Set Maturity if not locked (or principal is 0 and user wants to change it)
+      if (!vaultInfo.isMaturitySet) {
+        console.log(`[Creode] Auto-setting maturity to ${durationDays} days...`);
         const setTx = await contract.setMaturity(BigInt(durationDays));
         await setTx.wait();
       }
 
       // 2. Deposit Funds
       const baseValue = ethers.parseEther(amountHBAR);
-      // Add 0.1% fee on top in frontend for seamless UX (contract also deducts its fee)
-      const protocolFee = (baseValue * 1n) / 1000n;
-      const finalValue = baseValue + protocolFee;
+      // Contract handles the 0.1% fee internally; we send exactly what the user typed.
+      const finalValue = baseValue; 
       
       console.log(`[Creode] Depositing ${amountHBAR} HBAR...`);
       const tx = await contract.deposit({ 
         value: finalValue,
-        gasLimit: 500000 
+        gasLimit: 800000 // Increased gas for safety
       });
       
       const receipt = await tx.wait();
       console.log(`[Creode] Deposit Success! Hash: ${receipt.hash}`);
       return receipt;
     } catch (err: any) {
-      const msg = err.reason || err.message || "Transaction failed.";
+      // Robust error parsing
+      let msg = "Transaction failed.";
+      if (err.reason) msg = err.reason;
+      else if (err.data?.message) msg = err.data.message;
+      else if (err.message) msg = err.message;
+      
       console.error(`[Creode] Deposit Error:`, err);
-      setError(msg);
+      setError(msg.toUpperCase());
       throw err;
     } finally {
       setIsPending(false);
@@ -143,5 +168,5 @@ export const useCreodeVault = () => {
     }
   };
 
-  return { deposit, withdraw, getVaultData, isPending, error };
+  return { deposit, withdraw, setMaturity, getVaultData, isPending, error };
 };

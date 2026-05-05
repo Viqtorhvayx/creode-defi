@@ -22,7 +22,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | 'set'>('deposit');
   
   // Flawless Protocol Logic authored by Viqtorhvayx
-  const { deposit, withdraw, getVaultData, isPending, error } = useCreodeVault();
+  const { deposit, withdraw, setMaturity, getVaultData, isPending, error } = useCreodeVault();
   const [vaultPrincipal, setVaultPrincipal] = useState("0.00");
   const [vaultEarnings, setVaultEarnings] = useState("0.00");
   const [unlockTime, setUnlockTime] = useState(0);
@@ -105,17 +105,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     const numericDays = stripCommas(days);
     if (!numericDays || Number(numericDays) <= 0) return;
     try {
-      // In the new logic, setMaturity is called within deposit if needed, 
-      // but we can also expose it directly here for the 'Set' button.
-      // Note: setMaturity is only allowed when principal is 0.
       if (Number(vaultPrincipal) > 0) {
         alert("Cannot change maturity while funds are locked.");
         return;
       }
-      // We don't have a direct setMaturity in the current hook export, 
-      // but we could add it or just use the confirmation alert as before.
-      // For now, let's keep the alert to maintain UI behavior unless requested.
-      alert(`Maturity set to ${calculatedMaturity}`);
+      await setMaturity(numericDays);
+      setTimeout(refreshVaultState, 2000);
     } catch (err) {
       console.error("[Protocol] Set maturity failed.");
     }
