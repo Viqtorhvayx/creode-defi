@@ -26,6 +26,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [vaultPrincipal, setVaultPrincipal] = useState("0.00");
   const [vaultEarnings, setVaultEarnings] = useState("0.00");
   const [unlockTime, setUnlockTime] = useState(0);
+  const [isMaturityLocked, setIsMaturityLocked] = useState(false);
 
   const refreshVaultState = useCallback(async () => {
     if (address) {
@@ -34,6 +35,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         setVaultPrincipal(data.balance);
         setVaultEarnings(data.earnings);
         setUnlockTime(data.unlockTime);
+        setIsMaturityLocked(data.isSet);
       } catch (err) {
         console.error("[Protocol] State sync failed:", err);
       }
@@ -41,6 +43,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       setVaultPrincipal("0.00");
       setVaultEarnings("0.00");
       setUnlockTime(0);
+      setIsMaturityLocked(false);
     }
   }, [address, getVaultData]);
 
@@ -79,6 +82,13 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const handleDeposit = async () => {
     const rawAmount = stripCommas(amount);
     if (!rawAmount || Number(rawAmount) <= 0) return;
+    
+    // Explicit UI-level check before even hitting the hook
+    if (!isMaturityLocked) {
+      alert("⚠️ PLEASE CLICK 'SET' FIRST TO LOCK YOUR DURATION.");
+      return;
+    }
+
     setActiveAction('deposit');
     try {
       await deposit(rawAmount, days);

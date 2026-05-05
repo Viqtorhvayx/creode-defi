@@ -96,8 +96,7 @@ export const useCreodeVault = () => {
       
       console.log(`[Creode] Depositing ${amountHBAR} HBAR...`);
       const tx = await contract.deposit({ 
-        value: finalValue,
-        gasLimit: 800000 // Increased gas for safety
+        value: finalValue
       });
       
       const receipt = await tx.wait();
@@ -129,9 +128,7 @@ export const useCreodeVault = () => {
       const contract = await getContract();
       console.log(`[Creode] Withdrawing all funds...`);
       
-      const tx = await contract.withdraw({
-        gasLimit: 500000
-      });
+      const tx = await contract.withdraw();
       
       const receipt = await tx.wait();
       console.log(`[Creode] Withdrawal Success! Hash: ${receipt.hash}`);

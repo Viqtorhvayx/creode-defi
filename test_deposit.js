@@ -31,8 +31,8 @@ async function main() {
 
     console.log("Attempting deposit of 10 HBAR...");
     try {
-        const amount = ethers.parseEther("10");
-        const tx = await contract.deposit({ value: amount, gasLimit: 800000 });
+        const amount = ethers.parseUnits("10", 8);
+        const tx = await contract.deposit({ value: amount });
         const receipt = await tx.wait();
         console.log("Deposit successful:", receipt.hash);
     } catch (e) {
