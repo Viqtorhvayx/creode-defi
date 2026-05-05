@@ -154,21 +154,21 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         <div className="flex flex-col h-full justify-between">
           <div className="space-y-1 mb-8">
             <div className="flex justify-between items-center w-full">
-              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>Deposit</span>
-              <span className="text-[10px] font-black !text-[#00A8E8]">0.00 {balanceSymbol}</span>
+              <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>0.00 {balanceSymbol}</span>
             </div>
             <div className="flex justify-between items-center w-full">
-              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>Earnings</span>
-              <span className="text-[10px] font-black !text-[#00A8E8]">0.00 {balanceSymbol}</span>
+              <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Earnings</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>0.00 {balanceSymbol}</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>TVL</span>
-              <span className="text-[10px] font-black !text-[#00A8E8]">125,000.00 {balanceSymbol}</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>125,000.00 {balanceSymbol}</span>
             </div>
           </div>
-
+ 
           <div className="relative">
-            <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Lock ({balanceSymbol})</label>
+            <label className="text-[10px] font-bold uppercase block mb-2" style={{ color: labelColor }}>Amount to Save ({balanceSymbol})</label>
             <FormattedNumberInput 
               placeholder="0.00"
               className={numericInputClasses}
