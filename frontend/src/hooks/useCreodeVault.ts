@@ -10,13 +10,8 @@ import { useState, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
 
-/**
- * !!! ONE-CLICK DEPLOYER SYNC !!!
- * 1. Run 'node scripts/deploy.js' in your terminal.
- * 2. Copy the 'EVM Address' from the success log.
- * 3. PASTE THE ADDRESS BELOW.
- */
-const VAULT_ADDRESS = process.env.NEXT_PUBLIC_VAULT_ADDRESS || ""; 
+// !!! CRITICAL: UPDATED ADDRESS POST-AUDIT !!!
+const VAULT_ADDRESS = "0x000000000000000000000000000000000087c528"; 
 
 // Human-Readable ABI for the Zero-Dependency CreodeVault authored by Viqtorhvayx
 const contractABI = [
@@ -41,7 +36,7 @@ export const useCreodeVault = () => {
     if (!walletClient) throw new Error("Wallet not connected.");
     
     if (!VAULT_ADDRESS || !VAULT_ADDRESS.startsWith('0x') || VAULT_ADDRESS.length !== 42) {
-      throw new Error("Vault address not configured. Please run deploy.js and update Vercel.");
+      throw new Error("Vault address not configured correctly.");
     }
     
     const provider = new ethers.BrowserProvider(walletClient.transport);
@@ -58,7 +53,10 @@ export const useCreodeVault = () => {
     try {
       const contract = await getContract();
       console.log(`[Creode] Setting maturity to ${durationDays} days...`);
-      const tx = await contract.setMaturity(BigInt(durationDays));
+      // Explicit gas limit for Hedera pre-check stability
+      const tx = await contract.setMaturity(BigInt(durationDays), {
+        gasLimit: 300000
+      });
       const receipt = await tx.wait();
       console.log(`[Creode] Maturity locked!`);
       return receipt;
@@ -85,20 +83,17 @@ export const useCreodeVault = () => {
       // Check if maturity is already set for this user
       const vaultInfo = await contract.vaults(userAddress);
       
-      // 1. Ensure Maturity is locked before simulating deposit
-      // (HashPack often fails simulation if we auto-set and deposit in the same block)
       if (!vaultInfo.isMaturitySet) {
         throw new Error("PLEASE CLICK 'SET' TO LOCK YOUR DURATION BEFORE DEPOSITING.");
       }
 
-      // 2. Deposit Funds
-      const baseValue = ethers.parseEther(amountHBAR);
-      // Contract handles the 0.1% fee internally; we send exactly what the user typed.
-      const finalValue = baseValue; 
+      const finalValue = ethers.parseEther(amountHBAR);
       
       console.log(`[Creode] Depositing ${amountHBAR} HBAR...`);
+      // VITAL: Pass the value in the overrides object as required by ethers.js
       const tx = await contract.deposit({ 
-        value: finalValue
+        value: finalValue,
+        gasLimit: 500000 
       });
       
       const receipt = await tx.wait();

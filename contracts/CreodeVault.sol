@@ -16,7 +16,7 @@ contract CreodeVault {
     uint256 private _status;
 
     modifier nonReentrant() {
-        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call detected");
         _status = _ENTERED;
         _;
         _status = _NOT_ENTERED;
@@ -55,8 +55,8 @@ contract CreodeVault {
      * @param durationDays Number of days to lock funds.
      */
     function setMaturity(uint256 durationDays) external {
-        require(durationDays > 0, "Duration must be positive");
-        require(vaults[msg.sender].principal == 0, "Cannot change maturity with active deposit");
+        require(durationDays > 0, "Duration must be greater than zero days");
+        require(vaults[msg.sender].principal == 0, "Cannot change maturity date while you have an active deposit");
         
         vaults[msg.sender].maturityTimestamp = block.timestamp + (durationDays * 1 days);
         vaults[msg.sender].isMaturitySet = true;
@@ -68,8 +68,8 @@ contract CreodeVault {
      * @notice Deposit native HBAR. Maturity must be set first.
      */
     function deposit() external payable nonReentrant {
-        require(msg.value > 0, "Deposit must be > 0");
-        require(vaults[msg.sender].isMaturitySet, "Must set maturity before depositing");
+        require(msg.value > 0, "Deposit amount must be greater than zero");
+        require(vaults[msg.sender].isMaturitySet, "You must set a maturity date first");
 
         uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
         uint256 netDeposit = msg.value - protocolFee;
@@ -100,7 +100,7 @@ contract CreodeVault {
      */
     function withdraw() external nonReentrant {
         UserVault storage v = vaults[msg.sender];
-        require(v.principal > 0, "Nothing to withdraw");
+        require(v.principal > 0, "You do not have any funds in the vault to withdraw");
 
         uint256 earnings = calculateEarnings(msg.sender);
         uint256 totalBeforePenalty = v.principal + earnings;
@@ -114,6 +114,9 @@ contract CreodeVault {
             accumulatedFees += penalty;
         }
 
+        // Check if contract has enough balance (e.g. for earnings)
+        require(address(this).balance >= finalAmount, "Vault has insufficient liquidity for withdrawal");
+
         // Reset vault before transfers
         uint256 principalToReset = v.principal;
         v.principal = 0;
@@ -121,7 +124,7 @@ contract CreodeVault {
 
         // Transfer funds to user
         (bool successUser, ) = payable(msg.sender).call{value: finalAmount}("");
-        require(successUser, "User transfer failed");
+        require(successUser, "Failed to transfer HBAR to user wallet");
 
         emit Withdrawn(msg.sender, principalToReset, earnings, penalty);
     }
@@ -131,10 +134,10 @@ contract CreodeVault {
      */
     function claimFees() external nonReentrant {
         uint256 fees = accumulatedFees;
-        require(fees > 0, "No fees to claim");
+        require(fees > 0, "There are currently no accumulated fees to claim");
         accumulatedFees = 0;
         (bool success, ) = payable(TREASURY).call{value: fees}("");
-        require(success, "Fee transfer failed");
+        require(success, "Failed to transfer accumulated fees to treasury");
     }
 
     /**
