@@ -173,7 +173,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="flex flex-col h-full justify-between">
+        <div className="flex flex-col h-full justify-between transform transition-all duration-300 hover:-translate-y-1.5">
           <div className="space-y-1 mb-8">
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
@@ -211,12 +211,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           {error && <div className="mt-4 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-[10px] text-red-500 font-bold uppercase">{error}</div>}
           
           <div className="flex gap-4 mt-20">
-            <button onClick={handleDeposit} disabled={isPending || !amount} className={getButtonClasses('deposit')}>Deposit</button>
-            <button onClick={handleWithdraw} disabled={isPending || !amount} className={getButtonClasses('withdraw')}>Withdraw</button>
+            <button onClick={handleDeposit} disabled={isPending || !amount} className={`${getButtonClasses('deposit')} transform transition-all duration-300 hover:-translate-y-1.5`}>Deposit</button>
+            <button onClick={handleWithdraw} disabled={isPending || !amount} className={`${getButtonClasses('withdraw')} transform transition-all duration-300 hover:-translate-y-1.5`}>Withdraw</button>
           </div>
         </div>
 
-        <div className="flex flex-col h-full justify-between">
+        <div className="flex flex-col h-full justify-between transform transition-all duration-300 hover:-translate-y-1.5">
           <div className="space-y-6">
             <div className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <p className="text-xs font-medium leading-tight" style={{ color: labelColor }}>
@@ -247,7 +247,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               />
             </div>
             <div className="flex flex-col justify-end">
-              <button onClick={handleSetMaturity} className={getButtonClasses('set').replace('flex-1 min-w-[120px]', 'w-full')}>Set</button>
+              <button onClick={handleSetMaturity} className={`${getButtonClasses('set').replace('flex-1 min-w-[120px]', 'w-full')} transform transition-all duration-300 hover:-translate-y-1.5`}>Set</button>
             </div>
           </div>
         </div>
