@@ -40,7 +40,7 @@ contract CreodeVault {
         bool isMaturitySet;
     }
 
-    mapping(address => UserVault) public vaults;
+    mapping(address => UserVault) public deposits;
 
     event MaturitySet(address indexed user, uint256 maturityDate);
     event Deposited(address indexed user, uint256 amount, uint256 fee);
@@ -56,12 +56,12 @@ contract CreodeVault {
      */
     function setMaturity(uint256 durationDays) external {
         require(durationDays > 0, "Duration must be greater than zero days");
-        require(vaults[msg.sender].principal == 0, "Cannot change maturity date while you have an active deposit");
+        require(deposits[msg.sender].principal == 0, "Cannot change maturity date while you have an active deposit");
         
-        vaults[msg.sender].maturityTimestamp = block.timestamp + (durationDays * 1 days);
-        vaults[msg.sender].isMaturitySet = true;
+        deposits[msg.sender].maturityTimestamp = block.timestamp + (durationDays * 1 days);
+        deposits[msg.sender].isMaturitySet = true;
         
-        emit MaturitySet(msg.sender, vaults[msg.sender].maturityTimestamp);
+        emit MaturitySet(msg.sender, deposits[msg.sender].maturityTimestamp);
     }
 
     /**
@@ -69,7 +69,7 @@ contract CreodeVault {
      */
     function deposit() external payable nonReentrant {
         require(msg.value > 0, "Deposit amount must be greater than zero");
-        require(vaults[msg.sender].isMaturitySet, "You must set a maturity date first");
+        require(deposits[msg.sender].isMaturitySet, "You must set a maturity date first");
 
         uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
         uint256 netDeposit = msg.value - protocolFee;
@@ -77,8 +77,8 @@ contract CreodeVault {
         // Accumulate fee instead of sending immediately to avoid .call revert issues
         accumulatedFees += protocolFee;
 
-        vaults[msg.sender].principal += netDeposit;
-        vaults[msg.sender].depositTimestamp = block.timestamp;
+        deposits[msg.sender].principal += netDeposit;
+        deposits[msg.sender].depositTimestamp = block.timestamp;
 
         emit Deposited(msg.sender, netDeposit, protocolFee);
     }
@@ -87,7 +87,7 @@ contract CreodeVault {
      * @notice Calculate current earnings based on 0.30% static APY.
      */
     function calculateEarnings(address user) public view returns (uint256) {
-        UserVault memory v = vaults[user];
+        UserVault memory v = deposits[user];
         if (v.principal == 0) return 0;
         
         uint256 timeElapsed = block.timestamp - v.depositTimestamp;
@@ -99,7 +99,7 @@ contract CreodeVault {
      * @notice Withdraw principal + earnings. 5% penalty applies if before maturity.
      */
     function withdraw() external nonReentrant {
-        UserVault storage v = vaults[msg.sender];
+        UserVault storage v = deposits[msg.sender];
         require(v.principal > 0, "You do not have any funds in the vault to withdraw");
 
         uint256 earnings = calculateEarnings(msg.sender);
@@ -144,9 +144,9 @@ contract CreodeVault {
      * @dev Receive fallback. Defaults to 30-day maturity if not set.
      */
     receive() external payable {
-        if (!vaults[msg.sender].isMaturitySet) {
-            vaults[msg.sender].maturityTimestamp = block.timestamp + 30 days;
-            vaults[msg.sender].isMaturitySet = true;
+        if (!deposits[msg.sender].isMaturitySet) {
+            deposits[msg.sender].maturityTimestamp = block.timestamp + 30 days;
+            deposits[msg.sender].isMaturitySet = true;
         }
         
         uint256 protocolFee = (msg.value * PROTOCOL_FEE_BASIS_POINTS) / 10000;
@@ -154,7 +154,7 @@ contract CreodeVault {
         
         accumulatedFees += protocolFee;
 
-        vaults[msg.sender].principal += netDeposit;
-        vaults[msg.sender].depositTimestamp = block.timestamp;
+        deposits[msg.sender].principal += netDeposit;
+        deposits[msg.sender].depositTimestamp = block.timestamp;
     }
 }

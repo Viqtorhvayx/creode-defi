@@ -11,7 +11,7 @@ import { ethers } from 'ethers';
 import { useWalletClient } from 'wagmi';
 
 // !!! CRITICAL: UPDATED ADDRESS POST-AUDIT !!!
-const VAULT_ADDRESS = "0x000000000000000000000000000000000087c528"; 
+const VAULT_ADDRESS = "0x000000000000000000000000000000000087c738"; 
 
 // Human-Readable ABI for the Zero-Dependency CreodeVault authored by Viqtorhvayx
 const contractABI = [
@@ -19,7 +19,7 @@ const contractABI = [
   "function deposit() external payable",
   "function withdraw() external",
   "function calculateEarnings(address user) public view returns (uint256)",
-  "function vaults(address) view returns (uint256 principal, uint256 depositTimestamp, uint256 maturityTimestamp, bool isMaturitySet)",
+  "function deposits(address) view returns (uint256 principal, uint256 depositTimestamp, uint256 maturityTimestamp, bool isMaturitySet)",
   "function claimFees() external",
   "function accumulatedFees() view returns (uint256)",
   "event MaturitySet(address indexed user, uint256 maturityDate)",
@@ -81,7 +81,7 @@ export const useCreodeVault = () => {
       if (!userAddress) throw new Error("No account address found.");
 
       // Check if maturity is already set for this user
-      const vaultInfo = await contract.vaults(userAddress);
+      const vaultInfo = await contract.deposits(userAddress);
       
       if (!vaultInfo.isMaturitySet) {
         throw new Error("PLEASE CLICK 'SET' TO LOCK YOUR DURATION BEFORE DEPOSITING.");
@@ -146,7 +146,7 @@ export const useCreodeVault = () => {
   const getVaultData = async (address: string) => {
     try {
       const contract = await getContract();
-      const vaultInfo = await contract.vaults(address);
+      const vaultInfo = await contract.deposits(address);
       const earnings = await contract.calculateEarnings(address);
       
       return {
