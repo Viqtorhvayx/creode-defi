@@ -132,7 +132,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
   const getButtonClasses = (action: 'deposit' | 'withdraw' | 'set') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] hover:-translate-y-1 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
     return isActive 
       ? `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
