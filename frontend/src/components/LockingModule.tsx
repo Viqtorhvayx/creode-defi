@@ -27,19 +27,30 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const [vaultEarnings, setVaultEarnings] = useState("0.00");
   const [unlockTime, setUnlockTime] = useState(0);
   const [isMaturityLocked, setIsMaturityLocked] = useState(false);
+  const [userDeposit, setUserDeposit] = useState("0.00"); // Step 1: React state for live balance
 
-  const refreshVaultState = useCallback(async () => {
+  // Step 2: Implement the fetcher function
+  const fetchVaultData = useCallback(async () => {
     if (address) {
       try {
         const data = await getVaultData(address);
+        // Step 4: Mandatory console logging
+        console.log("Vault Balance Fetched:", data.balance);
+        
+        // Format strictly to 2 decimal places as requested
+        const formattedBalance = Number(data.balance).toFixed(2);
+        
+        // Step 1 & 2: Update the states
+        setUserDeposit(formattedBalance);
         setVaultPrincipal(data.balance);
         setVaultEarnings(data.earnings);
         setUnlockTime(data.unlockTime);
         setIsMaturityLocked(data.isSet);
       } catch (err) {
-        console.error("[Protocol] State sync failed:", err);
+        console.error("[Protocol] fetchVaultData failed:", err);
       }
     } else {
+      setUserDeposit("0.00");
       setVaultPrincipal("0.00");
       setVaultEarnings("0.00");
       setUnlockTime(0);
@@ -47,9 +58,10 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     }
   }, [address, getVaultData]);
 
+  // Step 3: Trigger the Effect
   useEffect(() => {
-    refreshVaultState();
-  }, [address, refreshVaultState]);
+    fetchVaultData();
+  }, [address, fetchVaultData]);
 
   const [days, setDays] = useState<string>("21"); 
 
@@ -93,7 +105,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     try {
       await deposit(rawAmount, days);
       setAmount("");
-      setTimeout(refreshVaultState, 2000);
+      setTimeout(fetchVaultData, 2000);
     } catch (err) {
       console.error("[Protocol] Deposit failed.");
     }
@@ -104,7 +116,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
     try {
       await withdraw();
       setAmount("");
-      setTimeout(refreshVaultState, 2000);
+      setTimeout(fetchVaultData, 2000);
     } catch (err) {
       console.error("[Protocol] Withdrawal failed.");
     }
@@ -120,7 +132,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         return;
       }
       await setMaturity(numericDays);
-      setTimeout(refreshVaultState, 2000);
+      setTimeout(fetchVaultData, 2000);
     } catch (err) {
       console.error("[Protocol] Set maturity failed.");
     }
@@ -177,7 +189,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-1 mb-8">
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultPrincipal).toFixed(2)} HBAR</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>{userDeposit} HBAR</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Earnings</span>
