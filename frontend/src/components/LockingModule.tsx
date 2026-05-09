@@ -218,12 +218,12 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
         <div className="flex flex-col h-full justify-between">
           <div className="space-y-6">
-            <div className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px]">
+            <div className="bg-[#FF3837]/10 border border-[#FF3837]/20 rounded-2xl px-4 py-3 flex flex-col justify-center min-h-[52px] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <p className="text-xs font-medium leading-tight" style={{ color: labelColor }}>
                 Note: A <span className="font-bold !text-[#FF3837]">5.00%</span> penalty fee applies ONLY if funds are withdrawn before the preset maturity date.
               </p>
             </div>
-            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4">
+            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-[var(--border)] rounded-2xl space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase" style={{ color: labelColor }}>Active Maturity</span>
                 <span className="text-[11px] font-black !text-[#00A8E8]">{currentMaturityDate}</span>
