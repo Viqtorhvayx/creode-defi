@@ -177,11 +177,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           <div className="space-y-1 mb-8">
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultPrincipal).toFixed(2)} {balanceSymbol}</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultPrincipal).toFixed(2)} HBAR</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Earnings</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultEarnings).toFixed(2)} {balanceSymbol}</span>
+              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultEarnings).toFixed(2)} HBAR</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>TVL</span>
