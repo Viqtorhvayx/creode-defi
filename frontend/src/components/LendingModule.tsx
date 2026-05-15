@@ -63,14 +63,13 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
   const getButtonClasses = (action: 'deposit' | 'withdraw') => {
     const isActive = activeAction === action;
-    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-300 rounded-[60px] text-sm hover:-translate-y-1 hover:shadow-md active:scale-95";
+    const baseClasses = "flex-1 min-w-[120px] !py-2.5 !h-auto font-bold transition-all duration-500 rounded-[60px] text-sm bounce-hover";
     return isActive 
       ? `${baseClasses} bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20`
       : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
   };
 
   return (
-    <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Lending Pool</h3>

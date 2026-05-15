@@ -35,6 +35,24 @@
   --color-accent-blue-muted: var(--accent-blue-hover);
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+@utility glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl transition-all duration-500 shadow-xl;
+}
+
+@utility glass-panel-light {
+  @apply bg-white/40 backdrop-blur-xl border border-white/20 rounded-3xl transition-all duration-500 shadow-lg;
+}
+
+@utility nav-pill {
+  @apply flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-500 font-bold text-sm cursor-pointer;
+}
+
+@utility bounce-hover {
+  @apply transition-all duration-500 hover:-translate-y-1.5 active:scale-95;
 }
 
 /* Force San Francisco Font Stack Globally */
@@ -51,10 +69,18 @@ body {
 
 @utility industrial-panel {
   /**
-   * Updated: Standardized hover behavior across Light and Dark modes.
-   * Added hover:-translate-y-1 for consistent 'lift' animation and matched shadow intensity.
+   * Updated: Senior Architect Specification
+   * High-end Glassmorphism with standard bounce animation.
    */
-  @apply bg-surface border border-[var(--border)] rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-[var(--accent-glow)] hover:-translate-y-1;
+  @apply glass-panel p-6 shadow-sm hover:shadow-xl hover:shadow-[var(--accent-glow)] hover:-translate-y-1.5;
+}
+
+.dark .industrial-panel {
+  @apply bg-white/5 border-white/10;
+}
+
+.light .industrial-panel {
+  @apply glass-panel-light border-white/20;
 }
 
 @utility industrial-input {
@@ -78,4 +104,37 @@ body {
 
 .transition-bounce {
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(2.5rem); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-in {
+  animation-duration: 500ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in {
+  animation-name: fade-in;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slide-in-bottom;
+}
+
+.slide-in-from-right-10 {
+  animation-name: slide-in-right;
 }

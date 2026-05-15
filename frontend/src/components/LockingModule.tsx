@@ -187,17 +187,17 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="flex flex-col h-full justify-between transform transition-all duration-300 hover:-translate-y-1.5">
           <div className="space-y-1 mb-8">
-            <div className="flex justify-between items-center w-full">
-              <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Deposits</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>{userDeposit} HBAR</span>
+            <div className="flex justify-between items-center w-full group">
+              <span className="text-[11px] font-bold tracking-tight uppercase" style={{ color: labelColor }}>Deposits</span>
+              <span className="text-[13px] font-black text-white ml-auto">0.00 HBAR</span>
             </div>
-            <div className="flex justify-between items-center w-full">
-              <span className="text-[10px] font-bold tracking-tight" style={{ color: labelColor }}>Earnings</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>{Number(vaultEarnings).toFixed(2)} HBAR</span>
+            <div className="flex justify-between items-center w-full group">
+              <span className="text-[11px] font-bold tracking-tight uppercase" style={{ color: labelColor }}>Earnings</span>
+              <span className="text-[13px] font-black text-white ml-auto">0.00 HBAR</span>
             </div>
-            <div className="flex justify-between items-center w-full">
-              <span className="text-[10px] font-bold uppercase tracking-tight" style={{ color: labelColor }}>TVL</span>
-              <span className="text-[10px] font-black" style={{ color: labelColor }}>125,000.00 {balanceSymbol}</span>
+            <div className="flex justify-between items-center w-full group">
+              <span className="text-[11px] font-bold tracking-tight uppercase" style={{ color: labelColor }}>TVL</span>
+              <span className="text-[13px] font-black text-white ml-auto">0.00 HBAR</span>
             </div>
           </div>
  
@@ -223,8 +223,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
           {error && <div className="mt-4 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-[10px] text-red-500 font-bold uppercase">{error}</div>}
           
           <div className="flex gap-4 mt-20">
-            <button onClick={handleDeposit} disabled={isPending || !amount} className={`${getButtonClasses('deposit')} transform transition-all duration-300 hover:-translate-y-1.5`}>Deposit</button>
-            <button onClick={handleWithdraw} disabled={isPending || !amount} className={`${getButtonClasses('withdraw')} transform transition-all duration-300 hover:-translate-y-1.5`}>Withdraw</button>
+            <button onClick={handleDeposit} disabled={isPending || !amount} className={`${getButtonClasses('deposit')} bounce-hover`}>Deposit</button>
+            <button onClick={handleWithdraw} disabled={isPending || !amount} className={`${getButtonClasses('withdraw')} bounce-hover`}>Withdraw</button>
           </div>
         </div>
 
@@ -259,7 +259,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               />
             </div>
             <div className="flex flex-col justify-end">
-              <button onClick={handleSetMaturity} className={`${getButtonClasses('set').replace('flex-1 min-w-[120px]', 'w-full')} transform transition-all duration-300 hover:-translate-y-1.5`}>Set</button>
+              <button onClick={handleSetMaturity} className={`${getButtonClasses('set').replace('flex-1 min-w-[120px]', 'w-full')} bounce-hover`}>Set</button>
             </div>
           </div>
         </div>

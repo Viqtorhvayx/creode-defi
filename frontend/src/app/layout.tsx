@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppKitProvider } from "@/context/AppKitProvider";
 import { WalletProvider } from "@/context/WalletContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 /**
  * @title RootLayout (Advanced Wallet Architecture)
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className="antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col">
         <AppKitProvider>
           <WalletProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </WalletProvider>
         </AppKitProvider>
       </body>
