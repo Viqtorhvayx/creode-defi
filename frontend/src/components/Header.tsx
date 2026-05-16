@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
   };
 
   return (
-    <header className="w-full pt-2 mb-16">
+    <header className="w-full pt-2 mb-16 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)]">
       <nav className="max-w-7xl mx-auto px-6 pb-10 flex justify-between items-center w-full">
         <Logo theme={theme} />
         
@@ -58,7 +58,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
           </div>
         </div>
       </nav>
-      <div className="w-full h-[1px] bg-[#00A8E8]/40 shadow-[0_4px_15px_rgba(0,168,232,0.3)]" />
     </header>
   );
 };
