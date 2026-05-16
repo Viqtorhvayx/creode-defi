@@ -110,15 +110,46 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       {/* Header authored by Viqtorhvayx */}
       <div className="flex justify-between items-center mb-12">
         <div>
-          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] mb-2" style={{ color: labelColor }}>Credit Facility</h3>
+          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
           <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
         </div>
         <div className="text-right">
-          <span className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1 block" style={{ color: primaryTextColor }}>Loan Health</span>
+          <span className="text-[11px] font-bold opacity-40 mb-1 block" style={{ color: primaryTextColor }}>Loan health</span>
           <p className="text-3xl font-black flex items-baseline justify-end gap-1">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
             <span className="text-sm font-bold opacity-30">/ 100</span>
           </p>
+        </div>
+      </div>
+
+      {/* Cardiac Monitor authored by Viqtorhvayx */}
+      <div className="mb-12 h-20 bg-black/40 rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group">
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path 
+              d="M0,50 L200,50 L220,30 L240,70 L260,10 L280,90 L300,50 L1000,50" 
+              fill="none" 
+              stroke="#00A8E8" 
+              strokeWidth="2" 
+              className="animate-[pulse_3s_infinite]"
+            />
+          </svg>
+        </div>
+        <div className="relative z-10 flex items-center gap-8">
+           <div className="flex flex-col items-center">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Stability</span>
+             <span className="text-sm font-black text-[#10B981]">Nominal</span>
+           </div>
+           <div className="w-[1px] h-8 bg-white/10" />
+           <div className="flex flex-col items-center">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Pulse</span>
+             <span className="text-sm font-black text-[#00A8E8] animate-pulse">Active</span>
+           </div>
+           <div className="w-[1px] h-8 bg-white/10" />
+           <div className="flex flex-col items-center">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Risk</span>
+             <span className="text-sm font-black text-emerald-500">Minimal</span>
+           </div>
         </div>
       </div>
 
@@ -131,12 +162,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
         <div className="uniswap-input-box">
           <div className="flex justify-between items-center">
-            <label className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: primaryTextColor }}>
-              {activeTab === 'deposit' ? 'Collateral Amount' : 'Borrow Amount'}
+            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>
+              {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
             </label>
             <div className="flex gap-3">
-              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-black px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">50%</button>
-              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-black px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">Max</button>
+              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">50%</button>
+              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">Max</button>
             </div>
           </div>
           <div className="flex items-center gap-6 h-20">
@@ -147,22 +178,48 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               value={hbarInput}
               onValueChange={setHbarInput}
             />
-            <div className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[160px] justify-center relative cursor-pointer" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
-                  <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
-                </svg>
+            <div className="relative group">
+              <div 
+                className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[180px] justify-center cursor-pointer hover:bg-white/10 transition-all"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
+                  {collateralToken === 'USDT' ? (
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
+                  ) : (
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
+                  )}
+                </div>
+                <span className="text-xl font-black tracking-tighter text-white">{collateralToken}</span>
               </div>
-              <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
+
+              {isDropdownOpen && (
+                <div className="absolute top-full mt-2 left-0 w-full bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                  <div 
+                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors"
+                    onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
+                  >
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
+                    <span className="text-sm font-black text-white">USDT</span>
+                  </div>
+                  <div 
+                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors border-t border-white/5"
+                    onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
+                  >
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
+                    <span className="text-sm font-black text-white">USDC</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <p className="text-[12px] font-black text-[#00A8E8] tracking-[0.2em] opacity-60 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60 uppercase">{usdValue} Valuation</p>
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
         <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Borrow Limit</span>
+            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
             <div className="flex flex-col items-end">
               <span className="text-xl font-black text-white tracking-tight">0.00 HBAR</span>
               <div className="w-40 h-2 bg-white/5 rounded-full mt-3 overflow-hidden border border-white/5">
@@ -171,24 +228,24 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Liquidation Price</span>
+            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Liquidation price</span>
             <span className="text-xl font-black text-white tracking-tight">$0.0000</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Net APY</span>
-            <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">BORROW</span></span>
+            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Net APR</span>
+            <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">Borrow</span></span>
           </div>
         </div>
 
         <button 
           onClick={handleAction} 
           disabled={isClicked || !hasInput}
-          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px]"
+          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px]"
         >
-          {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply Collateral' : 'Execute Borrow')}
+          {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
         </button>
 
-        <p className="text-center text-[11px] font-black uppercase tracking-[0.4em] opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by CREODE Reputation Engine</p>
+        <p className="text-center text-[11px] font-bold opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
       </div>
     </div>
   );

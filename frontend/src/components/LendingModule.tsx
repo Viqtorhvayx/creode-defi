@@ -73,11 +73,11 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
     <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       <div className="flex justify-between items-center mb-12">
         <div>
-          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] mb-2" style={{ color: labelColor }}>Liquidity Provision</h3>
+          <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Liquidity provision</h3>
           <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Lend</p>
         </div>
         <div className="bg-[#00A8E8]/10 px-6 py-3 rounded-[24px] border border-[#00A8E8]/20 shadow-inner">
-          <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1" style={{ color: primaryTextColor }}>Protocol Points</p>
+          <p className="text-[11px] font-bold opacity-40 mb-1" style={{ color: primaryTextColor }}>Protocol points</p>
           <p className="text-2xl font-black text-[#00A8E8]">{points.toLocaleString()}</p>
         </div>
       </div>
@@ -86,7 +86,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
         <div className="uniswap-input-box">
           <div className="flex justify-between items-center">
-            <label className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: primaryTextColor }}>Amount to Provide</label>
+            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Amount to provide</label>
             <div className="flex gap-3">
               <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
               <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
@@ -110,30 +110,30 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
               <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
             </div>
           </div>
-          <p className="text-[12px] font-black text-[#00A8E8] tracking-[0.2em] opacity-60 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60">{usdValue} Valuation</p>
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
         <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl mt-auto">
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Your Supply</span>
+            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Your supply</span>
             <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Current APR</span>
+            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Current APR</span>
             <span className="text-xl font-black text-[#10B981] ml-auto tracking-tight">8.42%</span>
           </div>
         </div>
 
         <div className="bg-black/30 rounded-[28px] py-6 px-8 border border-white/5 shadow-inner">
-          <p className="text-[12px] font-black leading-relaxed opacity-40 uppercase tracking-widest" style={{ color: primaryTextColor }}>
-            Liquidity providers earn dynamic yield and <span className="text-[#00A8E8] opacity-100">Protocol Points</span> per epoch. Deploy capital to start accruing.
+          <p className="text-[12px] font-bold leading-relaxed opacity-40 tracking-widest" style={{ color: primaryTextColor }}>
+            Liquidity providers earn dynamic yield and <span className="text-[#00A8E8] opacity-100">Protocol points</span> per epoch. Deploy capital to start accruing.
           </p>
         </div>
 
         <div className="flex gap-6 mt-auto">
-          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Supply</button>
-          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all bounce-hover !rounded-[30px]">Withdraw</button>
+          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Supply</button>
+          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition-all bounce-hover !rounded-[30px]">Withdraw</button>
         </div>
       </div>
     </div>

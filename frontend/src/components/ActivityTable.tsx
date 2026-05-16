@@ -18,15 +18,15 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
-    <div className="glass-panel !rounded-3xl overflow-hidden mt-12 max-w-5xl mx-auto shadow-2xl">
+    <div className="glass-panel !rounded-3xl overflow-hidden shadow-2xl">
       <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: labelColor }}>Asset Lifecycle</h3>
-          <p className="text-2xl font-black tracking-tight" style={{ color: primaryTextColor }}>Protocol Activity</p>
+          <h3 className="text-[11px] font-bold tracking-[0.2em] opacity-40 mb-1" style={{ color: labelColor }}>Asset lifecycle</h3>
+          <p className="text-2xl font-black tracking-tight" style={{ color: primaryTextColor }}>Protocol activity</p>
         </div>
         <div className="flex gap-4">
           <div className="text-right">
-            <p className="text-[10px] font-bold uppercase opacity-40" style={{ color: primaryTextColor }}>Daily Volume</p>
+            <p className="text-[10px] font-bold opacity-40" style={{ color: primaryTextColor }}>Daily volume</p>
             <p className="text-sm font-black text-[#00A8E8]">12.4M HBAR</p>
           </div>
         </div>
@@ -35,9 +35,9 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-black/20">
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Type</th>
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Amount</th>
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50 text-right" style={{ color: primaryTextColor }}>Transaction Hash</th>
+              <th className="px-8 py-5 text-[10px] font-black tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Type</th>
+              <th className="px-8 py-5 text-[10px] font-black tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Amount</th>
+              <th className="px-8 py-5 text-[10px] font-black tracking-[0.15em] opacity-50 text-right" style={{ color: primaryTextColor }}>Transaction hash</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -57,7 +57,7 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
                 <td className="px-8 py-6">
                   <div className="flex flex-col">
                     <span className="text-sm font-black text-white">{tx.amount}</span>
-                    <span className="text-[10px] font-bold opacity-40 uppercase mt-0.5" style={{ color: primaryTextColor }}>{tx.date}</span>
+                    <span className="text-[10px] font-bold opacity-40 mt-0.5" style={{ color: primaryTextColor }}>{tx.date}</span>
                   </div>
                 </td>
                 <td className="px-8 py-6 text-right">
@@ -65,7 +65,7 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
                     <code className="text-[11px] font-bold text-[#00A8E8] group-hover:underline cursor-pointer tracking-wider">
                       {tx.hash}
                     </code>
-                    <span className="text-[9px] font-bold uppercase opacity-30 mt-1" style={{ color: primaryTextColor }}>Network Confirmed</span>
+                    <span className="text-[9px] font-bold opacity-30 mt-1" style={{ color: primaryTextColor }}>Network confirmed</span>
                   </div>
                 </td>
               </tr>
@@ -74,8 +74,8 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
         </table>
       </div>
       <div className="p-6 bg-white/[0.01] flex justify-center border-t border-white/5">
-        <button className="nav-pill !px-12 bg-white/5 hover:bg-[#00A8E8]/10 text-[10px] font-black uppercase tracking-[0.25em] text-[#00A8E8] transition-all duration-500 border border-[#00A8E8]/10">
-          Sync Explorer
+        <button className="nav-pill !px-12 bg-white/5 hover:bg-[#00A8E8]/10 text-[10px] font-black tracking-[0.25em] text-[#00A8E8] transition-all duration-500 border border-[#00A8E8]/10">
+          Sync explorer
         </button>
       </div>
     </div>

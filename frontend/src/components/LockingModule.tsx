@@ -176,11 +176,11 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
       {/* Header authored by Viqtorhvayx */}
       <div className="flex justify-between items-center mb-12">
         <div>
-          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] mb-2" style={{ color: labelColor }}>Capital Strategy</h3>
+          <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Capital Strategy</h3>
           <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Vault</p>
         </div>
         <div className="bg-[#00A8E8]/10 px-6 py-3 rounded-[24px] border border-[#00A8E8]/20 shadow-inner">
-          <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1" style={{ color: primaryTextColor }}>Target Yield</p>
+          <p className="text-[11px] font-bold opacity-40 mb-1" style={{ color: primaryTextColor }}>Target Yield</p>
           <p className="text-2xl font-black text-[#10B981]">0.30% <span className="text-[11px] opacity-30">APY</span></p>
         </div>
       </div>
@@ -189,15 +189,15 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
         <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Deposited Capital</span>
+            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Deposited capital</span>
             <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Accrued Yield</span>
+            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Accrued yield</span>
             <span className="text-xl font-black text-[#10B981] ml-auto tracking-tight">0.00 HBAR</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Protocol TVL</span>
+            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Protocol TVL</span>
             <span className="text-xl font-black text-white ml-auto tracking-tight">12.5M HBAR</span>
           </div>
         </div>
@@ -205,7 +205,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
         <div className="uniswap-input-box">
           <div className="flex justify-between items-center">
-            <label className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: primaryTextColor }}>Amount to Save</label>
+            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Amount to save</label>
             <div className="flex gap-3">
               <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
               <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
@@ -229,13 +229,13 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
               <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
             </div>
           </div>
-          <p className="text-[12px] font-black text-[#00A8E8] tracking-[0.2em] opacity-60 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60">{usdValue} Valuation</p>
         </div>
 
         {/* Duration Logic authored by Viqtorhvayx */}
         <div className="grid grid-cols-2 gap-8">
           <div className="bg-black/30 p-8 rounded-[40px] border border-white/10 shadow-xl">
-            <label className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30 block mb-4" style={{ color: primaryTextColor }}>Lock Duration</label>
+            <label className="text-[11px] font-bold opacity-30 block mb-4" style={{ color: primaryTextColor }}>Lock duration</label>
             <div className="flex items-center gap-3">
                <FormattedNumberInput 
                 placeholder="21"
@@ -244,29 +244,29 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
                 value={days}
                 onValueChange={handleDaysChange}
               />
-              <span className="text-xs font-black opacity-30 uppercase tracking-widest">Days</span>
+              <span className="text-xs font-bold opacity-30 tracking-widest">Days</span>
             </div>
           </div>
           <div className="flex flex-col justify-center px-4 space-y-2">
             <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-20">Release</span>
-              <span className="text-[11px] font-black text-[#00A8E8] uppercase tracking-tighter">{calculatedMaturity}</span>
+              <span className="text-[10px] font-bold opacity-20">Release</span>
+              <span className="text-[11px] font-black text-[#00A8E8] tracking-tighter">{calculatedMaturity}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-20">Status</span>
-              <span className="text-[11px] font-black text-white uppercase tracking-widest">{currentMaturityDate === "No active lock" ? "Open" : "Locked"}</span>
+              <span className="text-[10px] font-bold opacity-20">Status</span>
+              <span className="text-[11px] font-black text-white tracking-widest">{currentMaturityDate === "No active lock" ? "Open" : "Locked"}</span>
             </div>
           </div>
         </div>
 
-        {error && <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-[24px] text-[11px] text-red-500 font-black uppercase tracking-[0.3em] text-center animate-pulse">{error}</div>}
+        {error && <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-[24px] text-[11px] text-red-500 font-bold text-center animate-pulse">{error}</div>}
 
         <div className="grid grid-cols-2 gap-6 mt-6">
-          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-6 bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Deposit</button>
-          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-6 bg-white/5 border border-white/10 text-white text-sm font-black uppercase tracking-[0.3em] hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover !rounded-[30px]">Set Strategy</button>
+          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-6 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Deposit</button>
+          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-6 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover !rounded-[30px]">Set strategy</button>
         </div>
         
-        <button onClick={handleWithdraw} disabled={isPending} className="w-full text-[11px] font-black uppercase tracking-[0.4em] py-6 text-white/20 hover:text-red-500 transition-all bounce-hover">Emergency Liquidate (5% Penalty)</button>
+        <button onClick={handleWithdraw} disabled={isPending} className="w-full text-[11px] font-bold py-6 text-white/20 hover:text-red-500 transition-all bounce-hover">Emergency liquidate (5% Penalty)</button>
       </div>
     </div>
   );

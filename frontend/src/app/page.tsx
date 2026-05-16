@@ -10,6 +10,7 @@ import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
 import { Navigation } from '../components/Navigation';
 import { ActivityTable } from '../components/ActivityTable';
+import { PriceChart } from '../components/PriceChart';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
@@ -49,28 +50,62 @@ export default function Dashboard() {
     switch (activeMainTab) {
       case 'Home':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 flex justify-center">
-            <div className="w-full max-w-5xl">
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 space-y-12">
+            {/* Command Center Widgets authored by Viqtorhvayx */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="ambient-glow">
+                <div className="glass-panel p-6 shadow-xl border border-white/10 hover:border-[#00A8E8]/30 transition-colors">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-2">Protocol TVL</h4>
+                  <p className="text-3xl font-black text-white">$12.4M</p>
+                </div>
+              </div>
+              <div className="ambient-glow">
+                <div className="glass-panel p-6 shadow-xl border border-white/10 hover:border-[#00A8E8]/30 transition-colors">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-2">Protocol Fees</h4>
+                  <p className="text-3xl font-black text-[#10B981]">$42.8K</p>
+                </div>
+              </div>
+              <div className="ambient-glow">
+                <div className="glass-panel p-6 shadow-xl border border-white/10 hover:border-[#00A8E8]/30 transition-colors">
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-2">User Reputation</h4>
+                  <p className="text-3xl font-black text-[#00A8E8]">{userXP} XP</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="ambient-glow">
+              <div className="glass-panel p-8 shadow-2xl border border-white/10">
+                <PriceChart theme={theme} />
+              </div>
+            </div>
+
+            <div className="ambient-glow">
               <ActivityTable theme={theme} />
             </div>
           </div>
         );
       case 'Vault':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8">
-            <LockingModule theme={theme} />
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
+            <div className="ambient-glow w-full max-w-2xl">
+              <LockingModule theme={theme} />
+            </div>
           </div>
         );
       case 'Lend':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8">
-            <LendingModule points={userPoints} theme={theme} />
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
+            <div className="ambient-glow w-full max-w-2xl">
+              <LendingModule points={userPoints} theme={theme} />
+            </div>
           </div>
         );
       case 'Borrow':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8">
-            <BorrowingModule xp={userXP} theme={theme} />
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
+            <div className="ambient-glow w-full max-w-2xl">
+              <BorrowingModule xp={userXP} theme={theme} />
+            </div>
           </div>
         );
       default:
