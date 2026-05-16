@@ -40,7 +40,7 @@
 }
 
 @utility glass-panel {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl transition-all duration-500 shadow-xl;
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl transition-all duration-500 shadow-xl;
 }
 
 @utility glass-panel-light {
@@ -149,29 +149,7 @@ body {
 }
 
 @utility uniswap-input-box {
-  @apply bg-black/40 p-8 rounded-[40px] border border-white/10 transition-all duration-500 focus-within:border-[#00A8E8]/40 shadow-2xl h-48 flex flex-col justify-between;
-}
-
-@utility ambient-glow {
-  @apply relative;
-}
-
-.ambient-glow::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 140%;
-  height: 140%;
-  background: radial-gradient(circle, rgba(0, 168, 232, 0.08) 0%, transparent 70%);
-  filter: blur(60px);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.dark .ambient-glow::before {
-  background: radial-gradient(circle, rgba(0, 168, 232, 0.12) 0%, transparent 70%);
+  @apply bg-white/5 p-8 rounded-[40px] border border-white/10 transition-all duration-500 focus-within:border-[#00A8E8]/40 shadow-2xl h-48 flex flex-col justify-between;
 }
 
 /* Enforce Title/Sentence Case globally for buttons and labels */
