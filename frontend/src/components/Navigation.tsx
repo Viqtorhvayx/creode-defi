@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { LayoutDashboard, Lock, TrendingUp, ArrowDownLeft } from 'lucide-react';
+import { Home, Lock, TrendingUp, ArrowDownLeft } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -11,7 +11,7 @@ interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab, theme }) => {
   const tabs = [
-    { id: 'Dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'Home', icon: Home, label: 'Home' },
     { id: 'Vault', icon: Lock, label: 'Vault' },
     { id: 'Lend', icon: TrendingUp, label: 'Lend' },
     { id: 'Borrow', icon: ArrowDownLeft, label: 'Borrow' },

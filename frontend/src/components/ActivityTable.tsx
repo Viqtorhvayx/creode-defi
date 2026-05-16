@@ -18,56 +18,64 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
   return (
-    <div className="industrial-panel !p-0 overflow-hidden">
-      <div className="p-6 border-b border-white/10">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Protocol History</h3>
-        <p className="text-xl font-black" style={{ color: primaryTextColor }}>Activity</p>
+    <div className="glass-panel !rounded-3xl overflow-hidden mt-12 max-w-5xl mx-auto shadow-2xl">
+      <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+        <div>
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: labelColor }}>Asset Lifecycle</h3>
+          <p className="text-2xl font-black tracking-tight" style={{ color: primaryTextColor }}>Protocol Activity</p>
+        </div>
+        <div className="flex gap-4">
+          <div className="text-right">
+            <p className="text-[10px] font-bold uppercase opacity-40" style={{ color: primaryTextColor }}>Daily Volume</p>
+            <p className="text-sm font-black text-[#00A8E8]">12.4M HBAR</p>
+          </div>
+        </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/5">
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Type</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Amount</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Date</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Status</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right" style={{ color: labelColor }}>Transaction Hash</th>
+            <tr className="bg-black/20">
+              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Type</th>
+              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50" style={{ color: primaryTextColor }}>Amount</th>
+              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.15em] opacity-50 text-right" style={{ color: primaryTextColor }}>Transaction Hash</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {transactions.map((tx) => (
-              <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
-                <td className="px-6 py-4">
-                  <span className={`text-[11px] font-bold px-2 py-1 rounded-full ${
-                    tx.type === 'Deposit' ? 'bg-emerald-500/10 text-emerald-500' : 
-                    tx.type === 'Yield' ? 'bg-[#00A8E8]/10 text-[#00A8E8]' :
-                    tx.type === 'Borrow' ? 'bg-amber-500/10 text-amber-500' :
-                    'bg-white/10 text-white'
-                  }`}>
-                    {tx.type}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm font-bold text-white">{tx.amount}</td>
-                <td className="px-6 py-4 text-sm text-white/60">{tx.date}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-tighter">{tx.status}</span>
+              <tr key={tx.id} className="hover:bg-white/[0.03] transition-all duration-300 group">
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      tx.type === 'Deposit' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 
+                      tx.type === 'Yield' ? 'bg-[#00A8E8] shadow-[0_0_10px_rgba(0,168,232,0.5)]' :
+                      tx.type === 'Borrow' ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' :
+                      'bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                    }`} />
+                    <span className="text-sm font-bold tracking-tight text-white">{tx.type}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <code className="text-[10px] bg-white/5 px-2 py-1 rounded border border-white/10 text-[#00A8E8] group-hover:bg-[#00A8E8]/10 transition-colors">
-                    {tx.hash}
-                  </code>
+                <td className="px-8 py-6">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-black text-white">{tx.amount}</span>
+                    <span className="text-[10px] font-bold opacity-40 uppercase mt-0.5" style={{ color: primaryTextColor }}>{tx.date}</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6 text-right">
+                  <div className="flex flex-col items-end">
+                    <code className="text-[11px] font-bold text-[#00A8E8] group-hover:underline cursor-pointer tracking-wider">
+                      {tx.hash}
+                    </code>
+                    <span className="text-[9px] font-bold uppercase opacity-30 mt-1" style={{ color: primaryTextColor }}>Network Confirmed</span>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="p-4 bg-white/[0.01] flex justify-center border-t border-white/5">
-        <button className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#00A8E8] hover:opacity-80 transition-opacity">
-          View All Transactions
+      <div className="p-6 bg-white/[0.01] flex justify-center border-t border-white/5">
+        <button className="nav-pill !px-12 bg-white/5 hover:bg-[#00A8E8]/10 text-[10px] font-black uppercase tracking-[0.25em] text-[#00A8E8] transition-all duration-500 border border-[#00A8E8]/10">
+          Sync Explorer
         </button>
       </div>
     </div>
