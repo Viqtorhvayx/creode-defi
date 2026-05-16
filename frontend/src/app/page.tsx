@@ -10,7 +10,6 @@ import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
 import { Navigation } from '../components/Navigation';
 import { ActivityTable } from '../components/ActivityTable';
-import { PriceChart } from '../components/PriceChart';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
@@ -50,11 +49,10 @@ export default function Dashboard() {
     switch (activeMainTab) {
       case 'Home':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 space-y-12">
-            <div className="max-w-5xl mx-auto">
-              <PriceChart theme={theme} />
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 flex justify-center">
+            <div className="w-full max-w-5xl">
+              <ActivityTable theme={theme} />
             </div>
-            <ActivityTable theme={theme} />
           </div>
         );
       case 'Vault':

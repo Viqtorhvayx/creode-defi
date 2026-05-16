@@ -166,107 +166,107 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const usdValue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
 
   return (
-    <div className="glass-panel !rounded-[40px] p-10 max-w-2xl mx-auto shadow-2xl relative overflow-hidden">
+    <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {isPending && (
-        <div className="absolute inset-0 bg-black/20 backdrop-blur-md z-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A8E8]"></div>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-xl z-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.4)]"></div>
         </div>
       )}
 
       {/* Header authored by Viqtorhvayx */}
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex justify-between items-center mb-12">
         <div>
-          <h3 className="text-[12px] font-black uppercase tracking-[0.3em]" style={{ color: labelColor }}>Capital Strategy</h3>
-          <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Vault</p>
+          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] mb-2" style={{ color: labelColor }}>Capital Strategy</h3>
+          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Vault</p>
         </div>
-        <div className="bg-[#00A8E8]/10 px-4 py-2 rounded-2xl border border-[#00A8E8]/20">
-          <p className="text-[10px] font-bold uppercase tracking-widest opacity-60" style={{ color: primaryTextColor }}>Target Yield</p>
-          <p className="text-xl font-black text-[#10B981]">0.30% <span className="text-[10px] opacity-40">APY</span></p>
+        <div className="bg-[#00A8E8]/10 px-6 py-3 rounded-[24px] border border-[#00A8E8]/20 shadow-inner">
+          <p className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1" style={{ color: primaryTextColor }}>Target Yield</p>
+          <p className="text-2xl font-black text-[#10B981]">0.30% <span className="text-[11px] opacity-30">APY</span></p>
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Deposited Capital</span>
-            <span className="text-lg font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
+        <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Deposited Capital</span>
+            <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
           </div>
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Accrued Yield</span>
-            <span className="text-lg font-black text-[#10B981] ml-auto tracking-tight">0.00 HBAR</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Accrued Yield</span>
+            <span className="text-xl font-black text-[#10B981] ml-auto tracking-tight">0.00 HBAR</span>
           </div>
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Protocol TVL</span>
-            <span className="text-lg font-black text-white ml-auto tracking-tight">12.5M HBAR</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Protocol TVL</span>
+            <span className="text-xl font-black text-white ml-auto tracking-tight">12.5M HBAR</span>
           </div>
         </div>
 
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
-        <div className="bg-black/20 p-6 rounded-[32px] border border-white/10 transition-all duration-300 focus-within:border-[#00A8E8]/40 shadow-inner">
-          <div className="flex justify-between mb-4">
-            <label className="text-[11px] font-black uppercase tracking-widest opacity-40" style={{ color: primaryTextColor }}>Amount to Save</label>
-            <div className="flex gap-2">
+        <div className="uniswap-input-box">
+          <div className="flex justify-between items-center">
+            <label className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: primaryTextColor }}>Amount to Save</label>
+            <div className="flex gap-3">
               <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
               <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
               <QuickButton label="Max" onClick={() => setAmount(balance)} />
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6 h-20">
             <FormattedNumberInput 
               placeholder="0.00"
-              className="w-full bg-transparent text-4xl font-black outline-none border-none p-0 tracking-tighter"
+              className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter"
               style={{ color: primaryTextColor }}
               value={amount}
               onValueChange={setAmount}
             />
-            <div className="flex items-center gap-3 bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 shadow-xl">
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+            <div className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md">
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
                   <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
                 </svg>
               </div>
-              <span className="text-lg font-black tracking-tighter text-white">HBAR</span>
+              <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
             </div>
           </div>
-          <p className="mt-4 text-[11px] font-bold text-[#00A8E8] tracking-widest opacity-80 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-black text-[#00A8E8] tracking-[0.2em] opacity-60 uppercase">{usdValue} Valuation</p>
         </div>
 
         {/* Duration Logic authored by Viqtorhvayx */}
-        <div className="grid grid-cols-2 gap-6">
-          <div className="bg-black/20 p-6 rounded-[32px] border border-white/10">
-            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 block mb-3" style={{ color: primaryTextColor }}>Lock Duration</label>
-            <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-8">
+          <div className="bg-black/30 p-8 rounded-[40px] border border-white/10 shadow-xl">
+            <label className="text-[11px] font-black uppercase tracking-[0.3em] opacity-30 block mb-4" style={{ color: primaryTextColor }}>Lock Duration</label>
+            <div className="flex items-center gap-3">
                <FormattedNumberInput 
                 placeholder="21"
-                className="w-full bg-transparent text-2xl font-black outline-none border-none p-0 tracking-tighter"
+                className="w-full bg-transparent text-3xl font-black outline-none border-none p-0 tracking-tighter"
                 style={{ color: primaryTextColor }}
                 value={days}
                 onValueChange={handleDaysChange}
               />
-              <span className="text-xs font-black opacity-40 uppercase">Days</span>
+              <span className="text-xs font-black opacity-30 uppercase tracking-widest">Days</span>
             </div>
           </div>
-          <div className="flex flex-col justify-center px-2">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-[9px] font-bold uppercase opacity-30">Release</span>
-              <span className="text-[10px] font-black text-[#00A8E8]">{calculatedMaturity}</span>
+          <div className="flex flex-col justify-center px-4 space-y-2">
+            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-20">Release</span>
+              <span className="text-[11px] font-black text-[#00A8E8] uppercase tracking-tighter">{calculatedMaturity}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[9px] font-bold uppercase opacity-30">Status</span>
-              <span className="text-[10px] font-black text-white uppercase tracking-tighter">{currentMaturityDate === "No active lock" ? "Open" : "Locked"}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-20">Status</span>
+              <span className="text-[11px] font-black text-white uppercase tracking-widest">{currentMaturityDate === "No active lock" ? "Open" : "Locked"}</span>
             </div>
           </div>
         </div>
 
-        {error && <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] text-red-500 font-black uppercase tracking-widest text-center">{error}</div>}
+        {error && <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-[24px] text-[11px] text-red-500 font-black uppercase tracking-[0.3em] text-center animate-pulse">{error}</div>}
 
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-5 bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(0,168,232,0.4)] bounce-hover">Deposit</button>
-          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-5 bg-white/5 border border-white/10 text-white text-sm font-black uppercase tracking-[0.2em] hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover">Set Strategy</button>
+        <div className="grid grid-cols-2 gap-6 mt-6">
+          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-6 bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Deposit</button>
+          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-6 bg-white/5 border border-white/10 text-white text-sm font-black uppercase tracking-[0.3em] hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover !rounded-[30px]">Set Strategy</button>
         </div>
         
-        <button onClick={handleWithdraw} disabled={isPending} className="w-full text-[10px] font-black uppercase tracking-[0.3em] py-4 text-white/30 hover:text-red-500 transition-all bounce-hover">Emergency Liquidate (5% Penalty)</button>
+        <button onClick={handleWithdraw} disabled={isPending} className="w-full text-[11px] font-black uppercase tracking-[0.4em] py-6 text-white/20 hover:text-red-500 transition-all bounce-hover">Emergency Liquidate (5% Penalty)</button>
       </div>
     </div>
   );

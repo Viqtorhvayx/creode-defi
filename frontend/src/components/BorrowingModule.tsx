@@ -106,95 +106,89 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const maxBorrowHbar = pythHbarPrice ? ((hbarInputNumeric * (assetPrice || 0)) * MAX_LTV / pythHbarPrice) : 0;
 
   return (
-    <div className="glass-panel !rounded-[40px] p-10 max-w-2xl mx-auto shadow-2xl relative overflow-hidden">
+    <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {/* Header authored by Viqtorhvayx */}
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex justify-between items-center mb-12">
         <div>
-          <h3 className="text-[12px] font-black uppercase tracking-[0.3em]" style={{ color: labelColor }}>Credit Facility</h3>
-          <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] mb-2" style={{ color: labelColor }}>Credit Facility</h3>
+          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1 block" style={{ color: primaryTextColor }}>Loan Health</span>
-          <p className="text-2xl font-black flex items-baseline justify-end gap-1">
+          <span className="text-[11px] font-black uppercase tracking-widest opacity-40 mb-1 block" style={{ color: primaryTextColor }}>Loan Health</span>
+          <p className="text-3xl font-black flex items-baseline justify-end gap-1">
             <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
-            <span className="text-xs font-bold opacity-30">/ 100</span>
+            <span className="text-sm font-bold opacity-30">/ 100</span>
           </p>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-10 bg-black/20 p-1.5 rounded-[60px] border border-white/5">
+      <div className="flex gap-4 mb-12 bg-black/30 p-2 rounded-[60px] border border-white/5">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Collateral</button>
         <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Credit</button>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
-        <div className="bg-black/20 p-8 rounded-[32px] border border-white/10 transition-all duration-300 focus-within:border-[#00A8E8]/40 shadow-inner">
-          <div className="flex justify-between mb-4">
-            <label className="text-[11px] font-black uppercase tracking-widest opacity-40" style={{ color: primaryTextColor }}>
+        <div className="uniswap-input-box">
+          <div className="flex justify-between items-center">
+            <label className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: primaryTextColor }}>
               {activeTab === 'deposit' ? 'Collateral Amount' : 'Borrow Amount'}
             </label>
-            <div className="flex gap-2">
-              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-black px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">50%</button>
-              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-black px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">Max</button>
+            <div className="flex gap-3">
+              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-black px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">50%</button>
+              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-black px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 hover:opacity-100 transition-all uppercase tracking-widest">Max</button>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6 h-20">
             <FormattedNumberInput 
               placeholder="0.00"
-              className="w-full bg-transparent text-4xl font-black outline-none border-none p-0 tracking-tighter"
+              className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter"
               style={{ color: primaryTextColor }}
               value={hbarInput}
               onValueChange={setHbarInput}
             />
-            <div className="flex items-center gap-3 bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 shadow-xl min-w-[140px] justify-center relative cursor-pointer group" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+            <div className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[160px] justify-center relative cursor-pointer" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
                   <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
                 </svg>
               </div>
-              <span className="text-lg font-black tracking-tighter text-white">HBAR</span>
-              
-              {isDropdownOpen && (
-                <div className="absolute top-full mt-2 right-0 w-full bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 p-2 animate-in fade-in zoom-in duration-200">
-                  <div className="p-2 hover:bg-white/5 rounded-xl text-white text-xs font-bold uppercase tracking-widest">HBAR</div>
-                </div>
-              )}
+              <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
             </div>
           </div>
-          <p className="mt-4 text-[11px] font-bold text-[#00A8E8] tracking-widest opacity-80 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-black text-[#00A8E8] tracking-[0.2em] opacity-60 uppercase">{usdValue} Valuation</p>
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-4 bg-white/[0.02] p-8 rounded-3xl border border-white/5">
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Borrow Limit</span>
+        <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Borrow Limit</span>
             <div className="flex flex-col items-end">
-              <span className="text-lg font-black text-white tracking-tight">0.00 HBAR</span>
-              <div className="w-32 h-1.5 bg-white/5 rounded-full mt-2 overflow-hidden border border-white/5">
-                <div className="h-full bg-[#00A8E8] shadow-[0_0_10px_rgba(0,168,232,0.5)]" style={{ width: '0%' }} />
+              <span className="text-xl font-black text-white tracking-tight">0.00 HBAR</span>
+              <div className="w-40 h-2 bg-white/5 rounded-full mt-3 overflow-hidden border border-white/5">
+                <div className="h-full bg-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.5)] transition-all duration-1000" style={{ width: '0%' }} />
               </div>
             </div>
           </div>
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Liquidation Price</span>
-            <span className="text-lg font-black text-white tracking-tight">$0.0000</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Liquidation Price</span>
+            <span className="text-xl font-black text-white tracking-tight">$0.0000</span>
           </div>
-          <div className="flex justify-between items-center group">
-            <span className="text-[11px] font-bold tracking-widest uppercase opacity-40" style={{ color: primaryTextColor }}>Net APY</span>
-            <span className="text-lg font-black text-red-500 tracking-tight">12.4% <span className="text-[10px] opacity-30">BORROW</span></span>
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] font-black tracking-[0.2em] uppercase opacity-40" style={{ color: primaryTextColor }}>Net APY</span>
+            <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">BORROW</span></span>
           </div>
         </div>
 
         <button 
           onClick={handleAction} 
           disabled={isClicked || !hasInput}
-          className="nav-pill !py-6 w-full bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.25em] shadow-[0_15px_40px_rgba(0,168,232,0.4)] bounce-hover mt-4 disabled:opacity-50 disabled:translate-y-0"
+          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-black uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px]"
         >
           {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply Collateral' : 'Execute Borrow')}
         </button>
 
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] opacity-20 mt-6" style={{ color: primaryTextColor }}>Powered by CREODE Reputation Engine</p>
+        <p className="text-center text-[11px] font-black uppercase tracking-[0.4em] opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by CREODE Reputation Engine</p>
       </div>
     </div>
   );
