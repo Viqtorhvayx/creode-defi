@@ -70,6 +70,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   };
 
   return (
+    <div className="industrial-panel bg-surface flex flex-col h-full">
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>Lending Pool</h3>
