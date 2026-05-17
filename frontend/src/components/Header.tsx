@@ -23,8 +23,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-5 mb-10 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)] sticky top-0 z-50 bg-background/90 backdrop-blur-xl">
-      {/* Notice we restored your beautiful custom shadow here and adjusted the padding */}
+    <header className="w-full pt-2 pb-5 mb-10 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)] sticky top-0 z-50 bg-white/5 dark:bg-black/10 backdrop-blur-2xl border-b border-white/5 transition-all duration-500">
+      {/* UPGRADED GLASSMORPHISM: High blur, very low opacity, subtle frosted border */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
         {/* LEFT COLUMN: Logo */}
@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Text-Only Navigation (Reduced Size & Correct Casing) */}
+        {/* CENTER COLUMN: Text-Only Navigation */}
         <div className="flex-1 flex justify-center">
           <div className="flex items-center gap-1 p-1 bg-white/5 rounded-full border border-white/10 shadow-inner">
             {tabs.map((tab) => (
@@ -45,7 +45,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
                     : 'text-white/40 hover:text-white hover:bg-white/10'
                 }`}
               >
-                {/* Now displaying exactly as written in the array (e.g., "Home") */}
                 {tab}
               </button>
             ))}
