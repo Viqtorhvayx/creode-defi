@@ -1,5 +1,6 @@
 "use client";
 
+// Developer: Viqtorhvayx (GitHub: Viqtorhvayx)
 import React, { useState } from 'react';
 import { Logo } from './Logo';
 import CustomWalletButton from './CustomWalletButton';
@@ -23,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-5 mb-10 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)] sticky top-0 z-50 bg-white/5 dark:bg-black/10 backdrop-blur-2xl transition-all duration-500">
+    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 bg-white/5 dark:bg-black/10 backdrop-blur-2xl transition-all duration-500">
       {/* UPGRADED GLASSMORPHISM: High blur, very low opacity, subtle frosted border */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
