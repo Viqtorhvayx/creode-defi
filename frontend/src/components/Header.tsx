@@ -11,7 +11,6 @@ interface HeaderProps {
   setActiveTab: (tab: string) => void;
 }
 
-// Notice we added activeTab and setActiveTab to the props here!
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
   const [isToggling, setIsToggling] = useState(false);
 
@@ -24,7 +23,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full py-4 mb-10 border-b border-white/10 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
+    <header className="w-full pt-2 pb-5 mb-10 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)] sticky top-0 z-50 bg-background/90 backdrop-blur-xl">
+      {/* Notice we restored your beautiful custom shadow here and adjusted the padding */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
         {/* LEFT COLUMN: Logo */}
@@ -32,20 +32,21 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Text-Only Navigation */}
+        {/* CENTER COLUMN: Text-Only Navigation (Reduced Size & Correct Casing) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 p-1.5 bg-white/5 rounded-full border border-white/10 shadow-inner">
+          <div className="flex items-center gap-1 p-1 bg-white/5 rounded-full border border-white/10 shadow-inner">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+                className={`px-5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
-                    ? 'bg-[#00A8E8] text-white shadow-[0_0_20px_rgba(0,168,232,0.4)]'
+                    ? 'bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.4)]'
                     : 'text-white/40 hover:text-white hover:bg-white/10'
                 }`}
               >
-                {tab.toUpperCase()}
+                {/* Now displaying exactly as written in the array (e.g., "Home") */}
+                {tab}
               </button>
             ))}
           </div>
@@ -55,15 +56,15 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
         <div className="flex-1 flex items-center justify-end gap-4">
           <button 
             onClick={handleThemeToggle}
-            className="p-2.5 bg-white/5 rounded-full hover:bg-white/10 transition-all duration-300 active:scale-90"
+            className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all duration-300 active:scale-90"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
             ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill={isToggling ? "#00A8E8" : "none"} stroke="#00A8E8" strokeWidth="2">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
