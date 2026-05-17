@@ -8,7 +8,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
-import { Navigation } from '../components/Navigation';
 import { ActivityTable } from '../components/ActivityTable';
 import { PriceChart } from '../components/PriceChart';
 import { LockingModule } from '../components/LockingModule';
@@ -107,12 +106,11 @@ export default function Dashboard() {
     <>
       <main className="flex-grow min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
-          <Header theme={theme} toggleTheme={toggleTheme} />
-          
-          <Navigation 
-            activeTab={activeMainTab} 
-            setActiveTab={setActiveMainTab} 
+          <Header 
             theme={theme} 
+            toggleTheme={toggleTheme} 
+            activeTab={activeMainTab}
+            setActiveTab={setActiveMainTab}
           />
 
           <div className="min-h-[600px]">

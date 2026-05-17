@@ -7,14 +7,12 @@ import CustomWalletButton from './CustomWalletButton';
 interface HeaderProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
-/**
- * @title Header
- * @author Viqtorhvayx
- * @dev Navigation component integrated with Theme-Aware CustomWalletButton.
- */
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
+// Notice we added activeTab and setActiveTab to the props here!
+export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
   const [isToggling, setIsToggling] = useState(false);
 
   const handleThemeToggle = () => {
@@ -23,15 +21,41 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     setTimeout(() => setIsToggling(false), 300);
   };
 
+  const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
+
   return (
-    <header className="w-full pt-2 mb-16 shadow-[0_15px_30px_-15px_rgba(0,168,232,0.4)]">
-      <nav className="max-w-7xl mx-auto px-6 pb-10 flex justify-between items-center w-full">
-        <Logo theme={theme} />
+    <header className="w-full py-4 mb-10 border-b border-white/10 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
+      <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
-        <div className="flex items-center gap-4">
+        {/* LEFT COLUMN: Logo */}
+        <div className="flex-1 flex justify-start">
+          <Logo theme={theme} />
+        </div>
+
+        {/* CENTER COLUMN: Text-Only Navigation */}
+        <div className="flex-1 flex justify-center">
+          <div className="flex items-center gap-2 p-1.5 bg-white/5 rounded-full border border-white/10 shadow-inner">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+                  activeTab === tab
+                    ? 'bg-[#00A8E8] text-white shadow-[0_0_20px_rgba(0,168,232,0.4)]'
+                    : 'text-white/40 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {tab.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Controls */}
+        <div className="flex-1 flex items-center justify-end gap-4">
           <button 
             onClick={handleThemeToggle}
-            className="p-2.5 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-300 active:scale-90"
+            className="p-2.5 bg-white/5 rounded-full hover:bg-white/10 transition-all duration-300 active:scale-90"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
@@ -52,11 +76,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
               </svg>
             )}
           </button>
-
-          <div className="flex items-center gap-3">
-            <CustomWalletButton theme={theme} />
-          </div>
+          <CustomWalletButton theme={theme} />
         </div>
+
       </nav>
     </header>
   );
