@@ -24,9 +24,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 backdrop-blur-xl bg-white/5 dark:bg-black/10 transition-all duration-500">
-      {/* UPGRADED GLASSMORPHISM: Transparent floating header */}
-      <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
+    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500">
+      {/* STRETCHED GLASSMORPHISM: Wrapping entire nav container */}
+      <nav className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center w-full bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl border border-white/20 rounded-2xl">
         
         {/* LEFT COLUMN: Logo */}
         <div className="flex-1 flex justify-start">
@@ -35,15 +35,15 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
         {/* CENTER COLUMN: Text-Only Navigation */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-1 bg-white/10 dark:bg-black/40 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-6 py-2">
+          <div className="flex items-center gap-1">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
-                    ? 'text-[#00A8E8] drop-shadow-[0_0_8px_rgba(0,168,232,0.5)]'
-                    : 'text-white/40 hover:text-white'
+                    ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]'
+                    : 'text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white'
                 }`}
               >
                 {tab}
