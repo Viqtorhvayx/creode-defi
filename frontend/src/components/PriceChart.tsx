@@ -195,7 +195,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   return (
     <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full relative overflow-visible">
       {isInfoActive && (
-        <div className="absolute top-14 right-6 w-56 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
+        <div className="absolute top-14 right-6 w-56 bg-black/40 backdrop-blur-md outline-none rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
           <h5 className="text-[10px] font-black uppercase tracking-widest mb-3 text-white/90">Market Statistics</h5>
           <div className="space-y-2.5">
             {[
