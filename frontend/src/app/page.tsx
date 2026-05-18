@@ -1,7 +1,7 @@
 "use client";
 
-/* * Developer: [Viqtorhvayx]
- * Component: Dashboard
+// Developer: Viqtorhvayx (GitHub: Viqtorhvayx)
+/* Component: Dashboard
  * Description: Main protocol dashboard refactored into a 4-tabbed architectural interface.
  */
 
@@ -66,9 +66,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="glass-panel p-8 shadow-2xl border border-white/10">
-              <PriceChart theme={theme} />
-            </div>
+            <PriceChart theme={theme} />
 
             <ActivityTable theme={theme} />
           </div>
