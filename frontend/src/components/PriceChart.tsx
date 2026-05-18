@@ -195,17 +195,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   return (
     <div className="industrial-panel w-full mx-auto !p-6 flex flex-col h-full relative overflow-visible">
       {isInfoActive && (
-        <div className="absolute top-14 right-6 w-56 bg-black/40 backdrop-blur-md outline-none rounded-xl p-4 shadow-2xl z-[110] animate-in fade-in zoom-in duration-200">
+        <div className="absolute top-14 right-6 w-56 z-[110] bg-white/10 dark:bg-black/40 backdrop-blur-2xl border-none outline-none shadow-2xl rounded-xl p-4 animate-in fade-in zoom-in duration-200">
           <h5 className="text-[10px] font-black uppercase tracking-widest mb-3 text-white/90">Market Statistics</h5>
           <div className="space-y-2.5">
             {[
-              { label: 'Market Cap', value: marketCap || "..." },
-              { label: '24H Volume', value: volume24h || "..." },
-              { label: '24H Change', value: priceChange24h ? `${priceChange24h.toFixed(2)}%` : "..." }
+              { label: 'Market Cap', value: marketCap || "...", color: 'text-white' },
+              { label: '24H Volume', value: volume24h || "...", color: 'text-white' },
+              { label: '24H Change', value: priceChange24h ? `${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(2)}%` : "...", color: priceChange24h ? (priceChange24h >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]') : 'text-white' }
             ].map((item, idx) => (
               <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-1.5 last:border-0 last:pb-0">
                 <span className="text-[9px] font-bold uppercase text-white/40">{item.label}</span>
-                <span className="text-[10px] font-black text-white">{item.value}</span>
+                <span className={`text-[10px] font-black ${item.color}`}>{item.value}</span>
               </div>
             ))}
           </div>
