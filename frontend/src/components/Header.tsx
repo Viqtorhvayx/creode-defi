@@ -24,8 +24,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 bg-white/5 dark:bg-black/10 backdrop-blur-2xl transition-all duration-500">
-      {/* UPGRADED GLASSMORPHISM: High blur, very low opacity, subtle frosted border */}
+    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500">
+      {/* UPGRADED GLASSMORPHISM: Transparent floating header */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
         {/* LEFT COLUMN: Logo */}
