@@ -1,6 +1,8 @@
 "use client";
 
-// Developer: Viqtorhvayx (GitHub: Viqtorhvayx)
+/* UI Design & Implementation by Viqtorhvayx (GitHub: Viqtorhvayx) 
+ * CREODE DApp 
+ */
 import React, { useState } from 'react';
 import { Logo } from './Logo';
 import CustomWalletButton from './CustomWalletButton';
@@ -24,26 +26,26 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-5 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500">
-      {/* STRETCHED GLASSMORPHISM: Wrapping entire nav container */}
-      <nav className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center w-full bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl border border-white/20 rounded-2xl">
+    <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 backdrop-blur-xl bg-white/5 dark:bg-black/5 transition-all duration-500 border-none outline-none">
+      {/* INVISIBLE SCROLL BLUR: This wraps the whole top of the screen to blur charts on scroll, but has virtually no background color so it doesn't look like a box */}
+      <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
         {/* LEFT COLUMN: Logo */}
         <div className="flex-1 flex justify-start">
           <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Text-Only Navigation */}
+        {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-8 px-8 py-3 bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl rounded-2xl border-none outline-none">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 ${
+                className={`text-sm font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
-                    ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]'
-                    : 'text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white'
+                    ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]' 
+                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white' 
                 }`}
               >
                 {tab}
@@ -52,11 +54,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Controls */}
+        {/* RIGHT COLUMN: Controls (Free floating, NO glassmorphism) */}
         <div className="flex-1 flex items-center justify-end gap-4">
           <button 
             onClick={handleThemeToggle}
-            className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all duration-300 active:scale-90"
+            className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 active:scale-90 border-none outline-none"
             aria-label="Toggle Theme"
           >
             {theme === 'light' ? (
