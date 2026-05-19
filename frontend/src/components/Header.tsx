@@ -26,26 +26,26 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 backdrop-blur-xl bg-white/5 dark:bg-black/5 transition-all duration-500 border-none outline-none">
-      {/* SCROLL BLUR: Invisible layer wrapping the top to blur underlying content on scroll */}
+    <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
+      {/* INVISIBLE SCROLL BLUR: This wraps the whole top of the screen to blur charts on scroll, but has virtually no background color so it doesn't look like a box */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
-        {/* LEFT COLUMN: Logo (Free floating, no glassmorphism) */}
+        {/* LEFT COLUMN: Logo */}
         <div className="flex-1 flex justify-start">
           <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Tabs inside the EXACT Info Popup Glassmorphism */}
+        {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 p-1.5 bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl rounded-2xl border-none outline-none">
+          <div className="flex items-center gap-8 px-8 py-3 bg-gradient-to-br from-white/20 to-transparent dark:from-white/10 dark:to-transparent backdrop-blur-xl rounded-[28px] border-none outline-none ring-0 focus:outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_8px_30px_-5px_rgba(0,168,232,0.3)]">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
+                className={`outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
-                    ? 'bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.4)]' /* Beautiful blue highlight pill for selected tab */
-                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5' /* Clean inactive state */
+                    ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]' 
+                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white' 
                 }`}
               >
                 {tab}
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Controls (Free floating, no glassmorphism) */}
+        {/* RIGHT COLUMN: Controls (Free floating, NO glassmorphism) */}
         <div className="flex-1 flex items-center justify-end gap-4">
           <button 
             onClick={handleThemeToggle}
