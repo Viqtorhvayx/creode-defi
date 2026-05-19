@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 backdrop-blur-xl bg-white/5 dark:bg-black/5 transition-all duration-500 border-none outline-none">
+    <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
       {/* INVISIBLE SCROLL BLUR: This wraps the whole top of the screen to blur charts on scroll, but has virtually no background color so it doesn't look like a box */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
