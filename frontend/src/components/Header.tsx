@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
                 className={`outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
                     ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]' 
-                    : 'text-white/40 hover:text-white' 
+                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white' 
                 }`}
               >
                 {tab}
