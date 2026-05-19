@@ -37,12 +37,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
         {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-8 px-8 py-3 bg-white/30 dark:bg-white/10 backdrop-blur-md border border-white/40 dark:border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-2xl rounded-[28px]">
+          <div className="flex items-center gap-8 px-8 py-3 bg-white/30 dark:bg-white/10 backdrop-blur-md rounded-[28px] border-none outline-none ring-0 focus:outline-none shadow-[0_8px_30px_-5px_rgba(0,168,232,0.2)]">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`text-sm font-bold tracking-wide transition-all duration-300 ${
+                className={`outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 ${
                   activeTab === tab
                     ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]' 
                     : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white' 
