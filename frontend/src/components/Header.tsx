@@ -37,15 +37,15 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
         {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-8 px-8 py-3 bg-gradient-to-br from-white/20 to-transparent dark:from-white/10 dark:to-transparent backdrop-blur-xl rounded-[28px] border-none outline-none ring-0 focus:outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_8px_30px_-5px_rgba(0,168,232,0.3)]">
+          <div className="flex items-center gap-2 p-1.5 bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl border-none outline-none rounded-2xl">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 ${
+                className={`px-6 py-2 outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
                   activeTab === tab
-                    ? 'text-[#00A8E8] drop-shadow-[0_0_12px_rgba(0,168,232,0.8)]' 
-                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white' 
+                    ? 'bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.4)]' 
+                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5' 
                 }`}
               >
                 {tab}
