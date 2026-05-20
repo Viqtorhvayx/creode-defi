@@ -13,6 +13,7 @@ import { PriceChart } from '../components/PriceChart';
 import { LockingModule } from '../components/LockingModule';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
+import { VaultTab } from '../components/VaultTab';
 import { Footer } from '@/components/Footer';
 
 export default function Dashboard() {
@@ -73,10 +74,8 @@ export default function Dashboard() {
         );
       case 'Vault':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
-            <div className="w-full max-w-2xl">
-              <LockingModule theme={theme} />
-            </div>
+          <div className="py-8 flex justify-center w-full">
+            <VaultTab theme={theme} />
           </div>
         );
       case 'Lend':
