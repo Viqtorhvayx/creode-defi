@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
             className="p-0 bg-transparent border-none outline-none cursor-pointer"
             aria-label="Go to Home"
           >
-            <Logo theme={theme} />
+            <Logo theme={theme} onClick={() => setActiveTab('Home')} />
           </button>
         </div>
 
