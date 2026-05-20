@@ -23,16 +23,22 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
     setTimeout(() => setIsToggling(false), 300);
   };
 
-  const tabs = ['Home', 'Vault', 'Lend', 'Borrow'];
+  const tabs = ['Vault', 'Lend', 'Borrow'];
 
   return (
     <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
       {/* INVISIBLE SCROLL BLUR: This wraps the whole top of the screen to blur charts on scroll, but has virtually no background color so it doesn't look like a box */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
-        {/* LEFT COLUMN: Logo */}
+        {/* LEFT COLUMN: Logo — clicking navigates back to Home landing page */}
         <div className="flex-1 flex justify-start">
-          <Logo theme={theme} />
+          <button
+            onClick={() => setActiveTab('Home')}
+            className="p-0 bg-transparent border-none outline-none cursor-pointer"
+            aria-label="Go to Home"
+          >
+            <Logo theme={theme} />
+          </button>
         </div>
 
         {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
