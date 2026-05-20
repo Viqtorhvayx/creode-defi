@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
         {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 p-1.5 bg-white/10 dark:bg-black/40 backdrop-blur-2xl shadow-2xl border-none outline-none rounded-2xl">
+          <div className="flex items-center gap-6">
             {tabs.map((tab) => (
               <button
                 key={tab}
