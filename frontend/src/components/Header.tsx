@@ -1,8 +1,8 @@
+/* Credit this code to Viqtorhvayx on GitHub
+ * CREODE DApp - Flat Header with Ticker
+ */
 "use client";
 
-/* UI Design & Implementation by Viqtorhvayx (GitHub: Viqtorhvayx) 
- * CREODE DApp 
- */
 import React, { useState } from 'react';
 import { Logo } from './Logo';
 import CustomWalletButton from './CustomWalletButton';
@@ -27,31 +27,27 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
   return (
     <header className="w-full pt-4 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
-      {/* INVISIBLE SCROLL BLUR: This wraps the whole top of the screen to blur charts on scroll, but has virtually no background color so it doesn't look like a box */}
       <nav className="max-w-7xl mx-auto px-6 flex justify-between items-center w-full">
         
-        {/* LEFT COLUMN: Logo — clicking navigates back to Home landing page */}
-        <div className="flex-1 flex justify-start">
-          <button
-            onClick={() => setActiveTab('Home')}
-            className="p-0 bg-transparent border-none outline-none cursor-pointer"
-            aria-label="Go to Home"
-          >
-            <Logo theme={theme} onClick={() => setActiveTab('Home')} />
-          </button>
+        {/* LEFT COLUMN: Clickable Logo */}
+        <div 
+          className="flex-1 flex justify-start cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setActiveTab('Home')}
+        >
+          <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Tabs (WITH isolated glassmorphism and increased text size) */}
+        {/* CENTER COLUMN: Flat, Solid Tabs Container */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 p-1.5 bg-black/5 dark:bg-white/5 rounded-2xl border-none outline-none">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 outline-none ring-0 focus:outline-none text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
+                className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
                   activeTab === tab
-                    ? 'bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.4)]' 
-                    : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5' 
+                    ? 'bg-[#00A8E8] text-white shadow-md' 
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' 
                 }`}
               >
                 {tab}
@@ -60,8 +56,16 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Controls (Free floating, NO glassmorphism) */}
+        {/* RIGHT COLUMN: Flat Ticker, Controls, and Wallet */}
         <div className="flex-1 flex items-center justify-end gap-4">
+          
+          {/* THE MINI-TICKER: Flat, solid pill */}
+          <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-black/5 dark:bg-white/5 rounded-full border-none outline-none">
+            <span className="text-xs font-black text-black/60 dark:text-white/60 tracking-wider">HBAR</span>
+            <span className="text-sm font-bold text-black dark:text-white">$0.124</span>
+            <span className="text-xs font-bold text-[#10B981]">+5.2%</span>
+          </div>
+
           <button 
             onClick={handleThemeToggle}
             className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 active:scale-90 border-none outline-none"

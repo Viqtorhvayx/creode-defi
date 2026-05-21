@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 interface LogoProps {
   theme?: 'light' | 'dark';
-  onClick?: () => void;
 }
 
 /**
@@ -14,12 +13,12 @@ interface LogoProps {
  * @dev Modernized inline SVG logo for Creode Protocol.
  * Features an abstract geometric 'C' node structure and updated Title Case typography.
  */
-export const Logo: React.FC<LogoProps> = ({ theme, onClick }) => {
-  const brandTextColor = theme === 'dark' ? '#FFFFFF' : '#0F172A'; // Slate-900 for Light Mode
+export const Logo: React.FC<LogoProps> = ({ theme }) => {
+  const brandTextColor = theme === 'dark' ? '#FFFFFF' : '#0F172A';
   const brandBlue = "#00A8E8";
 
-  const inner = (
-    <>
+  return (
+    <div className="flex items-center gap-0 select-none group transition-transform duration-300 active:scale-95">
       {/* Modern Abstract 'C' Node SVG - Acts as the capital 'C' */}
       <div className="relative h-9 w-9">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
@@ -55,27 +54,13 @@ export const Logo: React.FC<LogoProps> = ({ theme, onClick }) => {
         </svg>
       </div>
 
-      {/* Modern Brand Typography - Prefixed by the SVG 'C' */}
+      {/* Modern Brand Typography */}
       <span 
         className="text-xl font-bold tracking-wide transition-colors duration-300 -ml-1.5"
         style={{ color: brandBlue }}
       >
         reode
       </span>
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <div className="flex items-center gap-0 select-none group transition-transform duration-300 active:scale-95 cursor-pointer">
-        {inner}
-      </div>
-    );
-  }
-
-  return (
-    <Link href="/" className="flex items-center gap-0 select-none group transition-transform duration-300 active:scale-95">
-      {inner}
-    </Link>
+    </div>
   );
 };
