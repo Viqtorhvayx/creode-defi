@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
 
-import { LockingModule } from '../components/LockingModule';
+import { VaultTab } from '../components/VaultTab';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
 
@@ -112,10 +112,8 @@ export default function Dashboard() {
         );
       case 'Vault':
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
-            <div className="w-full max-w-2xl">
-              <LockingModule theme={theme} />
-            </div>
+          <div className="py-8">
+            <VaultTab theme={theme} />
           </div>
         );
       case 'Lend':
