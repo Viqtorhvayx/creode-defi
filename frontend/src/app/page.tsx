@@ -91,7 +91,7 @@ export default function Dashboard() {
 
             {/* Launch App CTA — authored by Viqtorhvayx */}
             <button
-              onClick={() => setActiveTab('Vault')}
+              onClick={() => setActiveMainTab('Vault')}
               className="relative group mt-4 px-16 py-6 rounded-[20px] bg-[#00A8E8] text-white text-xl font-black uppercase tracking-[0.15em] shadow-[0_0_50px_rgba(0,168,232,0.5)] hover:shadow-[0_0_80px_rgba(0,168,232,0.8)] hover:scale-105 active:scale-95 transition-all duration-300"
             >
               {/* Inner shine */}
