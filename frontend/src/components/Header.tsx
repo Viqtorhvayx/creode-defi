@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub
- * CREODE DApp - Flat Header with Ticker
+ * CREODE DApp - Clean Header
  */
 "use client";
 
@@ -56,16 +56,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Flat Ticker, Controls, and Wallet */}
+        {/* RIGHT COLUMN: Controls and Wallet (Ticker Removed) */}
         <div className="flex-1 flex items-center justify-end gap-4">
-          
-          {/* THE MINI-TICKER: Flat, solid pill */}
-          <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-black/5 dark:bg-white/5 rounded-full border-none outline-none">
-            <span className="text-xs font-black text-black/60 dark:text-white/60 tracking-wider">HBAR</span>
-            <span className="text-sm font-bold text-black dark:text-white">$0.124</span>
-            <span className="text-xs font-bold text-[#10B981]">+5.2%</span>
-          </div>
-
           <button 
             onClick={handleThemeToggle}
             className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 active:scale-90 border-none outline-none"
