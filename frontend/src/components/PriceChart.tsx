@@ -168,12 +168,19 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({ width: chartContainerRef.current.offsetWidth });
+        chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => { window.removeEventListener('resize', handleResize); chart.remove(); };
+    const resizeObserver = new ResizeObserver(() => handleResize());
+    if (chartContainerRef.current) {
+      resizeObserver.observe(chartContainerRef.current);
+    }
+
+    return () => { 
+      resizeObserver.disconnect(); 
+      chart.remove(); 
+    };
   }, [theme, activeInterval]);
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
