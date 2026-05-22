@@ -1,3 +1,4 @@
+/* Credit this code to Viqtorhvayx on GitHub */
 "use client";
 
 /* * Developer: [Viqtorhvayx]
@@ -159,58 +160,56 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       <div className="space-y-10">
-        {/* Uniswap-style Input Box authored by Viqtorhvayx */}
-        <div className="uniswap-input-box">
-          <div className="flex justify-between items-center">
-            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>
-              {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
-            </label>
-            <div className="flex gap-3">
-              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">50%</button>
-              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">Max</button>
-            </div>
-          </div>
-          <div className="flex items-center gap-6 h-20">
+        {/* Standardized Input Box */}
+        <div className="space-y-3">
+          <label className="text-xs font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">
+            {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
+          </label>
+          <div className="relative w-full group">
             <FormattedNumberInput 
               placeholder="0.00"
-              className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter"
-              style={{ color: primaryTextColor }}
+              className="w-full h-20 bg-black/5 dark:bg-white/5 border border-transparent rounded-2xl px-6 text-3xl font-black text-black dark:text-white focus:outline-none focus:border-[#00A8E8]/30 focus:bg-transparent transition-all duration-300"
               value={hbarInput}
               onValueChange={setHbarInput}
             />
-            <div className="relative group">
-              <div 
-                className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[180px] justify-center cursor-pointer hover:bg-white/10 transition-all"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4 bg-white dark:bg-[#1A1A1A] p-2 pl-5 rounded-xl shadow-sm border border-black/5 dark:border-white/5">
+              <button 
+                onClick={() => setHbarInput(balance)}
+                className="text-xs font-black text-[#00A8E8] uppercase tracking-widest hover:text-black dark:hover:text-white transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
-                  {collateralToken === 'USDT' ? (
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
-                  ) : (
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
-                  )}
+                Max
+              </button>
+              <div className="w-px h-5 bg-black/10 dark:bg-white/10"></div>
+              
+              {/* Dropdown Wrapper inside the inner element */}
+              <div className="relative">
+                <div 
+                  className="flex items-center gap-2 pr-2 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <span className="text-base font-black text-black/80 dark:text-white/80">{collateralToken}</span>
+                  <svg className="w-3 h-3 text-black/40 dark:text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
                 </div>
-                <span className="text-xl font-black tracking-tighter text-white">{collateralToken}</span>
+                
+                {isDropdownOpen && (
+                  <div className="absolute top-full mt-4 right-0 w-32 bg-white dark:bg-[#1A1A1A] border border-black/5 dark:border-white/5 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div 
+                      className="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors"
+                      onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
+                    >
+                      <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-5 h-5 object-contain" alt="USDT" />
+                      <span className="text-xs font-black text-black dark:text-white">USDT</span>
+                    </div>
+                    <div 
+                      className="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-t border-black/5 dark:border-white/5"
+                      onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
+                    >
+                      <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-5 h-5 object-contain" alt="USDC" />
+                      <span className="text-xs font-black text-black dark:text-white">USDC</span>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {isDropdownOpen && (
-                <div className="absolute top-full mt-2 left-0 w-full bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                  <div 
-                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors"
-                    onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
-                  >
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
-                    <span className="text-sm font-black text-white">USDT</span>
-                  </div>
-                  <div 
-                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors border-t border-white/5"
-                    onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
-                  >
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
-                    <span className="text-sm font-black text-white">USDC</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60 uppercase">{usdValue} Valuation</p>

@@ -3,7 +3,7 @@
  */
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PriceChart } from './PriceChart';
 
 interface VaultTabProps {
@@ -11,6 +11,20 @@ interface VaultTabProps {
 }
 
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
+  const [lockDuration, setLockDuration] = useState<string>('');
+  const [maturityDate, setMaturityDate] = useState<string | null>(null);
+
+  const handleSetDuration = () => {
+    const days = parseInt(lockDuration);
+    if (!isNaN(days) && days > 0) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      setMaturityDate(date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }));
+    } else {
+      setMaturityDate(null);
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
@@ -86,26 +100,34 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
             </div>
 
-            {/* Custom Timeline Picker */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl">
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Start Date</label>
+            {/* Lock Duration (Days) */}
+            <div className="space-y-3">
+              <label className="text-xs font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Lock Duration (Days)</label>
+              <div className="flex gap-4">
                 <input 
-                  type="date" 
-                  className="w-full p-3 bg-white dark:bg-[#1A1A1A] rounded-xl border border-black/5 dark:border-white/5 text-sm font-bold text-black dark:text-white focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer" 
+                  type="number"
+                  placeholder="e.g. 30"
+                  value={lockDuration}
+                  onChange={(e) => setLockDuration(e.target.value)}
+                  className="flex-1 p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-transparent focus:border-[#00A8E8]/30 text-xl font-black text-black dark:text-white focus:outline-none focus:bg-transparent transition-all"
                 />
+                <button 
+                  onClick={handleSetDuration}
+                  className="px-8 bg-black/5 dark:bg-white/5 hover:bg-[#00A8E8] text-black dark:text-white hover:text-white rounded-2xl font-black uppercase tracking-widest transition-colors duration-300"
+                >
+                  Set
+                </button>
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Maturity Date</label>
-                <input 
-                  type="date" 
-                  className="w-full p-3 bg-white dark:bg-[#1A1A1A] rounded-xl border border-black/5 dark:border-white/5 text-sm font-bold text-black dark:text-white focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer" 
-                />
+              <div className="pt-2 px-1 flex items-center gap-2">
+                <span className="text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-widest">Maturity Date:</span>
+                <span className={`text-sm font-black ${maturityDate ? 'text-[#00A8E8]' : 'text-black/20 dark:text-white/20'}`}>
+                  {maturityDate || 'Not Set'}
+                </span>
               </div>
             </div>
 
             {/* Warning & Submit */}
-            <div className="space-y-6 pt-2">
+            <div className="space-y-6 pt-2 mt-auto">
               <div className="p-4 bg-red-50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20 flex gap-3 items-start">
                 <div className="p-1.5 bg-red-100 dark:bg-red-500/20 rounded-lg shrink-0 mt-0.5">
                   <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
@@ -127,3 +149,4 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     </div>
   );
 };
+

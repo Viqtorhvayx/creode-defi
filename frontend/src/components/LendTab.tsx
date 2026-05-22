@@ -18,12 +18,12 @@ export const LendTab = () => {
           <input 
             type="number"
             placeholder="0.00"
-            className="w-full h-24 bg-black/5 dark:bg-white/5 backdrop-blur-xl border-none rounded-2xl px-8 text-4xl font-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#00A8E8]/50 transition-all duration-500"
+            className="w-full h-20 bg-black/5 dark:bg-white/5 border border-transparent rounded-2xl px-6 text-3xl font-black text-black dark:text-white focus:outline-none focus:border-[#00A8E8]/30 focus:bg-transparent transition-all duration-300"
           />
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3 bg-white/50 dark:bg-black/40 p-2 pl-4 rounded-xl backdrop-blur-md">
-            <button className="text-xs font-extrabold text-[#00A8E8] uppercase tracking-widest hover:opacity-80 transition-opacity">Max</button>
-            <div className="w-px h-6 bg-black/10 dark:bg-white/10"></div>
-            <span className="text-lg font-bold text-black/50 dark:text-white/50 pr-2">HBAR</span>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4 bg-white dark:bg-[#1A1A1A] p-2 pl-5 rounded-xl shadow-sm border border-black/5 dark:border-white/5">
+            <button className="text-xs font-black text-[#00A8E8] uppercase tracking-widest hover:text-black dark:hover:text-white transition-colors">Max</button>
+            <div className="w-px h-5 bg-black/10 dark:bg-white/10"></div>
+            <span className="text-base font-black text-black/80 dark:text-white/80 pr-2">HBAR</span>
           </div>
         </div>
 
