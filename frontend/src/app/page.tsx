@@ -27,12 +27,20 @@ export default function Dashboard() {
     const savedTheme = localStorage.getItem('creode-theme') as 'light' | 'dark' | null;
     if (savedTheme) {
       setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
       setTheme('dark');
-      document.documentElement.classList.add('dark');
     }
   }, []);
+
+  useEffect(() => {
+    if (activeMainTab === 'Home') {
+      // Force dark mode on landing page
+      document.documentElement.classList.add('dark');
+    } else {
+      // Restore user theme preference when navigating away
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    }
+  }, [activeMainTab, theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
