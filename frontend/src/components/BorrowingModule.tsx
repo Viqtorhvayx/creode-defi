@@ -72,10 +72,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const [currentXP, setCurrentXP] = useState(initialXP);
 
   const getXPColor = (val: number) => {
-    if (val >= 70) return '#10B981';
-    if (val >= 40) return '#F4E285';
-    if (val >= 16) return '#FF5400';
-    return '#FF3837';
+    if (val >= 70) return '#00E676'; // Vibrant Neon Green (Safe)
+    if (val >= 40) return '#FFEA00'; // Vibrant Neon Yellow (Warning)
+    return '#FF3837';                // Vibrant Neon Red (Critical)
   };
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.3)';
@@ -114,46 +113,47 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   return (
     <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {/* Header authored by Viqtorhvayx */}
-      <div className="flex justify-between items-center mb-12">
-        <div>
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
-        </div>
-        <div className="text-right">
-          <span className="text-[11px] font-bold opacity-40 mb-1 block" style={{ color: primaryTextColor }}>Loan health</span>
-          <p className="text-3xl font-black flex items-baseline justify-end gap-1">
-            <span style={{ color: getXPColor(currentXP) }}>{currentXP}</span>
-            <span className="text-sm font-bold opacity-30">/ 100</span>
-          </p>
-        </div>
+      <div className="mb-8">
+        <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
+        <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
       </div>
 
-      {/* Dynamic ECG Heartbeat Monitor */}
-      <div className="mb-12 h-24 bg-black/40 rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group shadow-inner">
-        <div className="absolute inset-0">
-          <HeartbeatMonitor healthFactor={healthFactor} xp={currentXP} isActive={true} />
+      <div className="mb-12 flex flex-col gap-4">
+        {/* Heartbeat Monitor Screen */}
+        <div className="h-28 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden shadow-inner">
+          <HeartbeatMonitor 
+            healthFactor={healthFactor} 
+            xp={currentXP} 
+            isActive={borrowRatio > 0} 
+            color={borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563'} 
+          />
         </div>
         
-        {/* UI Overlay on top of the canvas */}
-        <div className="relative z-10 flex items-center gap-8 bg-black/60 px-8 py-2 rounded-full backdrop-blur-md border border-white/5 shadow-2xl">
+        {/* Separated Status Panel */}
+        <div className="flex justify-between items-center bg-black/20 px-8 py-5 rounded-[32px] border border-white/5 shadow-xl">
+           <div className="flex flex-col">
+             <span className="text-[11px] font-bold opacity-40 uppercase tracking-widest mb-1" style={{ color: primaryTextColor }}>Reputation XP</span>
+             <p className="text-3xl font-black flex items-baseline gap-1">
+               <span style={{ color: getXPColor(currentXP), textShadow: `0 0 20px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
+               <span className="text-sm font-bold opacity-30">/ 100</span>
+             </p>
+           </div>
+
+           <div className="w-[1px] h-12 bg-white/10" />
+
            <div className="flex flex-col items-center">
-             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Stability</span>
-             <span className={`text-sm font-black ${isHealthy ? 'text-[#10B981]' : 'text-red-500'}`}>
-               {isHealthy ? 'Nominal' : 'Critical'}
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-2" style={{ color: primaryTextColor }}>Stability</span>
+             <span className="text-sm font-black px-4 py-1.5 rounded-full bg-white/5 border border-white/10" style={{ color: getXPColor(currentXP) }}>
+               {currentXP >= 70 ? 'Safe' : currentXP >= 40 ? 'Warning' : 'Critical'}
              </span>
            </div>
-           <div className="w-[1px] h-6 bg-white/10" />
-           <div className="flex flex-col items-center">
-             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Pulse</span>
-             <span className={`text-sm font-black ${isHealthy ? 'text-[#00A8E8]' : 'text-red-400'} animate-pulse`}>
+
+           <div className="w-[1px] h-12 bg-white/10" />
+
+           <div className="flex flex-col items-end">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-2" style={{ color: primaryTextColor }}>Signal</span>
+             <span className={`text-sm font-black ${borrowRatio > 0 ? 'animate-pulse' : ''}`} style={{ color: borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563' }}>
                {borrowRatio > 0 ? 'Active' : 'Idle'}
-             </span>
-           </div>
-           <div className="w-[1px] h-6 bg-white/10" />
-           <div className="flex flex-col items-center">
-             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Risk</span>
-             <span className={`text-sm font-black ${isHealthy ? 'text-emerald-500' : 'text-red-600'}`}>
-               {borrowRatio > 0.8 ? 'High' : (borrowRatio > 0 ? 'Moderate' : 'Minimal')}
              </span>
            </div>
         </div>
