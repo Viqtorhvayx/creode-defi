@@ -37,23 +37,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           <Logo theme={theme} />
         </div>
 
-        {/* CENTER COLUMN: Flat, Solid Tabs Container */}
+        {/* CENTER COLUMN: Removed navigation tabs */}
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 p-1.5 bg-black/5 dark:bg-white/5 rounded-2xl border-none outline-none">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
-                  activeTab === tab
-                    ? 'bg-[#00A8E8] text-white shadow-md' 
-                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' 
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* RIGHT COLUMN: Controls and Wallet (Ticker Removed) */}
