@@ -1,4 +1,3 @@
-/* Credit this code to Viqtorhvayx on GitHub */
 "use client";
 
 /* * Developer: [Viqtorhvayx]
@@ -84,30 +83,34 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       <div className="space-y-10 flex flex-col flex-grow">
-        {/* Standardized Input Box */}
-        <div className="space-y-3">
-          <label className="text-xs font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">
-            Amount to provide
-          </label>
-          <div className="relative w-full group">
+        {/* Uniswap-style Input Box authored by Viqtorhvayx */}
+        <div className="uniswap-input-box">
+          <div className="flex justify-between items-center">
+            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Amount to provide</label>
+            <div className="flex gap-3">
+              <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
+              <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
+              <QuickButton label="Max" onClick={handleMaxSelect} />
+            </div>
+          </div>
+          <div className="flex items-center gap-6 h-20">
             <FormattedNumberInput 
               placeholder="0.00"
-              className="w-full h-20 bg-black/5 dark:bg-white/5 border border-transparent rounded-2xl px-6 text-3xl font-black text-black dark:text-white focus:outline-none focus:border-[#00A8E8]/30 focus:bg-transparent transition-all duration-300"
+              className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter"
+              style={{ color: primaryTextColor }}
               value={amount}
               onValueChange={setAmount}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4 bg-white dark:bg-[#1A1A1A] p-2 pl-5 rounded-xl shadow-sm border border-black/5 dark:border-white/5">
-              <button 
-                onClick={handleMaxSelect}
-                className="text-xs font-black text-[#00A8E8] uppercase tracking-widest hover:text-black dark:hover:text-white transition-colors"
-              >
-                Max
-              </button>
-              <div className="w-px h-5 bg-black/10 dark:bg-white/10"></div>
-              <span className="text-base font-black text-black/80 dark:text-white/80 pr-2">HBAR</span>
+            <div className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[160px] justify-center">
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                  <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
+                </svg>
+              </div>
+              <span className="text-xl font-black tracking-tighter text-white">HBAR</span>
             </div>
           </div>
-          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60">{usdValue} Valuation</p>
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
