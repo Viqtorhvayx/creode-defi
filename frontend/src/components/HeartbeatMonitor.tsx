@@ -7,9 +7,10 @@ interface HeartbeatMonitorProps {
   healthFactor: number; // 0 to 100
   xp: number; // 0 to 100
   isActive: boolean;
+  color: string;
 }
 
-export const HeartbeatMonitor: React.FC<HeartbeatMonitorProps> = ({ healthFactor, xp, isActive }) => {
+export const HeartbeatMonitor: React.FC<HeartbeatMonitorProps> = ({ healthFactor, xp, isActive, color }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -96,7 +97,6 @@ export const HeartbeatMonitor: React.FC<HeartbeatMonitorProps> = ({ healthFactor
       ctx.clearRect(0, 0, width, height);
 
       // Set styling
-      const strokeColor = isActive ? (isHealthy ? '#00A8E8' : '#FF3837') : '#4B5563';
       const glowBlur = isActive ? 5 + (xp / 100) * 15 : 2; // XP increases glow
       const lineWidth = isActive ? 2 + (xp / 100) * 1.5 : 1.5;
 
@@ -106,10 +106,10 @@ export const HeartbeatMonitor: React.FC<HeartbeatMonitorProps> = ({ healthFactor
         ctx.lineTo(i, points[i]);
       }
 
-      ctx.strokeStyle = strokeColor;
+      ctx.strokeStyle = color;
       ctx.lineWidth = lineWidth;
       ctx.shadowBlur = glowBlur;
-      ctx.shadowColor = strokeColor;
+      ctx.shadowColor = color;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
       ctx.stroke();
