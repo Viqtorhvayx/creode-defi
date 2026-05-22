@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
+import { HeartbeatMonitor } from './HeartbeatMonitor';
 
 interface BorrowingModuleProps {
   xp: number;
@@ -105,6 +106,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
 
   const maxBorrowHbar = pythHbarPrice ? ((hbarInputNumeric * (assetPrice || 0)) * MAX_LTV / pythHbarPrice) : 0;
 
+  // Calculate dynamic health factor for UI
+  const borrowRatio = activeTab === 'borrow' && maxBorrowHbar > 0 ? (hbarInputNumeric / maxBorrowHbar) : 0;
+  const healthFactor = activeTab === 'deposit' ? 100 : Math.max(10, 100 - (borrowRatio * 100));
+  const isHealthy = healthFactor >= 50;
+
   return (
     <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {/* Header authored by Viqtorhvayx */}
@@ -122,33 +128,33 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
       </div>
 
-      {/* Cardiac Monitor authored by Viqtorhvayx */}
-      <div className="mb-12 h-20 bg-black/40 rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" viewBox="0 0 1000 100" preserveAspectRatio="none">
-            <path 
-              d="M0,50 L200,50 L220,30 L240,70 L260,10 L280,90 L300,50 L1000,50" 
-              fill="none" 
-              stroke="#00A8E8" 
-              strokeWidth="2" 
-              className="animate-[pulse_3s_infinite]"
-            />
-          </svg>
+      {/* Dynamic ECG Heartbeat Monitor */}
+      <div className="mb-12 h-24 bg-black/40 rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group shadow-inner">
+        <div className="absolute inset-0">
+          <HeartbeatMonitor healthFactor={healthFactor} xp={currentXP} isActive={true} />
         </div>
-        <div className="relative z-10 flex items-center gap-8">
+        
+        {/* UI Overlay on top of the canvas */}
+        <div className="relative z-10 flex items-center gap-8 bg-black/60 px-8 py-2 rounded-full backdrop-blur-md border border-white/5 shadow-2xl">
            <div className="flex flex-col items-center">
              <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Stability</span>
-             <span className="text-sm font-black text-[#10B981]">Nominal</span>
+             <span className={`text-sm font-black ${isHealthy ? 'text-[#10B981]' : 'text-red-500'}`}>
+               {isHealthy ? 'Nominal' : 'Critical'}
+             </span>
            </div>
-           <div className="w-[1px] h-8 bg-white/10" />
+           <div className="w-[1px] h-6 bg-white/10" />
            <div className="flex flex-col items-center">
              <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Pulse</span>
-             <span className="text-sm font-black text-[#00A8E8] animate-pulse">Active</span>
+             <span className={`text-sm font-black ${isHealthy ? 'text-[#00A8E8]' : 'text-red-400'} animate-pulse`}>
+               {borrowRatio > 0 ? 'Active' : 'Idle'}
+             </span>
            </div>
-           <div className="w-[1px] h-8 bg-white/10" />
+           <div className="w-[1px] h-6 bg-white/10" />
            <div className="flex flex-col items-center">
              <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">Risk</span>
-             <span className="text-sm font-black text-emerald-500">Minimal</span>
+             <span className={`text-sm font-black ${isHealthy ? 'text-emerald-500' : 'text-red-600'}`}>
+               {borrowRatio > 0.8 ? 'High' : (borrowRatio > 0 ? 'Moderate' : 'Minimal')}
+             </span>
            </div>
         </div>
       </div>
