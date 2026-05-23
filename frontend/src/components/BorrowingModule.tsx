@@ -247,7 +247,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <button 
           onClick={handleAction} 
           disabled={isClicked || !hasInput}
-          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px]"
+          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] transition-all hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_25px_70px_rgba(0,168,232,0.5)]"
         >
           {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
         </button>

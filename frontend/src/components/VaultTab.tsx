@@ -105,8 +105,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     style={{ color: primaryTextColor }}
                   />
                   <button 
-                    onClick={handleSetDays}
-                    className="h-full px-6 bg-[#00A8E8] text-white font-bold rounded-[16px] shadow-md hover:bg-[#0090C7] transition-all tracking-widest text-sm"
+                    onClick={() => {
+                      if (!lockDays) return;
+                      const days = parseInt(lockDays);
+                      const targetDate = new Date();
+                      targetDate.setDate(targetDate.getDate() + days);
+                      setMaturityDate(targetDate.toISOString().split('T')[0]);
+                    }}
+                    disabled={!lockDays}
+                    className="h-full px-8 bg-[#00A8E8] text-white font-bold rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:bg-[#0096D1] hover:shadow-[0_10px_20px_rgba(0,168,232,0.3)] disabled:hover:transform-none disabled:hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     SET
                   </button>

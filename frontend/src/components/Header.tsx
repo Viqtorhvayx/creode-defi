@@ -29,27 +29,26 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
     <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
       <nav className="w-full max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
         
-        {/* LEFT SIDE: Logo + Navigation Tabs */}
-        <div className="flex items-center gap-8 lg:gap-12">
-          {/* Clickable Logo */}
-          <div 
-            className="cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
-            onClick={() => setActiveTab('Home')}
-          >
-            <Logo theme={theme} />
-          </div>
+        {/* LEFT COLUMN: Clickable Logo */}
+        <div 
+          className="flex-1 flex justify-start cursor-pointer hover:-translate-y-1 hover:scale-105 transition-all duration-300 flex-shrink-0"
+          onClick={() => setActiveTab('Home')}
+        >
+          <Logo theme={theme} />
+        </div>
 
-          {/* Navigation tabs (hidden on Home) */}
+        {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
+        <div className="flex-1 flex justify-center">
           {activeTab !== 'Home' && (
             <div className="hidden md:flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
+                  className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl hover:-translate-y-1 hover:scale-105 ${
                     activeTab === tab
-                      ? 'bg-[#00A8E8] text-white shadow-md' 
-                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' 
+                      ? 'text-black dark:text-white scale-105' 
+                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white' 
                   }`}
                 >
                   {tab}
@@ -59,12 +58,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           )}
         </div>
 
-        {/* RIGHT SIDE: Controls and Wallet */}
-        <div className="flex items-center gap-4">
+        {/* RIGHT COLUMN: Controls and Wallet */}
+        <div className="flex-1 flex items-center justify-end gap-4">
           {activeTab !== 'Home' && (
             <button 
               onClick={handleThemeToggle}
-              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 active:scale-90 border-none outline-none"
+              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:scale-110 active:scale-90 border-none outline-none"
               aria-label="Toggle Theme"
             >
               {theme === 'light' ? (
@@ -87,7 +86,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
             </button>
           )}
           {activeTab !== 'Home' && (
-            <CustomWalletButton theme={theme} />
+            <div className="hover:-translate-y-1 hover:scale-105 transition-all duration-300">
+              <CustomWalletButton theme={theme} />
+            </div>
           )}
         </div>
 

@@ -132,8 +132,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
 
         <div className="flex gap-6 mt-auto">
-          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Supply</button>
-          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition-all bounce-hover !rounded-[30px]">Withdraw</button>
+          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px] hover:-translate-y-1 hover:scale-[1.02]">Supply</button>
+          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition-all bounce-hover !rounded-[30px] hover:-translate-y-1 hover:scale-[1.02]">Withdraw</button>
         </div>
       </div>
     </div>
