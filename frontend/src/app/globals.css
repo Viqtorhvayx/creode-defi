@@ -150,7 +150,7 @@ body {
 }
 
 @utility uniswap-input-box {
-  @apply bg-white/5 p-8 rounded-[40px] border border-white/10 transition-all duration-500 focus-within:border-[#00A8E8]/40 shadow-2xl h-48 flex flex-col justify-between;
+  @apply bg-black/[0.03] dark:bg-white/[0.03] rounded-3xl p-4 border border-black/5 dark:border-white/5 transition-all focus-within:border-[#00A8E8]/50 focus-within:shadow-[0_0_20px_rgba(0,168,232,0.1)] flex flex-col justify-between;
 }
 
 /* Enforce Title/Sentence Case globally for buttons and labels */

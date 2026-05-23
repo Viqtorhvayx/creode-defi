@@ -167,59 +167,60 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       <div className="space-y-10">
         {/* Uniswap-style Input Box authored by Viqtorhvayx */}
         <div className="uniswap-input-box">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-2">
             <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>
               {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
             </label>
-            <div className="flex gap-3">
-              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">50%</button>
-              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-4 py-1.5 bg-white/5 rounded-[12px] hover:bg-white/10 text-white opacity-40 transition-all uppercase tracking-widest">Max</button>
+            <div className="flex gap-2">
+              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">50%</button>
+              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">Max</button>
             </div>
           </div>
-          <div className="flex items-center gap-6 h-20">
+          <div className="flex items-center justify-between gap-4">
             <FormattedNumberInput 
-              placeholder="0.00"
-              className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter"
+              placeholder="0"
+              className="w-full bg-transparent text-4xl font-semibold outline-none border-none p-0"
               style={{ color: primaryTextColor }}
               value={hbarInput}
               onValueChange={setHbarInput}
             />
             <div className="relative group">
               <div 
-                className="flex items-center gap-4 bg-white/5 px-6 py-4 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-md min-w-[180px] justify-center cursor-pointer hover:bg-white/10 transition-all"
+                className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md cursor-pointer hover:bg-white/10 transition-all"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
+                <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
                   {collateralToken === 'USDT' ? (
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-4 h-4 object-contain" alt="USDT" />
                   ) : (
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-4 h-4 object-contain" alt="USDC" />
                   )}
                 </div>
-                <span className="text-xl font-black tracking-tighter text-white">{collateralToken}</span>
+                <span className="text-lg font-bold text-white whitespace-nowrap">{collateralToken}</span>
+                <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute top-full mt-2 left-0 w-full bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute top-full mt-2 right-0 w-36 bg-[#1a1b1f] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden">
                   <div 
-                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors"
+                    className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors"
                     onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
                   >
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-6 h-6 object-contain" alt="USDT" />
-                    <span className="text-sm font-black text-white">USDT</span>
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-5 h-5 object-contain" alt="USDT" />
+                    <span className="text-sm font-bold text-white">USDT</span>
                   </div>
                   <div 
-                    className="p-4 hover:bg-white/10 cursor-pointer flex items-center gap-4 transition-colors border-t border-white/5"
+                    className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-t border-white/5"
                     onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
                   >
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-6 h-6 object-contain" alt="USDC" />
-                    <span className="text-sm font-black text-white">USDC</span>
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-5 h-5 object-contain" alt="USDC" />
+                    <span className="text-sm font-bold text-white">USDC</span>
                   </div>
                 </div>
               )}
             </div>
           </div>
-          <p className="text-[12px] font-bold text-[#00A8E8] tracking-[0.1em] opacity-60 uppercase">{usdValue} Valuation</p>
+          <p className="text-[12px] font-bold text-[#00A8E8] opacity-60 mt-2">{usdValue}</p>
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}

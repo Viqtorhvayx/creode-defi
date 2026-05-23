@@ -59,20 +59,20 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           <div className="flex-1 flex flex-col gap-8">
             {/* Uniswap-style Amount Input */}
-            <div className="uniswap-input-box !h-40">
-              <div className="flex justify-between items-center">
+            <div className="uniswap-input-box">
+              <div className="flex justify-between items-center mb-2">
                 <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Deposit amount</label>
               </div>
-              <div className="flex items-center gap-6 h-20">
+              <div className="flex items-center justify-between gap-4">
                 <input 
                   type="number"
-                  placeholder="0.00"
-                  className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="0"
+                  className="w-full bg-transparent text-4xl font-semibold outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ color: primaryTextColor }}
                 />
-                <div className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-6 py-4 rounded-[28px] border border-black/5 dark:border-white/10 shadow-lg backdrop-blur-md min-w-[160px] justify-center">
-                  <span className="text-[10px] font-bold text-[#00A8E8] uppercase tracking-widest cursor-pointer hover:text-[#0090C7] transition-colors absolute left-4">Max</span>
-                  <span className="text-xl font-black tracking-tighter" style={{ color: primaryTextColor }}>HBAR</span>
+                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-md backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer">
+                  <span className="text-[10px] font-bold text-[#00A8E8] uppercase tracking-widest cursor-pointer hover:text-[#0090C7] transition-colors pl-1">Max</span>
+                  <span className="text-lg font-bold" style={{ color: primaryTextColor }}>HBAR</span>
                 </div>
               </div>
             </div>
