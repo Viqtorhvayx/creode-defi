@@ -33,7 +33,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       
       {/* 1. TOP OVERVIEW ROW: Slim minimalist metric cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center transition-bounce hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
+        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center interactive-pop">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Total Value Locked</h4>
             <div className="flex items-baseline gap-2">
@@ -46,7 +46,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center transition-bounce hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
+        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center interactive-pop">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Active Positions</h4>
             <div className="flex items-baseline gap-2">
@@ -64,7 +64,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
-        <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 transition-bounce hover:-translate-y-2 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] h-full">
+        <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 interactive-pop h-full">
           
           <div>
             <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Yield Generation</h3>
@@ -113,7 +113,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       setMaturityDate(targetDate.toISOString().split('T')[0]);
                     }}
                     disabled={!lockDays}
-                    className="h-full px-8 bg-[#00A8E8] text-white font-bold rounded-[16px] transition-bounce hover:-translate-y-1 hover:scale-[1.02] active:scale-95 hover:bg-[#0096D1] hover:shadow-[0_10px_20px_rgba(0,168,232,0.3)] disabled:hover:transform-none disabled:hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-full px-8 bg-[#00A8E8] text-white font-bold rounded-[16px] interactive-pop active:scale-95 disabled:hover:transform-none disabled:hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     SET
                   </button>
@@ -140,7 +140,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </p>
               </div>
 
-              <button className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] transition-bounce hover:-translate-y-2 hover:scale-[1.02] active:scale-95 !rounded-[30px] flex justify-center">
+              <button className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] interactive-pop active:scale-95 !rounded-[30px] flex justify-center">
                 CONFIRM LOCK
               </button>
             </div>
@@ -149,7 +149,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* 4. RIGHT COLUMN: Chart (Span 5) */}
-        <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-bounce hover:-translate-y-2 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] min-h-[500px]">
+        <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] interactive-pop min-h-[500px]">
           <div className="p-10 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
             <div>
               <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Market Analytics</h3>

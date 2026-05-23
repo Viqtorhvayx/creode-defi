@@ -70,7 +70,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   };
 
   return (
-    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden transition-bounce hover:-translate-y-2 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
+    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden interactive-pop">
       <div className="flex justify-between items-center mb-12">
         <div>
           <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Liquidity provision</h3>
@@ -132,8 +132,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
 
         <div className="flex gap-6 mt-auto">
-          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] transition-bounce !rounded-[30px] hover:-translate-y-2 hover:scale-[1.02] active:scale-95 disabled:hover:transform-none">Supply</button>
-          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 transition-bounce !rounded-[30px] hover:-translate-y-2 hover:scale-[1.02] active:scale-95">Withdraw</button>
+          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] interactive-pop !rounded-[30px] active:scale-95 disabled:hover:transform-none">Supply</button>
+          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 interactive-pop !rounded-[30px] active:scale-95">Withdraw</button>
         </div>
       </div>
     </div>

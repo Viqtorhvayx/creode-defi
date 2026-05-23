@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
         
         {/* LEFT COLUMN: Clickable Logo */}
         <div 
-          className="flex-1 flex justify-start cursor-pointer hover:-translate-y-1 hover:scale-105 transition-bounce flex-shrink-0"
+          className="flex-1 flex justify-start cursor-pointer interactive-pop flex-shrink-0"
           onClick={() => setActiveTab('Home')}
         >
           <Logo theme={theme} />
@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 text-sm font-bold tracking-wide transition-bounce rounded-xl hover:-translate-y-1 hover:scale-105 ${
+                  className={`px-6 py-2 text-sm font-bold tracking-wide interactive-pop rounded-xl ${
                     activeTab === tab
                       ? 'text-black dark:text-white scale-105' 
                       : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white' 
@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           {activeTab !== 'Home' && (
             <button 
               onClick={handleThemeToggle}
-              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-bounce hover:-translate-y-1 hover:scale-110 active:scale-90 border-none outline-none"
+              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 interactive-pop active:scale-90 border-none outline-none"
               aria-label="Toggle Theme"
             >
               {theme === 'light' ? (
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
             </button>
           )}
           {activeTab !== 'Home' && (
-            <div className="hover:-translate-y-1 hover:scale-105 transition-bounce">
+            <div className="interactive-pop">
               <CustomWalletButton theme={theme} />
             </div>
           )}
