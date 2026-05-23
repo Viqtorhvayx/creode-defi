@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
         {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
         <div className="flex-1 flex justify-center">
           {activeTab !== 'Home' && (
-            <div className="flex items-center gap-2 p-1.5 bg-black/5 dark:bg-white/5 rounded-2xl border-none outline-none">
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
               {tabs.map((tab) => (
                 <button
                   key={tab}
