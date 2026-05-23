@@ -26,8 +26,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
   const tabs = ['Vault', 'Lend', 'Borrow'];
 
   return (
-    <header className="w-full pt-2 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
-      <nav className="w-full max-w-[1440px] mx-auto px-4 md:px-8 flex justify-between items-center">
+    <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-none outline-none">
+      <nav className="w-full px-6 md:px-10 flex justify-between items-center">
         
         {/* LEFT COLUMN: Clickable Logo */}
         <div 
