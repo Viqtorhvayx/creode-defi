@@ -88,6 +88,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           {activeTab !== 'Home' && (
             <CustomWalletButton theme={theme} />
           )}
+        </div>
 
       </nav>
     </header>
