@@ -46,22 +46,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       {/* 2. MAIN SPLIT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* 3. LEFT COLUMN: Chart (Span 7) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 overflow-hidden flex flex-col transition-all hover:shadow-md min-h-[500px]">
-          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-black text-black dark:text-white tracking-tight">Market Analytics</h2>
-              <p className="text-xs font-bold text-[#00A8E8] uppercase tracking-widest mt-1">HBAR / USD</p>
-            </div>
-            <span className="px-3 py-1 bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 rounded-lg text-xs font-black tracking-wide">Live Data</span>
-          </div>
-          <div className="flex-1 p-2 h-full">
-            <PriceChart theme={theme} />
-          </div>
-        </div>
-
-        {/* 4. RIGHT COLUMN: Lock Engine (Span 5) */}
-        <div className="lg:col-span-5 p-8 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 flex flex-col gap-8 transition-all hover:shadow-md h-full justify-between">
+        {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
+        <div className="lg:col-span-7 p-8 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 flex flex-col gap-8 transition-all hover:shadow-md h-full justify-between">
           
           <div>
             <h3 className="text-2xl font-black text-black dark:text-white mb-2">Create Lock</h3>
@@ -121,6 +107,20 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
           </div>
           
+        </div>
+
+        {/* 4. RIGHT COLUMN: Chart (Span 5) */}
+        <div className="lg:col-span-5 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 overflow-hidden flex flex-col transition-all hover:shadow-md min-h-[500px]">
+          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-black text-black dark:text-white tracking-tight">Market Analytics</h2>
+              <p className="text-xs font-bold text-[#00A8E8] uppercase tracking-widest mt-1">HBAR / USD</p>
+            </div>
+            <span className="px-3 py-1 bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 rounded-lg text-xs font-black tracking-wide">Live Data</span>
+          </div>
+          <div className="flex-1 p-2 h-full">
+            <PriceChart theme={theme} />
+          </div>
         </div>
 
       </div>
