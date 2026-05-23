@@ -11,34 +11,37 @@ interface VaultTabProps {
 }
 
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
+  const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)';
+  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
+
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* 1. TOP OVERVIEW ROW: Slim minimalist metric cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 bg-white dark:bg-[#121212] rounded-3xl shadow-sm border border-black/5 dark:border-white/5 flex justify-between items-center transition-all hover:shadow-md">
+        <div className="glass-panel !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
           <div>
-            <h4 className="text-black/50 dark:text-white/50 font-extrabold uppercase tracking-widest text-xs mb-1">Total Value Locked</h4>
+            <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Total Value Locked</h4>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-black dark:text-white tracking-tighter">0.00</span>
-              <span className="text-black/80 dark:text-white/80 font-bold text-sm">HBAR</span>
+              <span className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>0.00</span>
+              <span className="font-bold text-sm" style={{ color: labelColor }}>HBAR</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-full bg-[#00A8E8]/10 flex items-center justify-center">
-            <svg className="w-6 h-6 text-[#00A8E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          <div className="w-14 h-14 rounded-full bg-[#00A8E8]/10 flex items-center justify-center border border-[#00A8E8]/20 shadow-inner">
+            <svg className="w-7 h-7 text-[#00A8E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
           </div>
         </div>
         
-        <div className="p-6 bg-white dark:bg-[#121212] rounded-3xl shadow-sm border border-black/5 dark:border-white/5 flex justify-between items-center transition-all hover:shadow-md">
+        <div className="glass-panel !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
           <div>
-            <h4 className="text-black/50 dark:text-white/50 font-extrabold uppercase tracking-widest text-xs mb-1">Active Positions</h4>
+            <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Active Positions</h4>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-black dark:text-white tracking-tighter">0</span>
-              <span className="text-black/50 dark:text-white/50 font-bold text-sm ml-1">Locks</span>
+              <span className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>0</span>
+              <span className="font-bold text-sm ml-1" style={{ color: labelColor }}>Locks</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-full bg-[#10B981]/10 flex items-center justify-center">
-            <svg className="w-6 h-6 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="w-14 h-14 rounded-full bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/20 shadow-inner">
+            <svg className="w-7 h-7 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
         </div>
       </div>
@@ -47,62 +50,66 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
-        <div className="lg:col-span-7 p-8 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 flex flex-col gap-8 transition-all hover:shadow-md h-full justify-between">
+        <div className="lg:col-span-7 glass-panel !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] h-full">
           
           <div>
-            <h3 className="text-2xl font-black text-black dark:text-white mb-2">Create Lock</h3>
-            <p className="text-black/50 dark:text-white/50 text-sm font-medium">Select your timeline and secure HBAR to generate protocol yield.</p>
+            <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Yield Generation</h3>
+            <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Create Lock</p>
           </div>
 
           <div className="flex-1 flex flex-col gap-8">
-            {/* Amount Input */}
-            <div className="space-y-3">
-              <label className="text-xs font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Deposit Amount</label>
-              <div className="relative w-full group">
+            {/* Uniswap-style Amount Input */}
+            <div className="uniswap-input-box !h-40">
+              <div className="flex justify-between items-center">
+                <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Deposit amount</label>
+              </div>
+              <div className="flex items-center gap-6 h-20">
                 <input 
                   type="number"
                   placeholder="0.00"
-                  className="w-full h-20 bg-black/5 dark:bg-white/5 border border-transparent rounded-2xl px-6 text-3xl font-black text-black dark:text-white focus:outline-none focus:border-[#00A8E8]/30 focus:bg-transparent transition-all duration-300"
+                  className="w-full bg-transparent text-5xl font-black outline-none border-none p-0 tracking-tighter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ color: primaryTextColor }}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4 bg-white dark:bg-[#1A1A1A] p-2 pl-5 rounded-xl shadow-sm border border-black/5 dark:border-white/5">
-                  <button className="text-xs font-black text-[#00A8E8] uppercase tracking-widest hover:text-black dark:hover:text-white transition-colors">Max</button>
-                  <div className="w-px h-5 bg-black/10 dark:bg-white/10"></div>
-                  <span className="text-base font-black text-black/80 dark:text-white/80 pr-2">HBAR</span>
+                <div className="flex items-center gap-4 bg-black/5 dark:bg-white/5 px-6 py-4 rounded-[28px] border border-black/5 dark:border-white/10 shadow-lg backdrop-blur-md min-w-[160px] justify-center">
+                  <span className="text-[10px] font-bold text-[#00A8E8] uppercase tracking-widest cursor-pointer hover:text-[#0090C7] transition-colors absolute left-4">Max</span>
+                  <span className="text-xl font-black tracking-tighter" style={{ color: primaryTextColor }}>HBAR</span>
                 </div>
               </div>
             </div>
 
             {/* Custom Timeline Picker */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl">
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Start Date</label>
+            <div className="grid grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[32px] border border-black/5 dark:border-white/5 shadow-inner">
+              <div className="flex flex-col gap-3">
+                <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Start Date</label>
                 <input 
                   type="date" 
-                  className="w-full p-3 bg-white dark:bg-[#1A1A1A] rounded-xl border border-black/5 dark:border-white/5 text-sm font-bold text-black dark:text-white focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer" 
+                  className="w-full p-4 bg-white/50 dark:bg-black/20 rounded-[20px] border border-black/5 dark:border-white/10 text-sm font-black focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer shadow-sm" 
+                  style={{ color: primaryTextColor }}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-black/40 dark:text-white/40 uppercase tracking-widest">Maturity Date</label>
+              <div className="flex flex-col gap-3">
+                <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Maturity Date</label>
                 <input 
                   type="date" 
-                  className="w-full p-3 bg-white dark:bg-[#1A1A1A] rounded-xl border border-black/5 dark:border-white/5 text-sm font-bold text-black dark:text-white focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer" 
+                  className="w-full p-4 bg-white/50 dark:bg-black/20 rounded-[20px] border border-black/5 dark:border-white/10 text-sm font-black focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer shadow-sm" 
+                  style={{ color: primaryTextColor }}
                 />
               </div>
             </div>
 
             {/* Warning & Submit */}
-            <div className="space-y-6 pt-2">
-              <div className="p-4 bg-red-50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20 flex gap-3 items-start">
-                <div className="p-1.5 bg-red-100 dark:bg-red-500/20 rounded-lg shrink-0 mt-0.5">
-                  <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            <div className="space-y-6 mt-auto">
+              <div className="bg-red-500/10 p-6 rounded-[32px] border border-red-500/20 flex gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
-                <p className="text-xs text-red-700 dark:text-red-300 font-bold leading-relaxed pt-0.5">
-                  Early withdrawal before your selected maturity date triggers a strict 5% penalty fee on your locked principal.
+                <p className="text-xs font-bold leading-relaxed text-red-500 dark:text-red-400">
+                  Early withdrawal before your selected maturity date triggers a strict 5% penalty fee.
                 </p>
               </div>
 
-              <button className="w-full py-5 bg-[#00A8E8] text-white rounded-2xl text-lg font-black uppercase tracking-[0.15em] hover:bg-[#0090C7] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-                Confirm Lock
+              <button className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover !rounded-[30px] flex justify-center">
+                CONFIRM LOCK
               </button>
             </div>
           </div>
@@ -110,15 +117,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* 4. RIGHT COLUMN: Chart (Span 5) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#121212] rounded-[2rem] shadow-sm border border-black/5 dark:border-white/5 overflow-hidden flex flex-col transition-all hover:shadow-md min-h-[500px]">
-          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
+        <div className="lg:col-span-5 glass-panel !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] min-h-[500px]">
+          <div className="p-10 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
             <div>
-              <h2 className="text-2xl font-black text-black dark:text-white tracking-tight">Market Analytics</h2>
-              <p className="text-xs font-bold text-[#00A8E8] uppercase tracking-widest mt-1">HBAR / USD</p>
+              <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Market Analytics</h3>
+              <p className="text-2xl font-black tracking-tighter" style={{ color: primaryTextColor }}>HBAR / USD</p>
             </div>
-            <span className="px-3 py-1 bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 rounded-lg text-xs font-black tracking-wide">Live Data</span>
+            <span className="px-4 py-2 bg-[#00A8E8]/10 text-[#00A8E8] rounded-full text-[10px] font-black tracking-[0.2em] uppercase border border-[#00A8E8]/20">Live</span>
           </div>
-          <div className="flex-1 p-2 h-full">
+          <div className="flex-1 p-6 h-full relative">
             <PriceChart theme={theme} />
           </div>
         </div>
