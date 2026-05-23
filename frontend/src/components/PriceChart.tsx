@@ -102,7 +102,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         vertLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
         horzLines: { color: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)' },
       },
-      width: chartContainerRef.current.offsetWidth,
+      autoSize: true,
+      width: chartContainerRef.current.clientWidth || 400,
       height: 230,
       localization: {
         priceFormatter: (price: number) => {
@@ -241,7 +242,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         </button>
       </div>
 
-      <div className="relative w-full flex-grow mt-2 min-h-[230px]"><div ref={chartContainerRef} className="w-full h-full" /></div>
+      <div className="relative w-full h-[230px] mt-2"><div ref={chartContainerRef} className="absolute inset-0" /></div>
 
       <div className="flex w-full justify-between items-end border-t border-[var(--border)] pt-4 transform -translate-y-4">
         <div className="flex flex-col text-left">

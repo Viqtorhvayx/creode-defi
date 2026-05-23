@@ -16,6 +16,8 @@
   --border: rgba(0, 0, 0, 0.05);
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .dark {
   --background: #0B0E14;
   --surface: #151A22;
