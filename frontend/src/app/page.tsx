@@ -135,7 +135,7 @@ export default function Dashboard() {
       case 'Borrow':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8 flex justify-center">
-            <div className="w-full max-w-2xl">
+            <div className="w-full max-w-5xl">
               <BorrowingModule xp={userXP} theme={theme} />
             </div>
           </div>
