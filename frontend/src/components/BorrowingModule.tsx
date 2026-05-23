@@ -111,7 +111,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-  return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full max-w-6xl mx-auto">
       {/* LEFT COLUMN: Input Section */}
       <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop flex flex-col h-full">
