@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
-import { HeartbeatMonitor } from './HeartbeatMonitor';
+
 
 interface BorrowingModuleProps {
   xp: number;
@@ -111,7 +111,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
       {/* LEFT COLUMN: Input Section */}
       <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop flex flex-col h-full">
         {/* Header authored by Viqtorhvayx */}
@@ -225,15 +225,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </div>
         
         <div className="flex-1 flex flex-col justify-center gap-12">
-          {/* Dynamic ECG Heartbeat Monitor - Old Design */}
+          {/* Cardiac Monitor authored by Viqtorhvayx */}
           <div className="h-32 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group shadow-inner">
-            <div className="absolute inset-0">
-              <HeartbeatMonitor 
-                healthFactor={healthFactor} 
-                xp={currentXP} 
-                isActive={true} 
-                color={borrowRatio > 0 ? getXPColor(currentXP) : '#00A8E8'} 
-              />
+            <div className="absolute inset-0 opacity-10">
+              <svg className="w-full h-full" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                <path 
+                  d="M0,50 L200,50 L220,30 L240,70 L260,10 L280,90 L300,50 L1000,50" 
+                  fill="none" 
+                  stroke="#00A8E8" 
+                  strokeWidth="2" 
+                  className="animate-[pulse_3s_infinite]"
+                />
+              </svg>
             </div>
             
             {/* UI Overlay on top of the canvas */}
