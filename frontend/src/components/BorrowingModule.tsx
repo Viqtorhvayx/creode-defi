@@ -111,7 +111,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
+    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transition-bounce hover:-translate-y-2 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {/* Header authored by Viqtorhvayx */}
       <div className="mb-8">
         <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
@@ -247,7 +247,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <button 
           onClick={handleAction} 
           disabled={isClicked || !hasInput}
-          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] bounce-hover mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] transition-all hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_25px_70px_rgba(0,168,232,0.5)]"
+          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] transition-bounce hover:-translate-y-2 hover:scale-[1.02] active:scale-95 hover:shadow-[0_25px_70px_rgba(0,168,232,0.5)] disabled:hover:transform-none"
         >
           {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
         </button>
