@@ -27,20 +27,21 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
   return (
     <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
-      <nav className="w-full px-4 flex justify-between items-center">
+      <nav className="w-full max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
         
-        {/* LEFT COLUMN: Clickable Logo */}
-        <div 
-          className="flex-1 flex justify-start cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setActiveTab('Home')}
-        >
-          <Logo theme={theme} />
-        </div>
+        {/* LEFT SIDE: Logo + Navigation Tabs */}
+        <div className="flex items-center gap-8 lg:gap-12">
+          {/* Clickable Logo */}
+          <div 
+            className="cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
+            onClick={() => setActiveTab('Home')}
+          >
+            <Logo theme={theme} />
+          </div>
 
-        {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
-        <div className="flex-1 flex justify-center">
+          {/* Navigation tabs (hidden on Home) */}
           {activeTab !== 'Home' && (
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
+            <div className="hidden md:flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -58,8 +59,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           )}
         </div>
 
-        {/* RIGHT COLUMN: Controls and Wallet */}
-        <div className="flex-1 flex items-center justify-end gap-4">
+        {/* RIGHT SIDE: Controls and Wallet */}
+        <div className="flex items-center gap-4">
           {activeTab !== 'Home' && (
             <button 
               onClick={handleThemeToggle}
