@@ -27,13 +27,39 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
 
   return (
     <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
-      <nav className="w-full px-8 flex justify-between items-center">
+      <nav className="w-full px-4 flex justify-between items-center">
         
-        {/* LEFT COLUMN: Controls and Wallet */}
-        <div className="flex-1 flex items-center justify-start gap-4">
+        {/* LEFT COLUMN: Clickable Logo */}
+        <div 
+          className="flex-1 flex justify-start cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setActiveTab('Home')}
+        >
+          <Logo theme={theme} />
+        </div>
+
+        {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
+        <div className="flex-1 flex justify-center">
           {activeTab !== 'Home' && (
-            <CustomWalletButton theme={theme} />
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
+                    activeTab === tab
+                      ? 'bg-[#00A8E8] text-white shadow-md' 
+                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' 
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           )}
+        </div>
+
+        {/* RIGHT COLUMN: Controls and Wallet */}
+        <div className="flex-1 flex items-center justify-end gap-4">
           {activeTab !== 'Home' && (
             <button 
               onClick={handleThemeToggle}
@@ -59,35 +85,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
               )}
             </button>
           )}
-        </div>
-
-        {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
-        <div className="flex-1 flex justify-center">
           {activeTab !== 'Home' && (
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 text-sm font-bold tracking-wide transition-all duration-300 rounded-xl ${
-                    activeTab === tab
-                      ? 'bg-[#00A8E8] text-white shadow-md' 
-                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' 
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+            <CustomWalletButton theme={theme} />
           )}
-        </div>
-
-        {/* RIGHT COLUMN: Clickable Logo */}
-        <div 
-          className="flex-1 flex justify-end cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => setActiveTab('Home')}
-        >
-          <Logo theme={theme} />
         </div>
 
       </nav>
