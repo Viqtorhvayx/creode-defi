@@ -3,7 +3,7 @@
  */
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PriceChart } from './PriceChart';
 
 interface VaultTabProps {
@@ -14,12 +14,26 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
 
+  const [lockDays, setLockDays] = useState("");
+  const [maturityDate, setMaturityDate] = useState("--");
+
+  const handleSetDays = () => {
+    const days = parseInt(lockDays);
+    if (!isNaN(days) && days > 0) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      setMaturityDate(date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }));
+    } else {
+      setMaturityDate("--");
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* 1. TOP OVERVIEW ROW: Slim minimalist metric cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="glass-panel !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
+        <div className="bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Total Value Locked</h4>
             <div className="flex items-baseline gap-2">
@@ -32,7 +46,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className="glass-panel !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
+        <div className="bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center transition-all hover:shadow-[0_20px_60px_rgba(0,168,232,0.1)]">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Active Positions</h4>
             <div className="flex items-baseline gap-2">
@@ -50,7 +64,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
-        <div className="lg:col-span-7 glass-panel !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] h-full">
+        <div className="lg:col-span-7 bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] h-full">
           
           <div>
             <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Yield Generation</h3>
@@ -63,11 +77,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <div className="flex justify-between items-center mb-2">
                 <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Deposit amount</label>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-4 h-20">
                 <input 
                   type="number"
                   placeholder="0"
-                  className="w-full bg-transparent text-4xl font-semibold outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ color: primaryTextColor }}
                 />
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-md backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer">
@@ -78,22 +92,33 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
 
             {/* Custom Timeline Picker */}
-            <div className="grid grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[32px] border border-black/5 dark:border-white/5 shadow-inner">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[32px] border border-black/5 dark:border-white/5 shadow-inner items-end">
               <div className="flex flex-col gap-3">
-                <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Start Date</label>
-                <input 
-                  type="date" 
-                  className="w-full p-4 bg-white/50 dark:bg-black/20 rounded-[20px] border border-black/5 dark:border-white/10 text-sm font-black focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer shadow-sm" 
-                  style={{ color: primaryTextColor }}
-                />
+                <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Lock Duration (Days)</label>
+                <div className="flex gap-2 h-14">
+                  <input 
+                    type="number"
+                    value={lockDays}
+                    onChange={(e) => setLockDays(e.target.value)}
+                    placeholder="0"
+                    className="w-full h-full px-4 bg-white dark:bg-black/20 rounded-[16px] border border-black/5 dark:border-white/10 text-xl font-bold focus:outline-none focus:border-[#00A8E8] transition-all shadow-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                    style={{ color: primaryTextColor }}
+                  />
+                  <button 
+                    onClick={handleSetDays}
+                    className="h-full px-6 bg-[#00A8E8] text-white font-bold rounded-[16px] shadow-md hover:bg-[#0090C7] transition-all tracking-widest text-sm"
+                  >
+                    SET
+                  </button>
+                </div>
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Maturity Date</label>
-                <input 
-                  type="date" 
-                  className="w-full p-4 bg-white/50 dark:bg-black/20 rounded-[20px] border border-black/5 dark:border-white/10 text-sm font-black focus:outline-none focus:border-[#00A8E8] transition-all cursor-pointer shadow-sm" 
-                  style={{ color: primaryTextColor }}
-                />
+                <div className="w-full h-14 px-4 bg-black/5 dark:bg-white/5 rounded-[16px] border border-black/5 dark:border-white/10 flex items-center shadow-sm">
+                  <span className="text-sm font-bold" style={{ color: maturityDate === "--" ? labelColor : primaryTextColor }}>
+                    {maturityDate}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -117,7 +142,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* 4. RIGHT COLUMN: Chart (Span 5) */}
-        <div className="lg:col-span-5 glass-panel !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] min-h-[500px]">
+        <div className="lg:col-span-5 bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-all hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)] min-h-[500px]">
           <div className="p-10 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
             <div>
               <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Market Analytics</h3>

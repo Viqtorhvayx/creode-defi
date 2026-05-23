@@ -111,7 +111,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
+    <div className="bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       {/* Header authored by Viqtorhvayx */}
       <div className="mb-8">
         <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
@@ -176,10 +176,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">Max</button>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 h-20">
             <FormattedNumberInput 
               placeholder="0"
-              className="w-full bg-transparent text-4xl font-semibold outline-none border-none p-0"
+              className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0"
               style={{ color: primaryTextColor }}
               value={hbarInput}
               onValueChange={setHbarInput}

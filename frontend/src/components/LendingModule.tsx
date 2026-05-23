@@ -70,7 +70,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   };
 
   return (
-    <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
+    <div className="bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
       <div className="flex justify-between items-center mb-12">
         <div>
           <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Liquidity provision</h3>
@@ -93,10 +93,10 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
               <QuickButton label="Max" onClick={handleMaxSelect} />
             </div>
           </div>
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 h-20">
             <FormattedNumberInput 
               placeholder="0"
-              className="w-full bg-transparent text-4xl font-semibold outline-none border-none p-0"
+              className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0"
               style={{ color: primaryTextColor }}
               value={amount}
               onValueChange={setAmount}
