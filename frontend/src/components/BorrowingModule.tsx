@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom';
 import { useWallet } from '../context/WalletContext';
 import { FormattedNumberInput, formatWithCommas, stripCommas } from './FormattedNumberInput';
 import { usePythPrice } from '../hooks/usePythPrice';
-
+import { HeartbeatMonitor } from './HeartbeatMonitor';
 
 interface BorrowingModuleProps {
   xp: number;
@@ -111,14 +111,53 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
-      {/* LEFT COLUMN: Input Section */}
-      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop flex flex-col h-full">
-        {/* Header authored by Viqtorhvayx */}
-        <div className="mb-8">
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
+      {/* Header authored by Viqtorhvayx */}
+      <div className="mb-8">
+        <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
+        <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+      </div>
+
+      <div className="mb-12 flex flex-col gap-4">
+        {/* Heartbeat Monitor Screen */}
+        <div className="h-28 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden shadow-inner">
+          <HeartbeatMonitor 
+            healthFactor={healthFactor} 
+            xp={currentXP} 
+            isActive={borrowRatio > 0} 
+            color={borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563'} 
+          />
         </div>
+        
+        {/* Separated Status Panel */}
+        <div className="flex justify-between items-center bg-black/20 px-8 py-5 rounded-[32px] border border-white/5 shadow-xl">
+           <div className="flex flex-col">
+             <span className="text-[11px] font-bold opacity-40 uppercase tracking-widest mb-1" style={{ color: primaryTextColor }}>Reputation XP</span>
+             <p className="text-3xl font-black flex items-baseline gap-1">
+               <span style={{ color: getXPColor(currentXP), textShadow: `0 0 20px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
+               <span className="text-sm font-bold opacity-30">/ 100</span>
+             </p>
+           </div>
+
+           <div className="w-[1px] h-12 bg-white/10" />
+
+           <div className="flex flex-col items-center">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-2" style={{ color: primaryTextColor }}>Stability</span>
+             <span className="text-sm font-black px-4 py-1.5 rounded-full bg-white/5 border border-white/10" style={{ color: getXPColor(currentXP) }}>
+               {currentXP >= 80 ? 'Safe' : currentXP >= 40 ? 'Warning' : 'Critical'}
+             </span>
+           </div>
+
+           <div className="w-[1px] h-12 bg-white/10" />
+
+           <div className="flex flex-col items-end">
+             <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-2" style={{ color: primaryTextColor }}>Signal</span>
+             <span className={`text-sm font-black ${borrowRatio > 0 ? 'animate-pulse' : ''}`} style={{ color: borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563' }}>
+               {borrowRatio > 0 ? 'Active' : 'Idle'}
+             </span>
+           </div>
+        </div>
+      </div>
 
       <div className="flex gap-4 mb-12 bg-black/30 p-2 rounded-[60px] border border-white/5">
         <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Collateral</button>
@@ -214,64 +253,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         </button>
 
         <p className="text-center text-[11px] font-bold opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
-      </div>
-      </div>
-      
-      {/* RIGHT COLUMN: Reputation Metric & Heartbeat */}
-      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] interactive-pop min-h-[500px] flex flex-col">
-        <div className="mb-8">
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Reputation Metric</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
-        </div>
-        
-        <div className="flex-1 flex flex-col justify-center gap-12">
-          {/* Cardiac Monitor authored by Viqtorhvayx */}
-          <div className="h-32 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden flex items-center justify-center group shadow-inner">
-            <div className="absolute inset-0 opacity-10">
-              <svg className="w-full h-full" viewBox="0 0 1000 100" preserveAspectRatio="none">
-                <path 
-                  d="M0,50 L200,50 L220,30 L240,70 L260,10 L280,90 L300,50 L1000,50" 
-                  fill="none" 
-                  stroke="#00A8E8" 
-                  strokeWidth="2" 
-                  className="animate-[pulse_3s_infinite]"
-                />
-              </svg>
-            </div>
-            
-            {/* UI Overlay on top of the canvas */}
-            <div className="relative z-10 flex items-center gap-6 bg-black/60 px-8 py-3 rounded-full backdrop-blur-md border border-white/5 shadow-2xl">
-               <div className="flex flex-col items-center">
-                 <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest text-white">Stability</span>
-                 <span className={`text-sm font-black ${isHealthy ? 'text-[#10B981]' : 'text-red-500'}`}>
-                   {isHealthy ? 'Nominal' : 'Critical'}
-                 </span>
-               </div>
-               <div className="w-[1px] h-8 bg-white/10" />
-               <div className="flex flex-col items-center">
-                 <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest text-white">Pulse</span>
-                 <span className={`text-sm font-black ${isHealthy ? 'text-[#00A8E8]' : 'text-red-400'} animate-pulse`}>
-                   {borrowRatio > 0 ? 'Active' : 'Idle'}
-                 </span>
-               </div>
-               <div className="w-[1px] h-8 bg-white/10" />
-               <div className="flex flex-col items-center">
-                 <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest text-white">Risk</span>
-                 <span className={`text-sm font-black ${isHealthy ? 'text-emerald-500' : 'text-red-600'}`}>
-                   {borrowRatio > 0.8 ? 'High' : (borrowRatio > 0 ? 'Moderate' : 'Minimal')}
-                 </span>
-               </div>
-            </div>
-          </div>
-          
-          <div className="text-center flex flex-col gap-2">
-            <p className="text-5xl font-black flex items-baseline justify-center gap-2">
-              <span style={{ color: getXPColor(currentXP), textShadow: `0 0 30px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
-              <span className="text-xl font-bold opacity-30">/ 100</span>
-            </p>
-            <p className="text-[12px] font-bold opacity-40 uppercase tracking-widest" style={{ color: primaryTextColor }}>Global Reputation Score</p>
-          </div>
-        </div>
       </div>
     </div>
   );
