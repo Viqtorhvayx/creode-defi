@@ -222,7 +222,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
       <div className="flex justify-between items-baseline w-full mb-2">
         <div className="flex flex-col relative">
-          <div className="z-10 bg-surface pb-1">
+          <div className="z-10 pb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>HBAR / USD</span>
           </div>
           <div className="flex items-baseline gap-2 mt-0.5">
