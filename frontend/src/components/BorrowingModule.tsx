@@ -111,7 +111,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-  return (
     <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
       {/* CARD 1: Reputation Metric (Cardiac Monitor + XP Figure) */}
       <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
