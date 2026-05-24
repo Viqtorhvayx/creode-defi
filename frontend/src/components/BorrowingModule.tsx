@@ -111,20 +111,20 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full max-w-6xl mx-auto">
       {/* LEFT COLUMN: Credit Facility (Inputs) */}
-      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-6">
-          <h3 className="text-[12px] font-bold opacity-40 mb-1" style={{ color: labelColor }}>Credit facility</h3>
-          <p className="text-2xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-10 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
+        <div className="mb-10">
+          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
+          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
         </div>
 
-        <div className="flex gap-4 mb-6 bg-black/30 p-2 rounded-[60px] border border-white/5">
+        <div className="flex gap-4 mb-10 bg-black/30 p-2 rounded-[60px] border border-white/5">
           <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Collateral</button>
           <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Credit</button>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Uniswap-style Input Box authored by Viqtorhvayx */}
           <div className="uniswap-input-box">
             <div className="flex justify-between items-center mb-2">
@@ -146,7 +146,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               />
               <div className="relative group">
                 <div 
-                  className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 shadow-md cursor-pointer hover:bg-white/10 transition-all"
+                  className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-md cursor-pointer hover:bg-white/10 transition-all"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
@@ -184,9 +184,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
 
           {/* Aave-style Data Rows authored by Viqtorhvayx */}
-          <div className="space-y-4 bg-white/[0.03] p-6 rounded-[32px] border border-white/5 shadow-xl">
+          <div className="space-y-4 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
             <div className="flex justify-between items-center">
-              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
+              <span className="text-[13px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
               <div className="flex flex-col items-end">
                 <span className="text-xl font-black text-white tracking-tight">0.00 HBAR</span>
                 <div className="w-40 h-2 bg-white/5 rounded-full mt-3 overflow-hidden border border-white/5">
@@ -195,11 +195,11 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Liquidation price</span>
+              <span className="text-[13px] font-bold opacity-40" style={{ color: primaryTextColor }}>Liquidation price</span>
               <span className="text-xl font-black text-white tracking-tight">$0.0000</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Net APR</span>
+              <span className="text-[13px] font-bold opacity-40" style={{ color: primaryTextColor }}>Net APR</span>
               <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">Borrow</span></span>
             </div>
           </div>
@@ -207,7 +207,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           <button 
             onClick={handleAction} 
             disabled={isClicked || !hasInput}
-            className="nav-pill !py-5 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] mt-4 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] interactive-pop active:scale-95 disabled:hover:transform-none"
+            className="nav-pill !py-6 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] mt-4 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] interactive-pop active:scale-95 disabled:hover:transform-none"
           >
             {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
           </button>
@@ -217,10 +217,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       {/* RIGHT COLUMN: Reputation Metric (Cardiac Monitor + XP Figure) */}
-      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-6">
-          <h3 className="text-[12px] font-bold opacity-40 mb-1" style={{ color: labelColor }}>Reputation Metric</h3>
-          <p className="text-2xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
+      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-10 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
+        <div className="mb-10">
+          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Reputation Metric</h3>
+          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
         </div>
         
         <div className="h-40 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
@@ -235,9 +235,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           
           {/* XP Figure Overlay without glassmorphism/cluttered words */}
           <div className="relative z-10 bg-black/90 px-8 py-3 rounded-full border border-white/5 shadow-2xl flex items-center justify-center">
-             <p className="text-3xl font-black flex items-baseline gap-2">
+             <p className="text-4xl font-black flex items-baseline gap-2">
                <span style={{ color: getXPColor(currentXP), textShadow: `0 0 20px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
-               <span className="text-lg font-bold opacity-30 text-white">/ 100</span>
+               <span className="text-xl font-bold opacity-30 text-white">/ 100</span>
              </p>
           </div>
         </div>
