@@ -111,9 +111,35 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full max-w-4xl mx-auto">
-      {/* LEFT COLUMN: Credit Facility (Inputs) */}
-      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl relative overflow-hidden">
+    <div className="flex flex-col gap-6 items-center w-full max-w-xl mx-auto">
+      {/* TOP ROW: Reputation Metric Banner */}
+      <div className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-6 shadow-md relative overflow-hidden">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-[13px] font-bold opacity-40" style={{ color: labelColor }}>Reputation Metric</h3>
+          <p className="text-xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
+        </div>
+        
+        <div className="h-24 w-full bg-[#0a0a0a] rounded-[16px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
+          <div className="absolute inset-0">
+            <HeartbeatMonitor 
+              healthFactor={healthFactor} 
+              xp={currentXP} 
+              isActive={borrowRatio > 0} 
+              color={borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563'} 
+            />
+          </div>
+          
+          <div className="relative z-10 bg-black/90 px-6 py-2 rounded-full border border-white/5 shadow-xl flex items-center justify-center">
+             <p className="text-2xl font-black flex items-baseline gap-2">
+               <span style={{ color: getXPColor(currentXP), textShadow: `0 0 15px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
+               <span className="text-lg font-bold opacity-30 text-white">/ 100</span>
+             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM ROW: Credit Facility */}
+      <div className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl relative overflow-hidden">
         <div className="mb-8">
           <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
           <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
@@ -213,33 +239,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </button>
 
           <p className="text-center text-[11px] font-bold opacity-10 mt-6" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
-        </div>
-      </div>
-
-      {/* RIGHT COLUMN: Reputation Metric (Cardiac Monitor + XP Figure) */}
-      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl relative overflow-hidden">
-        <div className="mb-8">
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Reputation Metric</h3>
-          <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
-        </div>
-        
-        <div className="h-40 w-full bg-[#0a0a0a] rounded-[16px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
-          <div className="absolute inset-0">
-            <HeartbeatMonitor 
-              healthFactor={healthFactor} 
-              xp={currentXP} 
-              isActive={borrowRatio > 0} 
-              color={borrowRatio > 0 ? getXPColor(currentXP) : '#4B5563'} 
-            />
-          </div>
-          
-          {/* XP Figure Overlay without glassmorphism/cluttered words */}
-          <div className="relative z-10 bg-black/90 px-8 py-3 rounded-full border border-white/5 shadow-2xl flex items-center justify-center">
-             <p className="text-4xl font-black flex items-baseline gap-2">
-               <span style={{ color: getXPColor(currentXP), textShadow: `0 0 20px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
-               <span className="text-xl font-bold opacity-30 text-white">/ 100</span>
-             </p>
-          </div>
         </div>
       </div>
     </div>
