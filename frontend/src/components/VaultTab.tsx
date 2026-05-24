@@ -73,15 +73,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           <div className="flex-1 flex flex-col gap-8">
             {/* Uniswap-style Amount Input */}
-            <div className="uniswap-input-box">
+            <div className="uniswap-input-box max-w-md mx-auto w-full border-x-0 border-t-0 border-b border-black/10 dark:border-white/10 pb-2">
               <div className="flex justify-between items-center mb-2">
                 <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Deposit amount</label>
               </div>
-              <div className="flex items-center justify-between gap-4 h-14">
+              <div className="flex items-center justify-between gap-4 h-20">
                 <input 
                   type="number"
                   placeholder="0"
-                  className="w-full bg-transparent text-2xl font-semibold outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ color: primaryTextColor }}
                 />
                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-md backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer">
