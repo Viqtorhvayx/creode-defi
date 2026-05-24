@@ -32,7 +32,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* 1. TOP OVERVIEW ROW: Slim minimalist metric cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto w-full">
         <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[16px] p-8 flex justify-between items-center">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Total Value Locked</h4>
