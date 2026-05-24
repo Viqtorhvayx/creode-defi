@@ -32,8 +32,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* 1. TOP OVERVIEW ROW: Slim minimalist metric cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center interactive-pop">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[16px] p-8 flex justify-between items-center">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Total Value Locked</h4>
             <div className="flex items-baseline gap-2">
@@ -46,7 +46,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[32px] p-8 flex justify-between items-center interactive-pop">
+        <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[16px] p-8 flex justify-between items-center">
           <div>
             <h4 className="font-bold tracking-[0.2em] text-[11px] mb-2 uppercase" style={{ color: labelColor }}>Active Positions</h4>
             <div className="flex items-baseline gap-2">
@@ -61,10 +61,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       </div>
 
       {/* 2. MAIN SPLIT GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto w-full">
         
         {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
-        <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col gap-10 interactive-pop h-full">
+        <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl flex flex-col gap-10 h-full relative overflow-hidden">
           
           <div>
             <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Yield Generation</h3>
@@ -92,7 +92,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
 
             {/* Custom Timeline Picker */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[32px] border border-black/5 dark:border-white/5 shadow-inner items-end">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[16px] border border-black/5 dark:border-white/5 shadow-inner items-end">
               <div className="flex flex-col gap-3">
                 <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Lock Duration (Days)</label>
                 <div className="flex gap-2 h-14">
@@ -131,7 +131,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
             {/* Warning & Submit */}
             <div className="space-y-6 mt-auto">
-              <div className="bg-red-500/10 p-6 rounded-[32px] border border-red-500/20 flex gap-4 items-center">
+              <div className="bg-red-500/10 p-6 rounded-[16px] border border-red-500/20 flex gap-4 items-center">
                 <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
@@ -140,7 +140,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </p>
               </div>
 
-              <button className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] interactive-pop active:scale-95 !rounded-[30px] flex justify-center">
+              <button className="nav-pill !py-6 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] interactive-pop active:scale-95 !rounded-[30px] flex justify-center">
                 CONFIRM LOCK
               </button>
             </div>
@@ -149,7 +149,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* 4. RIGHT COLUMN: Chart (Span 5) */}
-        <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-0 overflow-hidden flex flex-col shadow-[0_30px_100px_rgba(0,0,0,0.4)] interactive-pop min-h-[500px]">
+        <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-0 overflow-hidden flex flex-col shadow-xl min-h-[500px]">
           <div className="p-10 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
             <div>
               <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Market Analytics</h3>

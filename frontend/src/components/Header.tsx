@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
         
         {/* LEFT COLUMN: Clickable Logo */}
         <div 
-          className="flex-1 flex justify-start cursor-pointer interactive-pop flex-shrink-0"
+          className="flex-1 flex justify-start cursor-pointer flex-shrink-0"
           onClick={() => setActiveTab('Home')}
         >
           <Logo theme={theme} />
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
             </button>
           )}
           {activeTab !== 'Home' && (
-            <div className="interactive-pop">
+            <div>
               <CustomWalletButton theme={theme} />
             </div>
           )}

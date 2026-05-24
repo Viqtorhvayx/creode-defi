@@ -70,7 +70,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   };
 
   return (
-    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] flex flex-col h-full relative overflow-hidden interactive-pop">
+    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 max-w-xl mx-auto shadow-xl flex flex-col h-full relative overflow-hidden">
       <div className="flex justify-between items-center mb-12">
         <div>
           <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Liquidity provision</h3>
@@ -114,7 +114,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         </div>
 
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl mt-auto">
+        <div className="space-y-4 bg-white/[0.03] p-6 rounded-[16px] border border-white/5 shadow-md mt-auto">
           <div className="flex justify-between items-center">
             <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Your supply</span>
             <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>

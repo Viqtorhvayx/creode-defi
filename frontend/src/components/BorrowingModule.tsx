@@ -111,12 +111,12 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full max-w-4xl mx-auto">
       {/* LEFT COLUMN: Credit Facility (Inputs) */}
-      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-10 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-10">
+      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl relative overflow-hidden">
+        <div className="mb-8">
           <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+          <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
         </div>
 
         <div className="flex gap-4 mb-10 bg-black/30 p-2 rounded-[60px] border border-white/5">
@@ -184,7 +184,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
           </div>
 
           {/* Aave-style Data Rows authored by Viqtorhvayx */}
-          <div className="space-y-4 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
+          <div className="space-y-4 bg-white/[0.03] p-6 rounded-[16px] border border-white/5 shadow-md">
             <div className="flex justify-between items-center">
               <span className="text-[13px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
               <div className="flex flex-col items-end">
@@ -217,13 +217,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
       </div>
 
       {/* RIGHT COLUMN: Reputation Metric (Cardiac Monitor + XP Figure) */}
-      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-10 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-10">
+      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl relative overflow-hidden">
+        <div className="mb-8">
           <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Reputation Metric</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
+          <p className="text-3xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
         </div>
         
-        <div className="h-40 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
+        <div className="h-40 w-full bg-[#0a0a0a] rounded-[16px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
           <div className="absolute inset-0">
             <HeartbeatMonitor 
               healthFactor={healthFactor} 

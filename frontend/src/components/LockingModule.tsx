@@ -166,7 +166,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
   const usdValue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((Number(stripCommas(amount)) || 0) * hbarPrice);
 
   return (
-    <div className="glass-panel !rounded-[48px] p-12 max-w-2xl mx-auto shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden transform transition-all duration-700 hover:shadow-[0_40px_120px_rgba(0,168,232,0.15)]">
+    <div className="glass-panel !rounded-[24px] p-8 max-w-xl mx-auto shadow-xl relative overflow-hidden">
       {isPending && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-xl z-50 flex items-center justify-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.4)]"></div>
@@ -187,7 +187,7 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
 
       <div className="space-y-10">
         {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
+        <div className="space-y-4 bg-white/[0.03] p-6 rounded-[16px] border border-white/5 shadow-md">
           <div className="flex justify-between items-center">
             <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Deposited capital</span>
             <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
