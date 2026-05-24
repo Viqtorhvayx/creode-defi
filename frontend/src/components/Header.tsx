@@ -45,9 +45,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 text-sm font-bold tracking-wide interactive-pop rounded-xl ${
+                  className={`px-6 py-2 text-sm font-bold tracking-wide rounded-xl transition-colors ${
                     activeTab === tab
-                      ? 'text-black dark:text-white scale-105' 
+                      ? 'text-black dark:text-white' 
                       : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white' 
                   }`}
                 >
@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           {activeTab !== 'Home' && (
             <button 
               onClick={handleThemeToggle}
-              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 interactive-pop active:scale-90 border-none outline-none"
+              className="p-2 bg-transparent rounded-full hover:bg-black/5 dark:hover:bg-white/10 border-none outline-none transition-colors"
               aria-label="Toggle Theme"
             >
               {theme === 'light' ? (
