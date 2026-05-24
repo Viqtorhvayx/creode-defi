@@ -92,7 +92,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
 
             {/* Custom Timeline Picker */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[16px] border border-black/5 dark:border-white/5 shadow-inner items-end">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/[0.03] dark:bg-white/[0.03] p-6 rounded-[16px] border border-black/5 dark:border-white/5 shadow-inner items-end max-w-md w-full">
               <div className="flex flex-col gap-3">
                 <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>Lock Duration (Days)</label>
                 <div className="flex gap-2 h-14">
@@ -130,7 +130,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
 
             {/* Warning & Submit */}
-            <div className="space-y-6 mt-auto">
+            <div className="space-y-6 mt-auto max-w-md w-full">
               <div className="bg-red-500/10 p-6 rounded-[16px] border border-red-500/20 flex gap-4 items-center">
                 <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
