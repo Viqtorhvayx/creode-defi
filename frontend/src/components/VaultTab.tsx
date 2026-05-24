@@ -63,8 +63,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       {/* 2. MAIN SPLIT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto w-full">
         
-        {/* 3. LEFT COLUMN: Lock Engine (Span 7) */}
-        <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl flex flex-col gap-10 h-full relative overflow-hidden">
+        {/* 3. LEFT COLUMN: Lock Engine (Span 6) */}
+        <div className="lg:col-span-6 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl flex flex-col gap-10 h-full relative overflow-hidden">
           
           <div>
             <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Yield Generation</h3>
@@ -148,8 +148,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           
         </div>
 
-        {/* 4. RIGHT COLUMN: Chart (Span 5) */}
-        <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-0 overflow-hidden flex flex-col shadow-xl min-h-[500px]">
+        {/* 4. RIGHT COLUMN: Chart (Span 6) */}
+        <div className="lg:col-span-6 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-0 overflow-hidden flex flex-col shadow-xl min-h-[500px]">
           <div className="flex-1 p-6 h-full relative">
             <PriceChart theme={theme} />
           </div>
