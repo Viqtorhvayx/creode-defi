@@ -242,5 +242,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
         <p className="text-center text-[11px] font-bold opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
       </div>
     </div>
+    </div>
   );
 };
