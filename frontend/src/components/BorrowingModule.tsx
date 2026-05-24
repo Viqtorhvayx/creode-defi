@@ -111,12 +111,116 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const isHealthy = healthFactor >= 50;
 
   return (
-    <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
-      {/* CARD 1: Reputation Metric (Cardiac Monitor + XP Figure) */}
-      <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-8">
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Reputation Metric</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
+      {/* LEFT COLUMN: Credit Facility (Inputs) */}
+      <div className="lg:col-span-7 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
+        <div className="mb-6">
+          <h3 className="text-[12px] font-bold opacity-40 mb-1" style={{ color: labelColor }}>Credit facility</h3>
+          <p className="text-2xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
+        </div>
+
+        <div className="flex gap-4 mb-6 bg-black/30 p-2 rounded-[60px] border border-white/5">
+          <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Collateral</button>
+          <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Credit</button>
+        </div>
+
+        <div className="space-y-6">
+          {/* Uniswap-style Input Box authored by Viqtorhvayx */}
+          <div className="uniswap-input-box">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>
+                {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
+              </label>
+              <div className="flex gap-2">
+                <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">50%</button>
+                <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">Max</button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-4 h-20">
+              <FormattedNumberInput 
+                placeholder="0"
+                className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0"
+                style={{ color: primaryTextColor }}
+                value={hbarInput}
+                onValueChange={setHbarInput}
+              />
+              <div className="relative group">
+                <div 
+                  className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 shadow-md cursor-pointer hover:bg-white/10 transition-all"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
+                    {collateralToken === 'USDT' ? (
+                      <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-4 h-4 object-contain" alt="USDT" />
+                    ) : (
+                      <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-4 h-4 object-contain" alt="USDC" />
+                    )}
+                  </div>
+                  <span className="text-lg font-bold text-white whitespace-nowrap">{collateralToken}</span>
+                  <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute top-full mt-2 right-0 w-36 bg-[#1a1b1f] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden">
+                    <div 
+                      className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors"
+                      onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
+                    >
+                      <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-5 h-5 object-contain" alt="USDT" />
+                      <span className="text-sm font-bold text-white">USDT</span>
+                    </div>
+                    <div 
+                      className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-t border-white/5"
+                      onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
+                    >
+                      <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-5 h-5 object-contain" alt="USDC" />
+                      <span className="text-sm font-bold text-white">USDC</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-[12px] font-bold text-[#00A8E8] opacity-60 mt-2">{usdValue}</p>
+          </div>
+
+          {/* Aave-style Data Rows authored by Viqtorhvayx */}
+          <div className="space-y-4 bg-white/[0.03] p-6 rounded-[32px] border border-white/5 shadow-xl">
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
+              <div className="flex flex-col items-end">
+                <span className="text-xl font-black text-white tracking-tight">0.00 HBAR</span>
+                <div className="w-40 h-2 bg-white/5 rounded-full mt-3 overflow-hidden border border-white/5">
+                  <div className="h-full bg-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.5)] transition-all duration-1000" style={{ width: '0%' }} />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Liquidation price</span>
+              <span className="text-xl font-black text-white tracking-tight">$0.0000</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Net APR</span>
+              <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">Borrow</span></span>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleAction} 
+            disabled={isClicked || !hasInput}
+            className="nav-pill !py-5 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] mt-4 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] interactive-pop active:scale-95 disabled:hover:transform-none"
+          >
+            {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
+          </button>
+
+          <p className="text-center text-[11px] font-bold opacity-10 mt-6" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN: Reputation Metric (Cardiac Monitor + XP Figure) */}
+      <div className="lg:col-span-5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
+        <div className="mb-6">
+          <h3 className="text-[12px] font-bold opacity-40 mb-1" style={{ color: labelColor }}>Reputation Metric</h3>
+          <p className="text-2xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrower XP</p>
         </div>
         
         <div className="h-40 w-full bg-[#0a0a0a] rounded-[32px] border border-white/5 relative overflow-hidden shadow-inner flex items-center justify-center">
@@ -129,119 +233,15 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
             />
           </div>
           
-          {/* XP Figure Overlay without cluttered words */}
-          <div className="relative z-10 bg-black/60 px-8 py-3 rounded-full backdrop-blur-md border border-white/5 shadow-2xl flex items-center justify-center">
-             <p className="text-4xl font-black flex items-baseline gap-2">
+          {/* XP Figure Overlay without glassmorphism/cluttered words */}
+          <div className="relative z-10 bg-black/90 px-8 py-3 rounded-full border border-white/5 shadow-2xl flex items-center justify-center">
+             <p className="text-3xl font-black flex items-baseline gap-2">
                <span style={{ color: getXPColor(currentXP), textShadow: `0 0 20px ${getXPColor(currentXP)}80` }}>{currentXP}</span>
-               <span className="text-xl font-bold opacity-30 text-white">/ 100</span>
+               <span className="text-lg font-bold opacity-30 text-white">/ 100</span>
              </p>
           </div>
         </div>
       </div>
-
-      {/* CARD 2: Credit Facility (Inputs) */}
-      <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[48px] p-12 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden interactive-pop">
-        <div className="mb-10">
-          <h3 className="text-[13px] font-bold opacity-40 mb-2" style={{ color: labelColor }}>Credit facility</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Borrow</p>
-        </div>
-
-      <div className="flex gap-4 mb-12 bg-black/30 p-2 rounded-[60px] border border-white/5">
-        <button onClick={() => setActiveTab('deposit')} className={getTabClasses('deposit')}>Collateral</button>
-        <button onClick={() => setActiveTab('borrow')} className={getTabClasses('borrow')}>Credit</button>
-      </div>
-
-      <div className="space-y-10">
-        {/* Uniswap-style Input Box authored by Viqtorhvayx */}
-        <div className="uniswap-input-box">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>
-              {activeTab === 'deposit' ? 'Collateral amount' : 'Borrow amount'}
-            </label>
-            <div className="flex gap-2">
-              <button onClick={() => setHbarInput((Number(balance) * 0.5).toString())} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">50%</button>
-              <button onClick={() => setHbarInput(balance)} className="text-[10px] font-bold px-3 py-1 bg-white/5 rounded-lg hover:bg-white/10 text-white opacity-40 transition-all uppercase">Max</button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-4 h-20">
-            <FormattedNumberInput 
-              placeholder="0"
-              className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0"
-              style={{ color: primaryTextColor }}
-              value={hbarInput}
-              onValueChange={setHbarInput}
-            />
-            <div className="relative group">
-              <div 
-                className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md cursor-pointer hover:bg-white/10 transition-all"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center border border-white/10 overflow-hidden shrink-0">
-                  {collateralToken === 'USDT' ? (
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-4 h-4 object-contain" alt="USDT" />
-                  ) : (
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-4 h-4 object-contain" alt="USDC" />
-                  )}
-                </div>
-                <span className="text-lg font-bold text-white whitespace-nowrap">{collateralToken}</span>
-                <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-              </div>
-
-              {isDropdownOpen && (
-                <div className="absolute top-full mt-2 right-0 w-36 bg-[#1a1b1f] border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden">
-                  <div 
-                    className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors"
-                    onClick={() => { setCollateralToken('USDT'); setIsDropdownOpen(false); }}
-                  >
-                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" className="w-5 h-5 object-contain" alt="USDT" />
-                    <span className="text-sm font-bold text-white">USDT</span>
-                  </div>
-                  <div 
-                    className="p-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors border-t border-white/5"
-                    onClick={() => { setCollateralToken('USDC'); setIsDropdownOpen(false); }}
-                  >
-                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" className="w-5 h-5 object-contain" alt="USDC" />
-                    <span className="text-sm font-bold text-white">USDC</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          <p className="text-[12px] font-bold text-[#00A8E8] opacity-60 mt-2">{usdValue}</p>
-        </div>
-
-        {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-5 bg-white/[0.03] p-8 rounded-[32px] border border-white/5 shadow-xl">
-          <div className="flex justify-between items-center">
-            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Borrow limit</span>
-            <div className="flex flex-col items-end">
-              <span className="text-xl font-black text-white tracking-tight">0.00 HBAR</span>
-              <div className="w-40 h-2 bg-white/5 rounded-full mt-3 overflow-hidden border border-white/5">
-                <div className="h-full bg-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.5)] transition-all duration-1000" style={{ width: '0%' }} />
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Liquidation price</span>
-            <span className="text-xl font-black text-white tracking-tight">$0.0000</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Net APR</span>
-            <span className="text-xl font-black text-red-500 tracking-tight">12.4% <span className="text-[11px] opacity-30">Borrow</span></span>
-          </div>
-        </div>
-
-        <button 
-          onClick={handleAction} 
-          disabled={isClicked || !hasInput}
-          className="nav-pill !py-7 w-full bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_60px_rgba(0,168,232,0.4)] mt-6 disabled:opacity-50 disabled:translate-y-0 !rounded-[30px] interactive-pop active:scale-95 disabled:hover:transform-none"
-        >
-          {isClicked ? 'Processing...' : (activeTab === 'deposit' ? 'Supply collateral' : 'Execute borrow')}
-        </button>
-
-        <p className="text-center text-[11px] font-bold opacity-10 mt-8" style={{ color: primaryTextColor }}>Powered by Creode Reputation Engine</p>
-      </div>
-    </div>
     </div>
   );
 };
