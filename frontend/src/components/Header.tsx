@@ -16,16 +16,6 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
-  const [isToggling, setIsToggling] = useState(false);
-
-  const handleThemeToggle = () => {
-    setIsToggling(true);
-    toggleTheme();
-    setTimeout(() => setIsToggling(false), 300);
-  };
-
-  const tabs = ['Vault', 'Lend', 'Borrow'];
-
   return (
     <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
       <nav className="w-full max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
