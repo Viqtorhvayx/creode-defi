@@ -56,13 +56,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-sm ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-black/5 dark:bg-white/10 text-[#00A8E8] shadow-sm'
-                  : 'text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'
+                  ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-[#00A8E8] shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
               }`}
             >
-              <Icon size={20} weight={isActive ? "fill" : "regular"} />
+              <Icon size={18} weight={isActive ? "fill" : "regular"} />
               <span>{item.label}</span>
             </button>
           );
@@ -81,25 +81,35 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-sm ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white shadow-sm'
-                  : 'text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'
+                  ? 'bg-white/10 text-white border border-white/20'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
               }`}
             >
-              <Icon size={20} weight={isActive ? "fill" : "regular"} />
+              <Icon size={18} weight={isActive ? "fill" : "regular"} />
               <span>{item.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Bottom Log out */}
-      <div className="mt-auto">
-        <button className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-sm text-red-500 hover:bg-red-500/10 hover:text-red-600">
-          <SignOut size={20} />
+      {/* Bottom Section */}
+      <div className="mt-auto flex flex-col gap-6">
+        <button className="flex items-center gap-3 px-4 py-2 w-full font-bold text-[13px] text-white/60 hover:text-white transition-colors">
+          <SignOut size={18} />
           <span>Log out</span>
         </button>
+
+        {/* Total Portfolio Card */}
+        <div className="bg-[#090D14] border border-[#1A2332] rounded-[16px] p-5 flex flex-col gap-1">
+          <span className="text-[11px] font-bold text-white/60">Total Portfolio</span>
+          <span className="text-xl font-bold text-white">$18,642.75</span>
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-[11px] font-bold text-[#10B981]">▲ 3.24%</span>
+          </div>
+          <span className="text-[10px] font-bold text-white/40 mt-1">24h Change</span>
+        </div>
       </div>
 
     </div>

@@ -190,10 +190,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[10px] font-bold transition-all duration-300 rounded-[6px] py-1.5 px-3 tracking-widest ${
+      className={`text-[11px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide ${
         active 
-          ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white' 
-          : 'text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+          ? 'bg-[#00A8E8]/20 text-[#00A8E8]' 
+          : 'text-white/40 hover:text-white'
       }`}
     >
       {label}
@@ -214,7 +214,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>HBAR / USD</span>
           </div>
         </div>
-        <div className="flex gap-1 items-center bg-black/5 dark:bg-[#1A2332] p-1 rounded-lg border border-black/5 dark:border-white/5">
+        <div className="flex gap-1 items-center bg-[#090D14] border border-[#1A2332] p-1 rounded-full">
           {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
             <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
           ))}
@@ -237,22 +237,25 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       <div className="relative w-full flex-1 min-h-[200px] mt-2 mb-6"><div ref={chartContainerRef} className="absolute inset-0" /></div>
 
       {/* Bottom Stats Footer */}
-      <div className="grid grid-cols-4 w-full border-t border-black/5 dark:border-white/10 pt-6">
+      <div className="bg-[#090D14] border border-[#1A2332] rounded-2xl p-5 flex items-center justify-between mt-auto">
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Market Cap</span>
-          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>{marketCap || "$3.76B"}</span>
+          <span className="text-[11px] font-bold text-white/40 mb-1">Market Cap</span>
+          <span className="text-sm font-bold text-white">{marketCap || "$3.76B"}</span>
         </div>
+        <div className="w-px h-8 bg-[#1A2332]"></div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>24h Volume</span>
-          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>{volume24h || "$128.45M"}</span>
+          <span className="text-[11px] font-bold text-white/40 mb-1">24h Volume</span>
+          <span className="text-sm font-bold text-white">{volume24h || "$128.45M"}</span>
         </div>
+        <div className="w-px h-8 bg-[#1A2332]"></div>
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Circulating Supply</span>
-          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>42.39B HBAR</span>
+          <span className="text-[11px] font-bold text-white/40 mb-1">Circulating Supply</span>
+          <span className="text-sm font-bold text-white">42.39B HBAR</span>
         </div>
-        <div className="flex flex-col text-right items-end">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Rank</span>
-          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>#18</span>
+        <div className="w-px h-8 bg-[#1A2332]"></div>
+        <div className="flex flex-col text-left">
+          <span className="text-[11px] font-bold text-white/40 mb-1">Rank</span>
+          <span className="text-sm font-bold text-white">#18</span>
         </div>
       </div>
     </div>
