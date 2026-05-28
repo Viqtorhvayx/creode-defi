@@ -29,34 +29,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
     <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
       <nav className="w-full max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
         
-        {/* LEFT COLUMN: Clickable Logo */}
-        <div 
-          className="flex-1 flex justify-start cursor-pointer flex-shrink-0"
-          onClick={() => setActiveTab('Home')}
-        >
-          <Logo theme={theme} />
-        </div>
-
-        {/* CENTER COLUMN: Navigation tabs (hidden on Home) */}
-        <div className="flex-1 flex justify-center">
-          {activeTab !== 'Home' && (
-            <div className="hidden md:flex items-center gap-2 p-1.5 rounded-2xl border-none outline-none">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 text-sm font-bold tracking-wide rounded-xl transition-colors ${
-                    activeTab === tab
-                      ? 'text-black dark:text-white' 
-                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white' 
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* LEFT COLUMN: Empty space for right-alignment */}
+        <div className="flex-1"></div>
 
         {/* RIGHT COLUMN: Controls and Wallet */}
         <div className="flex-1 flex items-center justify-end gap-4">

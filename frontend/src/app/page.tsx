@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { Header } from '../components/Header';
+import { Sidebar } from '../components/Sidebar';
 
 import { VaultTab } from '../components/VaultTab';
 import { LendingModule } from '../components/LendingModule';
@@ -144,22 +145,35 @@ export default function Dashboard() {
   };
 
   return (
-    <>
-      <main className="flex-grow min-h-screen bg-background pt-4 pb-12 px-6 md:pt-6 md:px-12 lg:pt-8 lg:px-16 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto">
+    <div className="flex h-screen overflow-hidden bg-background transition-colors duration-500">
+      {/* Left Sidebar */}
+      <Sidebar 
+        theme={theme}
+        activeTab={activeMainTab}
+        setActiveTab={setActiveMainTab}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        {/* Top Bar */}
+        <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md pt-4 px-6 md:px-12 lg:px-16">
           <Header 
             theme={theme} 
             toggleTheme={toggleTheme} 
             activeTab={activeMainTab}
             setActiveTab={setActiveMainTab}
           />
+        </div>
 
-          <div className="min-h-[600px]">
+        {/* Scrollable Main Content */}
+        <main className="flex-1 px-6 md:px-12 lg:px-16 pb-12 w-full">
+          <div className="max-w-[1200px] mx-auto min-h-[600px]">
             {renderTabContent()}
           </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+        </main>
+        
+        <Footer />
+      </div>
+    </div>
   );
 }
