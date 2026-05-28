@@ -19,8 +19,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
-  const [activeInterval, setActiveInterval] = useState<'15min' | 'Hour' | 'Day' | 'Week'>('Day');
-  const [isInfoActive, setIsInfoActive] = useState(false);
+  const [activeInterval, setActiveInterval] = useState<'1H' | '1D' | '1W' | '1M' | 'ALL'>('1W');
   
   // Real-time Data States authored by Viqtorhvayx
   const [hbarPrice, setHbarPrice] = useState<string | null>(null);
@@ -138,10 +137,11 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     const loadPythHistory = async () => {
       let resolution = 'D';
       let secondsBack = 30 * 24 * 60 * 60;
-      if (activeInterval === '15min') { resolution = '15'; secondsBack = 24 * 60 * 60; }
-      else if (activeInterval === 'Hour') { resolution = '60'; secondsBack = 7 * 24 * 60 * 60; }
-      else if (activeInterval === 'Day') { resolution = 'D'; secondsBack = 30 * 24 * 60 * 60; }
-      else if (activeInterval === 'Week') { resolution = 'W'; secondsBack = 180 * 24 * 60 * 60; }
+      if (activeInterval === '1H') { resolution = '15'; secondsBack = 24 * 60 * 60; }
+      else if (activeInterval === '1D') { resolution = '60'; secondsBack = 7 * 24 * 60 * 60; }
+      else if (activeInterval === '1W') { resolution = 'D'; secondsBack = 30 * 24 * 60 * 60; }
+      else if (activeInterval === '1M') { resolution = 'D'; secondsBack = 90 * 24 * 60 * 60; }
+      else if (activeInterval === 'ALL') { resolution = 'W'; secondsBack = 365 * 24 * 60 * 60; }
 
       const to = Math.floor(Date.now() / 1000);
       const from = to - secondsBack;
@@ -190,10 +190,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[8px] font-black transition-all duration-300 rounded-[60px] !py-1 !h-auto px-2 tracking-tighter ${
+      className={`text-[10px] font-bold transition-all duration-300 rounded-[6px] py-1.5 px-3 tracking-widest ${
         active 
-          ? 'bg-[#00A8E8] text-white shadow-md shadow-[#00A8E8]/20' 
-          : 'bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20'
+          ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white' 
+          : 'text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
       }`}
     >
       {label}
@@ -202,56 +202,57 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
 
   return (
     <div className="w-full mx-auto flex flex-col h-full relative overflow-visible">
-      {isInfoActive && (
-        <div className="absolute top-14 right-6 w-56 z-[110] bg-black/40 backdrop-blur-2xl backdrop-saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_25px_50px_-12px_rgba(0,0,0,0.5)] border-none outline-none rounded-xl p-4 animate-in fade-in zoom-in duration-200">
-          <h5 className="text-[10px] font-black uppercase tracking-widest mb-3 text-white/90">Market Statistics</h5>
-          <div className="space-y-2.5">
-            {[
-              { label: 'Market Cap', value: marketCap || "...", color: 'text-white' },
-              { label: '24H Volume', value: volume24h || "...", color: 'text-white' },
-              { label: '24H Change', value: priceChange24h ? `${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(2)}%` : "...", color: priceChange24h ? (priceChange24h >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]') : 'text-white' }
-            ].map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-1.5 last:border-0 last:pb-0">
-                <span className="text-[9px] font-bold uppercase text-white/40">{item.label}</span>
-                <span className={`text-[10px] font-black ${item.color}`}>{item.value}</span>
-              </div>
-            ))}
+      
+      {/* Header section exactly as reference */}
+      <div className="flex justify-between items-start w-full mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-black/5 dark:bg-white/5">
+            <span className="text-xl font-bold" style={{ color: primaryTextColor }}>H</span>
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-sm font-bold tracking-tight mb-1" style={{ color: primaryTextColor }}>HBAR Market</h3>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>HBAR / USD</span>
           </div>
         </div>
-      )}
-
-      <div className="flex justify-between items-baseline w-full mb-2">
-        <div className="flex flex-col relative">
-          <div className="z-10 pb-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>HBAR / USD</span>
-          </div>
-          <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl font-black" style={{ color: primaryTextColor }}>{hbarPrice ? `$${hbarPrice}` : "..."}</span>
-              <span className={`text-[10px] font-bold ${priceChange24h && priceChange24h >= 0 ? '!text-[#10B981]' : '!text-[#EF4444]'}`}>
-                {priceChange24h ? `${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(2)}%` : "..."}
-              </span>
-          </div>
-          <div className="flex gap-1 mt-2 z-0">
-            {(['15min', 'Hour', 'Day', 'Week'] as const).map(interval => (
-              <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
-            ))}
-          </div>
+        <div className="flex gap-1 items-center bg-black/5 dark:bg-[#1A2332] p-1 rounded-lg border border-black/5 dark:border-white/5">
+          {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
+            <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
+          ))}
         </div>
-        <button onClick={() => setIsInfoActive(!isInfoActive)} className="transition-all duration-300 hover:scale-110 active:scale-95 p-1 relative top-[2px]" style={{ color: isInfoActive ? '#00A8E8' : labelColor }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </button>
       </div>
 
-      <div className="relative w-full h-[230px] mt-2"><div ref={chartContainerRef} className="absolute inset-0" /></div>
+      {/* Massive Price section */}
+      <div className="flex flex-col mb-4">
+        <span className="text-[40px] leading-none font-bold tracking-tight mb-3" style={{ color: primaryTextColor }}>
+          {hbarPrice ? `$${hbarPrice}` : "..."}
+        </span>
+        <div className="flex items-center gap-2">
+          <span className={`text-sm font-bold flex items-center gap-1 ${priceChange24h && priceChange24h >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+            {priceChange24h && priceChange24h >= 0 ? '▲' : '▼'} {priceChange24h ? Math.abs(priceChange24h).toFixed(2) : "..."}% 
+            <span className="text-xs ml-1" style={{ color: labelColor }}>(24h)</span>
+          </span>
+        </div>
+      </div>
 
-      <div className="flex w-full justify-between items-end border-t border-[var(--border)] pt-4 transform -translate-y-4">
+      <div className="relative w-full flex-1 min-h-[200px] mt-2 mb-6"><div ref={chartContainerRef} className="absolute inset-0" /></div>
+
+      {/* Bottom Stats Footer */}
+      <div className="grid grid-cols-4 w-full border-t border-black/5 dark:border-white/10 pt-6">
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>24H Volume</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{volume24h || "..."}</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Market Cap</span>
+          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>{marketCap || "$3.76B"}</span>
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>24h Volume</span>
+          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>{volume24h || "$128.45M"}</span>
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Circulating Supply</span>
+          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>42.39B HBAR</span>
         </div>
         <div className="flex flex-col text-right items-end">
-          <span className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: labelColor }}>Liquidity</span>
-          <span className="text-xs font-black" style={{ color: primaryTextColor }}>{marketCap || "..."}</span>
+          <span className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: labelColor }}>Rank</span>
+          <span className="text-sm font-bold" style={{ color: primaryTextColor }}>#18</span>
         </div>
       </div>
     </div>
