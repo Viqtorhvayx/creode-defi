@@ -46,14 +46,14 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       role="button"
       tabIndex={0}
       onClick={handleConnect}
-      className={`transition-all duration-300 flex items-center justify-center cursor-pointer select-none rounded-full border border-white/5 hover:bg-white/5 active:scale-95 px-2 py-1.5 ${
+      className={`transition-all duration-300 flex items-center justify-center cursor-pointer select-none border hover:bg-white/5 active:scale-95 ${
         !isConnected 
-          ? "bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20 border-none hover:bg-[#0090C7]" 
-          : "bg-[#0A0F16] text-white"
+          ? "bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.3)] border-[#00A8E8] hover:bg-[#0090C7] rounded-[12px] px-6 py-2.5" 
+          : "bg-[#090D14] text-white border-[#1A2332] rounded-full px-2 py-1.5"
       }`}
     >
       {!isConnected ? (
-        <span className="text-[12px] font-bold px-4 py-1">Connect Wallet</span>
+        <span className="text-[13px] font-bold tracking-wide">Connect Wallet</span>
       ) : (
         <div className="flex items-center gap-3 pr-2">
           {/* Circular Avatar */}
@@ -61,10 +61,9 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
             <span className="text-white font-bold text-sm">C</span>
           </div>
 
-          {/* Stacked Address & Mainnet */}
           <div className="flex flex-col items-start leading-tight">
-            <span className="text-[12px] font-bold text-white tracking-tight">
-              {accountId || "0.0.123456"}
+            <span className="text-[13px] font-bold text-white tracking-wide">
+              {balance ? `${Number(balance).toFixed(2)} ${balanceSymbol}` : "2,450.75 HBAR"}
             </span>
             <span className="text-[10px] font-medium text-white/50">
               Mainnet

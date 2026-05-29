@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
       
       {/* Top Logo */}
       <div 
-        className="cursor-pointer mb-10 pl-2"
+        className="cursor-pointer mb-10 pl-2 scale-[0.85] origin-left"
         onClick={() => setActiveTab('Home')}
       >
         <Logo theme={theme} />

@@ -190,10 +190,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
     <button
       onClick={onClick}
-      className={`text-[11px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide ${
+      className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${
         active 
-          ? 'bg-[#00A8E8]/20 text-[#00A8E8]' 
-          : 'text-white/40 hover:text-white'
+          ? 'bg-[#1A2332] text-white shadow-sm' 
+          : 'text-white/40 hover:text-white hover:bg-white/5'
       }`}
     >
       {label}
@@ -214,7 +214,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: labelColor }}>HBAR / USD</span>
           </div>
         </div>
-        <div className="flex gap-1 items-center bg-[#090D14] border border-[#1A2332] p-1 rounded-full">
+        <div className="flex gap-1 items-center bg-[#04080F] border border-[#1A2332] p-1 rounded-[10px]">
           {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
             <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
           ))}
