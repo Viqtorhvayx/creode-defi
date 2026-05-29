@@ -49,34 +49,27 @@ export default function CustomWalletButton({ theme }: { theme?: 'light' | 'dark'
       className={`transition-all duration-300 flex items-center justify-center cursor-pointer select-none border hover:bg-white/5 active:scale-95 ${
         !isConnected 
           ? "bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.3)] border-[#00A8E8] hover:bg-[#0090C7] rounded-[12px] px-6 py-2.5" 
-          : "bg-[#090D14] text-white border-[#1A2332] rounded-full px-2 py-1.5"
+          : "bg-[#04080F] text-white border-[#1A2332] rounded-full px-4 py-2"
       }`}
     >
       {!isConnected ? (
         <span className="text-[13px] font-bold tracking-wide">Connect Wallet</span>
       ) : (
-        <div className="flex items-center gap-3 pr-2">
-          {/* Circular Avatar */}
-          <div className="w-8 h-8 rounded-full bg-[#00A8E8] flex items-center justify-center shadow-[0_0_10px_rgba(0,168,232,0.3)]">
-            <span className="text-white font-bold text-sm">C</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+            <span className="text-[12px] font-bold text-white">Mainnet</span>
           </div>
-
-          <div className="flex flex-col items-start leading-tight">
-            <span className="text-[13px] font-bold text-white tracking-wide">
-              {balance ? `${Number(balance).toFixed(2)} ${balanceSymbol}` : "2,450.75 HBAR"}
-            </span>
-            <span className="text-[10px] font-medium text-white/50">
-              Mainnet
-            </span>
-          </div>
-
-          {/* Dropdown Arrow & Action */}
+          <div className="w-px h-4 bg-[#1A2332]"></div>
+          <span className="text-[12px] font-bold text-white tracking-wide">
+            {balance ? `${Number(balance).toFixed(2)} ${balanceSymbol}` : "2,450.75 HBAR"}
+          </span>
           <button 
             onClick={handleDisconnect}
             className="flex items-center justify-center text-white/40 hover:text-white transition-colors ml-1"
             title="Disconnect Wallet"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
           </button>
         </div>
       )}
