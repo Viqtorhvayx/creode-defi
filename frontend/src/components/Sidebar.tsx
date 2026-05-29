@@ -37,11 +37,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
 
   return (
-    <div className="w-[170px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-4 py-6 shrink-0 sticky top-0 left-0">
+    <div className="w-[170px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent pl-2 pr-4 py-6 shrink-0 sticky top-0 left-0">
       
       {/* Top Logo */}
       <div 
-        className="cursor-pointer mb-10 pl-1 scale-[0.75] origin-left"
+        className="cursor-pointer mb-10 scale-[0.75] origin-left"
         onClick={() => setActiveTab('Home')}
       >
         <Logo theme={theme} />
@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
                   ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-[#00A8E8] shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
                   : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
                   ? 'bg-white/10 text-white border border-white/20'
                   : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
@@ -96,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
 
       {/* Bottom Section */}
       <div className="mt-auto flex flex-col gap-6">
-        <button className="flex items-center gap-3 px-4 py-2 w-full font-bold text-[13px] text-white/60 hover:text-white transition-colors">
+        <button className="flex items-center gap-3 px-3 py-2 w-full font-bold text-[13px] text-white/60 hover:text-white transition-colors">
           <SignOut size={18} />
           <span>Log out</span>
         </button>
