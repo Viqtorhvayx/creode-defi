@@ -17,7 +17,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
-  const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
   const [activeInterval, setActiveInterval] = useState<'1H' | '1D' | '1W' | '1M' | 'ALL'>('1W');
   
@@ -124,16 +123,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
       lineColor, topColor: `${lineColor}33`, bottomColor: `${lineColor}00`, lineWidth: 2,
     });
 
-    const volumeSeries = chart.addHistogramSeries({
-      color: isDark ? 'rgba(0, 168, 232, 0.1)' : 'rgba(0, 168, 232, 0.05)',
-      priceFormat: { type: 'volume' },
-      priceScaleId: '',
-    });
-
-    volumeSeries.priceScale().applyOptions({
-      scaleMargins: { top: 0.7, bottom: 0 },
-    });
-
     const loadPythHistory = async () => {
       let resolution = 'D';
       let secondsBack = 30 * 24 * 60 * 60;
@@ -151,12 +140,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
         const data = await response.json();
         if (data.s === "ok") {
           const priceData = data.t.map((t: number, i: number) => ({ time: t as UTCTimestamp, value: data.c[i] }));
-          const volData = data.t.map((t: number, i: number) => ({
-            time: t as UTCTimestamp, value: data.v[i] || Math.random() * 100000,
-            color: data.c[i] >= data.o[i] ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'
-          }));
           areaSeries.setData(priceData);
-          volumeSeries.setData(volData);
           chart.timeScale().fitContent();
         }
       } catch (err) { console.error("History Error:", err); }
@@ -165,7 +149,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme }) => {
     loadPythHistory();
     chartRef.current = chart;
     seriesRef.current = areaSeries;
-    volumeSeriesRef.current = volumeSeries;
 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
