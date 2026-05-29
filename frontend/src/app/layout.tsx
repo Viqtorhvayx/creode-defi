@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 import { AppKitProvider } from "@/context/AppKitProvider";
 import { WalletProvider } from "@/context/WalletContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col`}>
+      <body className={`${inter.className} antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col`}>
         <AppKitProvider>
           <WalletProvider>
             <ToastProvider>
