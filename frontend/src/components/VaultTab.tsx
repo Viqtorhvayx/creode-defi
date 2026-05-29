@@ -29,20 +29,20 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         {/* LEFT COLUMN: Chart + Stats (Spans 7 columns) */}
         <div className="lg:col-span-7 flex flex-col h-full">
           {/* Chart Card */}
-          <div className="bg-white dark:bg-[#0A0F16] border border-slate-100 dark:border-[#1A2332] rounded-[24px] shadow-sm dark:shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col w-full h-full p-6">
+          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[24px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-full p-6">
             <PriceChart theme={theme} />
           </div>
         </div>
 
         {/* RIGHT COLUMN: Vault Lock Card (Spans 5 columns) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#090D14] border border-slate-100 dark:border-[#00A8E8] rounded-[24px] p-8 shadow-sm dark:shadow-[0_0_20px_rgba(0,168,232,0.1),inset_0_0_20px_rgba(0,168,232,0.05)] flex flex-col relative overflow-hidden h-fit">
+        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[24px] p-8 shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col relative overflow-hidden h-fit">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-[44px] h-[44px] rounded-full bg-blue-50 dark:bg-[#00A8E8] flex items-center justify-center dark:shadow-[0_0_20px_rgba(0,168,232,0.4)] dark:border dark:border-[#00A8E8]/50">
+              <div className="w-[44px] h-[44px] rounded-full bg-blue-50 dark:bg-blue-600/10 flex items-center justify-center dark:shadow-[0_0_20px_rgba(37,99,235,0.3)]">
                 {/* Placeholder for custom Vault icon image */}
-                <LockKey size={24} weight="fill" className="text-blue-600 dark:text-white" />
+                <LockKey size={24} weight="fill" className="text-blue-600 dark:text-blue-400" />
               </div>
               <div className="flex flex-col">
                 <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Vault</h3>
@@ -62,21 +62,21 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Huge APY */}
           <div className="flex flex-col mb-8">
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-[48px] leading-none font-bold text-blue-600 dark:text-[#00A8E8] dark:drop-shadow-[0_0_30px_rgba(0,168,232,0.4)]">0.30%</span>
-              <span className="text-[20px] font-bold text-blue-600 dark:text-[#00A8E8] dark:drop-shadow-[0_0_20px_rgba(0,168,232,0.3)]">APY</span>
+              <span className="text-[48px] leading-none font-bold text-blue-600 dark:text-blue-500 dark:drop-shadow-[0_0_25px_rgba(37,99,235,0.4)]">0.30%</span>
+              <span className="text-[20px] font-bold text-blue-600 dark:text-blue-500 dark:drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]">APY</span>
             </div>
-            <span className="text-[13px] font-medium text-blue-600 dark:text-[#00A8E8]">Earns every 21 days</span>
+            <span className="text-[13px] font-medium text-blue-600 dark:text-blue-400">Earns every 21 days</span>
           </div>
 
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
-            <label className="text-[13px] font-bold text-slate-900 dark:text-white mb-2">Deposit HBAR</label>
-            <div className="flex items-center justify-between w-full p-4 bg-slate-50 dark:bg-[#04080F] border border-slate-200 dark:border-[#1A2332] rounded-[16px] transition-all focus-within:border-blue-400 dark:focus-within:border-[#00A8E8]">
+            <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
+            <div className="flex items-center justify-between w-full p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all focus-within:border-blue-400 dark:focus-within:border-blue-500/50">
               <div className="flex flex-col justify-center h-full">
                 <input type="number" placeholder="0" className="bg-transparent outline-none border-none text-[32px] font-bold w-32 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none mb-1" />
                 <span className="text-[12px] font-medium text-slate-400 dark:text-white/40">$0</span>
               </div>
-              <div className="flex items-center gap-2 bg-white dark:bg-[#1A2332] px-3 py-2 rounded-full border border-slate-200 dark:border-transparent shadow-sm dark:shadow-none cursor-pointer">
+              <div className="flex items-center gap-2 bg-white dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer">
                 <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black">H</span>
                 <span className="text-[13px] font-bold text-slate-900 dark:text-white">HBAR</span>
                 <svg className="w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
@@ -86,17 +86,17 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           {/* Lock For Input Area */}
           <div className="flex flex-col w-full mb-4">
-            <label className="text-[13px] font-bold text-slate-900 dark:text-white mb-2">Lock for (days)</label>
-            <div className="flex items-center justify-between w-full p-2 pl-4 bg-white dark:bg-[#04080F] border border-slate-200 dark:border-[#1A2332] rounded-[12px]">
+            <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Lock for (days)</label>
+            <div className="flex items-center justify-between w-full p-2 pl-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[12px]">
               <input type="number" defaultValue="30" className="bg-transparent outline-none border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
-              <button className="text-[12px] font-bold text-blue-600 dark:text-[#00A8E8] border border-blue-200 dark:border-[#00A8E8]/30 px-4 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-[#00A8E8]/10 transition-colors">SET</button>
+              <button className="text-[12px] font-bold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 px-4 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">SET</button>
             </div>
           </div>
 
           {/* Warning Text */}
           <div className="flex items-center gap-2 mb-8">
-            <Warning size={16} className="text-red-500" />
-            <span className="text-[12px] font-medium text-red-500">Early withdrawal incurs a 5% fee</span>
+            <Warning size={16} className="text-red-500 dark:text-red-400/80" />
+            <span className="text-[12px] font-medium text-red-500 dark:text-red-400/80">Early withdrawal incurs a 5% fee</span>
           </div>
 
           {/* Info Row */}
@@ -126,12 +126,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <ChartLineUp size={14} />
                 <span className="text-[11px] font-semibold">Estimated Earnings</span>
               </div>
-              <span className="text-[13px] font-bold text-blue-600 dark:text-[#00A8E8]">+4.50 HBAR</span>
+              <span className="text-[13px] font-bold text-blue-600 dark:text-blue-400">+4.50 HBAR</span>
             </div>
           </div>
 
           {/* Deposit Button */}
-          <button className="w-full h-14 bg-blue-600 dark:bg-[#00A8E8] hover:bg-blue-700 dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(37,99,235,0.25)] dark:shadow-[0_5px_15px_rgba(0,168,232,0.3)] transition-all tracking-wide">
+          <button className="w-full h-14 bg-blue-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 hover:bg-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(37,99,235,0.25)] dark:shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all tracking-wide">
             <LockKey size={18} weight="bold" />
             Deposit to Vault
           </button>

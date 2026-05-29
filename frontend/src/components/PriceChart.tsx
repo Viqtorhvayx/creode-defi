@@ -161,7 +161,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => {
     if (theme === 'dark') {
       return (
-        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-[#1A2332] text-white shadow-sm' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>
+        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-white/10 text-white shadow-sm' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>
           {label}
         </button>
       );
@@ -180,15 +180,15 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       {/* Header section exactly as reference */}
       <div className="flex justify-between items-start w-full mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
-            <span className="text-[20px] font-bold text-slate-900 dark:text-white">H</span>
+          <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
+            <span className="text-[20px] font-bold text-slate-900 dark:text-white/90">H</span>
           </div>
           <div className="flex flex-col">
             <h3 className="text-[16px] font-bold tracking-tight mb-0.5 text-slate-900 dark:text-white">HBAR Market</h3>
-            <span className="text-[12px] font-medium text-slate-500 dark:text-white/60 uppercase tracking-widest">HBAR / USD</span>
+            <span className="text-[12px] font-medium text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>
           </div>
         </div>
-        <div className="flex gap-1 items-center bg-white dark:bg-[#04080F] border border-slate-100 dark:border-[#1A2332] p-1 rounded-[12px] shadow-sm dark:shadow-none">
+        <div className="flex gap-1 items-center bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 p-1 rounded-[12px] shadow-sm dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
           {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
             <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
           ))}
@@ -211,25 +211,25 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       <div className="relative w-full flex-1 min-h-[240px] mt-2 mb-6"><div ref={chartContainerRef} className="absolute inset-0" /></div>
 
       {/* Bottom Stats Footer */}
-      <div className="bg-slate-50 dark:bg-[#090D14] border border-slate-100 dark:border-[#1A2332] rounded-2xl p-5 flex items-center justify-between mt-auto">
+      <div className="bg-slate-50 dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-2xl p-5 flex items-center justify-between mt-auto dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
         <div className="flex flex-col text-left flex-1 pl-2">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Market Cap</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white">{marketCap || "$3.76B"}</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">{marketCap || "$3.76B"}</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
+        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">24h Volume</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white">{volume24h || "$128.45M"}</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">{volume24h || "$128.45M"}</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
+        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Circulating Supply</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white">42.39B HBAR</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">42.39B HBAR</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
+        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Rank</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white">#18</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">#18</span>
         </div>
       </div>
     </div>
