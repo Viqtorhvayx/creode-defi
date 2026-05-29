@@ -5,7 +5,6 @@
 
 import React, { useState } from 'react';
 import { Sun, Moon } from '@phosphor-icons/react';
-import { Logo } from './Logo';
 import CustomWalletButton from './CustomWalletButton';
 
 interface HeaderProps {
@@ -16,42 +15,49 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
-  const [isToggling, setIsToggling] = useState(false);
-
-  const handleThemeToggle = () => {
-    setIsToggling(true);
-    toggleTheme();
-    setTimeout(() => setIsToggling(false), 300);
-  };
-
   return (
-    <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 border-b border-black/5 dark:border-white/5 outline-none">
-      <nav className="w-full max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
+    <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 outline-none">
+      <nav className="w-full max-w-7xl mx-auto flex justify-between items-center">
         
         {/* LEFT COLUMN: Empty space for right-alignment */}
         <div className="flex-1"></div>
 
         {/* RIGHT COLUMN: Controls and Wallet */}
         <div className="flex-1 flex items-center justify-end gap-4">
-          <button 
-            onClick={handleThemeToggle}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-              theme === 'dark' 
-                ? 'bg-white/5 hover:bg-white/10 border-white/5' 
-                : 'bg-black/5 hover:bg-black/10 border-black/5'
-            } border ${isToggling ? 'scale-90 opacity-50' : 'scale-100 opacity-100'}`}
-            aria-label="Toggle Theme"
-          >
-            {theme === 'dark' 
-              ? <Sun size={20} color="white" weight="bold" /> 
-              : <Moon size={20} color="black" weight="bold" />
-            }
-          </button>
+          
+          {/* Wallet Button */}
           {activeTab !== 'Home' && (
             <div>
               <CustomWalletButton theme={theme} />
             </div>
           )}
+
+          {/* Theme Toggle Pill */}
+          <button 
+            onClick={toggleTheme}
+            className={`relative flex items-center h-[38px] w-[72px] rounded-full p-1 transition-all duration-300 border ${
+              theme === 'dark'
+                ? 'bg-[#04080F] border-[#1A2332]'
+                : 'bg-white border-slate-200 shadow-sm'
+            }`}
+            aria-label="Toggle Theme"
+          >
+            {/* Icons inside the pill */}
+            <div className="flex w-full justify-between px-1.5 z-0">
+              <Sun size={16} weight="fill" className={theme === 'dark' ? 'text-white/20' : 'text-amber-400'} />
+              <Moon size={16} weight="fill" className={theme === 'dark' ? 'text-white' : 'text-slate-300'} />
+            </div>
+
+            {/* Sliding Thumb */}
+            <div 
+              className={`absolute top-[3px] left-[3px] w-[30px] h-[30px] rounded-full transition-transform duration-300 shadow-sm z-10 ${
+                theme === 'dark' 
+                  ? 'translate-x-[34px] bg-[#00A8E8]' 
+                  : 'translate-x-0 bg-blue-600'
+              }`}
+            ></div>
+          </button>
+
         </div>
 
       </nav>

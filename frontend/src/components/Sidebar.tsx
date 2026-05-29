@@ -33,9 +33,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'Settings', icon: Gear, label: 'Settings' },
   ];
 
-  const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
-  const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
-
   return (
     <div className="w-[170px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent pl-2 pr-4 py-6 shrink-0 sticky top-0 left-0">
       
@@ -58,8 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
               onClick={() => setActiveTab(item.id)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-[#00A8E8] shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
-                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
+                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-[#00A8E8]/10 dark:text-[#00A8E8] dark:border-[#00A8E8] dark:shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
               <Icon size={18} weight={isActive ? "fill" : "regular"} />
@@ -83,8 +80,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
               onClick={() => setActiveTab(item.id)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-white/10 text-white border border-white/20'
-                  : 'text-white/60 hover:bg-white/5 hover:text-white border border-transparent'
+                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-[#00A8E8]/10 dark:text-[#00A8E8] dark:border-[#00A8E8] dark:shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
               <Icon size={18} weight={isActive ? "fill" : "regular"} />
@@ -96,20 +93,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
 
       {/* Bottom Section */}
       <div className="mt-auto flex flex-col gap-6">
-        <button className="flex items-center gap-3 px-3 py-2 w-full font-bold text-[13px] text-white/60 hover:text-white transition-colors">
+        <button className="flex items-center gap-3 px-3 py-2 w-full font-bold text-[13px] text-slate-500 hover:text-slate-900 dark:text-white/60 dark:hover:text-white transition-colors">
           <SignOut size={18} />
           <span>Log out</span>
         </button>
-
-        {/* Total Portfolio Card */}
-        <div className="bg-[#090D14] border border-[#1A2332] rounded-[16px] p-5 flex flex-col gap-1">
-          <span className="text-[11px] font-bold text-white/60">Total Portfolio</span>
-          <span className="text-xl font-bold text-white">$18,642.75</span>
-          <div className="flex items-center gap-1 mt-1">
-            <span className="text-[11px] font-bold text-[#10B981]">▲ 3.24%</span>
-          </div>
-          <span className="text-[10px] font-bold text-white/40 mt-1">24h Change</span>
-        </div>
       </div>
 
     </div>
