@@ -34,16 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   ];
 
   return (
-    <div className="w-[140px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 sticky top-0 left-0">
-      
-      {/* Top Logo */}
-      <div 
-        className="cursor-pointer mb-10 scale-[0.85] origin-left"
-        onClick={() => setActiveTab('Home')}
-      >
-        <Logo theme={theme} />
-      </div>
-
+    <div className="w-[140px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 relative">
       {/* Primary Menu */}
       <div className="flex flex-col gap-2 mb-8">
         {primaryMenu.map((item) => {

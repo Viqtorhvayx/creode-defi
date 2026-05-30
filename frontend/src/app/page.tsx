@@ -13,6 +13,7 @@ import { Sidebar } from '../components/Sidebar';
 import { VaultTab } from '../components/VaultTab';
 import { LendingModule } from '../components/LendingModule';
 import { BorrowingModule } from '../components/BorrowingModule';
+import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
 
@@ -145,18 +146,22 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background transition-colors duration-500">
-      {/* Left Sidebar */}
-      <Sidebar 
-        theme={theme}
-        activeTab={activeMainTab}
-        setActiveTab={setActiveMainTab}
-      />
+    <div className="flex flex-col h-screen overflow-hidden bg-background transition-colors duration-500">
+      
+      {/* Top Header (Full Width) */}
+      <header className="w-full flex items-center border-b border-black/5 dark:border-white/5 z-50 bg-background/80 backdrop-blur-md relative">
+        {/* Left: Logo (aligned with Sidebar) */}
+        <div className="w-[140px] flex items-center shrink-0 px-2 pt-6 pb-6 border-r border-black/5 dark:border-white/5">
+          <div 
+            className="cursor-pointer scale-[0.85] origin-left"
+            onClick={() => setActiveMainTab('Home')}
+          >
+            <Logo theme={theme} />
+          </div>
+        </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative">
-        {/* Top Bar */}
-        <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md pt-4 px-6 md:px-12 lg:px-16">
+        {/* Right: Controls (aligned with main content) */}
+        <div className="flex-1 flex justify-end px-6 md:px-12 lg:px-16 pt-6 pb-6">
           <Header 
             theme={theme} 
             toggleTheme={toggleTheme} 
@@ -164,15 +169,25 @@ export default function Dashboard() {
             setActiveTab={setActiveMainTab}
           />
         </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Left Sidebar */}
+        <Sidebar 
+          theme={theme}
+          activeTab={activeMainTab}
+          setActiveTab={setActiveMainTab}
+        />
 
         {/* Scrollable Main Content */}
-        <main className="flex-1 px-6 md:px-12 lg:px-16 pb-12 w-full">
-          <div className="max-w-[1200px] mx-auto min-h-[600px]">
-            {renderTabContent()}
+        <main className="flex-1 flex flex-col overflow-y-auto w-full relative">
+          <div className="px-6 md:px-12 lg:px-16 w-full flex-1">
+            <div className="max-w-[1200px] mx-auto min-h-[600px] mt-8 w-full">
+              {renderTabContent()}
+            </div>
           </div>
+          <Footer />
         </main>
-        
-        <Footer />
       </div>
     </div>
   );
