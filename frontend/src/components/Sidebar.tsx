@@ -34,7 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   ];
 
   return (
-    <div className="w-[170px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent pl-2 pr-4 py-6 shrink-0 sticky top-0 left-0">
+    <div className="w-[140px] h-screen flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 sticky top-0 left-0">
       
       {/* Top Logo */}
       <div 
