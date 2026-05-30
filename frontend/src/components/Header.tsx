@@ -16,7 +16,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
   return (
-    <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 outline-none">
+    <header className="w-full pt-0 pb-4 mb-10 sticky top-0 z-50 bg-transparent transition-all duration-500 outline-none border-b border-black/5 dark:border-white/5">
       <nav className="w-full max-w-7xl mx-auto flex justify-between items-center">
         
         {/* LEFT COLUMN: Empty space for right-alignment */}

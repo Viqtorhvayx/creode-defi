@@ -12,16 +12,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
-      {/* 1. TOP HEADER */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Vault</h1>
-          <ShieldCheck size={28} weight="fill" className="text-[#00A8E8] dark:text-[#00A8E8]" />
-        </div>
-        <p className="text-[13px] font-medium text-slate-500 dark:text-white/60">
-          Time-lock your HBAR and earn 0.30% APY every 21 days.
-        </p>
-      </div>
+      {/* Removed Top Header as requested */}
 
       {/* 2. MAIN 2-COLUMN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8 items-start">
