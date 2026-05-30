@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
               onClick={() => setActiveTab(item.id)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-[#00A8E8]/10 dark:text-[#00A8E8] dark:border-[#00A8E8] dark:shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
+                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-blue-600/15 dark:text-blue-400 dark:border-transparent dark:shadow-none'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
@@ -80,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
               onClick={() => setActiveTab(item.id)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
-                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-[#00A8E8]/10 dark:text-[#00A8E8] dark:border-[#00A8E8] dark:shadow-[inset_0_0_10px_rgba(0,168,232,0.1),0_0_10px_rgba(0,168,232,0.1)]'
+                  ? 'bg-blue-50 text-blue-600 border border-transparent dark:bg-blue-600/15 dark:text-blue-400 dark:border-transparent dark:shadow-none'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
