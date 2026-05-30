@@ -185,7 +185,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
           </div>
           <div className="flex flex-col">
             <h3 className="text-[16px] font-bold tracking-tight mb-0.5 text-slate-900 dark:text-white">HBAR Market</h3>
-            <span className="text-[12px] font-medium text-slate-500 dark:text-white/50 uppercase tracking-widest font-[family-name:var(--font-poppins)]">HBAR / USD</span>
+            <span className="text-[12px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>
           </div>
         </div>
         <div className="flex gap-1 items-center bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 p-1 rounded-[12px] shadow-sm dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">

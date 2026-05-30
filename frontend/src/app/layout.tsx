@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: '--font-poppins' });
 import { AppKitProvider } from "@/context/AppKitProvider";
 import { WalletProvider } from "@/context/WalletContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -26,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${poppins.variable} antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col`}>
+      <body className={`${inter.className} antialiased bg-background transition-colors duration-500 min-h-screen flex flex-col`}>
         <AppKitProvider>
           <WalletProvider>
             <ToastProvider>
