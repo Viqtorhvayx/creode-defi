@@ -78,7 +78,7 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
         // Light Mode: Stacked Avatar Layout
         <div className="flex items-center gap-3">
           {/* Circular Avatar */}
-          <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-bold text-[14px]">
+          <div className="w-8 h-8 rounded-full bg-[#00A8E8] flex items-center justify-center text-white font-bold text-[14px]">
             C
           </div>
           

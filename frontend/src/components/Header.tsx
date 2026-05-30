@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
               className={`absolute top-[3px] left-[3px] w-[30px] h-[30px] rounded-full transition-transform duration-300 shadow-sm z-10 ${
                 theme === 'dark' 
                   ? 'translate-x-[34px] bg-[#00A8E8]' 
-                  : 'translate-x-0 bg-blue-600'
+                  : 'translate-x-0 bg-[#00A8E8]'
               }`}
             ></div>
           </button>

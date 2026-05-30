@@ -76,7 +76,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
     const isDark = theme === 'dark';
     const textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.5)';
-    const lineColor = isDark ? '#00A8E8' : '#2563EB';
+    const lineColor = '#00A8E8';
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
@@ -168,7 +168,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     }
     // Light Mode Button
     return (
-      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-blue-50 text-blue-600 shadow-sm border border-transparent' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
+      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-[#00A8E8]/10 text-[#00A8E8] shadow-sm border border-transparent' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
         {label}
       </button>
     );
