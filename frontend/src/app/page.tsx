@@ -99,13 +99,15 @@ export default function Dashboard() {
         </div>
 
         {/* Right: Controls (aligned with main content) */}
-        <div className="flex-1 flex justify-end pr-8 pt-6 pb-6">
-          <Header 
-            theme={theme} 
-            toggleTheme={toggleTheme} 
-            activeTab={activeMainTab}
-            setActiveTab={setActiveMainTab}
-          />
+        <div className="flex-1 pl-6 pr-8 pt-6 pb-6">
+          <div className="max-w-[1400px] mr-auto flex justify-end">
+            <Header 
+              theme={theme} 
+              toggleTheme={toggleTheme} 
+              activeTab={activeMainTab}
+              setActiveTab={setActiveMainTab}
+            />
+          </div>
         </div>
       </header>
 
