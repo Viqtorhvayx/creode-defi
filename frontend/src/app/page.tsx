@@ -122,7 +122,7 @@ export default function Dashboard() {
         {/* Scrollable Main Content */}
         <main className="flex-1 flex flex-col overflow-y-auto w-full relative">
           <div className="pl-6 pr-[42px] md:pr-[46px] w-full flex-1">
-            <div className="max-w-[1400px] mr-auto min-h-[600px] mt-8 w-full">
+            <div className="max-w-[1400px] mr-auto min-h-[600px] mt-6 w-full">
               {renderTabContent()}
             </div>
           </div>
