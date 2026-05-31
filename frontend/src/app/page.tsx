@@ -99,7 +99,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right: Controls (aligned with main content) */}
-        <div className="flex-1 flex justify-end px-6 md:px-12 lg:px-16 pt-6 pb-6">
+        <div className="flex-1 flex justify-end pr-8 pt-6 pb-6">
           <Header 
             theme={theme} 
             toggleTheme={toggleTheme} 
@@ -119,8 +119,8 @@ export default function Dashboard() {
 
         {/* Scrollable Main Content */}
         <main className="flex-1 flex flex-col overflow-y-auto w-full relative">
-          <div className="px-6 md:px-12 lg:px-16 w-full flex-1">
-            <div className="max-w-[1200px] mx-auto min-h-[600px] mt-8 w-full">
+          <div className="pl-6 pr-8 w-full flex-1">
+            <div className="max-w-[1400px] mr-auto min-h-[600px] mt-8 w-full">
               {renderTabContent()}
             </div>
           </div>
