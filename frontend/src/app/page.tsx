@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   const renderTabContent = () => {
     switch (activeMainTab) {
-      {/* Removed Landing Page (Home) */}
+      // Removed Landing Page (Home)
       case 'Vault':
         return (
           <div className="py-8">
