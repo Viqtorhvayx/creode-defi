@@ -99,8 +99,8 @@ export default function Dashboard() {
         </div>
 
         {/* Right: Controls (aligned with main content) */}
-        <div className="flex-1 pl-6 pr-8 pt-6 pb-6">
-          <div className="max-w-[1400px] mr-auto flex justify-end">
+        <div className="flex-1 pl-6 pr-[42px] md:pr-[46px] pt-6 pb-6">
+          <div className="max-w-[1400px] w-full mr-auto flex justify-end">
             <Header 
               theme={theme} 
               toggleTheme={toggleTheme} 
