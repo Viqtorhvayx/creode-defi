@@ -20,13 +20,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         {/* LEFT COLUMN: Chart + Stats (Spans 7 columns) */}
         <div className="lg:col-span-7 flex flex-col h-full">
           {/* Chart Card */}
-          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-full p-6">
+          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[8px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-full p-6">
             <PriceChart theme={theme} />
           </div>
         </div>
 
         {/* RIGHT COLUMN: Vault Lock Card (Spans 5 columns) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] p-8 shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col relative overflow-hidden h-fit">
+        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[8px] p-8 shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col relative overflow-hidden h-fit">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
