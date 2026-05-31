@@ -17,11 +17,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
   return (
     <div className="flex items-center gap-4">
-      {/* Wallet Button */}
-      <div>
-        <CustomWalletButton theme={theme} />
-      </div>
-
       {/* Theme Toggle Pill */}
       <button 
         onClick={toggleTheme}
@@ -47,6 +42,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
           }`}
         ></div>
       </button>
+
+      {/* Wallet Button */}
+      <div>
+        <CustomWalletButton theme={theme} />
+      </div>
     </div>
   );
 };
