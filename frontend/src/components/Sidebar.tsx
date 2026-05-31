@@ -44,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-[16px] transition-all duration-300 w-full font-bold text-[13px] ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
                   ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-transparent dark:bg-[#00A8E8]/15 dark:text-[#00A8E8] dark:border-transparent dark:shadow-none'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
@@ -69,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-[16px] transition-all duration-300 w-full font-bold text-[13px] ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 w-full font-bold text-[13px] ${
                 isActive
                   ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-transparent dark:bg-[#00A8E8]/15 dark:text-[#00A8E8] dark:border-transparent dark:shadow-none'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
