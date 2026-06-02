@@ -1,4 +1,6 @@
+// Implementation by Viqtorhvayx
 "use client";
+
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
@@ -95,7 +97,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         priceFormatter: (price: number) => {
           return new Intl.NumberFormat('en-US', {
             style: 'currency', currency: 'USD',
-            minimumFractionDigits: 4, maximumFractionDigits: 4,
+            minimumFractionDigits: 4, maximumFractionDigits: 6,
           }).format(price);
         },
       },
@@ -112,12 +114,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       topColor: isDark ? `${lineColor}33` : `${lineColor}22`, 
       bottomColor: `${lineColor}00`, 
       lineWidth: 2,
+      priceFormat: {
+        type: 'price',
+        precision: 5,
+        minMove: 0.00001,
+      },
     });
 
     const loadPythHistory = async () => {
       let resolution = 'D';
       let secondsBack = 30 * 24 * 60 * 60;
-      if (activeInterval === '1H') { resolution = '15'; secondsBack = 24 * 60 * 60; }
+      if (activeInterval === '1H') { resolution = '1'; secondsBack = 60 * 60; }
       else if (activeInterval === '1D') { resolution = '60'; secondsBack = 7 * 24 * 60 * 60; }
       else if (activeInterval === '1W') { resolution = 'D'; secondsBack = 30 * 24 * 60 * 60; }
       else if (activeInterval === '1M') { resolution = 'D'; secondsBack = 90 * 24 * 60 * 60; }
