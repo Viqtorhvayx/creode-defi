@@ -29,8 +29,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
 
   const secondaryMenu = [
     { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
-    { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
     { id: 'Rewards', icon: Gift, label: 'Rewards' },
+    { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
   ];
 
   return (
