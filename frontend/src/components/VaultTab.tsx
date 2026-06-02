@@ -27,7 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* RIGHT COLUMN: Vault Lock Card (Spans 5 columns) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 flex flex-col relative overflow-hidden h-fit">
+        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-[#00A8E8]/30 rounded-[16px] p-8 flex flex-col relative overflow-hidden h-fit">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
@@ -63,9 +63,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
-            <div className="flex items-center justify-between w-full p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8]/50">
+            <div className="flex items-center justify-between w-full p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
               <div className="flex flex-col justify-center h-full">
-                <input type="number" placeholder="0" className="bg-transparent outline-none border-none text-[32px] font-bold w-32 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none mb-1" />
+                <input type="number" placeholder="0" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-32 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none mb-1" />
                 <span className="text-[12px] font-medium text-slate-400 dark:text-white/40">$0</span>
               </div>
               <div className="flex items-center gap-2 bg-white dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer">
@@ -80,7 +80,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           <div className="flex flex-col w-full mb-4">
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Lock for (days)</label>
             <div className="flex items-center justify-between w-full p-2 pl-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[12px]">
-              <input type="number" defaultValue="30" className="bg-transparent outline-none border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
+              <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
               <button className="text-[12px] font-bold text-[#00A8E8] dark:text-[#00A8E8] border border-[#00A8E8]/30 dark:border-[#00A8E8]/30 px-4 py-1.5 rounded-lg hover:bg-[#00A8E8]/10 dark:hover:bg-[#00A8E8]/10 transition-colors">SET</button>
             </div>
           </div>
