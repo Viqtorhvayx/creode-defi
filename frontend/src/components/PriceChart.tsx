@@ -107,19 +107,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       handleScroll: false, handleScale: false,
     });
 
-    // Add a thicker, semi-transparent line behind the main area series to create a glowing effect
-    const glowSeries = chart.addLineSeries({
-      color: isDark ? 'rgba(0, 168, 232, 0.4)' : 'rgba(0, 168, 232, 0.25)',
-      lineWidth: 4,
-      crosshairMarkerVisible: false,
-      lastValueVisible: false,
-      priceLineVisible: false,
-    });
-
     const areaSeries = chart.addAreaSeries({
       lineColor, 
-      topColor: isDark ? 'rgba(0, 168, 232, 0.6)' : 'rgba(0, 168, 232, 0.35)', 
-      bottomColor: isDark ? 'rgba(0, 168, 232, 0.05)' : 'rgba(0, 168, 232, 0.02)', 
+      topColor: isDark ? `${lineColor}33` : `${lineColor}22`, 
+      bottomColor: `${lineColor}00`, 
       lineWidth: 2,
     });
 
@@ -140,7 +131,6 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         const data = await response.json();
         if (data.s === "ok") {
           const priceData = data.t.map((t: number, i: number) => ({ time: t as UTCTimestamp, value: data.c[i] }));
-          glowSeries.setData(priceData);
           areaSeries.setData(priceData);
           chart.timeScale().fitContent();
         }
