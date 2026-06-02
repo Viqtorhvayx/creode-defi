@@ -110,7 +110,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     // Add a thicker, semi-transparent line behind the main area series to create a glowing effect
     const glowSeries = chart.addLineSeries({
       color: isDark ? 'rgba(0, 168, 232, 0.4)' : 'rgba(0, 168, 232, 0.25)',
-      lineWidth: 8,
+      lineWidth: 4,
       crosshairMarkerVisible: false,
       lastValueVisible: false,
       priceLineVisible: false,
