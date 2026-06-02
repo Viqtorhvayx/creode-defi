@@ -112,6 +112,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       topColor: isDark ? `${lineColor}33` : `${lineColor}22`, 
       bottomColor: `${lineColor}00`, 
       lineWidth: 2,
+      lastValueVisible: false,
+      priceLineVisible: false,
     });
 
     const loadPythHistory = async () => {
