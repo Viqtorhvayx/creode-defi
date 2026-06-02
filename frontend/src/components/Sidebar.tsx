@@ -9,7 +9,7 @@ import {
   ArrowsDownUp, 
   SquaresFour, 
   ChartLineUp, 
-  Gift, 
+  Users, 
   Gear, 
   SignOut 
 } from '@phosphor-icons/react';
@@ -29,7 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
 
   const secondaryMenu = [
     { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
-    { id: 'Rewards', icon: Gift, label: 'Rewards' },
+    { id: 'P2P', icon: Users, label: 'P2P' },
     { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
   ];
 
