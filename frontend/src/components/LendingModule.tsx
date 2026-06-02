@@ -1,3 +1,4 @@
+// Implementation by Viqtorhvayx
 "use client";
 
 /* * Developer: [Viqtorhvayx]
@@ -70,71 +71,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   };
 
   return (
-    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 max-w-xl mx-auto shadow-xl flex flex-col h-full relative overflow-hidden">
-      <div className="flex justify-between items-center mb-12">
-        <div>
-          <h3 className="text-[13px] font-bold tracking-[0.2em] opacity-40 mb-2" style={{ color: labelColor }}>Liquidity provision</h3>
-          <p className="text-4xl font-black tracking-tighter" style={{ color: primaryTextColor }}>Lend</p>
-        </div>
-        <div className="bg-[#00A8E8]/10 px-6 py-3 rounded-[24px] border border-[#00A8E8]/20 shadow-inner">
-          <p className="text-[11px] font-bold opacity-40 mb-1" style={{ color: primaryTextColor }}>Protocol points</p>
-          <p className="text-2xl font-black text-[#00A8E8]">{points.toLocaleString()}</p>
-        </div>
-      </div>
-
-      <div className="space-y-10 flex flex-col flex-grow">
-        {/* Uniswap-style Input Box authored by Viqtorhvayx */}
-        <div className="uniswap-input-box">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-[12px] font-bold opacity-40" style={{ color: primaryTextColor }}>Amount to provide</label>
-            <div className="flex gap-2">
-              <QuickButton label="25%" onClick={() => handleQuickSelect(25)} />
-              <QuickButton label="50%" onClick={() => handleQuickSelect(50)} />
-              <QuickButton label="Max" onClick={handleMaxSelect} />
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-4 h-20">
-            <FormattedNumberInput 
-              placeholder="0"
-              className="w-full bg-transparent text-3xl font-semibold outline-none border-none p-0"
-              style={{ color: primaryTextColor }}
-              value={amount}
-              onValueChange={setAmount}
-            />
-            <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
-              <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center border border-white/10">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white">
-                  <path d="M5 4h3v5h8V4h3v16h-3v-5H8v5H5V4zm3 7v2h8v-2H8z" />
-                </svg>
-              </div>
-              <span className="text-lg font-bold text-white pr-1">HBAR</span>
-            </div>
-          </div>
-          <p className="text-[12px] font-bold text-[#00A8E8] opacity-60 mt-2">{usdValue}</p>
-        </div>
-
-        {/* Aave-style Data Rows authored by Viqtorhvayx */}
-        <div className="space-y-4 bg-white/[0.03] p-6 rounded-[16px] border border-white/5 shadow-md mt-auto">
-          <div className="flex justify-between items-center">
-            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Your supply</span>
-            <span className="text-xl font-black text-white ml-auto tracking-tight">0.00 HBAR</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[12px] font-bold tracking-[0.1em] opacity-40" style={{ color: primaryTextColor }}>Current APR</span>
-            <span className="text-xl font-black text-[#10B981] ml-auto tracking-tight">8.42%</span>
-          </div>
-        </div>
-
-        <div className="bg-black/30 rounded-[28px] py-6 px-8 border border-white/5 shadow-inner">
-          <p className="text-[12px] font-bold leading-relaxed opacity-40 tracking-widest" style={{ color: primaryTextColor }}>
-            Liquidity providers earn dynamic yield and <span className="text-[#00A8E8] opacity-100">Protocol points</span> per epoch. Deploy capital to start accruing.
-          </p>
-        </div>
-
-        <div className="flex gap-6 mt-auto">
-          <button onClick={handleDeposit} disabled={!amount || Number(stripCommas(amount)) <= 0} className="nav-pill !py-6 flex-1 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] interactive-pop !rounded-[30px] active:scale-95 disabled:hover:transform-none">Supply</button>
-          <button onClick={handleWithdraw} className="nav-pill !py-6 flex-1 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 interactive-pop !rounded-[30px] active:scale-95">Withdraw</button>
-        </div>
+    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 max-w-xl mx-auto shadow-xl flex flex-col h-[500px] relative overflow-hidden items-center justify-center">
+      <div className="w-full h-full border-2 border-dashed border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center">
+        <p className="text-black/40 dark:text-white/40 font-bold tracking-widest uppercase text-sm">P2P Lending Grid Placeholder</p>
       </div>
     </div>
   );
