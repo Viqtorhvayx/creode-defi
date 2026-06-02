@@ -70,11 +70,5 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       : `${baseClasses} bg-[#00A8E8]/10 text-[#00A8E8] hover:bg-[#00A8E8]/20`;
   };
 
-  return (
-    <div className="bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 max-w-xl mx-auto shadow-xl flex flex-col h-[500px] relative overflow-hidden items-center justify-center">
-      <div className="w-full h-full border-2 border-dashed border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center">
-        <p className="text-black/40 dark:text-white/40 font-bold tracking-widest uppercase text-sm">P2P Lending Grid Placeholder</p>
-      </div>
-    </div>
-  );
+  return <div />;
 };

@@ -111,13 +111,5 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ xp: initialXP,
   const healthFactor = activeTab === 'deposit' ? 100 : Math.max(10, 100 - (borrowRatio * 100));
   const isHealthy = healthFactor >= 50;
 
-  return (
-    <div className="flex flex-col gap-6 items-center w-full max-w-xl mx-auto">
-      <div className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 !rounded-[24px] p-8 shadow-xl flex flex-col h-[500px] relative overflow-hidden items-center justify-center">
-        <div className="w-full h-full border-2 border-dashed border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center">
-          <p className="text-black/40 dark:text-white/40 font-bold tracking-widest uppercase text-sm">P2P Borrowing Grid Placeholder</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <div />;
 };
