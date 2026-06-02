@@ -27,7 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* RIGHT COLUMN: Vault Lock Card (Spans 5 columns) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 shadow-[inset_0_0_20px_rgba(0,168,232,0.35)] flex flex-col relative overflow-hidden h-fit">
+        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 shadow-[0_0_20px_rgba(0,168,232,0.35)] flex flex-col relative overflow-hidden h-fit">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
