@@ -28,14 +28,14 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
         aria-label="Toggle Theme"
       >
         {/* Icons inside the pill */}
-        <div className="flex w-full justify-between px-1.5 z-0">
-          <Sun size={12} weight="fill" className={theme === 'dark' ? 'text-white/20' : 'text-amber-400'} />
-          <Moon size={12} weight="fill" className={theme === 'dark' ? 'text-white' : 'text-slate-300'} />
+        <div className="flex w-full justify-between px-1.5 z-10 relative pointer-events-none">
+          <Sun size={12} weight="fill" className={theme === 'dark' ? 'text-white/40' : 'text-white'} />
+          <Moon size={12} weight="fill" className={theme === 'dark' ? 'text-white' : 'text-slate-400'} />
         </div>
 
         {/* Sliding Thumb */}
         <div 
-          className={`absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full transition-transform duration-300 shadow-sm z-10 ${
+          className={`absolute top-[3px] left-[3px] w-[20px] h-[20px] rounded-full transition-transform duration-300 shadow-sm z-0 ${
             theme === 'dark' 
               ? 'translate-x-[24px] bg-[#00A8E8]' 
               : 'translate-x-0 bg-[#00A8E8]'
