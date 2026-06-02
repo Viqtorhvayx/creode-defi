@@ -31,7 +31,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
     { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
     { id: 'Rewards', icon: Gift, label: 'Rewards' },
-    { id: 'Settings', icon: Gear, label: 'Settings' },
   ];
 
   return (
@@ -79,11 +78,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             </button>
           );
         })}
-      </div>
+        {/* Second Divider */}
+        <div className="w-full border-t border-black/10 dark:border-white/5 my-2"></div>
 
-      {/* Bottom Section */}
-      <div className="mt-auto flex flex-col">
-        <button className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+        {/* Bottom Section (Settings & Log out) */}
+        <button
+          onClick={() => setActiveTab('Settings')}
+          className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 w-full font-bold text-[13px] ${
+            activeTab === 'Settings'
+              ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-transparent dark:bg-[#00A8E8]/15 dark:text-[#00A8E8] dark:border-transparent dark:shadow-none'
+              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
+          }`}
+        >
+          <Gear size={18} weight={activeTab === 'Settings' ? "fill" : "regular"} />
+          <span>Settings</span>
+        </button>
+
+        <button className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
           <SignOut size={18} />
           <span>Log out</span>
         </button>
