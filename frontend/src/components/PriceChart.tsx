@@ -168,14 +168,14 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => {
     if (theme === 'dark') {
       return (
-        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-white/10 text-white shadow-sm' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>
+        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-[#00A8E8]/50 shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}>
           {label}
         </button>
       );
     }
     // Light Mode Button
     return (
-      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-[#00A8E8]/10 text-[#00A8E8] shadow-sm border border-transparent' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
+      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-[#00A8E8]/50 shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
         {label}
       </button>
     );
