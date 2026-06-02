@@ -1,3 +1,4 @@
+// Implementation by Viqtorhvayx
 "use client";
 
 import React from 'react';
@@ -35,8 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
 
   return (
     <div className="w-[140px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 relative">
-      {/* Primary Menu */}
-      <div className="flex flex-col gap-2 mb-8">
+      <div className="flex flex-col gap-2">
+        {/* Primary Menu */}
         {primaryMenu.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -55,13 +56,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             </button>
           );
         })}
-      </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-black/5 dark:bg-white/5 mb-8"></div>
+        {/* Divider */}
+        <div className="w-full border-t border-black/10 dark:border-white/5 my-2"></div>
 
-      {/* Secondary Menu */}
-      <div className="flex flex-col gap-2 flex-1">
+        {/* Secondary Menu */}
         {secondaryMenu.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -83,8 +82,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
       </div>
 
       {/* Bottom Section */}
-      <div className="mt-auto flex flex-col gap-6">
-        <button className="flex items-center gap-3 px-3 py-2 w-full font-bold text-[13px] text-slate-500 hover:text-slate-900 dark:text-white/60 dark:hover:text-white transition-colors">
+      <div className="mt-auto flex flex-col">
+        <button className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
           <SignOut size={18} />
           <span>Log out</span>
         </button>
