@@ -83,14 +83,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <div className="w-[100px] py-2 px-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-full">
                 <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
               </div>
-              <button className="text-[12px] font-bold text-[#00A8E8] dark:text-[#00A8E8] border border-[#00A8E8]/30 dark:border-[#00A8E8]/30 px-4 py-1.5 rounded-lg hover:bg-[#00A8E8]/10 dark:hover:bg-[#00A8E8]/10 transition-colors">SET</button>
+              <button className="text-[12px] font-bold text-[#00A8E8] dark:text-[#00A8E8] border border-[#00A8E8]/30 dark:border-[#00A8E8]/30 px-4 py-2 rounded-full hover:bg-[#00A8E8]/10 dark:hover:bg-[#00A8E8]/10 transition-colors">SET</button>
             </div>
           </div>
 
           {/* Warning Text */}
           <div className="flex items-start gap-2 mb-8">
             <Warning size={16} className="text-red-500 dark:text-red-400/80 mt-[1px] shrink-0" />
-            <span className="text-[12px] font-medium text-red-500 dark:text-red-400/80 leading-snug">⚠️ Withdrawing before maturity incurs a 5% fee and forfeits pending yield.</span>
+            <span className="text-[12px] font-medium text-red-500 dark:text-red-400/80 leading-snug">Withdrawing before maturity incurs a 5% fee and forfeits pending yield.</span>
           </div>
 
           {/* Info Row */}
@@ -115,10 +115,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
             <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
 
-            <div className="flex flex-col items-end gap-1.5 flex-1">
+            <div className="flex flex-col items-start gap-1.5 flex-1 pl-4 lg:pl-8">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40 whitespace-nowrap">
                 <ChartLineUp size={14} className="shrink-0" />
-                <span className="text-[11px] font-semibold">Estimated Earnings</span>
+                <span className="text-[11px] font-semibold">Est. Yield</span>
               </div>
               <span className="text-[13px] font-bold text-[#00A8E8] dark:text-[#00A8E8]">+4.50 HBAR</span>
             </div>
