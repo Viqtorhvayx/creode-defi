@@ -118,7 +118,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <div className="flex flex-col items-start gap-1.5 flex-1 pl-4 lg:pl-8">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40 whitespace-nowrap">
                 <ChartLineUp size={14} className="shrink-0" />
-                <span className="text-[11px] font-semibold">Est. Yield</span>
+                <span className="text-[11px] font-semibold">Estimated Yield</span>
               </div>
               <span className="text-[13px] font-bold text-[#00A8E8] dark:text-[#00A8E8]">+4.50 HBAR</span>
             </div>
