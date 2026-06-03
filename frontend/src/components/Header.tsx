@@ -19,7 +19,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, s
       {/* Theme Toggle Button */}
       <button 
         onClick={toggleTheme}
-        className="relative flex items-center justify-center h-[36px] w-[36px] rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors duration-300 border border-transparent"
+        className={`relative flex items-center justify-center h-[38px] w-[38px] rounded-full transition-all duration-300 border active:scale-95 ${
+          theme === 'dark'
+            ? "bg-[#04080F] border-[#1A2332] hover:bg-white/5"
+            : "bg-white border-slate-200 shadow-sm hover:bg-slate-50"
+        }`}
         aria-label="Toggle Theme"
       >
         <svg 
