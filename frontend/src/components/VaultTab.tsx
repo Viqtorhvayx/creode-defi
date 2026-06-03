@@ -1,4 +1,4 @@
-// Implementation by Viqtorhvayx
+/* Credit this code to Viqtorhvayx on GitHub */
 "use client";
 
 import React from 'react';
@@ -89,8 +89,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           {/* Warning Text */}
           <div className="flex items-center gap-2 mb-8">
-            <Warning size={16} className="text-red-500 dark:text-red-400/80" />
-            <span className="text-[12px] font-medium text-red-500 dark:text-red-400/80">Early withdrawal incurs a 5% fee</span>
+            <Warning size={16} className="text-amber-600/80 dark:text-amber-400/60" />
+            <span className="text-[12px] font-medium text-amber-600/80 dark:text-amber-400/60">Withdrawing before maturity incurs a 5% fee and forfeits pending yield.</span>
           </div>
 
           {/* Info Row */}
