@@ -79,8 +79,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Lock For Input Area */}
           <div className="flex flex-col w-full mb-4">
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Lock for (days)</label>
-            <div className="flex items-center justify-between w-full p-2 pl-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[12px]">
-              <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-[100px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
+            <div className="flex items-center justify-between w-full">
+              <div className="w-[100px] p-2 pl-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[12px]">
+                <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
+              </div>
               <button className="text-[12px] font-bold text-[#00A8E8] dark:text-[#00A8E8] border border-[#00A8E8]/30 dark:border-[#00A8E8]/30 px-4 py-1.5 rounded-lg hover:bg-[#00A8E8]/10 dark:hover:bg-[#00A8E8]/10 transition-colors">SET</button>
             </div>
           </div>
