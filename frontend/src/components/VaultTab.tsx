@@ -116,7 +116,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
             <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
 
-            <div className="flex flex-col items-end gap-1.5">
+            <div className="flex flex-col items-start gap-1.5">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40 whitespace-nowrap">
                 <ChartLineUp size={14} className="shrink-0" />
                 <span className="text-[11px] font-semibold">Estimated Earnings</span>
