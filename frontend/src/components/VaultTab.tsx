@@ -94,8 +94,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
 
           {/* Info Row */}
-          <div className="flex items-center justify-between w-full mb-8 pt-6 border-t border-slate-100 dark:border-white/5">
-            <div className="flex flex-col items-start gap-1.5 flex-1">
+          <div className="grid grid-cols-3 w-full mb-8 pt-6 border-t border-slate-100 dark:border-white/5 divide-x divide-slate-200 dark:divide-[#1A2332]">
+            <div className="flex flex-col items-start gap-1.5 pr-2">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40">
                 <LockKey size={14} />
                 <span className="text-[11px] font-semibold">Lock Period</span>
@@ -103,9 +103,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <span className="text-[13px] font-bold text-slate-900 dark:text-white">30 Days</span>
             </div>
             
-            <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
-            
-            <div className="flex flex-col items-center gap-1.5 flex-1">
+            <div className="flex flex-col items-center gap-1.5 px-2">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40">
                 <CalendarBlank size={14} />
                 <span className="text-[11px] font-semibold">Maturity Date</span>
@@ -113,14 +111,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <span className="text-[13px] font-bold text-slate-900 dark:text-white">Jun 12, 2025</span>
             </div>
 
-            <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
-
-            <div className="flex flex-col items-start gap-1.5 flex-1 pl-4 lg:pl-8">
+            <div className="flex flex-col items-end gap-1.5 pl-2">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-white/40 whitespace-nowrap">
                 <ChartLineUp size={14} className="shrink-0" />
-                <span className="text-[11px] font-semibold">Estimated Earning</span>
+                <span className="text-[11px] font-semibold">Estimated Earnings</span>
               </div>
-              <span className="text-[13px] font-bold text-[#00A8E8] dark:text-[#00A8E8]">+4.50 HBAR</span>
+              <span className="text-[13px] font-bold text-emerald-500 dark:text-emerald-400">+4.50 HBAR</span>
             </div>
           </div>
 
