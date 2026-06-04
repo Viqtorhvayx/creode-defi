@@ -51,11 +51,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-[#1A2332] rounded-lg border border-slate-100 dark:border-white/5">
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-white/60">Secured by</span>
-              <div className="flex items-center gap-1">
-                <span className="w-3.5 h-3.5 rounded-full bg-black dark:bg-white flex items-center justify-center text-[8px] font-black text-white dark:text-black">H</span>
-                <span className="text-[11px] font-bold text-slate-900 dark:text-white">Hedera</span>
+            <div className="flex flex-col items-start px-3 py-2 w-fit rounded-[14px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">Secured by</span>
+              <div className="flex items-center gap-2 mt-1.5">
+                <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
               </div>
             </div>
           </div>
@@ -177,15 +177,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             Deposit to Vault
           </button>
 
-          {/* Footer Subtext / Badge */}
-          <div className="flex justify-center mt-5">
-            <div className="flex flex-col items-start px-3 py-2 w-fit rounded-[14px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">Secured by</span>
-              <div className="flex items-center gap-2 mt-1.5">
-                <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
-              </div>
-            </div>
+          {/* Footer Subtext */}
+          <div className="flex items-center justify-center gap-1.5 mt-5">
+            <ShieldCheck size={14} className="text-slate-400 dark:text-white/40" />
+            <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">Your funds are locked and secured on Hedera</span>
           </div>
 
           </div>
