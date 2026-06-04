@@ -84,9 +84,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               {/* Right Side: Logo & Embedded Utilities */}
               <div className="flex flex-col items-end justify-center h-full shrink-0">
                 {/* HBAR Logo */}
-                <div className="flex items-center gap-2 bg-white dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer mb-[14px]">
-                  <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black">H</span>
-                  <span className="text-[13px] font-bold text-slate-900 dark:text-white">HBAR</span>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none cursor-pointer mb-[14px]">
+                  <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</span>
+                  <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">HBAR</span>
                   <svg className="w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                 </div>
 
