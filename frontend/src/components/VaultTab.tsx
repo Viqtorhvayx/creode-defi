@@ -66,27 +66,29 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
             <div className="flex items-center justify-between w-full h-[104px] px-5 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
               
-              {/* Left Side: Input Field */}
-              <div className="flex items-center h-full flex-1">
-                <input type="number" placeholder="0" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none m-0 p-0" />
+              {/* Left Side: Input Field & $0 */}
+              <div className="flex flex-col justify-center h-full flex-1">
+                <input type="number" placeholder="0" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none m-0 p-0 mb-1" />
+                <span className="text-[12px] font-medium text-slate-400 dark:text-white/40 ml-0.5">$0</span>
               </div>
 
-              {/* Right Side: Embedded Utilities & Logo */}
-              <div className="flex items-center gap-4 shrink-0">
-                {/* Shortcut Buttons */}
-                <div className="flex items-center gap-3">
-                  <button className="text-xs font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">25%</button>
-                  <button className="text-xs font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">50%</button>
-                  <button className="text-xs font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">MAX</button>
-                </div>
-                
+              {/* Right Side: Logo & Embedded Utilities */}
+              <div className="flex flex-col items-end justify-center h-full shrink-0">
                 {/* HBAR Logo */}
-                <div className="flex items-center gap-2 bg-white dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer">
+                <div className="flex items-center gap-2 bg-white dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer mb-1.5">
                   <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black">H</span>
                   <span className="text-[13px] font-bold text-slate-900 dark:text-white">HBAR</span>
                   <svg className="w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                 </div>
+
+                {/* Shortcut Buttons */}
+                <div className="flex items-center gap-3 pr-2">
+                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">25%</button>
+                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">50%</button>
+                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">MAX</button>
+                </div>
               </div>
+
             </div>
           </div>
 
