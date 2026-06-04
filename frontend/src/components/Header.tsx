@@ -16,10 +16,13 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, activeTab, setActiveTab }) => {
   return (
     <div className="flex items-center gap-4">
-      {/* Theme Toggle Button */}
       <button 
         onClick={toggleTheme}
-        className="relative flex items-center justify-center h-[38px] w-[38px] rounded-full transition-all duration-300 active:scale-95 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-black/10 dark:hover:bg-white/10"
+        className={`relative flex items-center justify-center h-[38px] w-[38px] rounded-full transition-all duration-300 border active:scale-95 ${
+          theme === 'dark'
+            ? "bg-[#04080F] border-[#1A2332] hover:bg-white/5"
+            : "bg-white border-slate-200 shadow-sm hover:bg-slate-50"
+        }`}
         aria-label="Toggle Theme"
       >
         <svg 
