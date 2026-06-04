@@ -213,7 +213,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Portfolio</span>
               <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">$18,642.75</span>
               
-              <div className="mt-auto flex flex-col items-start">
+              <div className="mt-auto pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-start w-full">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <CaretUp size={14} weight="fill" className="text-emerald-500 dark:text-[#00E88A]" />
                   <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">3.24%</span>
