@@ -148,10 +148,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         {/* LEFT COLUMN: Features Card */}
         <div className="lg:col-span-7 flex flex-col">
           <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full h-full shadow-sm dark:shadow-none justify-center">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+            <div className="flex flex-col lg:flex-row w-full justify-between items-stretch gap-6 lg:gap-0">
               
               {/* Feature 1 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start flex-1">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <ShieldCheck size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
@@ -159,8 +159,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Built on Hedera with enterprise-grade security.</p>
               </div>
 
+              {/* Separator 1 */}
+              <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-[#00A8E8]/40 to-transparent shadow-[0_0_10px_rgba(0,168,232,0.5)] mx-6"></div>
+
               {/* Feature 2 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start flex-1">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <LockKey size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
@@ -168,8 +171,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Funds are locked for 21 days to maximize your earnings.</p>
               </div>
 
+              {/* Separator 2 */}
+              <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-[#00A8E8]/40 to-transparent shadow-[0_0_10px_rgba(0,168,232,0.5)] mx-6"></div>
+
               {/* Feature 3 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start flex-1">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <Percent size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
@@ -177,8 +183,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Earn 0.30% APY every 21 days, consistently.</p>
               </div>
 
+              {/* Separator 3 */}
+              <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-[#00A8E8]/40 to-transparent shadow-[0_0_10px_rgba(0,168,232,0.5)] mx-6"></div>
+
               {/* Feature 4 */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start flex-1">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <ArrowsClockwise size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
