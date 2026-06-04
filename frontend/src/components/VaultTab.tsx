@@ -152,51 +152,59 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               
               {/* Feature 1 */}
               <div className="flex flex-col items-start w-full h-full">
-                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)] shrink-0">
                   <ShieldCheck size={16} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
-                  <h4 className="text-[13px] font-bold text-slate-900 dark:text-white mb-0.5">Secure</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Built on Hedera with enterprise-grade security.</p>
+                <div className="flex flex-col relative w-full flex-1">
+                  <h4 className="text-[12px] lg:text-[13px] font-bold text-slate-900 dark:text-white mb-0.5 whitespace-nowrap tracking-tight">Secure</h4>
+                  <div className="flex-1 min-h-[40px]">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Built on Hedera with enterprise-grade security.</p>
+                  </div>
                   {/* Text Separator */}
-                  <div className="hidden md:block absolute right-[-12px] top-1 bottom-1 w-px bg-slate-200 dark:bg-white/10"></div>
+                  <div className="hidden md:block absolute right-[-12px] top-0 h-12 w-px bg-black/10 dark:bg-white/5"></div>
                 </div>
               </div>
 
               {/* Feature 2 */}
               <div className="flex flex-col items-start w-full h-full">
-                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)] shrink-0">
                   <LockKey size={16} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
-                  <h4 className="text-[13px] font-bold text-slate-900 dark:text-white mb-0.5">Time-Locked</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Funds are locked for 21 days to maximize your earnings.</p>
+                <div className="flex flex-col relative w-full flex-1">
+                  <h4 className="text-[12px] lg:text-[13px] font-bold text-slate-900 dark:text-white mb-0.5 whitespace-nowrap tracking-tight">Time-Locked</h4>
+                  <div className="flex-1 min-h-[40px]">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Funds are safely locked for maximum yield</p>
+                  </div>
                   {/* Text Separator */}
-                  <div className="hidden md:block absolute right-[-12px] top-1 bottom-1 w-px bg-slate-200 dark:bg-white/10"></div>
+                  <div className="hidden md:block absolute right-[-12px] top-0 h-12 w-px bg-black/10 dark:bg-white/5"></div>
                 </div>
               </div>
 
               {/* Feature 3 */}
               <div className="flex flex-col items-start w-full h-full">
-                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)] shrink-0">
                   <Percent size={16} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
-                  <h4 className="text-[13px] font-bold text-slate-900 dark:text-white mb-0.5">Stable Yield</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Earn 0.30% APY every 21 days, consistently.</p>
+                <div className="flex flex-col relative w-full flex-1">
+                  <h4 className="text-[12px] lg:text-[13px] font-bold text-slate-900 dark:text-white mb-0.5 whitespace-nowrap tracking-tight">Stable Yield</h4>
+                  <div className="flex-1 min-h-[40px]">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Earn 0.30% APY every 21 days, consistently.</p>
+                  </div>
                   {/* Text Separator */}
-                  <div className="hidden md:block absolute right-[-12px] top-1 bottom-1 w-px bg-slate-200 dark:bg-white/10"></div>
+                  <div className="hidden md:block absolute right-[-12px] top-0 h-12 w-px bg-black/10 dark:bg-white/5"></div>
                 </div>
               </div>
 
               {/* Feature 4 */}
               <div className="flex flex-col items-start w-full h-full">
-                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                <div className="w-9 h-9 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)] shrink-0">
                   <ArrowsClockwise size={16} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
-                  <h4 className="text-[13px] font-bold text-slate-900 dark:text-white mb-0.5">Auto-Compounding</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Earnings are added to your balance after each cycle.</p>
+                <div className="flex flex-col relative w-full flex-1">
+                  <h4 className="text-[12px] lg:text-[13px] font-bold text-slate-900 dark:text-white mb-0.5 whitespace-nowrap tracking-tight">Auto-Compounding</h4>
+                  <div className="flex-1 min-h-[40px]">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 leading-snug pr-4">Earnings are added to your balance after each cycle.</p>
+                  </div>
                 </div>
               </div>
             </div>
