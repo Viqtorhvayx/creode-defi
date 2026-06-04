@@ -177,10 +177,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             Deposit to Vault
           </button>
 
-          {/* Footer Subtext */}
-          <div className="flex items-center justify-center gap-1.5 mt-5">
-            <ShieldCheck size={14} className="text-slate-400 dark:text-white/40" />
-            <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">Your funds are locked and secured on Hedera</span>
+          {/* Secured by Hedera Badge */}
+          <div className="flex justify-center mt-6">
+            <div className="inline-flex flex-col items-start bg-transparent border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-3 shadow-sm dark:shadow-none">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-white/50 mb-1.5 leading-none">Secured by</span>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[12px] font-black">H</span>
+                <span className="text-[15px] font-bold text-slate-900 dark:text-white leading-none">Hedera</span>
+              </div>
+            </div>
           </div>
 
           </div>
