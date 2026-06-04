@@ -64,7 +64,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
-            <div className="flex items-center justify-between w-full h-[88px] px-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
+            <div className="flex items-center justify-between w-full h-[104px] px-5 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
               
               {/* Left Side: Input Field */}
               <div className="flex items-center h-full flex-1">
