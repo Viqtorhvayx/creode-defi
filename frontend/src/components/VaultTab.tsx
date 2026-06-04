@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { PriceChart } from './PriceChart';
-import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp } from '@phosphor-icons/react';
+import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp } from '@phosphor-icons/react';
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -26,8 +26,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Vault Lock Card (Spans 5 columns) */}
-        <div className="lg:col-span-5 bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 flex flex-col relative overflow-hidden h-fit">
+        {/* RIGHT COLUMN: Spans 5 columns */}
+        <div className="lg:col-span-5 flex flex-col gap-6 h-fit">
+          
+          {/* Vault Lock Card */}
+          <div className="bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 flex flex-col relative overflow-hidden">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
@@ -136,6 +139,19 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           <div className="flex items-center justify-center gap-1.5 mt-5">
             <ShieldCheck size={14} className="text-slate-400 dark:text-white/40" />
             <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">Your funds are locked and secured on Hedera</span>
+          </div>
+
+          </div>
+
+          {/* Total Portfolio Card */}
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none">
+            <span className="text-[14px] font-medium text-slate-600 dark:text-white/80 mb-1">Total Portfolio</span>
+            <span className="text-[28px] font-bold text-slate-900 dark:text-white mb-2 tracking-tight">$18,642.75</span>
+            <div className="flex items-center gap-1.5 mb-6">
+              <CaretUp size={14} weight="fill" className="text-emerald-500 dark:text-[#00E88A]" />
+              <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">3.24%</span>
+            </div>
+            <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">24h Change</span>
           </div>
 
         </div>
