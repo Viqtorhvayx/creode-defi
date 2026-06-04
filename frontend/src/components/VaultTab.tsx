@@ -11,6 +11,7 @@ interface VaultTabProps {
 
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
+  const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
 
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
@@ -107,7 +108,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <div className="w-[100px] py-2 px-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-full">
                 <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
               </div>
-              <button className="text-[12px] font-bold text-[#00A8E8] bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 px-4 py-2 rounded-full transition-colors">Set</button>
+              <button 
+                onClick={() => setIsSetSelected(!isSetSelected)}
+                className={`text-[12px] font-bold px-4 py-2 rounded-full transition-colors ${isSetSelected ? 'text-white bg-[#00A8E8]' : 'text-[#00A8E8] bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25'}`}>
+                Set
+              </button>
             </div>
           </div>
 
