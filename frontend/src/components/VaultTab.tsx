@@ -205,16 +205,21 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
         {/* RIGHT COLUMN: Total Portfolio Card */}
         <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] px-6 py-4 flex flex-col w-full shadow-sm dark:shadow-none h-full">
-            <span className="text-[13px] font-medium text-slate-600 dark:text-white/80 mb-0.5">Total Portfolio</span>
-            <span className="text-[24px] font-bold text-slate-900 dark:text-white mb-1.5 tracking-tight">$18,642.75</span>
-            
-            <div className="mt-auto pt-3 border-t border-slate-100 dark:border-white/5 flex flex-col items-start w-full">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <CaretUp size={12} weight="fill" className="text-emerald-500 dark:text-[#00E88A]" />
-                <span className="text-[14px] font-bold text-emerald-500 dark:text-[#00E88A]">3.24%</span>
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] px-6 py-5 flex flex-col w-full shadow-sm dark:shadow-none h-full relative overflow-hidden">
+            {/* Subtle background glow accent */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#00A8E8]/5 dark:bg-[#00A8E8]/10 blur-2xl rounded-full"></div>
+
+            <div className="flex flex-col h-full z-10">
+              <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Portfolio</span>
+              <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">$18,642.75</span>
+              
+              <div className="mt-auto pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-start w-full">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <CaretUp size={14} weight="fill" className="text-emerald-500 dark:text-[#00E88A]" />
+                  <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">3.24%</span>
+                </div>
+                <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">24h Change</span>
               </div>
-              <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">24h Change</span>
             </div>
           </div>
         </div>
