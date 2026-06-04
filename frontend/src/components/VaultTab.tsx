@@ -15,22 +15,19 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       
       {/* Removed Top Header as requested */}
 
-      {/* 2. MAIN 2-COLUMN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8 items-start">
+      {/* ROW 1: Chart & Vault Lock Card */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-6">
         
-        {/* LEFT COLUMN: Chart + Stats (Spans 7 columns) */}
-        <div className="lg:col-span-7 flex flex-col h-fit">
-          {/* Chart Card */}
-          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-fit p-6">
+        {/* LEFT COLUMN: Chart Card */}
+        <div className="lg:col-span-7 flex flex-col">
+          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-full p-6">
             <PriceChart theme={theme} />
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Spans 5 columns */}
-        <div className="lg:col-span-5 flex flex-col gap-6 h-fit">
-          
-          {/* Vault Lock Card */}
-          <div className="bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 flex flex-col relative overflow-hidden">
+        {/* RIGHT COLUMN: Vault Lock Card */}
+        <div className="lg:col-span-5 flex flex-col">
+          <div className="bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-8 flex flex-col relative overflow-hidden h-full">
           
           {/* Header Row */}
           <div className="flex justify-between items-start mb-8">
@@ -142,9 +139,19 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
 
           </div>
+        </div>
+      </div>
 
-          {/* Total Portfolio Card */}
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none">
+      {/* ROW 2: Empty Space & Total Portfolio Card */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8">
+        
+        {/* LEFT COLUMN: Empty space reserved for future card */}
+        <div className="lg:col-span-7 flex flex-col">
+        </div>
+
+        {/* RIGHT COLUMN: Total Portfolio Card */}
+        <div className="lg:col-span-5 flex flex-col">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none h-full">
             <span className="text-[14px] font-medium text-slate-600 dark:text-white/80 mb-1">Total Portfolio</span>
             <span className="text-[28px] font-bold text-slate-900 dark:text-white mb-2 tracking-tight">$18,642.75</span>
             <div className="flex items-center gap-1.5 mb-6">
@@ -153,9 +160,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
             <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">24h Change</span>
           </div>
-
         </div>
       </div>
+      
     </div>
   );
 };
