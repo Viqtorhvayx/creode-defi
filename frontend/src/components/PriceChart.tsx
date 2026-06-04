@@ -195,7 +195,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
             <span className="text-[12px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>
           </div>
         </div>
-        <div className="flex gap-1 items-center bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 p-1 rounded-[12px] shadow-sm dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+        <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-[12px] shadow-sm dark:shadow-none">
           {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
             <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
           ))}
