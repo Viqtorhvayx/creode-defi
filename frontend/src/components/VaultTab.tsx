@@ -111,7 +111,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           <div className="flex flex-col w-full mb-4">
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Lock for (days)</label>
             <div className="flex items-center justify-between w-full">
-              <div className="w-[100px] py-2 px-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-full">
+              <div className="w-[100px] py-2 px-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-full transition-all duration-200 focus-within:border-[#00A8E8]/60 focus-within:ring-2 focus-within:ring-[#00A8E8]/20">
                 <input 
                   type="number" 
                   value={lockDaysInput}
