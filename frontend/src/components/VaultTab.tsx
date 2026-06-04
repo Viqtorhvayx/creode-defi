@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { PriceChart } from './PriceChart';
-import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp } from '@phosphor-icons/react';
+import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, Percent, ArrowsClockwise } from '@phosphor-icons/react';
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -145,13 +145,54 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       {/* ROW 2: Empty Space & Total Portfolio Card */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8">
         
-        {/* LEFT COLUMN: Empty space reserved for future card */}
+        {/* LEFT COLUMN: Features Card */}
         <div className="lg:col-span-7 flex flex-col">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full h-full shadow-sm dark:shadow-none justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+              
+              {/* Feature 1 */}
+              <div className="flex flex-col items-start">
+                <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                  <ShieldCheck size={20} className="text-[#00A8E8]" weight="regular" />
+                </div>
+                <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Secure</h4>
+                <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Built on Hedera with enterprise-grade security.</p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="flex flex-col items-start">
+                <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                  <LockKey size={20} className="text-[#00A8E8]" weight="regular" />
+                </div>
+                <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Time-Locked</h4>
+                <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Funds are locked for 21 days to maximize your earnings.</p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="flex flex-col items-start">
+                <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                  <Percent size={20} className="text-[#00A8E8]" weight="regular" />
+                </div>
+                <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Stable Yield</h4>
+                <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Earn 0.30% APY every 21 days, consistently.</p>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="flex flex-col items-start">
+                <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
+                  <ArrowsClockwise size={20} className="text-[#00A8E8]" weight="regular" />
+                </div>
+                <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Auto-Compounding</h4>
+                <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-2">Earnings are added to your balance after each cycle.</p>
+              </div>
+
+            </div>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Total Portfolio Card */}
         <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none h-full">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none h-full justify-center">
             <span className="text-[14px] font-medium text-slate-600 dark:text-white/80 mb-1">Total Portfolio</span>
             <span className="text-[28px] font-bold text-slate-900 dark:text-white mb-2 tracking-tight">$18,642.75</span>
             <div className="flex items-center gap-1.5 mb-6">
