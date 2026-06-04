@@ -12,6 +12,12 @@ interface VaultTabProps {
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
+  const [lockDaysInput, setLockDaysInput] = useState<number>(30);
+  const [displayLockDays, setDisplayLockDays] = useState<number>(30);
+
+  const maturityDate = new Date();
+  maturityDate.setDate(maturityDate.getDate() + displayLockDays);
+  const formattedMaturityDate = maturityDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
@@ -106,10 +112,20 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Lock for (days)</label>
             <div className="flex items-center justify-between w-full">
               <div className="w-[100px] py-2 px-4 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-full">
-                <input type="number" defaultValue="30" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
+                <input 
+                  type="number" 
+                  value={lockDaysInput}
+                  onChange={(e) => {
+                    setLockDaysInput(Number(e.target.value));
+                    setIsSetSelected(false);
+                  }}
+                  className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
               </div>
               <button 
-                onClick={() => setIsSetSelected(!isSetSelected)}
+                onClick={() => {
+                  setDisplayLockDays(lockDaysInput);
+                  setIsSetSelected(true);
+                }}
                 className={`text-[12px] font-bold px-4 py-2 rounded-full transition-colors ${isSetSelected ? 'text-white bg-[#00A8E8]' : 'text-[#00A8E8] bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25'}`}>
                 Set
               </button>
@@ -130,7 +146,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <LockKey size={14} />
                 <span className="text-[11px] font-semibold">Lock Period</span>
               </div>
-              <span className="text-[13px] font-bold text-slate-900 dark:text-white">30 Days</span>
+              <span className="text-[13px] font-bold text-slate-900 dark:text-white">{displayLockDays} Days</span>
             </div>
             
             <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
@@ -140,7 +156,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <CalendarBlank size={14} />
                 <span className="text-[11px] font-semibold">Maturity Date</span>
               </div>
-              <span className="text-[13px] font-bold text-slate-900 dark:text-white">Jun 12, 2025</span>
+              <span className="text-[13px] font-bold text-slate-900 dark:text-white">{formattedMaturityDate}</span>
             </div>
 
             <div className="w-px h-8 bg-slate-200 dark:bg-[#1A2332]"></div>
@@ -150,7 +166,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <ChartLineUp size={14} className="shrink-0" />
                 <span className="text-[11px] font-semibold">Estimated Earnings</span>
               </div>
-              <span className="text-[13px] font-bold text-green-500 dark:text-green-400">+4.50 HBAR</span>
+              <span className="text-[13px] font-bold text-emerald-500 dark:text-[#00E88A]">+4.50 HBAR</span>
             </div>
 
           </div>
