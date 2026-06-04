@@ -143,19 +143,19 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       </div>
 
       {/* ROW 2: Empty Space & Total Portfolio Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8 items-start">
         
         {/* LEFT COLUMN: Features Card */}
         <div className="lg:col-span-7 flex flex-col">
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] px-6 py-4 flex flex-col w-full h-full shadow-sm dark:shadow-none justify-center">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full h-auto shadow-sm dark:shadow-none">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
               
               {/* Feature 1 */}
-              <div className="flex flex-col items-start w-full">
+              <div className="flex flex-col items-start w-full h-auto">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <ShieldCheck size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
+                <div className="flex flex-col relative w-full h-auto">
                   <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-1">Secure</h4>
                   <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-4">Built on Hedera with enterprise-grade security.</p>
                   {/* Text Separator */}
@@ -164,11 +164,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
 
               {/* Feature 2 */}
-              <div className="flex flex-col items-start w-full">
+              <div className="flex flex-col items-start w-full h-auto">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <LockKey size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
+                <div className="flex flex-col relative w-full h-auto">
                   <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-1">Time-Locked</h4>
                   <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-4">Funds are locked for 21 days to maximize your earnings.</p>
                   {/* Text Separator */}
@@ -177,11 +177,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
 
               {/* Feature 3 */}
-              <div className="flex flex-col items-start w-full">
+              <div className="flex flex-col items-start w-full h-auto">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <Percent size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
+                <div className="flex flex-col relative w-full h-auto">
                   <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-1">Stable Yield</h4>
                   <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-4">Earn 0.30% APY every 21 days, consistently.</p>
                   {/* Text Separator */}
@@ -190,11 +190,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
 
               {/* Feature 4 */}
-              <div className="flex flex-col items-start w-full">
+              <div className="flex flex-col items-start w-full h-auto">
                 <div className="w-11 h-11 rounded-full bg-transparent border border-[#00A8E8]/30 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(0,168,232,0.05)]">
                   <ArrowsClockwise size={20} className="text-[#00A8E8]" weight="regular" />
                 </div>
-                <div className="flex flex-col relative w-full h-full">
+                <div className="flex flex-col relative w-full h-auto">
                   <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-1">Auto-Compounding</h4>
                   <p className="text-[12px] text-slate-500 dark:text-white/50 leading-relaxed pr-4">Earnings are added to your balance after each cycle.</p>
                 </div>
@@ -206,7 +206,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
         {/* RIGHT COLUMN: Total Portfolio Card */}
         <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] px-6 py-4 flex flex-col w-full shadow-sm dark:shadow-none h-full justify-center">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none h-auto">
             <span className="text-[14px] font-medium text-slate-600 dark:text-white/80 mb-1">Total Portfolio</span>
             <span className="text-[28px] font-bold text-slate-900 dark:text-white mb-2 tracking-tight">$18,642.75</span>
             <div className="flex items-center gap-1.5 mb-3">
