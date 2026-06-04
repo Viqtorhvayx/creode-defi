@@ -1,7 +1,7 @@
 /* Credit this code to Viqtorhvayx on GitHub */
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PriceChart } from './PriceChart';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, Percent, ArrowsClockwise } from '@phosphor-icons/react';
 
@@ -10,6 +10,8 @@ interface VaultTabProps {
 }
 
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
+  const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
+
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
@@ -69,7 +71,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               {/* Left Side: Input Field & $0 */}
               <div className="flex flex-col justify-center h-full flex-1">
                 <input type="number" placeholder="0" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none m-0 p-0 mb-3" />
-                <span className="text-[12px] font-medium text-slate-400 dark:text-white/40 ml-0.5">$0</span>
+                <span className={`text-[12px] font-medium ml-0.5 transition-colors ${selectedPercent ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>$0</span>
               </div>
 
               {/* Right Side: Logo & Embedded Utilities */}
@@ -83,9 +85,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
                 {/* Shortcut Buttons */}
                 <div className="flex items-center gap-3 pr-2">
-                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">25%</button>
-                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">50%</button>
-                  <button className="text-[11px] font-bold text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] transition-colors">MAX</button>
+                  <button 
+                    onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>25%</button>
+                  <button 
+                    onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>50%</button>
+                  <button 
+                    onClick={() => setSelectedPercent(prev => prev === 'MAX' ? null : 'MAX')}
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>MAX</button>
                 </div>
               </div>
 
