@@ -37,11 +37,7 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
         role="button"
         tabIndex={0}
         onClick={handleConnect}
-        className={`transition-all duration-300 flex items-center justify-center cursor-pointer select-none border hover:opacity-90 active:scale-95 ${
-          theme === 'dark'
-            ? "bg-[#00A8E8] text-white shadow-[0_0_15px_rgba(0,168,232,0.3)] border-[#00A8E8] rounded-[12px] px-5 py-2" 
-            : "bg-white text-slate-800 shadow-sm border-slate-200 rounded-[12px] px-5 py-2"
-        }`}
+        className="transition-all duration-300 flex items-center justify-center cursor-pointer select-none border border-[#00A8E8] hover:bg-[#0090C7] active:scale-95 bg-[#00A8E8] text-white shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_15px_rgba(0,168,232,0.3)] hover:shadow-[0_0_20px_rgba(0,168,232,0.5)] dark:hover:shadow-[0_0_25px_rgba(0,168,232,0.6)] rounded-[12px] px-5 py-2"
       >
         <span className="text-[13px] font-bold tracking-wide">Connect Wallet</span>
       </div>

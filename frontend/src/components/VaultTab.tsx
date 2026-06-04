@@ -172,7 +172,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
 
           {/* Deposit Button */}
-          <button className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] transition-all tracking-wide">
+          <button className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_20px_rgba(0,168,232,0.5)] dark:hover:shadow-[0_0_25px_rgba(0,168,232,0.6)] transition-all tracking-wide">
             <LockKey size={18} weight="bold" />
             Deposit to Vault
           </button>
