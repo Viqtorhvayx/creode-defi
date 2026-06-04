@@ -53,11 +53,7 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
       role="button"
       tabIndex={0}
       onClick={handleConnect}
-      className={`transition-all duration-300 flex items-center justify-center cursor-pointer select-none border active:scale-95 ${
-        theme === 'dark'
-          ? "bg-[#04080F] text-white border-[#1A2332] rounded-[12px] px-4 py-2 hover:bg-white/5"
-          : "bg-white border-slate-200 rounded-[12px] px-4 py-1.5 shadow-sm hover:bg-slate-50"
-      }`}
+      className="transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none rounded-[12px] px-4 py-1.5 hover:bg-black/10 dark:hover:bg-white/10"
     >
       {theme === 'dark' ? (
         // Dark Mode: Stacked Avatar Layout
