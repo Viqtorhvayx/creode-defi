@@ -205,8 +205,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         </div>
 
         {/* RIGHT COLUMN: Total Portfolio Card */}
-        <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full shadow-sm dark:shadow-none h-full justify-center">
+        <div className="lg:col-span-5 flex flex-col items-end">
+          <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 flex flex-col w-full md:w-1/2 shadow-sm dark:shadow-none h-full justify-center">
             <span className="text-[14px] font-medium text-slate-600 dark:text-white/80 mb-1">Total Portfolio</span>
             <span className="text-[28px] font-bold text-slate-900 dark:text-white mb-2 tracking-tight">$18,642.75</span>
             <div className="flex items-center gap-1.5 mb-6">
