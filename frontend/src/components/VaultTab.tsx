@@ -19,9 +19,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-8 items-start">
         
         {/* LEFT COLUMN: Chart + Stats (Spans 7 columns) */}
-        <div className="lg:col-span-7 flex flex-col h-full">
+        <div className="lg:col-span-7 flex flex-col h-fit">
           {/* Chart Card */}
-          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-full p-6">
+          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] flex flex-col w-full h-fit p-6">
             <PriceChart theme={theme} />
           </div>
         </div>
