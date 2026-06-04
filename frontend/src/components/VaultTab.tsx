@@ -12,7 +12,7 @@ interface VaultTabProps {
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
-  const [lockDaysInput, setLockDaysInput] = useState<number>(30);
+  const [lockDaysInput, setLockDaysInput] = useState<string>('30');
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
 
   const maturityDate = new Date();
@@ -116,14 +116,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   type="number" 
                   value={lockDaysInput}
                   onChange={(e) => {
-                    setLockDaysInput(Number(e.target.value));
+                    setLockDaysInput(e.target.value);
                     setIsSetSelected(false);
                   }}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
               </div>
               <button 
                 onClick={() => {
-                  setDisplayLockDays(lockDaysInput);
+                  setDisplayLockDays(Number(lockDaysInput) || 0);
                   setIsSetSelected(true);
                 }}
                 className={`text-[12px] font-bold px-4 py-2 rounded-full transition-colors ${isSetSelected ? 'text-white bg-[#00A8E8]' : 'text-[#00A8E8] bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25'}`}>
