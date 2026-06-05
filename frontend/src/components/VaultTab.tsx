@@ -14,6 +14,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
   const [lockDaysInput, setLockDaysInput] = useState<string>('30');
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
+  const [depositAmount, setDepositAmount] = useState<string>('');
+  const [hasDeposited, setHasDeposited] = useState<boolean>(false);
 
   const maturityDate = new Date();
   maturityDate.setDate(maturityDate.getDate() + displayLockDays);
@@ -75,9 +77,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
             <div className="flex items-center justify-between w-full h-[104px] px-5 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
               
-              {/* Left Side: Input Field & $0 */}
               <div className="flex flex-col justify-center h-full flex-1">
-                <input type="number" placeholder="0" className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none m-0 p-0 mb-3" />
+                <input 
+                  type="number" 
+                  placeholder="0" 
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[32px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 leading-none m-0 p-0 mb-3" 
+                />
                 <span className={`text-[12px] font-medium ml-0.5 transition-colors ${selectedPercent ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>$0</span>
               </div>
 
@@ -171,10 +178,28 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           </div>
 
-          {/* Deposit Button */}
-          <button className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_rgba(0,168,232,0.6)] dark:hover:shadow-[0_0_40px_rgba(0,168,232,0.8)] transition-all duration-300 active:scale-[0.98] tracking-wide">
-            Deposit to Vault
-          </button>
+          {/* Deposit / Withdraw Buttons */}
+          {hasDeposited ? (
+            <div className="flex items-center gap-4 w-full">
+              <button className="flex-1 h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_rgba(0,168,232,0.6)] dark:hover:shadow-[0_0_40px_rgba(0,168,232,0.8)] transition-all duration-300 active:scale-[0.98] tracking-wide">
+                Deposit
+              </button>
+              <button className="flex-1 h-14 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-slate-900 dark:text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide">
+                Withdraw
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => {
+                if (Number(depositAmount) > 0) {
+                  setHasDeposited(true);
+                }
+              }}
+              className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_rgba(0,168,232,0.6)] dark:hover:shadow-[0_0_40px_rgba(0,168,232,0.8)] transition-all duration-300 active:scale-[0.98] tracking-wide"
+            >
+              Deposit to Vault
+            </button>
+          )}
 
           {/* Footer Subtext */}
           <div className="flex items-center justify-center gap-1.5 mt-5">
