@@ -16,7 +16,6 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
-  const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | null>(null);
 
   const maturityDate = new Date();
   maturityDate.setDate(maturityDate.getDate() + displayLockDays);
@@ -183,22 +182,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {hasDeposited ? (
             <div className="flex items-center gap-4 w-full">
               <button 
-                onClick={() => setActiveAction(prev => prev === 'deposit' ? null : 'deposit')}
-                className={`flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide ${
-                  activeAction === 'deposit'
-                    ? 'bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_rgba(0,168,232,0.6)] dark:hover:shadow-[0_0_40px_rgba(0,168,232,0.8)]'
-                    : 'bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8]'
-                }`}
+                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Deposit
               </button>
               <button 
-                onClick={() => setActiveAction(prev => prev === 'withdraw' ? null : 'withdraw')}
-                className={`flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide ${
-                  activeAction === 'withdraw'
-                    ? 'bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_rgba(0,168,232,0.6)] dark:hover:shadow-[0_0_40px_rgba(0,168,232,0.8)]'
-                    : 'bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8]'
-                }`}
+                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Withdraw
               </button>
