@@ -45,7 +45,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Header Row */}
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
-              <CustomVaultIcon className="w-12 h-12 text-[#00A8E8] transition-all duration-300 drop-shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:drop-shadow-[0_0_15px_rgba(0,168,232,0.3)] hover:drop-shadow-[0_0_20px_rgba(0,168,232,0.5)] dark:hover:drop-shadow-[0_0_25px_rgba(0,168,232,0.6)] cursor-pointer" />
+              <CustomVaultIcon className="w-12 h-12 text-black dark:text-white transition-all duration-300 drop-shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:drop-shadow-[0_0_15px_rgba(0,168,232,0.3)] hover:drop-shadow-[0_0_20px_rgba(0,168,232,0.5)] dark:hover:drop-shadow-[0_0_25px_rgba(0,168,232,0.6)] cursor-pointer" />
               <div className="flex flex-col">
                 <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Vault</h3>
                 <span className="text-[13px] font-medium text-slate-500 dark:text-white/60">Time-locked savings</span>
