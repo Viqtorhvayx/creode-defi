@@ -1,9 +1,11 @@
 /* Credit this code to Viqtorhvayx on GitHub */
+// Code credited and implemented by Viqtorhvayx
 "use client";
 
 import React, { useState } from 'react';
 import { PriceChart } from './PriceChart';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, Percent, ArrowsClockwise } from '@phosphor-icons/react';
+import { CustomVaultIcon } from './CustomVaultIcon';
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -44,8 +46,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
               <div className="w-[44px] h-[44px] rounded-full bg-[#00A8E8]/10 dark:bg-[#00A8E8]/10 flex items-center justify-center dark:shadow-[0_0_20px_rgba(0,168,232,0.3)]">
-                {/* Placeholder for custom Vault icon image */}
-                <LockKey size={24} weight="fill" className="text-[#00A8E8] dark:text-[#00A8E8]" />
+                {/* Custom Vault icon image */}
+                <CustomVaultIcon className="w-6 h-6 text-[#00A8E8] dark:text-[#00A8E8]" />
               </div>
               <div className="flex flex-col">
                 <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Vault</h3>
