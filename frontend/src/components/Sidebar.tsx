@@ -13,6 +13,7 @@ import {
   Gear, 
   SignOut 
 } from '@phosphor-icons/react';
+import { CustomVaultIcon } from './CustomVaultIcon';
 
 interface SidebarProps {
   theme: 'light' | 'dark';
@@ -50,7 +51,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
-              <Icon size={18} weight={isActive ? "fill" : "regular"} />
+              {item.id === 'Vault' ? (
+                <CustomVaultIcon className="w-[18px] h-[18px] shrink-0" />
+              ) : (
+                <Icon size={18} weight={isActive ? "fill" : "regular"} />
+              )}
               <span>{item.label}</span>
             </button>
           );
