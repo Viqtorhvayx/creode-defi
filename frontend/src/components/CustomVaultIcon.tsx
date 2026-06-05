@@ -15,7 +15,22 @@ export const CustomVaultIcon = ({ className }: { className?: string }) => {
       xmlSpace="preserve"
       fill="currentColor"
     >
+      <defs>
+        <linearGradient id="vaultLightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="black" />
+          <stop offset="100%" stopColor="#00A8E8" />
+        </linearGradient>
+        <linearGradient id="vaultDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="white" />
+          <stop offset="100%" stopColor="#00A8E8" />
+        </linearGradient>
+      </defs>
+      <style>{`
+        .vault-icon-path { fill: url(#vaultLightGrad); }
+        :global(.dark) .vault-icon-path, .dark .vault-icon-path { fill: url(#vaultDarkGrad); }
+      `}</style>
       <path 
+        className="vault-icon-path"
         opacity="1.000000" 
         stroke="none" 
         d="
