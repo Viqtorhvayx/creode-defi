@@ -13,9 +13,9 @@ export const CustomVaultIcon = ({ className }: { className?: string }) => {
       className={className}
       viewBox="0 0 736 464" 
       xmlSpace="preserve"
+      fill="currentColor"
     >
       <path 
-        className="fill-black dark:fill-white"
         opacity="1.000000" 
         d="
 M552.000000,465.000000 
@@ -77,7 +77,6 @@ M300.496552,115.100014
 z"
       />
       <path 
-        className="fill-[#00A8E8]"
         opacity="1.000000" 
         d="
 M336.134796,304.922150 
