@@ -187,8 +187,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       {/* Header section exactly as reference */}
       <div className="flex justify-between items-start w-full mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
-            <span className="text-[20px] font-bold text-slate-900 dark:text-white/90">H</span>
+          <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none overflow-hidden">
+            <img src="https://www.saucerswap.finance/images/tokens/hbar.svg" alt="HBAR" className="w-full h-full object-contain p-1.5" />
           </div>
           <div className="flex flex-col">
             <h3 className="text-[16px] font-bold tracking-tight mb-0.5 text-slate-900 dark:text-white">HBAR Market</h3>
