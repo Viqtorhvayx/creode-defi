@@ -1,9 +1,10 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including CoinGecko API integration and UI update, by Viqtorhvayx
+// Code credited and implemented, including custom UI components and CoinGecko API integration, by Viqtorhvayx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PriceChart } from './PriceChart';
+import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, Percent, ArrowsClockwise } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 
@@ -19,6 +20,22 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
+
+  const { balance } = useWallet();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'DOVU'];
+  const [activeToken, setActiveToken] = useState('HBAR');
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   React.useEffect(() => {
     const fetchLogo = async () => {
@@ -95,7 +112,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit Input Area */}
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
-            <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit HBAR</label>
+            <label className="text-[13px] font-bold text-slate-900 dark:text-white/80 mb-2">Deposit {activeToken}</label>
             <div className="flex items-center justify-between w-full h-[104px] px-5 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-white/5 dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] rounded-[16px] transition-all">
               
               <div className="flex flex-col justify-center h-full flex-1">
@@ -110,16 +127,51 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
 
               {/* Right Side: Logo & Embedded Utilities */}
-              <div className="flex flex-col items-end justify-center h-full shrink-0">
-                {/* HBAR Logo */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none cursor-pointer mb-[14px]">
-                  {hbarLogoUrlSmall ? (
+              <div className="flex flex-col items-end justify-center h-full shrink-0 relative" ref={dropdownRef}>
+                
+                {/* Token Selector Trigger */}
+                <div 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none cursor-pointer mb-[14px] hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                >
+                  {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
                     <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                   ) : (
-                    <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</span>
+                    <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                   )}
-                  <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">HBAR</span>
-                  <svg className="w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                  <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
+                  <svg className={`w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+
+                {/* Token Dropdown Menu */}
+                <div 
+                  className={`absolute top-[48px] right-0 w-[220px] bg-white dark:bg-[#121821] border border-slate-200 dark:border-white/10 rounded-[16px] shadow-xl z-50 transition-all duration-200 ease-in-out origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
+                >
+                  <div className="flex flex-col max-h-[280px] overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
+                    {TOKENS.map(token => (
+                      <div 
+                        key={token}
+                        onClick={() => { setActiveToken(token); setIsDropdownOpen(false); }}
+                        className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${activeToken === token ? 'bg-black/5 dark:bg-white/10' : 'hover:bg-[#00A8E8]/10'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {token === 'HBAR' && hbarLogoUrlSmall ? (
+                            <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                          ) : (
+                            <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
+                          )}
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">{token}</span>
+                        </div>
+                        
+                        {/* Token Balance logic fetch hook goes here */}
+                        <div className="flex flex-col items-end">
+                          <span className="text-[13px] font-semibold text-slate-600 dark:text-white/70">
+                            {token === 'HBAR' ? (balance || "0.00") : "0.00"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Shortcut Buttons */}
@@ -198,7 +250,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <ChartLineUp size={14} className="shrink-0" />
                 <span className="text-[11px] font-semibold">Estimated Earnings</span>
               </div>
-              <span className="text-[13px] font-bold text-emerald-500 dark:text-[#00E88A]">+4.50 HBAR</span>
+              <span className="text-[13px] font-bold text-emerald-500 dark:text-[#00E88A]">+4.50 {activeToken}</span>
             </div>
 
           </div>
