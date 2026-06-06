@@ -48,7 +48,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <CustomVaultIcon className="w-12 h-12 text-black dark:text-white" />
               <div className="flex flex-col">
                 <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Vault</h3>
-                <span className="text-[13px] font-medium text-slate-500 dark:text-white/60">Time-locked savings</span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Time-locked savings</span>
               </div>
             </div>
             
