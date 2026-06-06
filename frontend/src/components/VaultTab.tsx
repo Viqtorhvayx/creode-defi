@@ -21,6 +21,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
   const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
+  const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>(null);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -41,9 +42,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const [hbarRes, usdtRes] = await Promise.all([
+        const [hbarRes, usdtRes, usdcRes] = await Promise.all([
           fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
-          fetch("https://api.coingecko.com/api/v3/coins/tether")
+          fetch("https://api.coingecko.com/api/v3/coins/tether"),
+          fetch("https://api.coingecko.com/api/v3/coins/usd-coin")
         ]);
         
         if (hbarRes.ok) {
@@ -54,6 +56,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         if (usdtRes.ok) {
           const usdtData = await usdtRes.json();
           if (usdtData?.image?.small) setUsdtLogoUrlSmall(usdtData.image.small);
+        }
+
+        if (usdcRes.ok) {
+          const usdcData = await usdcRes.json();
+          if (usdcData?.image?.small) setUsdcLogoUrlSmall(usdcData.image.small);
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
@@ -147,6 +154,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
                       <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'USDC' && usdcLogoUrlSmall ? (
+                      <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -170,6 +179,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                               <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'USDT' && usdtLogoUrlSmall ? (
                               <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'USDC' && usdcLogoUrlSmall ? (
+                              <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
