@@ -1,4 +1,4 @@
-// Implementation by Viqtorhvayx
+// Implementation and CoinGecko API integration for UI update by Viqtorhvayx
 "use client";
 
 
@@ -20,6 +20,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const [priceChange24h, setPriceChange24h] = useState<number | null>(null);
   const [volume24h, setVolume24h] = useState<string | null>(null);
   const [marketCap, setMarketCap] = useState<string | null>(null);
+  const [hbarLogoUrl, setHbarLogoUrl] = useState<string | null>(null);
 
   const PYTH_HBAR_FEED_ID = "3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd";
   const PYTH_HERMES_URL = "https://hermes.pyth.network/v2/updates/price/latest";
@@ -71,6 +72,23 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     fetchMarketMetrics();
     const interval = setInterval(fetchMarketMetrics, 60000); 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph");
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.image?.large) {
+            setHbarLogoUrl(data.image.large);
+          }
+        }
+      } catch (err) {
+        console.error("CoinGecko Logo Error:", err);
+      }
+    };
+    fetchLogo();
   }, []);
 
   useEffect(() => {
@@ -187,9 +205,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       {/* Header section exactly as reference */}
       <div className="flex justify-between items-start w-full mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
-            <span className="text-[20px] font-bold text-slate-900 dark:text-white/90">H</span>
-          </div>
+          {hbarLogoUrl ? (
+            <img 
+              src={hbarLogoUrl} 
+              alt="HBAR Logo" 
+              className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none object-cover" 
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
+              <span className="text-[20px] font-bold text-slate-900 dark:text-white/90">H</span>
+            </div>
+          )}
           <div className="flex flex-col">
             <h3 className="text-[16px] font-bold tracking-tight mb-0.5 text-slate-900 dark:text-white">HBAR Market</h3>
             <span className="text-[12px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>
