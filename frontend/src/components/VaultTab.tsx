@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific DOVU asset update and UI correction, by Viqtorhvayx
+// Code credited and implemented, including this specific API optimization and batch-loading fix, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,6 +28,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
   const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://storage.googleapis.com/saucerswap-tokens/images/0.0.3716059.png");
+  const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -48,58 +49,26 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes, bonzoRes] = await Promise.all([
-          fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
-          fetch("https://api.coingecko.com/api/v3/coins/tether"),
-          fetch("https://api.coingecko.com/api/v3/coins/usd-coin"),
-          fetch("https://api.coingecko.com/api/v3/coins/saucerswap"),
-          fetch("https://api.coingecko.com/api/v3/coins/hashpack"),
-          fetch("https://api.coingecko.com/api/v3/coins/wrapped-bitcoin"),
-          fetch("https://api.coingecko.com/api/v3/coins/weth"),
-          fetch("https://api.coingecko.com/api/v3/coins/bonzo-finance")
-        ]);
+        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,tether,usd-coin,saucerswap,hashpack,wrapped-bitcoin,weth,bonzo-finance,dovu");
         
-        if (hbarRes.ok) {
-          const hbarData = await hbarRes.json();
-          if (hbarData?.image?.small) setHbarLogoUrlSmall(hbarData.image.small);
-        }
-        
-        if (usdtRes.ok) {
-          const usdtData = await usdtRes.json();
-          if (usdtData?.image?.small) setUsdtLogoUrlSmall(usdtData.image.small);
-        }
-
-        if (usdcRes.ok) {
-          const usdcData = await usdcRes.json();
-          if (usdcData?.image?.small) setUsdcLogoUrlSmall(usdcData.image.small);
-        }
-
-        if (sauceRes.ok) {
-          const sauceData = await sauceRes.json();
-          if (sauceData?.image?.small) setSauceLogoUrlSmall(sauceData.image.small);
-        }
-
-        if (packRes.ok) {
-          const packData = await packRes.json();
-          if (packData?.image?.small) setPackLogoUrlSmall(packData.image.small);
-        }
-
-        if (wbtcRes.ok) {
-          const wbtcData = await wbtcRes.json();
-          if (wbtcData?.image?.small) setWbtcLogoUrlSmall(wbtcData.image.small);
-        }
-
-        if (wethRes.ok) {
-          const wethData = await wethRes.json();
-          if (wethData?.image?.small) setWethLogoUrlSmall(wethData.image.small);
-        }
-
-        if (bonzoRes.ok) {
-          const bonzoData = await bonzoRes.json();
-          if (bonzoData?.image?.small) setBonzoLogoUrlSmall(bonzoData.image.small);
+        if (res.ok) {
+          const data = await res.json();
+          data.forEach((coin: any) => {
+            if (coin.id === 'hedera-hashgraph' && coin.image) setHbarLogoUrlSmall(coin.image);
+            else if (coin.id === 'tether' && coin.image) setUsdtLogoUrlSmall(coin.image);
+            else if (coin.id === 'usd-coin' && coin.image) setUsdcLogoUrlSmall(coin.image);
+            else if (coin.id === 'saucerswap' && coin.image) setSauceLogoUrlSmall(coin.image);
+            else if (coin.id === 'hashpack' && coin.image) setPackLogoUrlSmall(coin.image);
+            else if (coin.id === 'wrapped-bitcoin' && coin.image) setWbtcLogoUrlSmall(coin.image);
+            else if (coin.id === 'weth' && coin.image) setWethLogoUrlSmall(coin.image);
+            else if (coin.id === 'bonzo-finance' && coin.image) setBonzoLogoUrlSmall(coin.image);
+            // DOVU is purposely ignored to preserve the Google Storage override URL
+          });
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
+      } finally {
+        setIsLogosLoading(false);
       }
     };
     fetchLogos();
@@ -186,23 +155,23 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
-                    {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
+                    {activeToken === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
+                    ) : activeToken === 'USDT' && !isLogosLoading && usdtLogoUrlSmall ? (
                       <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'USDC' && usdcLogoUrlSmall ? (
+                    ) : activeToken === 'USDC' && !isLogosLoading && usdcLogoUrlSmall ? (
                       <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'SAUCE' && sauceLogoUrlSmall ? (
+                    ) : activeToken === 'SAUCE' && !isLogosLoading && sauceLogoUrlSmall ? (
                       <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'PACK' && packLogoUrlSmall ? (
+                    ) : activeToken === 'PACK' && !isLogosLoading && packLogoUrlSmall ? (
                       <img src={packLogoUrlSmall} alt="PACK Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'WBTC' && wbtcLogoUrlSmall ? (
+                    ) : activeToken === 'WBTC' && !isLogosLoading && wbtcLogoUrlSmall ? (
                       <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'WETH' && wethLogoUrlSmall ? (
+                    ) : activeToken === 'WETH' && !isLogosLoading && wethLogoUrlSmall ? (
                       <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'BONZO' && bonzoLogoUrlSmall ? (
+                    ) : activeToken === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                       <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'DOVU' && dovuLogoUrlSmall ? (
+                    ) : activeToken === 'DOVU' && !isLogosLoading && dovuLogoUrlSmall ? (
                       <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
@@ -223,23 +192,23 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${activeToken === token ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                         >
                           <div className="flex items-center gap-3">
-                            {token === 'HBAR' && hbarLogoUrlSmall ? (
+                            {token === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
                               <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'USDT' && usdtLogoUrlSmall ? (
+                            ) : token === 'USDT' && !isLogosLoading && usdtLogoUrlSmall ? (
                               <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'USDC' && usdcLogoUrlSmall ? (
+                            ) : token === 'USDC' && !isLogosLoading && usdcLogoUrlSmall ? (
                               <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'SAUCE' && sauceLogoUrlSmall ? (
+                            ) : token === 'SAUCE' && !isLogosLoading && sauceLogoUrlSmall ? (
                               <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'PACK' && packLogoUrlSmall ? (
+                            ) : token === 'PACK' && !isLogosLoading && packLogoUrlSmall ? (
                               <img src={packLogoUrlSmall} alt="PACK Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'WBTC' && wbtcLogoUrlSmall ? (
+                            ) : token === 'WBTC' && !isLogosLoading && wbtcLogoUrlSmall ? (
                               <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'WETH' && wethLogoUrlSmall ? (
+                            ) : token === 'WETH' && !isLogosLoading && wethLogoUrlSmall ? (
                               <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'BONZO' && bonzoLogoUrlSmall ? (
+                            ) : token === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                               <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'DOVU' && dovuLogoUrlSmall ? (
+                            ) : token === 'DOVU' && !isLogosLoading && dovuLogoUrlSmall ? (
                               <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
