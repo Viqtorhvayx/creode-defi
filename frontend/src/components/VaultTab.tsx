@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific UI asset update and API integration, by Viqtorhvayx
+// Code credited and implemented, including this specific UI component uniform styling and design alignment, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -144,7 +144,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
                     {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
-                      <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-contain p-0.5 shrink-0 shadow-sm dark:shadow-none bg-white dark:bg-white" />
+                      <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
                       <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
@@ -156,7 +156,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
                   {/* Token Dropdown Menu */}
                   <div 
-                    className={`absolute top-full right-0 mt-2 w-[220px] bg-slate-50/90 dark:bg-[#0B0F14]/90 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.15)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
+                    className={`absolute top-full right-0 mt-2 w-[220px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
                   >
                     <div className="flex flex-col max-h-[280px] overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
                       {TOKENS.map(token => (
@@ -167,7 +167,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                         >
                           <div className="flex items-center gap-3">
                             {token === 'HBAR' && hbarLogoUrlSmall ? (
-                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-contain p-[3px] shrink-0 shadow-sm bg-white dark:bg-white" />
+                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'USDT' && usdtLogoUrlSmall ? (
                               <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
