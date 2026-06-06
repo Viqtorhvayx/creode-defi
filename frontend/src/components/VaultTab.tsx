@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific DOVU logo override and UI correction, by Viqtorhvayx
+// Code credited and implemented, including this specific DOVU asset update and UI correction, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
