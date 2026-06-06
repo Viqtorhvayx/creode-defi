@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific UI asset update, styling unification, and API integration, by Viqtorhvayx
+// Code credited and implemented, including this specific UI asset update and API integration, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -143,15 +143,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white overflow-hidden">
-                      {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
-                        <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-full h-full object-cover" />
-                      ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
-                        <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-white dark:text-black text-[10px] font-black">{activeToken.charAt(0)}</span>
-                      )}
-                    </div>
+                    {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
+                      <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
+                      <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : (
+                      <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
+                    )}
                     <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
                     <svg className={`w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                   </div>
@@ -168,15 +166,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${activeToken === token ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 shadow-sm overflow-hidden">
-                              {token === 'HBAR' && hbarLogoUrlSmall ? (
-                                <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-full h-full object-cover" />
-                              ) : token === 'USDT' && usdtLogoUrlSmall ? (
-                                <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-slate-900 dark:text-white text-[12px] font-black">{token.charAt(0)}</span>
-                              )}
-                            </div>
+                            {token === 'HBAR' && hbarLogoUrlSmall ? (
+                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'USDT' && usdtLogoUrlSmall ? (
+                              <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : (
+                              <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
+                            )}
                             <span className={`text-[14px] font-bold ${activeToken === token ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white group-hover:text-[#00A8E8] dark:group-hover:text-[#00A8E8]'}`}>{token}</span>
                           </div>
                           
