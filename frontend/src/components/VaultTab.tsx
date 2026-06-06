@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific UI asset update, styling unification, and API integration, by Viqtorhvayx
+// Code credited and implemented, including this specific UI asset update and API integration, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -27,6 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
+  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>(null);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,7 +48,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes, bonzoRes] = await Promise.all([
+        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes, bonzoRes, dovuRes] = await Promise.all([
           fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
           fetch("https://api.coingecko.com/api/v3/coins/tether"),
           fetch("https://api.coingecko.com/api/v3/coins/usd-coin"),
@@ -55,7 +56,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           fetch("https://api.coingecko.com/api/v3/coins/hashpack"),
           fetch("https://api.coingecko.com/api/v3/coins/wrapped-bitcoin"),
           fetch("https://api.coingecko.com/api/v3/coins/weth"),
-          fetch("https://api.coingecko.com/api/v3/coins/bonzo-finance")
+          fetch("https://api.coingecko.com/api/v3/coins/bonzo-finance"),
+          fetch("https://api.coingecko.com/api/v3/coins/dovu")
         ]);
         
         if (hbarRes.ok) {
@@ -96,6 +98,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         if (bonzoRes.ok) {
           const bonzoData = await bonzoRes.json();
           if (bonzoData?.image?.small) setBonzoLogoUrlSmall(bonzoData.image.small);
+        }
+
+        if (dovuRes.ok) {
+          const dovuData = await dovuRes.json();
+          if (dovuData?.image?.small) setDovuLogoUrlSmall(dovuData.image.small);
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
@@ -201,6 +208,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'BONZO' && bonzoLogoUrlSmall ? (
                       <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'DOVU' && dovuLogoUrlSmall ? (
+                      <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -236,6 +245,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                               <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'BONZO' && bonzoLogoUrlSmall ? (
                               <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'DOVU' && dovuLogoUrlSmall ? (
+                              <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
