@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific API fix and UI correction, by Viqtorhvayx
+// Code credited and implemented, including this specific UI asset fix and implementation, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -27,7 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
-  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>(null);
+  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://s2.coinmarketcap.com/static/img/coins/200x200/28169.png");
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance } = useWallet();
@@ -48,45 +48,28 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
   React.useEffect(() => {
     const fetchLogos = async () => {
-      const fetchCoinGecko = async () => {
-        try {
-          const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,tether,usd-coin,saucerswap,hashpack,wrapped-bitcoin,weth,bonzo-finance,dovu");
-          
-          if (res.ok) {
-            const data = await res.json();
-            data.forEach((coin: any) => {
-              if (coin.id === 'hedera-hashgraph' && coin.image) setHbarLogoUrlSmall(coin.image);
-              else if (coin.id === 'tether' && coin.image) setUsdtLogoUrlSmall(coin.image);
-              else if (coin.id === 'usd-coin' && coin.image) setUsdcLogoUrlSmall(coin.image);
-              else if (coin.id === 'saucerswap' && coin.image) setSauceLogoUrlSmall(coin.image);
-              else if (coin.id === 'hashpack' && coin.image) setPackLogoUrlSmall(coin.image);
-              else if (coin.id === 'wrapped-bitcoin' && coin.image) setWbtcLogoUrlSmall(coin.image);
-              else if (coin.id === 'weth' && coin.image) setWethLogoUrlSmall(coin.image);
-              else if (coin.id === 'bonzo-finance' && coin.image) setBonzoLogoUrlSmall(coin.image);
-              // DOVU is purposely ignored to preserve the SaucerSwap API fetch
-            });
-          }
-        } catch (err) {
-          console.error("CoinGecko Logo Error:", err);
+      try {
+        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,tether,usd-coin,saucerswap,hashpack,wrapped-bitcoin,weth,bonzo-finance,dovu");
+        
+        if (res.ok) {
+          const data = await res.json();
+          data.forEach((coin: any) => {
+            if (coin.id === 'hedera-hashgraph' && coin.image) setHbarLogoUrlSmall(coin.image);
+            else if (coin.id === 'tether' && coin.image) setUsdtLogoUrlSmall(coin.image);
+            else if (coin.id === 'usd-coin' && coin.image) setUsdcLogoUrlSmall(coin.image);
+            else if (coin.id === 'saucerswap' && coin.image) setSauceLogoUrlSmall(coin.image);
+            else if (coin.id === 'hashpack' && coin.image) setPackLogoUrlSmall(coin.image);
+            else if (coin.id === 'wrapped-bitcoin' && coin.image) setWbtcLogoUrlSmall(coin.image);
+            else if (coin.id === 'weth' && coin.image) setWethLogoUrlSmall(coin.image);
+            else if (coin.id === 'bonzo-finance' && coin.image) setBonzoLogoUrlSmall(coin.image);
+            // DOVU is purposely ignored to preserve the static override URL
+          });
         }
-      };
-
-      const fetchDovu = async () => {
-        try {
-          const res = await fetch("https://api.saucerswap.finance/tokens/0.0.3716059");
-          if (res.ok) {
-            const data = await res.json();
-            if (data?.icon) {
-              setDovuLogoUrlSmall(`https://www.saucerswap.finance${data.icon}`);
-            }
-          }
-        } catch (err) {
-          console.error("SaucerSwap DOVU Logo Error:", err);
-        }
-      };
-
-      await Promise.all([fetchCoinGecko(), fetchDovu()]);
-      setIsLogosLoading(false);
+      } catch (err) {
+        console.error("CoinGecko Logo Error:", err);
+      } finally {
+        setIsLogosLoading(false);
+      }
     };
     fetchLogos();
   }, []);
