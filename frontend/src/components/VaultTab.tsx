@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific UI asset update and API integration, by Viqtorhvayx
+// Code credited and implemented, including this specific DOVU logo override and UI correction, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -27,7 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
-  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>(null);
+  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://storage.googleapis.com/saucerswap-tokens/images/0.0.3716059.png");
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes, bonzoRes, dovuRes] = await Promise.all([
+        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes, bonzoRes] = await Promise.all([
           fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
           fetch("https://api.coingecko.com/api/v3/coins/tether"),
           fetch("https://api.coingecko.com/api/v3/coins/usd-coin"),
@@ -56,8 +56,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           fetch("https://api.coingecko.com/api/v3/coins/hashpack"),
           fetch("https://api.coingecko.com/api/v3/coins/wrapped-bitcoin"),
           fetch("https://api.coingecko.com/api/v3/coins/weth"),
-          fetch("https://api.coingecko.com/api/v3/coins/bonzo-finance"),
-          fetch("https://api.coingecko.com/api/v3/coins/dovu")
+          fetch("https://api.coingecko.com/api/v3/coins/bonzo-finance")
         ]);
         
         if (hbarRes.ok) {
@@ -98,11 +97,6 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         if (bonzoRes.ok) {
           const bonzoData = await bonzoRes.json();
           if (bonzoData?.image?.small) setBonzoLogoUrlSmall(bonzoData.image.small);
-        }
-
-        if (dovuRes.ok) {
-          const dovuData = await dovuRes.json();
-          if (dovuData?.image?.small) setDovuLogoUrlSmall(dovuData.image.small);
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
