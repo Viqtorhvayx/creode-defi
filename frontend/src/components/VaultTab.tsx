@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including custom UI components and CoinGecko API integration, by Viqtorhvayx
+// Code credited and implemented, including this specific UI asset update and API integration, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -20,6 +20,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
+  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -38,20 +39,27 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   }, []);
 
   React.useEffect(() => {
-    const fetchLogo = async () => {
+    const fetchLogos = async () => {
       try {
-        const response = await fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph");
-        if (response.ok) {
-          const data = await response.json();
-          if (data?.image?.small) {
-            setHbarLogoUrlSmall(data.image.small);
-          }
+        const [hbarRes, usdtRes] = await Promise.all([
+          fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
+          fetch("https://api.coingecko.com/api/v3/coins/tether")
+        ]);
+        
+        if (hbarRes.ok) {
+          const hbarData = await hbarRes.json();
+          if (hbarData?.image?.small) setHbarLogoUrlSmall(hbarData.image.small);
+        }
+        
+        if (usdtRes.ok) {
+          const usdtData = await usdtRes.json();
+          if (usdtData?.image?.small) setUsdtLogoUrlSmall(usdtData.image.small);
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
       }
     };
-    fetchLogo();
+    fetchLogos();
   }, []);
 
   const maturityDate = new Date();
@@ -137,6 +145,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   >
                     {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
+                      <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -158,6 +168,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           <div className="flex items-center gap-3">
                             {token === 'HBAR' && hbarLogoUrlSmall ? (
                               <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'USDT' && usdtLogoUrlSmall ? (
+                              <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
