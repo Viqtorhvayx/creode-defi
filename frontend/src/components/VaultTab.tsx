@@ -25,6 +25,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>(null);
   const [packLogoUrlSmall, setPackLogoUrlSmall] = useState<string | null>(null);
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
+  const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -45,13 +46,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes] = await Promise.all([
+        const [hbarRes, usdtRes, usdcRes, sauceRes, packRes, wbtcRes, wethRes] = await Promise.all([
           fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph"),
           fetch("https://api.coingecko.com/api/v3/coins/tether"),
           fetch("https://api.coingecko.com/api/v3/coins/usd-coin"),
           fetch("https://api.coingecko.com/api/v3/coins/saucerswap"),
           fetch("https://api.coingecko.com/api/v3/coins/hashpack"),
-          fetch("https://api.coingecko.com/api/v3/coins/wrapped-bitcoin")
+          fetch("https://api.coingecko.com/api/v3/coins/wrapped-bitcoin"),
+          fetch("https://api.coingecko.com/api/v3/coins/weth")
         ]);
         
         if (hbarRes.ok) {
@@ -82,6 +84,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         if (wbtcRes.ok) {
           const wbtcData = await wbtcRes.json();
           if (wbtcData?.image?.small) setWbtcLogoUrlSmall(wbtcData.image.small);
+        }
+
+        if (wethRes.ok) {
+          const wethData = await wethRes.json();
+          if (wethData?.image?.small) setWethLogoUrlSmall(wethData.image.small);
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
@@ -183,6 +190,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <img src={packLogoUrlSmall} alt="PACK Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'WBTC' && wbtcLogoUrlSmall ? (
                       <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'WETH' && wethLogoUrlSmall ? (
+                      <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -214,6 +223,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                               <img src={packLogoUrlSmall} alt="PACK Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'WBTC' && wbtcLogoUrlSmall ? (
                               <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'WETH' && wethLogoUrlSmall ? (
+                              <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
