@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented by Viqtorhvayx
+// Code credited and implemented, including CoinGecko API integration and UI update, by Viqtorhvayx
 "use client";
 
 import React, { useState } from 'react';
@@ -18,6 +18,24 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
+  const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch("https://api.coingecko.com/api/v3/coins/hedera-hashgraph");
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.image?.small) {
+            setHbarLogoUrlSmall(data.image.small);
+          }
+        }
+      } catch (err) {
+        console.error("CoinGecko Logo Error:", err);
+      }
+    };
+    fetchLogo();
+  }, []);
 
   const maturityDate = new Date();
   maturityDate.setDate(maturityDate.getDate() + displayLockDays);
@@ -55,7 +73,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <div className="flex flex-col items-start px-3 py-2 w-fit rounded-[14px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
               <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">Secured by</span>
               <div className="flex items-center gap-2 mt-1.5">
-                <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
+                {hbarLogoUrlSmall ? (
+                  <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
+                )}
                 <span className="text-sm font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
               </div>
             </div>
