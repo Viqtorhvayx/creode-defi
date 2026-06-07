@@ -163,20 +163,20 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
                 {/* Amount Deposited Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.deposited}</span>
-                  <span className="text-[12px] text-slate-400 dark:text-white/50">{asset.depositedUsd}</span>
+                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.deposited}</span>
+                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.depositedUsd}</span>
                 </div>
 
                 {/* Earnings Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.earnings}</span>
-                  <span className="text-[12px] text-slate-400 dark:text-white/50">{asset.earningsUsd}</span>
+                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.earnings}</span>
+                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.earningsUsd}</span>
                 </div>
 
                 {/* TVL Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.tvl}</span>
-                  <span className="text-[12px] text-slate-400 dark:text-white/50">{asset.tvlUsd}</span>
+                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.tvl}</span>
+                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.tvlUsd}</span>
                 </div>
 
                 {/* Action Column */}
