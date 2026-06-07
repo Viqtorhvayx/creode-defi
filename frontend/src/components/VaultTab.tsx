@@ -1,5 +1,5 @@
 /* Credit this code to Viqtorhvayx on GitHub */
-// Code credited and implemented, including this specific UI asset fix and implementation, by Viqtorhvayx
+// Code credited and implemented, including this specific token replacement and API update, by Viqtorhvayx
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -27,13 +27,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
-  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://coin-images.coingecko.com/coins/images/32520/large/DOVU.png");
+  const [orbitLogoUrlSmall, setOrbitLogoUrlSmall] = useState<string | null>(null);
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'DOVU'];
+  const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'Orbit'];
   const [activeToken, setActiveToken] = useState('HBAR');
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   React.useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,tether,usd-coin,saucerswap,hashpack,wrapped-bitcoin,weth,bonzo-finance,dovu");
+        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,tether,usd-coin,saucerswap,hashpack,wrapped-bitcoin,weth,bonzo-finance,orbit-3");
         
         if (res.ok) {
           const data = await res.json();
@@ -62,7 +62,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             else if (coin.id === 'wrapped-bitcoin' && coin.image) setWbtcLogoUrlSmall(coin.image);
             else if (coin.id === 'weth' && coin.image) setWethLogoUrlSmall(coin.image);
             else if (coin.id === 'bonzo-finance' && coin.image) setBonzoLogoUrlSmall(coin.image);
-            // DOVU is purposely ignored to preserve the static override URL
+            else if (coin.id === 'orbit-3' && coin.image) setOrbitLogoUrlSmall(coin.image);
           });
         }
       } catch (err) {
@@ -171,8 +171,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                       <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'DOVU' && !isLogosLoading && dovuLogoUrlSmall ? (
-                      <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'Orbit' && !isLogosLoading && orbitLogoUrlSmall ? (
+                      <img src={orbitLogoUrlSmall} alt="Orbit Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -208,8 +208,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                               <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                               <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'DOVU' && !isLogosLoading && dovuLogoUrlSmall ? (
-                              <img src={dovuLogoUrlSmall} alt="DOVU Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'Orbit' && !isLogosLoading && orbitLogoUrlSmall ? (
+                              <img src={orbitLogoUrlSmall} alt="Orbit Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
