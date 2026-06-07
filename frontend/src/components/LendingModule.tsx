@@ -143,9 +143,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                 {/* Asset Column */}
                 <div className="col-span-3 flex items-center gap-3 pl-2">
                   {!isLogosLoading && logos[asset.symbol] ? (
-                    <img src={logos[asset.symbol]} alt={`${asset.name} Logo`} className="w-8 h-8 rounded-full object-cover shadow-sm bg-slate-900 dark:bg-white" />
+                    <img src={logos[asset.symbol]} alt={`${asset.name} Logo`} className="w-8 h-8 rounded-full object-cover" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[12px] font-black shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black">
                       {asset.symbol.charAt(0)}
                     </div>
                   )}
@@ -251,9 +251,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                   {/* Left: Token */}
                   <div className="flex items-center gap-3 shrink-0">
                     {!isLogosLoading && logos[selectedAsset.symbol] ? (
-                      <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-10 h-10 rounded-full object-cover shadow-sm bg-slate-900 dark:bg-white" />
+                      <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-10 h-10 rounded-full object-cover" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[13px] font-black shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[13px] font-black">
                         {selectedAsset.symbol.charAt(0)}
                       </div>
                     )}

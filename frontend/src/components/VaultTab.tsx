@@ -193,25 +193,25 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                         >
                           <div className="flex items-center gap-3">
                             {token === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
-                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'USDT' && !isLogosLoading && usdtLogoUrlSmall ? (
-                              <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'USDC' && !isLogosLoading && usdcLogoUrlSmall ? (
-                              <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'SAUCE' && !isLogosLoading && sauceLogoUrlSmall ? (
-                              <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'PACK' && !isLogosLoading && packLogoUrlSmall ? (
-                              <img src={packLogoUrlSmall} alt="PACK Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={packLogoUrlSmall} alt="PACK Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'WBTC' && !isLogosLoading && wbtcLogoUrlSmall ? (
-                              <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'WETH' && !isLogosLoading && wethLogoUrlSmall ? (
-                              <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
-                              <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : token === 'JAM' && !isLogosLoading && jamLogoUrlSmall ? (
-                              <img src={jamLogoUrlSmall} alt="JAM Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                              <img src={jamLogoUrlSmall} alt="JAM Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                             ) : (
-                              <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
+                              <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0">{token.charAt(0)}</span>
                             )}
                             <span className={`text-[14px] font-bold ${activeToken === token ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white group-hover:text-[#00A8E8] dark:group-hover:text-[#00A8E8]'}`}>{token}</span>
                           </div>
