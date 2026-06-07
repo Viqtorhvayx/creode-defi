@@ -33,7 +33,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'Orbit'];
+  const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'ORBIT'];
   const [activeToken, setActiveToken] = useState('HBAR');
 
   useEffect(() => {
@@ -171,8 +171,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : activeToken === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                       <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                    ) : activeToken === 'Orbit' && !isLogosLoading && orbitLogoUrlSmall ? (
-                      <img src={orbitLogoUrlSmall} alt="Orbit Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                    ) : activeToken === 'ORBIT' && !isLogosLoading && orbitLogoUrlSmall ? (
+                      <img src={orbitLogoUrlSmall} alt="ORBIT Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
                     ) : (
                       <span className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
@@ -208,8 +208,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                               <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : token === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
                               <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
-                            ) : token === 'Orbit' && !isLogosLoading && orbitLogoUrlSmall ? (
-                              <img src={orbitLogoUrlSmall} alt="Orbit Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
+                            ) : token === 'ORBIT' && !isLogosLoading && orbitLogoUrlSmall ? (
+                              <img src={orbitLogoUrlSmall} alt="ORBIT Logo" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm bg-slate-900 dark:bg-white" />
                             ) : (
                               <span className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0 border border-slate-200 dark:border-white/10 shadow-sm">{token.charAt(0)}</span>
                             )}
