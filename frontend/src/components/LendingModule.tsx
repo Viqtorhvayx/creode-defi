@@ -127,11 +127,18 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
           {/* Table Body */}
           <div className="flex flex-col">
-            {MOCK_ASSETS.map((asset, index) => (
-              <div 
-                key={asset.symbol} 
-                className={`grid grid-cols-12 gap-4 p-4 items-center transition-colors hover:bg-slate-50 dark:hover:bg-[#1F2937]/30 ${index !== MOCK_ASSETS.length - 1 ? 'border-b border-slate-100 dark:border-[#1F2937]' : ''}`}
-              >
+            {MOCK_ASSETS.map((asset, index) => {
+              const isSelected = selectedAsset?.symbol === asset.symbol;
+              return (
+                <div 
+                  key={asset.symbol} 
+                  onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setLendAmount(''); setSelectedPercent(null); }}
+                  className={`grid grid-cols-12 gap-4 p-4 items-center transition-all cursor-pointer relative ${
+                    isSelected 
+                      ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20 ring-1 ring-[#00A8E8]/50 z-10 rounded-xl shadow-[0_0_15px_rgba(0,168,232,0.15)]' 
+                      : `hover:bg-slate-50 dark:hover:bg-[#1F2937]/30 ${index !== MOCK_ASSETS.length - 1 ? 'border-b border-slate-100 dark:border-[#1F2937]' : ''}`
+                  }`}
+                >
                 
                 {/* Asset Column */}
                 <div className="col-span-3 flex items-center gap-3 pl-2">
@@ -175,14 +182,18 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                 {/* Action Column */}
                 <div className="col-span-1 flex justify-end pr-2">
                   <button 
-                    onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setLendAmount(''); setSelectedPercent(null); }}
-                    className="px-5 py-1.5 rounded-lg border border-[#00A8E8] text-[#00A8E8] text-[13px] font-semibold hover:bg-[#00A8E8] hover:text-white transition-colors duration-200">
+                    onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); setIsModalOpen(true); setLendAmount(''); setSelectedPercent(null); }}
+                    className={`px-5 py-1.5 rounded-lg border text-[13px] font-semibold transition-colors duration-200 ${
+                      isSelected 
+                        ? 'bg-[#00A8E8] text-white border-[#00A8E8] shadow-[0_0_10px_rgba(0,168,232,0.3)]' 
+                        : 'border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8] hover:text-white'
+                    }`}>
                     Lend
                   </button>
                 </div>
 
               </div>
-            ))}
+            )})}
           </div>
 
         </div>
