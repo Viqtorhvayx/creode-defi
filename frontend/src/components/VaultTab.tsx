@@ -254,7 +254,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   type="number" 
                   value={lockDaysInput}
                   onChange={(e) => {
-                    setLockDaysInput(e.target.value);
+                    let val = e.target.value;
+                    if (val.length > 1 && val.startsWith('0')) {
+                      val = val.replace(/^0+/, '') || '0';
+                    }
+                    setLockDaysInput(val);
                     setIsSetSelected(false);
                   }}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[16px] font-bold w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white" />
