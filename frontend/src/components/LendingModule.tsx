@@ -57,6 +57,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   return (
     <div className="w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
+
       {/* Top Metrics Section (3 Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         
@@ -66,9 +67,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             <Stack className="w-6 h-6 text-[#00A8E8]" weight="fill" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Supply</span>
-            <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm leading-none mb-2">42,390.75 HBAR</span>
-            <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">$3,756.45 USD</span>
+            <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400 mb-1">Total Supply</span>
+            <span className="text-[20px] font-bold text-slate-900 dark:text-white mb-0.5">42,390.75 HBAR</span>
+            <span className="text-[13px] text-slate-400 dark:text-gray-500">$3,756.45 USD</span>
           </div>
         </div>
 
@@ -78,8 +79,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             <ChartPieSlice className="w-6 h-6 text-[#00A8E8]" weight="fill" />
           </div>
           <div className="flex flex-col w-full">
-            <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Current Utilization</span>
-            <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm leading-none mb-3">68.45%</span>
+            <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400 mb-1">Current Utilization</span>
+            <span className="text-[20px] font-bold text-slate-900 dark:text-white mb-2">68.45%</span>
             <div className="w-full h-1.5 bg-slate-100 dark:bg-[#1F2937] rounded-full overflow-hidden">
               <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '68.45%' }}></div>
             </div>
@@ -92,9 +93,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             <Wallet className="w-6 h-6 text-[#00A8E8]" weight="fill" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Available</span>
-            <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm leading-none mb-2">13,450.25 HBAR</span>
-            <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">$1,194.45 USD</span>
+            <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400 mb-1">Total Available</span>
+            <span className="text-[20px] font-bold text-slate-900 dark:text-white mb-0.5">13,450.25 HBAR</span>
+            <span className="text-[13px] text-slate-400 dark:text-gray-500">$1,194.45 USD</span>
           </div>
         </div>
 
@@ -103,15 +104,15 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       {/* Lend Assets Section */}
       <div className="flex flex-col">
         <div className="flex flex-col mb-6">
-          <h2 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
-          <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mt-1">Supply your assets and start earning yield instantly.</span>
+          <h2 className="text-[20px] font-bold text-slate-900 dark:text-white mb-1">Lend Assets</h2>
+          <span className="text-[13px] text-slate-500 dark:text-gray-400">Supply your assets and start earning yield instantly.</span>
         </div>
 
         {/* Table Container */}
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[16px] overflow-hidden shadow-sm">
           
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-slate-50/50 dark:bg-[#0B0F14]/50 text-[11px] font-semibold text-slate-500 dark:text-white/60">
+          <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-slate-50/50 dark:bg-[#0B0F14]/50 text-[12px] font-medium text-slate-500 dark:text-gray-400">
             <div className="col-span-3 pl-2">Asset</div>
             <div className="col-span-2 flex items-center gap-1">APY <Info className="w-3.5 h-3.5" /></div>
             <div className="col-span-2">Amount Deposited</div>
@@ -138,33 +139,33 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none mb-0.5">{asset.name}</span>
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">{asset.symbol}</span>
+                    <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-tight">{asset.name}</span>
+                    <span className="text-[12px] text-slate-500 dark:text-gray-500">{asset.symbol}</span>
                   </div>
                 </div>
 
                 {/* APY Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-bold text-[#00A8E8] leading-none mb-0.5">{asset.apy}</span>
-                  <span className="text-[11px] font-semibold text-[#00A8E8]">Variable</span>
+                  <span className="text-[14px] font-bold text-[#00A8E8]">{asset.apy}</span>
+                  <span className="text-[12px] text-[#00A8E8] font-medium">Variable</span>
                 </div>
 
                 {/* Amount Deposited Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white leading-none mb-0.5">{asset.deposited}</span>
-                  <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">{asset.depositedUsd}</span>
+                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.deposited}</span>
+                  <span className="text-[12px] text-slate-400 dark:text-gray-500">{asset.depositedUsd}</span>
                 </div>
 
                 {/* Earnings Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white leading-none mb-0.5">{asset.earnings}</span>
-                  <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">{asset.earningsUsd}</span>
+                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.earnings}</span>
+                  <span className="text-[12px] text-slate-400 dark:text-gray-500">{asset.earningsUsd}</span>
                 </div>
 
                 {/* TVL Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className="text-[14px] font-medium text-slate-900 dark:text-white leading-none mb-0.5">{asset.tvl}</span>
-                  <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">{asset.tvlUsd}</span>
+                  <span className="text-[14px] font-medium text-slate-900 dark:text-white">{asset.tvl}</span>
+                  <span className="text-[12px] text-slate-400 dark:text-gray-500">{asset.tvlUsd}</span>
                 </div>
 
                 {/* Action Column */}
