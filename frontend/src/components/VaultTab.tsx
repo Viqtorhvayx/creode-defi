@@ -27,7 +27,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
-  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://s2.coinmarketcap.com/static/img/coins/200x200/28169.png");
+  const [dovuLogoUrlSmall, setDovuLogoUrlSmall] = useState<string | null>("https://coin-images.coingecko.com/coins/images/32520/large/DOVU.png");
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance } = useWallet();
