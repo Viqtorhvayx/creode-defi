@@ -55,7 +55,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   }, []);
 
   return (
-    <div className="w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20 max-w-[1200px] mx-auto">
+    <div className="w-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* Top Header */}
       <div className="flex flex-col mb-8">
