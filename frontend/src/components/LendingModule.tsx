@@ -163,20 +163,20 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
                 {/* Amount Deposited Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.deposited}</span>
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.depositedUsd}</span>
+                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.deposited}</span>
+                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.depositedUsd}</span>
                 </div>
 
                 {/* Earnings Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.earnings}</span>
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.earningsUsd}</span>
+                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.earnings}</span>
+                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.earningsUsd}</span>
                 </div>
 
                 {/* TVL Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-semibold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.tvl}</span>
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">{asset.tvlUsd}</span>
+                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.tvl}</span>
+                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.tvlUsd}</span>
                 </div>
 
                 {/* Action Column */}
@@ -208,7 +208,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
             <div className="flex items-center justify-between p-6 pb-4">
               <h3 className="text-[20px] font-bold text-slate-900 dark:text-white leading-none">Lend {selectedAsset.symbol}</h3>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => { setIsModalOpen(false); setSelectedAsset(null); }}
                 className="text-slate-400 hover:text-slate-600 dark:text-white/40 dark:hover:text-white transition-colors p-1"
               >
                 <X size={20} weight="bold" />
@@ -311,7 +311,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
               {/* Action Buttons */}
               <div className="flex items-center gap-3 w-full">
                 <button 
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => { setIsModalOpen(false); setSelectedAsset(null); }}
                   className="flex-1 h-14 rounded-[12px] border border-[#00A8E8] text-[#00A8E8] text-[16px] font-bold flex items-center justify-center gap-2 hover:bg-[#00A8E8]/5 transition-colors active:scale-[0.98]"
                 >
                   <ArrowUp size={18} weight="bold" />
