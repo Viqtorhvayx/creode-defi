@@ -107,16 +107,16 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
       {/* Lend Assets Section */}
       <div className="flex flex-col">
-        <div className="flex flex-col mb-6">
-          <div className="flex items-center gap-2 mb-1">
-            <img 
-              src="/lend-icon.png" 
-              alt="Lend Icon"
-              className="w-[22px] h-[22px] object-contain shrink-0 dark:invert"
-            />
-            <h2 className="text-[20px] font-bold text-slate-900 dark:text-white">Lend Assets</h2>
+        <div className="flex items-center gap-4 mb-6">
+          <img 
+            src="/lend-icon.png" 
+            alt="Lend Icon"
+            className="w-12 h-12 object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
+          />
+          <div className="flex flex-col">
+            <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
+            <span className="text-[13px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly.</span>
           </div>
-          <span className="text-[13px] text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly.</span>
         </div>
 
         {/* Table Container */}
