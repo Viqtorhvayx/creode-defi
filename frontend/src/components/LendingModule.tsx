@@ -239,61 +239,56 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                     <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                   </div>
                   <span className="text-[18px] font-bold text-slate-900 dark:text-white mb-0.5 leading-none">{selectedAsset.tvl}</span>
-                  <span className="text-[13px] text-slate-400 dark:text-white/50">{selectedAsset.tvlUsd}</span>
+              <span className="text-[13px] text-slate-400 dark:text-white/50">{selectedAsset.tvlUsd}</span>
                 </div>
               </div>
 
               {/* Input Section */}
-              <div className="flex flex-col w-full mb-3">
+              <div className="flex flex-col w-full mb-7">
                 <label className="text-[14px] font-bold text-slate-900 dark:text-white mb-2.5">Amount to Lend</label>
-                <div className="flex items-center justify-between w-full h-[96px] px-5 bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] transition-all focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10">
+                <div className="flex items-center justify-between w-full h-[120px] px-6 bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] transition-all focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 group">
                   
-                  {/* Left: Token */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    {!isLogosLoading && logos[selectedAsset.symbol] ? (
-                      <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-10 h-10 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[13px] font-black">
-                        {selectedAsset.symbol.charAt(0)}
-                      </div>
-                    )}
-                    <div className="flex flex-col">
-                      <span className="text-[16px] font-bold text-slate-900 dark:text-white leading-tight">{selectedAsset.name}</span>
-                      <span className="text-[13px] text-slate-500 dark:text-white/50">{selectedAsset.symbol}</span>
-                    </div>
-                  </div>
-
-                  {/* Right: Input */}
-                  <div className="flex flex-col items-end justify-center h-full flex-1 ml-4">
+                  {/* Left Side: Input & USD Value */}
+                  <div className="flex flex-col justify-center h-full flex-1">
                     <input 
                       type="number" 
                       placeholder="0" 
                       value={lendAmount}
                       onChange={(e) => setLendAmount(e.target.value)}
-                      className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[36px] font-bold w-full text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-1" 
+                      className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-2" 
                     />
-                    <span className="text-[14px] font-medium text-slate-400 dark:text-white/40">$0.00</span>
+                    <span className="text-[14px] font-medium text-slate-400 dark:text-white/40 ml-1">$0.00</span>
                   </div>
-                </div>
-              </div>
 
-              {/* Quick Actions */}
-              <div className="flex items-center w-full gap-2.5 mb-7">
-                <button 
-                  onClick={() => setSelectedPercent('25%')}
-                  className={`flex-1 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all ${selectedPercent === '25%' ? 'border-[#00A8E8] bg-[#00A8E8]/5 text-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 hover:border-slate-300 dark:hover:border-[#374151]'}`}>
-                  25%
-                </button>
-                <button 
-                  onClick={() => setSelectedPercent('50%')}
-                  className={`flex-1 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all ${selectedPercent === '50%' ? 'border-[#00A8E8] bg-[#00A8E8]/5 text-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 hover:border-slate-300 dark:hover:border-[#374151]'}`}>
-                  50%
-                </button>
-                <button 
-                  onClick={() => setSelectedPercent('MAX')}
-                  className={`flex-1 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all ${selectedPercent === 'MAX' ? 'border-[#00A8E8] bg-[#00A8E8]/5 text-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] text-[#00A8E8] hover:bg-[#00A8E8]/5 hover:border-[#00A8E8]/30'}`}>
-                  MAX
-                </button>
+                  {/* Right Side: Token & Percentages */}
+                  <div className="flex flex-col items-end justify-center h-full shrink-0">
+                    <div className="relative mb-[14px]">
+                      {/* Fixed Token Indicator (styled like Vault selector) */}
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
+                        {!isLogosLoading && logos[selectedAsset.symbol] ? (
+                          <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-5 h-5 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[10px] font-black shrink-0">{selectedAsset.symbol.charAt(0)}</span>
+                        )}
+                        <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{selectedAsset.symbol}</span>
+                      </div>
+                    </div>
+
+                    {/* Shortcut Buttons */}
+                    <div className="flex items-center gap-3 pr-2">
+                      <button 
+                        onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
+                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>25%</button>
+                      <button 
+                        onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
+                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>50%</button>
+                      <button 
+                        onClick={() => setSelectedPercent(prev => prev === '100%' ? null : '100%')}
+                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '100%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>100%</button>
+                    </div>
+                  </div>
+
+                </div>
               </div>
 
               {/* Balance Info */}
