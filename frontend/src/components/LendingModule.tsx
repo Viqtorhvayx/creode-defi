@@ -257,12 +257,12 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                       onChange={(e) => setLendAmount(e.target.value)}
                       className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-2" 
                     />
-                    <span className="text-[14px] font-medium text-slate-400 dark:text-white/40 ml-1">$0.00</span>
+                    <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">$0.00</span>
                   </div>
 
                   {/* Right Side: Token & Percentages */}
-                  <div className="flex flex-col items-end justify-center h-full shrink-0">
-                    <div className="relative mb-[14px]">
+                  <div className="flex flex-col items-center justify-center h-full shrink-0">
+                    <div className="mb-[14px]">
                       {/* Fixed Token Indicator (styled like Vault selector) */}
                       <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
                         {!isLogosLoading && logos[selectedAsset.symbol] ? (
@@ -275,16 +275,16 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                     </div>
 
                     {/* Shortcut Buttons */}
-                    <div className="flex items-center gap-3 pr-2">
+                    <div className="flex items-center justify-between w-full px-1">
                       <button 
                         onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
-                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>25%</button>
+                        className={`text-[12px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>25%</button>
                       <button 
                         onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
-                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>50%</button>
+                        className={`text-[12px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>50%</button>
                       <button 
-                        onClick={() => setSelectedPercent(prev => prev === '100%' ? null : '100%')}
-                        className={`text-[11px] font-bold transition-colors ${selectedPercent === '100%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>100%</button>
+                        onClick={() => setSelectedPercent(prev => prev === 'MAX' ? null : 'MAX')}
+                        className={`text-[12px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>MAX</button>
                     </div>
                   </div>
 
