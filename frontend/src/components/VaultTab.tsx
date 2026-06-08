@@ -153,7 +153,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   {/* Token Selector Trigger */}
                   <div 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
                     {activeToken === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />

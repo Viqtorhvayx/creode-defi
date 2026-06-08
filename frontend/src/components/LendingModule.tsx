@@ -264,7 +264,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                   <div className="flex flex-col items-center justify-center h-full shrink-0">
                     <div className="mb-[14px]">
                       {/* Fixed Token Indicator (styled like Vault selector) */}
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
+                      <div className="flex items-center justify-center gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
                         {!isLogosLoading && logos[selectedAsset.symbol] ? (
                           <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-5 h-5 rounded-full object-cover shrink-0" />
                         ) : (
