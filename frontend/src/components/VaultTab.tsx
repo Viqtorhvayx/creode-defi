@@ -317,12 +317,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {hasDeposited ? (
             <div className="flex items-center gap-4 w-full">
               <button 
-                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] hover:shadow-[0_0_20px_#00A8E8] dark:hover:shadow-[0_0_25px_#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
+                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Deposit
               </button>
               <button 
-                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] hover:shadow-[0_0_20px_#00A8E8] dark:hover:shadow-[0_0_25px_#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
+                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Withdraw
               </button>
@@ -334,7 +334,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   setHasDeposited(true);
                 }
               }}
-              className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] hover:shadow-[0_0_30px_#00A8E8] dark:hover:shadow-[0_0_40px_#00A8E8] transition-all duration-300 active:scale-[0.98] tracking-wide"
+              className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] transition-all duration-300 active:scale-[0.98] tracking-wide"
             >
               Deposit to Vault
             </button>
