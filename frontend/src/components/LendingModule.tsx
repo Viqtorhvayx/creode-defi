@@ -108,7 +108,19 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       {/* Lend Assets Section */}
       <div className="flex flex-col">
         <div className="flex flex-col mb-6">
-          <h2 className="text-[20px] font-bold text-slate-900 dark:text-white mb-1">Lend Assets</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <svg 
+              className="w-[22px] h-[22px] shrink-0 text-slate-900 dark:text-white"
+              viewBox="0 0 720 768" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path fill="currentColor" opacity="1.0" stroke="none" d="M721.000000,720.000000 C721.000000,736.283875 721.000000,752.567810 721.000000,769.000000 C689.312561,769.000000 657.624939,769.000000 625.375488,768.593506 C624.668335,766.493591 625.114563,764.915771 625.576050,763.297058 C629.143433,750.783325 638.521362,743.213806 649.015259,737.242126 C671.253967,724.587097 695.710510,720.354919 721.000000,720.000000 z"/>
+              <path fill="currentColor" opacity="1.0" stroke="none" d="M1.000000,726.468628 C22.435741,725.571838 43.526924,727.745667 63.852039,734.936401 C73.784363,738.450378 83.180984,743.136230 90.944885,750.468262 C96.089973,755.327209 100.448959,760.751709 101.084084,768.606873 C67.768959,769.000000 34.537922,769.000000 1.000000,769.000000 C1.000000,754.980591 1.000000,740.958984 1.000000,726.468628 M34.658001,734.543213 C32.670017,734.039673 30.578968,733.574646 29.603304,736.035583 C28.998011,737.562378 29.803045,738.963135 31.019049,739.971863 C32.248611,740.992004 33.532890,740.660645 34.603371,739.690674 C36.129364,738.308105 37.681721,736.838562 34.658001,734.543213 z"/>
+              <path fill="currentColor" opacity="1.0" stroke="none" d="M589.466125,769.000000 C587.680359,759.757324 591.394104,751.940552 596.557678,744.867737 C606.931274,730.658142 621.661377,722.287476 637.527588,715.706116 C663.096069,705.100220 689.900269,700.812012 717.436768,700.409424 C718.424988,700.394958 719.411377,700.252014 720.699341,700.084473 C721.000000,703.030579 721.000000,706.061218 720.534363,709.586487 C710.910034,709.932312 701.858276,710.943726 692.795471,712.211060 C669.033875,715.534058 646.193237,721.613403 626.162109,735.357727 C614.374878,743.445435 604.903015,753.520752 604.000000,769.000000 C599.310730,769.000000 594.621521,769.000000 589.466125,769.000000 z"/>
+              {/* IMPORTANT: The rest of your SVG paths were truncated. Please paste them below this line! */}
+            </svg>
+            <h2 className="text-[20px] font-bold text-slate-900 dark:text-white">Lend Assets</h2>
+          </div>
           <span className="text-[13px] text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly.</span>
         </div>
 
@@ -264,7 +276,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                   <div className="flex flex-col items-center justify-center h-full shrink-0">
                     <div className="mb-[14px]">
                       {/* Fixed Token Indicator (styled like Vault selector) */}
-                      <div className="flex items-center justify-center gap-3 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
+                      <div className="flex items-center justify-center gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
                         {!isLogosLoading && logos[selectedAsset.symbol] ? (
                           <img src={logos[selectedAsset.symbol]} alt={`${selectedAsset.name} Logo`} className="w-5 h-5 rounded-full object-cover shrink-0" />
                         ) : (
