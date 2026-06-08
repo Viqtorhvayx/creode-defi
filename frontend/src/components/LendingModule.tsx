@@ -115,7 +115,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           />
           <div className="flex flex-col">
             <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly.</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly</span>
           </div>
         </div>
 
