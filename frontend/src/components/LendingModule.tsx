@@ -133,7 +133,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
                 <div 
                   key={asset.symbol} 
                   onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setLendAmount(''); setSelectedPercent(null); }}
-                  className={`grid grid-cols-12 gap-4 p-4 items-center transition-all cursor-pointer relative ${
+                  className={`grid grid-cols-12 gap-4 p-4 items-center transition-all cursor-pointer relative outline-none focus:outline-none focus:ring-0 ${
                     isSelected 
                       ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20 z-10 rounded-xl' 
                       : `hover:bg-slate-50 dark:hover:bg-[#1F2937]/30 ${index !== MOCK_ASSETS.length - 1 ? 'border-b border-slate-100 dark:border-[#1F2937]' : ''}`

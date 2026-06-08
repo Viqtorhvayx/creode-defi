@@ -189,7 +189,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                         <div 
                           key={token}
                           onClick={() => { setActiveToken(token); setIsDropdownOpen(false); }}
-                          className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${activeToken === token ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
+                          className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${activeToken === token ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                         >
                           <div className="flex items-center gap-3">
                             {token === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
