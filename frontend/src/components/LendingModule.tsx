@@ -111,7 +111,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           <img 
             src="/lend-icon.png" 
             alt="Lend Icon"
-            className="w-16 h-16 object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
+            className="w-20 h-20 object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
           />
           <div className="flex flex-col">
             <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
