@@ -304,19 +304,17 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 w-full">
+              <div className="flex items-center gap-4 w-full">
                 <button 
-                  onClick={() => { setIsModalOpen(false); setSelectedAsset(null); }}
-                  className="flex-1 h-14 rounded-[12px] border border-[#00A8E8] text-[#00A8E8] text-[16px] font-bold flex items-center justify-center gap-2 hover:bg-[#00A8E8]/5 transition-colors active:scale-[0.98]"
+                  className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
                 >
-                  <ArrowUp size={18} weight="bold" />
-                  Withdraw
+                  Lend
                 </button>
                 <button 
-                  className="flex-1 h-14 bg-[#00A8E8] hover:bg-[#0090C7] text-white rounded-[12px] text-[16px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(0,168,232,0.25)] transition-all duration-300 active:scale-[0.98]"
+                  onClick={() => { setIsModalOpen(false); setSelectedAsset(null); }}
+                  className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
                 >
-                  <LockKey size={18} weight="bold" />
-                  Lend
+                  Withdraw
                 </button>
               </div>
 
