@@ -107,7 +107,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
       {/* Lend Assets Section */}
       <div className="flex flex-col">
-        <div className="flex items-center gap-2 mb-6 border border-[#00A8E8] rounded-[16px] p-4">
+        <div className="flex items-center gap-2 mb-6 border border-[#00A8E8] rounded-[16px] p-3 w-fit">
           <img 
             src="/lend-icon.png" 
             alt="Lend Icon"
