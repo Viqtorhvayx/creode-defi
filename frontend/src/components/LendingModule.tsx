@@ -125,7 +125,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           </div>
           
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-slate-50/50 dark:bg-[#0B0F14]/50 text-[12px] font-medium text-slate-500 dark:text-white/60">
+          <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-transparent text-[12px] font-medium text-slate-500 dark:text-white/60">
             <div className="col-span-3 pl-2">Asset</div>
             <div className="col-span-2 flex items-center gap-1">APY <Info className="w-3.5 h-3.5" /></div>
             <div className="col-span-2">Amount Deposited</div>
