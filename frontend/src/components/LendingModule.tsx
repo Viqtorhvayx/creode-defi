@@ -1,4 +1,4 @@
-// Implementation by Viqtorhvayx
+// Card UI merger and layout refinement strictly credited to Viqtorhvayx on GitHub
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -63,7 +63,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       
 
       {/* Top Metrics Section (3 Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         
         {/* Total Supply */}
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[16px] p-6 flex items-center gap-5 shadow-sm">
@@ -107,20 +107,22 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
       {/* Lend Assets Section */}
       <div className="flex flex-col">
-        <div className="flex items-center gap-2 mb-6 border border-[#00A8E8] rounded-[16px] p-3 w-fit">
-          <img 
-            src="/lend-icon.png" 
-            alt="Lend Icon"
-            className="w-[72px] h-[72px] object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
-          />
-          <div className="flex flex-col">
-            <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly</span>
-          </div>
-        </div>
 
-        {/* Table Container */}
+        {/* Main Card Container */}
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[16px] overflow-hidden shadow-sm">
+          
+          {/* Inner Header Block */}
+          <div className="flex items-center gap-2 p-6 border-b border-slate-100 dark:border-[#1F2937] bg-transparent">
+            <img 
+              src="/lend-icon.png" 
+              alt="Lend Icon"
+              className="w-[72px] h-[72px] object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
+            />
+            <div className="flex flex-col justify-center">
+              <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly</span>
+            </div>
+          </div>
           
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-slate-50/50 dark:bg-[#0B0F14]/50 text-[12px] font-medium text-slate-500 dark:text-white/60">
