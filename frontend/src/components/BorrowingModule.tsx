@@ -115,7 +115,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[16px] overflow-hidden shadow-sm">
           
           {/* Inner Header Block */}
-          <div className="flex items-center gap-2 p-6 border-b border-slate-100 dark:border-[#1F2937] bg-transparent">
+          <div className="flex items-center gap-2 p-6 bg-transparent">
             <div className="flex flex-col justify-center">
               <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Borrow Assets</h2>
               <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Borrow assets against your supplied collateral.</span>

@@ -112,7 +112,7 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
         <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[16px] overflow-hidden shadow-sm">
           
           {/* Inner Header Block */}
-          <div className="flex items-center gap-2 p-6 border-b border-slate-100 dark:border-[#1F2937] bg-transparent">
+          <div className="flex items-center gap-2 p-6 bg-transparent">
             <img 
               src="/lend-icon.png" 
               alt="Lend Icon"
