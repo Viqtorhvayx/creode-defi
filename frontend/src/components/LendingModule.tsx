@@ -113,11 +113,6 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           
           {/* Inner Header Block */}
           <div className="flex items-center gap-2 p-6 bg-transparent">
-            <img 
-              src="/lend-icon.png" 
-              alt="Lend Icon"
-              className="w-[72px] h-[72px] object-contain shrink-0 dark:invert mix-blend-multiply dark:mix-blend-screen"
-            />
             <div className="flex flex-col justify-center">
               <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Lend Assets</h2>
               <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Supply your assets and start earning yield instantly</span>
@@ -128,9 +123,9 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-[#1F2937] bg-transparent text-[12px] font-medium text-slate-500 dark:text-white/60">
             <div className="col-span-3 pl-2">Asset</div>
             <div className="col-span-2 flex items-center gap-1">APY <Info className="w-3.5 h-3.5" /></div>
-            <div className="col-span-2">Amount Deposited</div>
+            <div className="col-span-2 flex items-center gap-1">Amount Deposited <Info className="w-3.5 h-3.5" /></div>
             <div className="col-span-2 flex items-center gap-1">Earnings <Info className="w-3.5 h-3.5" /></div>
-            <div className="col-span-2">TVL</div>
+            <div className="col-span-2 flex items-center gap-1">TVL <Info className="w-3.5 h-3.5" /></div>
             <div className="col-span-1"></div>
           </div>
 
@@ -172,20 +167,20 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
                 {/* Amount Deposited Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.deposited}</span>
-                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.depositedUsd}</span>
+                  <span className={`text-[14px] font-bold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.deposited}</span>
+                  <span className={`text-[12px] font-medium ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-500 dark:text-white/50'}`}>{asset.depositedUsd}</span>
                 </div>
 
                 {/* Earnings Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.earnings}</span>
-                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.earningsUsd}</span>
+                  <span className={`text-[14px] font-bold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.earnings}</span>
+                  <span className={`text-[12px] font-medium ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-500 dark:text-white/50'}`}>{asset.earningsUsd}</span>
                 </div>
 
                 {/* TVL Column */}
                 <div className="col-span-2 flex flex-col justify-center">
-                  <span className={`text-[14px] font-medium ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.tvl}</span>
-                  <span className={`text-[12px] ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-400 dark:text-white/50'}`}>{asset.tvlUsd}</span>
+                  <span className={`text-[14px] font-bold ${isSelected ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white'}`}>{asset.tvl}</span>
+                  <span className={`text-[12px] font-medium ${isSelected ? 'text-[#00A8E8]/80' : 'text-slate-500 dark:text-white/50'}`}>{asset.tvlUsd}</span>
                 </div>
 
                 {/* Action Column */}
