@@ -325,92 +325,124 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
-                      <div className="flex items-center justify-between mb-3 relative">
-                        <div 
-                          onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
-                          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors z-10"
-                        >
-                          {collateralType === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full" />}
-                          {collateralType === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-5 h-5 rounded-full" />}
-                          {collateralType === 'NFT' && <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold">N</div>}
-                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">{collateralType}</span>
-                          <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
-                        </div>
-                        
-                        {isCollateralDropdownOpen && (
-                          <div className="absolute top-full left-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
-                            {['USDC', 'USDT', 'NFT'].map(type => (
+                    <div className="flex flex-col bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none overflow-hidden">
+                      
+                      {collateralType === 'NFT' ? (
+                        <div className="p-4 flex flex-col relative w-full h-auto min-h-[120px]">
+                          <div className="flex items-center justify-between mb-3 relative">
+                            <span className="text-[14px] font-bold text-slate-900 dark:text-white">Select NFT</span>
+                            <div 
+                              onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors z-10"
+                            >
+                              <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold">N</div>
+                              <span className="text-[14px] font-bold text-slate-900 dark:text-white">{collateralType}</span>
+                              <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
+                            </div>
+                            
+                            {isCollateralDropdownOpen && (
+                              <div className="absolute top-full right-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                                {['USDC', 'USDT', 'NFT'].map(type => (
+                                  <div 
+                                    key={type}
+                                    onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                                  >
+                                    <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-2 mt-2 pb-1">
+                            {[1, 2, 3, 4, 5, 6].map((id) => (
                               <div 
-                                key={type}
-                                onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
-                                className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                                key={id} 
+                                onClick={() => setSelectedNft(id)}
+                                className={`aspect-square rounded-xl cursor-pointer border-2 transition-all overflow-hidden relative group ${
+                                  selectedNft === id ? 'border-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] hover:border-[#00A8E8]/50'
+                                }`}
                               >
-                                <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                                <div className="w-full h-full bg-slate-200/50 dark:bg-[#1F2937]/50 flex flex-col items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-[#1F2937] transition-colors">
+                                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/40">NFT #{id}</span>
+                                </div>
+                                {selectedNft === id && (
+                                  <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-sm">
+                                    <span className="text-white text-[10px] font-bold leading-none">✓</span>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
-                        )}
-                      </div>
-                      
-                      {collateralType === 'NFT' ? (
-                        <div className="grid grid-cols-3 gap-2 mt-2 pb-1">
-                          {[1, 2, 3, 4, 5, 6].map((id) => (
-                            <div 
-                              key={id} 
-                              onClick={() => setSelectedNft(id)}
-                              className={`aspect-square rounded-xl cursor-pointer border-2 transition-all overflow-hidden relative group ${
-                                selectedNft === id ? 'border-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] hover:border-[#00A8E8]/50'
-                              }`}
-                            >
-                              <div className="w-full h-full bg-slate-200/50 dark:bg-[#1F2937]/50 flex flex-col items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-[#1F2937] transition-colors">
-                                <span className="text-[10px] font-bold text-slate-500 dark:text-white/40">NFT #{id}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between w-full h-[120px] px-6 relative group">
+                          
+                          {/* Left Side: Input & USD Value */}
+                          <div className="flex flex-col justify-center h-full flex-1">
+                            <input 
+                              type="number" 
+                              placeholder="0" 
+                              value={collateralAmount}
+                              onChange={(e) => { setCollateralAmount(e.target.value); setSelectedCollateralPercent(null); }}
+                              className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-2" 
+                            />
+                            <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">
+                              ${collateralAmount ? (parseFloat(collateralAmount) * 1).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
+                            </span>
+                          </div>
+
+                          {/* Right Side: Token Pill Dropdown & Percentages */}
+                          <div className="flex flex-col items-center justify-center h-full shrink-0">
+                            <div className="mb-[14px] relative">
+                              {/* Token Indicator Dropdown */}
+                              <div 
+                                onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
+                                className="flex items-center justify-center gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors z-10"
+                              >
+                                {collateralType === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full object-cover shrink-0" />}
+                                {collateralType === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-5 h-5 rounded-full object-cover shrink-0" />}
+                                <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{collateralType}</span>
+                                <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                               </div>
-                              {selectedNft === id && (
-                                <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-sm">
-                                  <span className="text-white text-[10px] font-bold leading-none">✓</span>
+                              
+                              {isCollateralDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                                  {['USDC', 'USDT', 'NFT'].map(type => (
+                                    <div 
+                                      key={type}
+                                      onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
+                                      className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                                    >
+                                      <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                                    </div>
+                                  ))}
                                 </div>
                               )}
                             </div>
-                          ))}
+
+                            {/* Shortcut Buttons */}
+                            <div className="flex items-center justify-between w-full px-1">
+                              <button 
+                                onClick={() => setSelectedCollateralPercent('25%')}
+                                className={`text-[12px] font-bold transition-colors ${selectedCollateralPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>25%</button>
+                              <button 
+                                onClick={() => setSelectedCollateralPercent('50%')}
+                                className={`text-[12px] font-bold transition-colors ${selectedCollateralPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>50%</button>
+                              <button 
+                                onClick={() => setSelectedCollateralPercent('MAX')}
+                                className={`text-[12px] font-bold transition-colors ${selectedCollateralPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]'}`}>MAX</button>
+                            </div>
+                          </div>
                         </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center justify-between">
-                            <input 
-                              type="number" 
-                              placeholder="0"
-                              value={collateralAmount}
-                              onChange={(e) => { setCollateralAmount(e.target.value); setSelectedCollateralPercent(null); }}
-                              className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
-                            />
-                            <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">{collateralType}</span>
-                          </div>
-                          <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
-                            ${collateralAmount ? (parseFloat(collateralAmount) * 1).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
-                          </div>
-                        </>
                       )}
                     </div>
 
                     {collateralType !== 'NFT' && (
-                      <div className="flex items-center justify-between mt-3 px-1">
-                        <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available Balance: 2,450.75 {collateralType}</span>
-                        <div className="flex items-center gap-1.5">
-                          {['25%', '50%', 'MAX'].map((pct) => (
-                            <button 
-                              key={pct}
-                              onClick={() => setSelectedCollateralPercent(pct)}
-                              className={`px-3 py-1 text-[11px] font-bold rounded-md transition-colors ${
-                                selectedCollateralPercent === pct 
-                                  ? 'bg-[#00A8E8] text-white' 
-                                  : 'bg-slate-100 dark:bg-[#1F2937] text-slate-600 dark:text-white/70 hover:bg-slate-200 dark:hover:bg-[#2D3748]'
-                              }`}
-                            >
-                              {pct}
-                            </button>
-                          ))}
-                        </div>
+                      <div className="flex items-center justify-between mt-3 px-1 mb-2">
+                        <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available Balance</span>
+                        <span className="text-[12px] font-medium text-slate-700 dark:text-white/80">2,450.75 {collateralType}</span>
                       </div>
                     )}
                   </div>
@@ -424,39 +456,58 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors">
-                          {logos[selectedAsset.symbol] ? (
-                            <img src={logos[selectedAsset.symbol]} alt={selectedAsset.symbol} className="w-5 h-5 rounded-full object-cover" />
-                          ) : (
-                            <div className="w-5 h-5 rounded-full bg-[#1F2937] text-white flex items-center justify-center text-[10px] font-black">
-                              {selectedAsset.symbol.charAt(0)}
-                            </div>
-                          )}
-                          <div className="flex flex-col">
-                            <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{selectedAsset.symbol}</span>
-                          </div>
-                          <CaretDown className="w-3.5 h-3.5 text-slate-500" />
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between w-full h-[120px] px-6 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] transition-all focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 group">
                       
-                      <div className="flex items-center justify-between">
+                      {/* Left Side: Input & USD Value */}
+                      <div className="flex flex-col justify-center h-full flex-1">
                         <input 
                           type="number" 
-                          placeholder="0"
+                          placeholder="0" 
                           value={borrowAmount}
                           onChange={(e) => setBorrowAmount(e.target.value)}
-                          className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
+                          className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-2" 
                         />
-                        <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">{selectedAsset.symbol}</span>
+                        <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">
+                          ${borrowAmount ? (parseFloat(borrowAmount) * 0.08).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
+                        </span>
                       </div>
-                      <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
-                        ${borrowAmount ? (parseFloat(borrowAmount) * 0.08).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
+
+                      {/* Right Side: Token Indicator Pill & Percentages */}
+                      <div className="flex flex-col items-center justify-center h-full shrink-0">
+                        <div className="mb-[14px]">
+                          {/* Fixed Token Indicator */}
+                          <div className="flex items-center justify-center gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)]">
+                            {logos[selectedAsset.symbol] ? (
+                              <img src={logos[selectedAsset.symbol]} alt={selectedAsset.symbol} className="w-5 h-5 rounded-full object-cover shrink-0" />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full bg-[#1F2937] text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                                {selectedAsset.symbol.charAt(0)}
+                              </div>
+                            )}
+                            <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{selectedAsset.symbol}</span>
+                          </div>
+                        </div>
+
+                        {/* Shortcut Buttons */}
+                        <div className="flex items-center justify-between w-full px-1">
+                          <button 
+                            onClick={() => setBorrowAmount((parseFloat(collateralAmount || '0') * 0.75 * 0.25).toString())}
+                            className="text-[12px] font-bold transition-colors text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]"
+                          >25%</button>
+                          <button 
+                            onClick={() => setBorrowAmount((parseFloat(collateralAmount || '0') * 0.75 * 0.5).toString())}
+                            className="text-[12px] font-bold transition-colors text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]"
+                          >50%</button>
+                          <button 
+                            onClick={() => setBorrowAmount((parseFloat(collateralAmount || '0') * 0.75).toString())}
+                            className="text-[12px] font-bold transition-colors text-slate-400 dark:text-white/50 hover:text-[#00A8E8] dark:hover:text-[#00A8E8]"
+                          >MAX</button>
+                        </div>
                       </div>
+
                     </div>
 
-                    <div className="flex items-center justify-between mt-3 px-1">
+                    <div className="flex items-center justify-between mt-3 px-1 mb-2">
                       <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available: 13,450.25 {selectedAsset.symbol}</span>
                       <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">
                         Max Borrowable: <span className="font-bold text-[#00A8E8]">
