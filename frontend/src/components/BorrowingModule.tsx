@@ -325,7 +325,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex flex-col bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none overflow-hidden">
+                    <div className="flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none overflow-hidden">
                       
                       {collateralType === 'NFT' ? (
                         <div className="p-4 flex flex-col relative w-full h-auto min-h-[120px]">
@@ -408,7 +408,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                               </div>
                               
                               {isCollateralDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                                <div className="absolute top-full right-0 mt-2 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[12px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
                                   {['USDC', 'USDT', 'NFT'].map(type => (
                                     <div 
                                       key={type}
@@ -456,7 +456,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex items-center justify-between w-full h-[120px] px-6 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] transition-all focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 group">
+                    <div className="flex items-center justify-between w-full h-[120px] px-6 bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] transition-all focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 group">
                       
                       {/* Left Side: Input & USD Value */}
                       <div className="flex flex-col justify-center h-full flex-1">
@@ -480,7 +480,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                             {logos[selectedAsset.symbol] ? (
                               <img src={logos[selectedAsset.symbol]} alt={selectedAsset.symbol} className="w-5 h-5 rounded-full object-cover shrink-0" />
                             ) : (
-                              <div className="w-5 h-5 rounded-full bg-[#1F2937] text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                              <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[10px] font-black shrink-0">
                                 {selectedAsset.symbol.charAt(0)}
                               </div>
                             )}
