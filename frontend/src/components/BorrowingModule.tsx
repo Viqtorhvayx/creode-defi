@@ -368,7 +368,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       {collateralType === 'NFT' ? (
                         <div className="flex flex-col relative w-full h-auto mt-2">
                           <div className="flex items-center justify-between mb-3 relative px-1">
-                            <span className="text-[14px] font-bold text-slate-400 dark:text-white/40">Select NFT(s) as Collateral</span>
+                            <span className="text-[12px] font-bold text-slate-400 dark:text-white/40">Select NFT(s) as Collateral</span>
                             <span className="text-[12px] font-medium text-slate-400 dark:text-white/40">{selectedNfts.length}/4 Selected</span>
                           </div>
                           
