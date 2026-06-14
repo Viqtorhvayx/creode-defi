@@ -320,46 +320,48 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                 <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
                   {/* Collateral Deposit Section */}
                   <div className="flex flex-col mb-2">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Collateral Deposit</span>
-                      <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
-                    </div>
-                    
-                    {collateralType === 'NFT' ? (
-                      <div className="flex flex-col w-full relative mb-2">
-                        {/* Pill shaped dropdown for NFT */}
-                        <div 
-                          onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
-                          className="flex items-center justify-center gap-2 px-4 py-2 w-fit min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors z-10 relative"
-                        >
-                          <div className="w-5 h-5 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[10px] font-black shrink-0 border border-[#00A8E8]/20">N</div>
-                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">NFT</span>
-                          <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
-                          
-                          <div className={`absolute top-full left-0 mt-2 w-[140px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200 ease-in-out origin-top-left ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                            <div className="flex flex-col p-1.5">
-                              {['USDC', 'USDT', 'NFT'].map(type => (
-                                <div 
-                                  key={type}
-                                  onClick={(e) => { e.stopPropagation(); setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNfts([]); setCollateralAmount(''); }}
-                                  className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    {type === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
-                                    {type === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
-                                    {type === 'NFT' && <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[11px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
-                                    <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Collateral Deposit</span>
+                        <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
+                      </div>
+
+                      {collateralType === 'NFT' && (
+                        <div className="relative">
+                          {/* Pill shaped dropdown for NFT */}
+                          <div 
+                            onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
+                            className="flex items-center justify-center gap-2 px-4 py-2 w-fit min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors z-10"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[10px] font-black shrink-0 border border-[#00A8E8]/20">N</div>
+                            <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">NFT</span>
+                            <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
+                            
+                            <div className={`absolute top-full right-0 mt-2 w-[140px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                              <div className="flex flex-col p-1.5">
+                                {['USDC', 'USDT', 'NFT'].map(type => (
+                                  <div 
+                                    key={type}
+                                    onClick={(e) => { e.stopPropagation(); setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNfts([]); setCollateralAmount(''); }}
+                                    className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      {type === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
+                                      {type === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
+                                      {type === 'NFT' && <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[11px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
+                                      <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
+                                    </div>
+                                    {collateralType === type && (
+                                      <div className="w-2 h-2 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-1"></div>
+                                    )}
                                   </div>
-                                  {collateralType === type && (
-                                    <div className="w-2 h-2 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-1"></div>
-                                  )}
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ) : null}
+                      )}
+                    </div>
 
                     <div className={`flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent border-none shadow-none focus-within:ring-0' : ''}`}>
                       
