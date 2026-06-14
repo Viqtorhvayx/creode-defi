@@ -401,9 +401,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM40,56H216V88H40ZM216,200H40V104H216V200ZM72,136a8,8,0,0,1,8-8h24a8,8,0,0,1,0,16H80A8,8,0,0,1,72,136Zm8,40h64a8,8,0,0,1,0,16H80a8,8,0,0,1,0-16Z"></path></svg>
                               Manage NFTs
                             </button>
-                            <span className="text-[12px] font-semibold text-slate-400 dark:text-white/40 mt-3 text-left">
-                              Available NFTs (4)
-                            </span>
+                            <div className="flex items-center justify-between mt-3">
+                              <span className="text-[12px] font-semibold text-slate-400 dark:text-white/40 text-left">
+                                Available NFTs (4)
+                              </span>
+                              <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60 text-right">
+                                {selectedNfts.length > 0 ? `${(selectedNfts.length * 3112.68).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDC` : '0.00 USDC'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ) : (
