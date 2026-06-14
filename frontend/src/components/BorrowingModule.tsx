@@ -1,9 +1,9 @@
-// Card UI merger and layout refinement strictly credited to Viqtorhvayx on GitHub
+// Sequential 2-step Collateral-to-Borrow console architecture strictly credited to Viqtorhvayx on GitHub
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ShieldCheck, Info, Clock, Wallet, Bank, X, CaretDown, LockKey } from '@phosphor-icons/react';
+import { ShieldCheck, Info, Clock, Wallet, Bank, X, CaretDown, LockKey, ArrowLeft } from '@phosphor-icons/react';
 
 interface BorrowingModuleProps {
   xp: number;
@@ -30,6 +30,10 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
   const [isLogosLoading, setIsLogosLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
+  const [borrowStep, setBorrowStep] = useState<1 | 2>(1);
+  const [collateralType, setCollateralType] = useState<'USDC' | 'USDT' | 'NFT'>('USDC');
+  const [isCollateralDropdownOpen, setIsCollateralDropdownOpen] = useState(false);
+  const [selectedNft, setSelectedNft] = useState<number | null>(null);
   const [borrowAmount, setBorrowAmount] = useState('');
   const [collateralAmount, setCollateralAmount] = useState('');
   const [selectedCollateralPercent, setSelectedCollateralPercent] = useState<string | null>(null);
@@ -149,7 +153,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
               return (
                 <div 
                   key={asset.symbol} 
-                  onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
+                  onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNft(null); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
                   className={`grid grid-cols-12 gap-4 p-4 items-center transition-all cursor-pointer relative outline-none focus:outline-none focus:ring-0 ${
                       isSelected 
                         ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20 z-10 rounded-xl' 
@@ -199,7 +203,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                 {/* Action Column */}
                 <div className="col-span-1 flex justify-end pr-2">
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); setIsModalOpen(true); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNft(null); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
                     className={`px-5 py-1.5 rounded-lg border text-[13px] font-semibold transition-colors duration-200 ${
                       isSelected 
                         ? 'bg-[#00A8E8] text-white border-[#00A8E8]' 
@@ -286,11 +290,21 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
             
             {/* Top Section */}
             <div className="flex items-center justify-between p-6 pb-4 border-b border-slate-100 dark:border-[#1F2937]/50">
-              <div className="flex flex-col">
-                <h3 className="text-[20px] font-bold text-slate-900 dark:text-white leading-none relative inline-block">
-                  Borrow
-                  <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-[#00A8E8] rounded-full"></div>
-                </h3>
+              <div className="flex items-center gap-3">
+                {borrowStep === 2 && (
+                  <button 
+                    onClick={() => setBorrowStep(1)}
+                    className="text-slate-400 hover:text-slate-600 dark:text-white/40 dark:hover:text-white transition-colors p-1 -ml-1"
+                  >
+                    <ArrowLeft size={20} weight="bold" />
+                  </button>
+                )}
+                <div className="flex flex-col">
+                  <h3 className="text-[20px] font-bold text-slate-900 dark:text-white leading-none relative inline-block">
+                    Borrow
+                    <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-[#00A8E8] rounded-full"></div>
+                  </h3>
+                </div>
               </div>
               <button 
                 onClick={() => { setIsModalOpen(false); setSelectedAsset(null); }}
@@ -300,203 +314,271 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
               </button>
             </div>
 
-            <div className="px-6 py-5 flex flex-col overflow-y-auto max-h-[80vh] custom-scrollbar">
+            <div className="px-6 py-5 flex flex-col overflow-y-auto max-h-[80vh] custom-scrollbar overflow-x-hidden">
 
-              {/* Collateral Deposit Section */}
-              <div className="flex flex-col mb-6">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Collateral Deposit</span>
-                  <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
-                </div>
-                
-                <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors">
-                      <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full" />
-                      <span className="text-[14px] font-bold text-slate-900 dark:text-white">USDC</span>
-                      <CaretDown className="w-3.5 h-3.5 text-slate-500" />
+              {borrowStep === 1 ? (
+                <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
+                  {/* Collateral Deposit Section */}
+                  <div className="flex flex-col mb-2">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Collateral Deposit</span>
+                      <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <input 
-                      type="number" 
-                      placeholder="0"
-                      value={collateralAmount}
-                      onChange={(e) => { setCollateralAmount(e.target.value); setSelectedCollateralPercent(null); }}
-                      className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
-                    />
-                    <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">USDC</span>
-                  </div>
-                  <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
-                    ${collateralAmount ? (parseFloat(collateralAmount) * 1).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mt-3 px-1">
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available Balance: 2,450.75 USDC</span>
-                  <div className="flex items-center gap-1.5">
-                    {['25%', '50%', 'MAX'].map((pct) => (
-                      <button 
-                        key={pct}
-                        onClick={() => setSelectedCollateralPercent(pct)}
-                        className={`px-3 py-1 text-[11px] font-bold rounded-md transition-colors ${
-                          selectedCollateralPercent === pct 
-                            ? 'bg-[#00A8E8] text-white' 
-                            : 'bg-slate-100 dark:bg-[#1F2937] text-slate-600 dark:text-white/70 hover:bg-slate-200 dark:hover:bg-[#2D3748]'
-                        }`}
-                      >
-                        {pct}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Borrow Asset Section */}
-              <div className="flex flex-col mb-6">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Borrow Asset</span>
-                  <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
-                </div>
-                
-                <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors">
-                      {logos[selectedAsset.symbol] ? (
-                        <img src={logos[selectedAsset.symbol]} alt={selectedAsset.symbol} className="w-5 h-5 rounded-full object-cover" />
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-[#1F2937] text-white flex items-center justify-center text-[10px] font-black">
-                          {selectedAsset.symbol.charAt(0)}
+                    
+                    <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
+                      <div className="flex items-center justify-between mb-3 relative">
+                        <div 
+                          onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors z-10"
+                        >
+                          {collateralType === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full" />}
+                          {collateralType === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-5 h-5 rounded-full" />}
+                          {collateralType === 'NFT' && <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold">N</div>}
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">{collateralType}</span>
+                          <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                         </div>
+                        
+                        {isCollateralDropdownOpen && (
+                          <div className="absolute top-full left-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                            {['USDC', 'USDT', 'NFT'].map(type => (
+                              <div 
+                                key={type}
+                                onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                              >
+                                <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {collateralType === 'NFT' ? (
+                        <div className="grid grid-cols-3 gap-2 mt-2 pb-1">
+                          {[1, 2, 3, 4, 5, 6].map((id) => (
+                            <div 
+                              key={id} 
+                              onClick={() => setSelectedNft(id)}
+                              className={`aspect-square rounded-xl cursor-pointer border-2 transition-all overflow-hidden relative group ${
+                                selectedNft === id ? 'border-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] hover:border-[#00A8E8]/50'
+                              }`}
+                            >
+                              <div className="w-full h-full bg-slate-200/50 dark:bg-[#1F2937]/50 flex flex-col items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-[#1F2937] transition-colors">
+                                <span className="text-[10px] font-bold text-slate-500 dark:text-white/40">NFT #{id}</span>
+                              </div>
+                              {selectedNft === id && (
+                                <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-sm">
+                                  <span className="text-white text-[10px] font-bold leading-none">✓</span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <input 
+                              type="number" 
+                              placeholder="0"
+                              value={collateralAmount}
+                              onChange={(e) => { setCollateralAmount(e.target.value); setSelectedCollateralPercent(null); }}
+                              className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
+                            />
+                            <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">{collateralType}</span>
+                          </div>
+                          <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
+                            ${collateralAmount ? (parseFloat(collateralAmount) * 1).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
+                          </div>
+                        </>
                       )}
-                      <div className="flex flex-col">
-                        <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{selectedAsset.symbol}</span>
-                      </div>
-                      <CaretDown className="w-3.5 h-3.5 text-slate-500" />
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <input 
-                      type="number" 
-                      placeholder="0"
-                      value={borrowAmount}
-                      onChange={(e) => setBorrowAmount(e.target.value)}
-                      className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
-                    />
-                    <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">{selectedAsset.symbol}</span>
-                  </div>
-                  <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
-                    ${borrowAmount ? (parseFloat(borrowAmount) * 0.08).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-between mt-3 px-1">
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available: 13,450.25 {selectedAsset.symbol}</span>
-                  <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">
-                    Max Borrowable: <span className="font-bold text-[#00A8E8]">125.00 {selectedAsset.symbol}</span>
-                  </span>
+                    {collateralType !== 'NFT' && (
+                      <div className="flex items-center justify-between mt-3 px-1">
+                        <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available Balance: 2,450.75 {collateralType}</span>
+                        <div className="flex items-center gap-1.5">
+                          {['25%', '50%', 'MAX'].map((pct) => (
+                            <button 
+                              key={pct}
+                              onClick={() => setSelectedCollateralPercent(pct)}
+                              className={`px-3 py-1 text-[11px] font-bold rounded-md transition-colors ${
+                                selectedCollateralPercent === pct 
+                                  ? 'bg-[#00A8E8] text-white' 
+                                  : 'bg-slate-100 dark:bg-[#1F2937] text-slate-600 dark:text-white/70 hover:bg-slate-200 dark:hover:bg-[#2D3748]'
+                              }`}
+                            >
+                              {pct}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              {/* Position XP Section */}
-              <div className="flex flex-col mb-2">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Position XP</span>
-                  <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
-                </div>
-                
-                <div className="flex flex-col items-center bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl p-6 mb-4 relative shadow-sm">
-                  
-                  {/* Gauge Display */}
-                  <div className="flex items-center justify-center gap-6 w-full">
-                    {/* Circle */}
-                    <div className="relative w-[110px] h-[110px] shrink-0">
-                      {/* Background circle */}
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-slate-100 dark:text-[#1F2937]" />
-                        {/* Progress circle */}
-                        <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="10" fill="transparent"
-                          strokeDasharray="263.89"
-                          strokeDashoffset="0"
-                          strokeLinecap="round"
-                          className="text-emerald-500 dark:text-[#00E88A] transition-all duration-1000 ease-out" 
+              ) : (
+                <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
+                  {/* Borrow Asset Section */}
+                  <div className="flex flex-col mb-6">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Borrow Asset</span>
+                      <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
+                    </div>
+                    
+                    <div className="flex flex-col p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl relative focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors">
+                          {logos[selectedAsset.symbol] ? (
+                            <img src={logos[selectedAsset.symbol]} alt={selectedAsset.symbol} className="w-5 h-5 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-[#1F2937] text-white flex items-center justify-center text-[10px] font-black">
+                              {selectedAsset.symbol.charAt(0)}
+                            </div>
+                          )}
+                          <div className="flex flex-col">
+                            <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{selectedAsset.symbol}</span>
+                          </div>
+                          <CaretDown className="w-3.5 h-3.5 text-slate-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <input 
+                          type="number" 
+                          placeholder="0"
+                          value={borrowAmount}
+                          onChange={(e) => setBorrowAmount(e.target.value)}
+                          className="bg-transparent border-none outline-none text-[28px] font-bold text-slate-900 dark:text-white w-full p-0 placeholder:text-slate-300 dark:placeholder:text-[#1F2937]"
                         />
-                      </svg>
-                      {/* Inner Text */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-[26px] font-black text-emerald-500 dark:text-[#00E88A]">100%</span>
+                        <span className="text-[16px] font-bold text-slate-400 dark:text-white/40">{selectedAsset.symbol}</span>
+                      </div>
+                      <div className="text-[12px] font-medium text-slate-400 dark:text-white/50 mt-1">
+                        ${borrowAmount ? (parseFloat(borrowAmount) * 0.08).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} USD
                       </div>
                     </div>
 
-                    {/* Status Text */}
-                    <div className="flex flex-col flex-1">
-                      <span className="text-[20px] font-bold text-emerald-500 dark:text-[#00E88A] mb-1">Healthy</span>
-                      <span className="text-[13px] font-medium text-slate-500 dark:text-white/60 leading-snug">
-                        Your position is in a safe zone.
+                    <div className="flex items-center justify-between mt-3 px-1">
+                      <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">Available: 13,450.25 {selectedAsset.symbol}</span>
+                      <span className="text-[12px] font-medium text-slate-500 dark:text-white/60">
+                        Max Borrowable: <span className="font-bold text-[#00A8E8]">
+                          {collateralType === 'NFT' 
+                            ? '500.00' 
+                            : collateralAmount ? (parseFloat(collateralAmount) * 0.75).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'
+                          } {selectedAsset.symbol}
+                        </span>
                       </span>
                     </div>
                   </div>
 
-                  {/* Gradient Segment line */}
-                  <div className="w-full mt-6 relative px-2">
-                    <div className="h-1.5 w-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 dark:from-red-400 dark:to-[#00E88A] opacity-90 flex items-center justify-between">
-                      {/* Ticks */}
-                      <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
-                      <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
-                      <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
-                      {/* Thumb */}
-                      <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 dark:border-[#00E88A] absolute right-0 shadow-md transform translate-x-1/2"></div>
+                  {/* Position XP Section */}
+                  <div className="flex flex-col mb-2">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Position XP</span>
+                      <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
-                    <div className="flex justify-between w-full mt-2 text-[10px] font-bold text-slate-400 dark:text-white/40">
-                      <span>0%</span>
-                      <span>25%</span>
-                      <span>50%</span>
-                      <span>75%</span>
-                      <span>100%</span>
+                    
+                    <div className="flex flex-col items-center bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl p-6 mb-4 relative shadow-sm">
+                      
+                      {/* Gauge Display */}
+                      <div className="flex items-center justify-center gap-6 w-full">
+                        {/* Circle */}
+                        <div className="relative w-[110px] h-[110px] shrink-0">
+                          {/* Background circle */}
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-slate-100 dark:text-[#1F2937]" />
+                            {/* Progress circle */}
+                            <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="10" fill="transparent"
+                              strokeDasharray="263.89"
+                              strokeDashoffset="0"
+                              strokeLinecap="round"
+                              className="text-emerald-500 dark:text-[#00E88A] transition-all duration-1000 ease-out" 
+                            />
+                          </svg>
+                          {/* Inner Text */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-[26px] font-black text-emerald-500 dark:text-[#00E88A]">100%</span>
+                          </div>
+                        </div>
+
+                        {/* Status Text */}
+                        <div className="flex flex-col flex-1">
+                          <span className="text-[20px] font-bold text-emerald-500 dark:text-[#00E88A] mb-1">Healthy</span>
+                          <span className="text-[13px] font-medium text-slate-500 dark:text-white/60 leading-snug">
+                            Your position is in a safe zone.
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Gradient Segment line */}
+                      <div className="w-full mt-6 relative px-2">
+                        <div className="h-1.5 w-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 dark:from-red-400 dark:to-[#00E88A] opacity-90 flex items-center justify-between">
+                          {/* Ticks */}
+                          <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
+                          <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
+                          <div className="w-[2px] h-[6px] bg-white dark:bg-[#0B0F14] ml-[25%]"></div>
+                          {/* Thumb */}
+                          <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 dark:border-[#00E88A] absolute right-0 shadow-md transform translate-x-1/2"></div>
+                        </div>
+                        <div className="flex justify-between w-full mt-2 text-[10px] font-bold text-slate-400 dark:text-white/40">
+                          <span>0%</span>
+                          <span>25%</span>
+                          <span>50%</span>
+                          <span>75%</span>
+                          <span>100%</span>
+                        </div>
+                      </div>
+                      
                     </div>
-                  </div>
-                  
-                </div>
 
-                {/* XP Breakdown Row */}
-                <div className="grid grid-cols-3 gap-2 p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">Health Impact</span>
-                    <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">+12.45%</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center border-l border-slate-200 dark:border-[#1F2937]">
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">LTV After Borrow</span>
-                    <span className="text-[15px] font-bold text-slate-900 dark:text-white">62.35%</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center border-l border-slate-200 dark:border-[#1F2937]">
-                    <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">Liquidation Price</span>
-                    <span className="text-[15px] font-bold text-slate-900 dark:text-white">$0.0821</span>
+                    {/* XP Breakdown Row */}
+                    <div className="grid grid-cols-3 gap-2 p-4 bg-slate-50 dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">Health Impact</span>
+                        <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">+12.45%</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center border-l border-slate-200 dark:border-[#1F2937]">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">LTV After Borrow</span>
+                        <span className="text-[15px] font-bold text-slate-900 dark:text-white">62.35%</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center border-l border-slate-200 dark:border-[#1F2937]">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60 mb-1 text-center">Liquidation Price</span>
+                        <span className="text-[15px] font-bold text-slate-900 dark:text-white">$0.0821</span>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
-
-              </div>
+              )}
 
             </div>
 
             {/* CTA Section */}
             <div className="p-6 pt-4 bg-white dark:bg-[#111827] border-t border-slate-100 dark:border-[#1F2937]/50">
-              <button 
-                className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-[15px] font-bold text-white transition-all shadow-md hover:shadow-lg ${
-                  borrowAmount && collateralAmount ? 'bg-gradient-to-r from-[#00A8E8] to-[#0096D1] hover:from-[#0096D1] hover:to-[#0082B5]' : 'bg-slate-300 dark:bg-[#1F2937] text-slate-500 dark:text-white/40 cursor-not-allowed shadow-none'
-                }`}
-              >
-                <LockKey weight="bold" className="w-5 h-5" />
-                Execute Borrow
-              </button>
+              {borrowStep === 1 ? (
+                <button 
+                  onClick={() => setBorrowStep(2)}
+                  disabled={collateralType === 'NFT' ? selectedNft === null : !collateralAmount || parseFloat(collateralAmount) <= 0}
+                  className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-[15px] font-bold text-white transition-all shadow-md hover:shadow-lg ${
+                    (collateralType === 'NFT' ? selectedNft !== null : collateralAmount && parseFloat(collateralAmount) > 0) ? 'bg-[#00A8E8] hover:bg-[#0096D1]' : 'bg-slate-300 dark:bg-[#1F2937] text-slate-500 dark:text-white/40 cursor-not-allowed shadow-none'
+                  }`}
+                >
+                  Deposit Collateral
+                </button>
+              ) : (
+                <button 
+                  disabled={!borrowAmount || parseFloat(borrowAmount) <= 0 || (collateralType !== 'NFT' && parseFloat(borrowAmount) > parseFloat(collateralAmount) * 0.75)}
+                  className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-[15px] font-bold text-white transition-all shadow-md hover:shadow-lg ${
+                    borrowAmount && parseFloat(borrowAmount) > 0 && (collateralType === 'NFT' || parseFloat(borrowAmount) <= parseFloat(collateralAmount) * 0.75) ? 'bg-gradient-to-r from-[#00A8E8] to-[#0096D1] hover:from-[#0096D1] hover:to-[#0082B5]' : 'bg-slate-300 dark:bg-[#1F2937] text-slate-500 dark:text-white/40 cursor-not-allowed shadow-none'
+                  }`}
+                >
+                  <LockKey weight="bold" className="w-5 h-5" />
+                  Borrow {selectedAsset.symbol}
+                </button>
+              )}
             </div>
 
           </div>
         </div>,
         document.body
-      )}
-
-    </div>
+      )}    </div>
   );
 };
