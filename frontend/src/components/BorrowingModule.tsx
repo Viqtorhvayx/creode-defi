@@ -325,7 +325,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none overflow-hidden">
+                    <div className="flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
                       
                       {collateralType === 'NFT' ? (
                         <div className="p-4 flex flex-col relative w-full h-auto min-h-[120px]">
@@ -340,19 +340,19 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                               <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                             </div>
                             
-                            {isCollateralDropdownOpen && (
-                              <div className="absolute top-full right-0 mt-1 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-lg overflow-hidden z-20 animate-in fade-in zoom-in-95 duration-100">
+                            <div className={`absolute top-full right-0 mt-2 w-[120px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                              <div className="flex flex-col p-1.5">
                                 {['USDC', 'USDT', 'NFT'].map(type => (
                                   <div 
                                     key={type}
                                     onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                                    className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                                   >
-                                    <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                                    <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                   </div>
                                 ))}
                               </div>
-                            )}
+                            </div>
                           </div>
                           
                           <div className="grid grid-cols-3 gap-2 mt-2 pb-1">
@@ -407,19 +407,19 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                                 <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                               </div>
                               
-                              {isCollateralDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-[120px] bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-[12px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100">
+                              <div className={`absolute top-full right-0 mt-2 w-[120px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                                <div className="flex flex-col p-1.5">
                                   {['USDC', 'USDT', 'NFT'].map(type => (
                                     <div 
                                       key={type}
                                       onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
-                                      className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#1F2937] cursor-pointer transition-colors"
+                                      className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                                     >
-                                      <span className="text-[13px] font-bold text-slate-900 dark:text-white">{type}</span>
+                                      <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                     </div>
                                   ))}
                                 </div>
-                              )}
+                              </div>
                             </div>
 
                             {/* Shortcut Buttons */}
