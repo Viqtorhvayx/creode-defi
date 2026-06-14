@@ -379,16 +379,16 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                               <div 
                                 key={id} 
                                 onClick={() => setSelectedNfts(prev => prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id])}
-                                className={`aspect-[3/2] rounded-[16px] cursor-pointer border-[3px] transition-all overflow-hidden relative group shadow-sm bg-slate-100 dark:bg-[#111827] ${
-                                  isSelected ? 'border-[#00A8E8] shadow-[0_0_15px_rgba(0,168,232,0.25)]' : 'border-transparent hover:border-[#00A8E8]/40 hover:shadow-md'
+                                className={`aspect-[3/2] rounded-[16px] cursor-pointer border-[3px] transition-all duration-300 overflow-hidden relative group shadow-sm bg-slate-100 dark:bg-[#111827] transform active:scale-95 ${
+                                  isSelected ? 'border-[#00A8E8] shadow-[0_0_20px_rgba(0,168,232,0.3)] scale-[1.02]' : 'border-transparent hover:border-[#00A8E8]/40 hover:shadow-lg'
                                 }`}
                               >
-                                <img src={`https://picsum.photos/seed/creode${id}/400/300`} alt={`NFT ${id}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <img src={`https://picsum.photos/seed/creode${id}/400/300`} alt={`NFT ${id}`} className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-105' : 'group-hover:scale-105'}`} />
                                 {isSelected && (
-                                  <div className="absolute inset-0 bg-[#00A8E8]/10 mix-blend-overlay"></div>
+                                  <div className="absolute inset-0 bg-[#00A8E8]/15 mix-blend-overlay animate-in fade-in duration-300"></div>
                                 )}
                                 {isSelected && (
-                                  <div className="absolute top-2.5 right-2.5 w-6 h-6 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-[#0B0F14]">
+                                  <div className="absolute top-2.5 right-2.5 w-6 h-6 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-[#0B0F14] animate-in zoom-in-50 duration-300">
                                     <span className="text-white text-[12px] font-bold leading-none">✓</span>
                                   </div>
                                 )}
@@ -396,11 +396,14 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                             )})}
                           </div>
 
-                          <div className="flex items-center justify-between mt-4 mb-2">
-                            <span className="text-[13px] font-bold text-slate-500 dark:text-white/60">Available NFTs (4)</span>
-                            <button className="px-4 py-1.5 rounded-xl border border-[#00A8E8]/30 text-[#00A8E8] hover:bg-[#00A8E8]/10 text-[13px] font-bold transition-colors outline-none focus:outline-none">
+                          <div className="flex flex-col mt-5 mb-2 px-1">
+                            <button className="w-full py-2.5 flex items-center justify-center gap-2 rounded-xl border border-[#00A8E8]/20 bg-[#00A8E8]/5 hover:bg-[#00A8E8]/10 text-[#00A8E8] text-[14px] font-bold transition-all shadow-sm outline-none focus:outline-none">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM40,56H216V88H40ZM216,200H40V104H216V200ZM72,136a8,8,0,0,1,8-8h24a8,8,0,0,1,0,16H80A8,8,0,0,1,72,136Zm8,40h64a8,8,0,0,1,0,16H80a8,8,0,0,1,0-16Z"></path></svg>
                               Manage NFTs
                             </button>
+                            <span className="text-[12px] font-semibold text-slate-400 dark:text-white/40 mt-3 text-left">
+                              Available NFTs (4)
+                            </span>
                           </div>
                         </div>
                       ) : (
