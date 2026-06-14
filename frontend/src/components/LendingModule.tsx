@@ -1,7 +1,8 @@
-// Card UI merger and layout refinement strictly credited to Viqtorhvayx on GitHub
+// Modal layout and viewport centering fix strictly credited to Viqtorhvayx on GitHub
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ShieldCheck, Stack, ChartPieSlice, Wallet, Info, X, ArrowUp, LockKey } from '@phosphor-icons/react';
 
 interface LendingModuleProps {
@@ -31,6 +32,11 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [lendAmount, setLendAmount] = useState('0');
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -204,8 +210,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
       </div>
 
       {/* Modal Overlay */}
-      {isModalOpen && selectedAsset && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 dark:bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      {isModalOpen && selectedAsset && mounted && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-[#111827] rounded-[16px] shadow-2xl w-full max-w-[440px] mx-auto flex flex-col relative overflow-hidden border border-slate-200 dark:border-[#1F2937] animate-in zoom-in-95 duration-200">
             
             {/* Header */}
@@ -324,7 +330,8 @@ export const LendingModule: React.FC<LendingModuleProps> = ({ points, theme }) =
 
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
