@@ -33,7 +33,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
   const [borrowStep, setBorrowStep] = useState<1 | 2>(1);
   const [collateralType, setCollateralType] = useState<'USDC' | 'USDT' | 'NFT'>('USDC');
   const [isCollateralDropdownOpen, setIsCollateralDropdownOpen] = useState(false);
-  const [selectedNft, setSelectedNft] = useState<number | null>(null);
+  const [selectedNfts, setSelectedNfts] = useState<number[]>([]);
   const [borrowAmount, setBorrowAmount] = useState('');
   const [collateralAmount, setCollateralAmount] = useState('');
   const [selectedCollateralPercent, setSelectedCollateralPercent] = useState<string | null>(null);
@@ -153,7 +153,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
               return (
                 <div 
                   key={asset.symbol} 
-                  onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNft(null); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
+                  onClick={() => { setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNfts([]); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
                   className={`grid grid-cols-12 gap-4 p-4 items-center transition-all cursor-pointer relative outline-none focus:outline-none focus:ring-0 ${
                       isSelected 
                         ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20 z-10 rounded-xl' 
@@ -203,7 +203,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                 {/* Action Column */}
                 <div className="col-span-1 flex justify-end pr-2">
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNft(null); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); setIsModalOpen(true); setBorrowStep(1); setCollateralType('USDC'); setSelectedNfts([]); setIsCollateralDropdownOpen(false); setBorrowAmount(''); setCollateralAmount(''); setSelectedCollateralPercent(null); }}
                     className={`px-5 py-1.5 rounded-lg border text-[13px] font-semibold transition-colors duration-200 ${
                       isSelected 
                         ? 'bg-[#00A8E8] text-white border-[#00A8E8]' 
@@ -325,63 +325,82 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                     </div>
                     
-                    <div className="flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none">
-                      
-                      {collateralType === 'NFT' ? (
-                        <div className="p-4 flex flex-col relative w-full h-auto min-h-[120px]">
-                          <div className="flex items-center justify-between mb-3 relative">
-                            <span className="text-[14px] font-bold text-slate-900 dark:text-white">Select NFT</span>
-                            <div 
-                              onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
-                              className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-[#1F2937] rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F2937]/50 transition-colors z-10"
-                            >
-                              <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold">N</div>
-                              <span className="text-[14px] font-bold text-slate-900 dark:text-white">{collateralType}</span>
-                              <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
-                            </div>
-                            
-                            <div className={`absolute top-full right-0 mt-2 w-[140px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                              <div className="flex flex-col p-1.5">
-                                {['USDC', 'USDT', 'NFT'].map(type => (
-                                  <div 
-                                    key={type}
-                                    onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
-                                    className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
-                                  >
-                                    <div className="flex items-center gap-2.5">
-                                      {type === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full object-cover shrink-0" />}
-                                      {type === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-5 h-5 rounded-full object-cover shrink-0" />}
-                                      {type === 'NFT' && <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold shrink-0">N</div>}
-                                      <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
-                                    </div>
-                                    {collateralType === type && (
-                                      <div className="w-1.5 h-1.5 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-0.5"></div>
-                                    )}
+                    {collateralType === 'NFT' ? (
+                      <div className="flex flex-col w-full relative mb-2">
+                        {/* Full width dropdown for NFT */}
+                        <div 
+                          onClick={() => setIsCollateralDropdownOpen(!isCollateralDropdownOpen)}
+                          className="flex items-center justify-between w-full px-4 py-3.5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-xl cursor-pointer relative shadow-sm hover:border-[#00A8E8]/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[11px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>
+                            <span className="text-[15px] font-bold text-slate-900 dark:text-white">NFT</span>
+                          </div>
+                          <CaretDown className={`w-4 h-4 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
+                          
+                          <div className={`absolute top-full left-0 right-0 mt-2 bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200 ease-in-out origin-top ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                            <div className="flex flex-col p-1.5">
+                              {['USDC', 'USDT', 'NFT'].map(type => (
+                                <div 
+                                  key={type}
+                                  onClick={(e) => { e.stopPropagation(); setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNfts([]); setCollateralAmount(''); }}
+                                  className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    {type === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
+                                    {type === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-6 h-6 rounded-full object-cover shrink-0 shadow-sm" />}
+                                    {type === 'NFT' && <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[11px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
+                                    <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                   </div>
-                                ))}
-                              </div>
+                                  {collateralType === type && (
+                                    <div className="w-2 h-2 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-1"></div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className={`flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent border-none shadow-none focus-within:ring-0' : ''}`}>
+                      
+                      {collateralType === 'NFT' ? (
+                        <div className="flex flex-col relative w-full h-auto mt-2">
+                          <div className="flex items-center justify-between mb-3 relative px-1">
+                            <span className="text-[14px] font-bold text-slate-900 dark:text-white">Select NFT(s) as Collateral</span>
+                            <span className="text-[12px] font-medium text-slate-400 dark:text-white/40">{selectedNfts.length}/4 Selected</span>
+                          </div>
                           
-                          <div className="grid grid-cols-3 gap-2 mt-2 pb-1">
-                            {[1, 2, 3, 4, 5, 6].map((id) => (
+                          <div className="grid grid-cols-2 gap-3 pb-1">
+                            {[1, 2, 3, 4].map((id) => {
+                              const isSelected = selectedNfts.includes(id);
+                              return (
                               <div 
                                 key={id} 
-                                onClick={() => setSelectedNft(id)}
-                                className={`aspect-square rounded-xl cursor-pointer border-2 transition-all overflow-hidden relative group ${
-                                  selectedNft === id ? 'border-[#00A8E8]' : 'border-slate-200 dark:border-[#1F2937] hover:border-[#00A8E8]/50'
+                                onClick={() => setSelectedNfts(prev => prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id])}
+                                className={`aspect-[3/2] rounded-[16px] cursor-pointer border-[3px] transition-all overflow-hidden relative group shadow-sm bg-slate-100 dark:bg-[#111827] ${
+                                  isSelected ? 'border-[#00A8E8] shadow-[0_0_15px_rgba(0,168,232,0.25)]' : 'border-transparent hover:border-[#00A8E8]/40 hover:shadow-md'
                                 }`}
                               >
-                                <div className="w-full h-full bg-slate-200/50 dark:bg-[#1F2937]/50 flex flex-col items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-[#1F2937] transition-colors">
-                                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/40">NFT #{id}</span>
-                                </div>
-                                {selectedNft === id && (
-                                  <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-sm">
-                                    <span className="text-white text-[10px] font-bold leading-none">✓</span>
+                                <img src={`https://picsum.photos/seed/creode${id}/400/300`} alt={`NFT ${id}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                {isSelected && (
+                                  <div className="absolute inset-0 bg-[#00A8E8]/10 mix-blend-overlay"></div>
+                                )}
+                                {isSelected && (
+                                  <div className="absolute top-2.5 right-2.5 w-6 h-6 bg-[#00A8E8] rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-[#0B0F14]">
+                                    <span className="text-white text-[12px] font-bold leading-none">✓</span>
                                   </div>
                                 )}
                               </div>
-                            ))}
+                            )})}
+                          </div>
+
+                          <div className="flex items-center justify-between mt-4 mb-2">
+                            <span className="text-[13px] font-bold text-slate-500 dark:text-white/60">Available NFTs (4)</span>
+                            <button className="px-4 py-1.5 rounded-xl border border-[#00A8E8]/30 text-[#00A8E8] hover:bg-[#00A8E8]/10 text-[13px] font-bold transition-colors outline-none focus:outline-none">
+                              Manage NFTs
+                            </button>
                           </div>
                         </div>
                       ) : (
@@ -420,13 +439,13 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                                   {['USDC', 'USDT', 'NFT'].map(type => (
                                     <div 
                                       key={type}
-                                      onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNft(null); setCollateralAmount(''); }}
+                                      onClick={() => { setCollateralType(type as any); setIsCollateralDropdownOpen(false); setSelectedNfts([]); setCollateralAmount(''); }}
                                       className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${collateralType === type ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-[#00A8E8]/5 dark:hover:bg-[#00A8E8]/10'}`}
                                     >
                                       <div className="flex items-center gap-2.5">
                                         {type === 'USDC' && <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC" className="w-5 h-5 rounded-full object-cover shrink-0" />}
                                         {type === 'USDT' && <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" className="w-5 h-5 rounded-full object-cover shrink-0" />}
-                                        {type === 'NFT' && <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white font-bold shrink-0">N</div>}
+                                        {type === 'NFT' && <div className="w-5 h-5 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[10px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
                                         <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                       </div>
                                       {collateralType === type && (
@@ -623,9 +642,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
               {borrowStep === 1 ? (
                 <button 
                   onClick={() => setBorrowStep(2)}
-                  disabled={collateralType === 'NFT' ? selectedNft === null : !collateralAmount || parseFloat(collateralAmount) <= 0}
+                  disabled={collateralType === 'NFT' ? selectedNfts.length === 0 : !collateralAmount || parseFloat(collateralAmount) <= 0}
                   className={`w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-[15px] font-bold text-white transition-all shadow-md hover:shadow-lg ${
-                    (collateralType === 'NFT' ? selectedNft !== null : collateralAmount && parseFloat(collateralAmount) > 0) ? 'bg-[#00A8E8] hover:bg-[#0096D1]' : 'bg-slate-300 dark:bg-[#1F2937] text-slate-500 dark:text-white/40 cursor-not-allowed shadow-none'
+                    (collateralType === 'NFT' ? selectedNfts.length > 0 : collateralAmount && parseFloat(collateralAmount) > 0) ? 'bg-[#00A8E8] hover:bg-[#0096D1]' : 'bg-slate-300 dark:bg-[#1F2937] text-slate-500 dark:text-white/40 cursor-not-allowed shadow-none'
                   }`}
                 >
                   Deposit Collateral
