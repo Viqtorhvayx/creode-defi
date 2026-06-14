@@ -10,18 +10,18 @@ interface BorrowingModuleProps {
 }
 
 const MOCK_BORROW_ASSETS = [
-  { symbol: 'HBAR', name: 'HBAR', threshold: '85%', threshLabel: 'High', ltv: '75%', apy: '3.25%', xp: 84 },
-  { symbol: 'SAUCE', name: 'SAUCE', threshold: '80%', threshLabel: 'High', ltv: '70%', apy: '5.12%', xp: 76 },
-  { symbol: 'WBTC', name: 'WBTC', threshold: '75%', threshLabel: 'High', ltv: '65%', apy: '2.85%', xp: 68 },
-  { symbol: 'WETH', name: 'WETH', threshold: '75%', threshLabel: 'High', ltv: '65%', apy: '2.60%', xp: 66 },
-  { symbol: 'PACK', name: 'PACK', threshold: '70%', threshLabel: 'Medium', ltv: '60%', apy: '7.15%', xp: 58 },
-  { symbol: 'BONZO', name: 'BONZO', threshold: '70%', threshLabel: 'Medium', ltv: '60%', apy: '6.35%', xp: 54 },
-  { symbol: 'JAM', name: 'JAM', threshold: '65%', threshLabel: 'Medium', ltv: '55%', apy: '4.90%', xp: 48 },
-  { symbol: 'DOVU', name: 'DOVU', threshold: '65%', threshLabel: 'Medium', ltv: '55%', apy: '6.80%', xp: 42 },
-  { symbol: 'GRELF', name: 'GRELF', threshold: '60%', threshLabel: 'Medium', ltv: '50%', apy: '5.65%', xp: 36 },
-  { symbol: 'HST', name: 'HST', threshold: '60%', threshLabel: 'Medium', ltv: '50%', apy: '3.90%', xp: 28 },
-  { symbol: 'STEAM', name: 'STEAM', threshold: '60%', threshLabel: 'Medium', ltv: '55%', apy: '6.10%', xp: 22 },
-  { symbol: 'KBL', name: 'KBL', threshold: '55%', threshLabel: 'Medium', ltv: '45%', apy: '4.75%', xp: 18 },
+  { symbol: 'HBAR', name: 'HBAR', threshold: '85%', threshLabel: 'High', ltv: '75%', apy: '3.25%', xp: 84, cgId: 'hedera-hashgraph' },
+  { symbol: 'SAUCE', name: 'SAUCE', threshold: '80%', threshLabel: 'High', ltv: '70%', apy: '5.12%', xp: 76, cgId: 'saucerswap' },
+  { symbol: 'WBTC', name: 'WBTC', threshold: '75%', threshLabel: 'High', ltv: '65%', apy: '2.85%', xp: 68, cgId: 'wrapped-bitcoin' },
+  { symbol: 'WETH', name: 'WETH', threshold: '75%', threshLabel: 'High', ltv: '65%', apy: '2.60%', xp: 66, cgId: 'weth' },
+  { symbol: 'PACK', name: 'PACK', threshold: '70%', threshLabel: 'Medium', ltv: '60%', apy: '7.15%', xp: 58, cgId: 'hashpack' },
+  { symbol: 'BONZO', name: 'BONZO', threshold: '70%', threshLabel: 'Medium', ltv: '60%', apy: '6.35%', xp: 54, cgId: 'bonzo-finance' },
+  { symbol: 'JAM', name: 'JAM', threshold: '65%', threshLabel: 'Medium', ltv: '55%', apy: '4.90%', xp: 48, cgId: 'tune-fm' },
+  { symbol: 'DOVU', name: 'DOVU', threshold: '65%', threshLabel: 'Medium', ltv: '55%', apy: '6.80%', xp: 42, cgId: 'dovu' },
+  { symbol: 'GRELF', name: 'GRELF', threshold: '60%', threshLabel: 'Medium', ltv: '50%', apy: '5.65%', xp: 36, cgId: 'grelf' },
+  { symbol: 'HST', name: 'HST', threshold: '60%', threshLabel: 'Medium', ltv: '50%', apy: '3.90%', xp: 28, cgId: 'headstarter' },
+  { symbol: 'STEAM', name: 'STEAM', threshold: '60%', threshLabel: 'Medium', ltv: '55%', apy: '6.10%', xp: 22, cgId: 'steamexchange' },
+  { symbol: 'KBL', name: 'KBL', threshold: '55%', threshLabel: 'Medium', ltv: '45%', apy: '4.75%', xp: 18, cgId: 'karabiner' },
 ];
 
 export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
@@ -32,20 +32,18 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
   useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const res = await fetch('https://api.saucerswap.finance/tokens');
+        const ids = MOCK_BORROW_ASSETS.map(a => a.cgId).join(',');
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`);
+        
         if (res.ok) {
           const data = await res.json();
           const newLogos: Record<string, string> = {};
-          data.forEach((token: any) => {
-            newLogos[token.symbol] = token.icon ? `https://www.saucerswap.finance/${token.icon}` : '';
+          data.forEach((coin: any) => {
+            if (coin.image) {
+              const symbol = MOCK_BORROW_ASSETS.find(a => a.cgId === coin.id)?.symbol;
+              if (symbol) newLogos[symbol] = coin.image;
+            }
           });
-          
-          // Fallbacks for known tokens
-          newLogos['HBAR'] = 'https://cryptologos.cc/logos/hedera-hbar-logo.png';
-          newLogos['WBTC'] = 'https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png';
-          newLogos['WETH'] = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
-          newLogos['PACK'] = 'https://hashpack.app/assets/images/hashpack-logo.png';
-          
           setLogos(newLogos);
         }
       } catch (err) {
