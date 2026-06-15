@@ -314,7 +314,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
               </button>
             </div>
 
-            <div className="px-6 py-5 flex flex-col overflow-y-auto max-h-[80vh] custom-scrollbar overflow-x-hidden">
+            <div className="px-6 py-5 flex flex-col overflow-y-auto max-h-[80vh] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full overflow-x-hidden">
 
               {borrowStep === 1 ? (
                 <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
