@@ -320,9 +320,9 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                 <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
                   {/* Collateral Deposit Section */}
                   <div className="flex flex-col mb-2">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[13px] font-semibold text-slate-900 dark:text-white">Collateral Deposit</span>
+                    <div className="flex items-center justify-between mb-2 h-[36px]">
+                      <div className="flex items-center gap-1.5 h-full">
+                        <span className="text-[13px] font-semibold text-slate-900 dark:text-white leading-none">Collateral Deposit</span>
                         <Info className="w-3.5 h-3.5 text-slate-400 dark:text-white/40" />
                       </div>
 
@@ -338,7 +338,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                             <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                             
                             <div className={`absolute top-full right-0 mt-2 w-[140px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                              <div className="flex flex-col p-1.5">
+                              <div className="flex flex-col gap-0.5 p-1.5">
                                 {['USDC', 'USDT', 'NFT'].map(type => (
                                   <div 
                                     key={type}
@@ -368,7 +368,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       {collateralType === 'NFT' ? (
                         <div className="flex flex-col relative w-full h-auto mt-2">
                           <div className="flex items-center justify-between mb-3 relative px-1">
-                            <span className="text-[12px] font-bold text-slate-400 dark:text-white/40">Select NFT(s) as Collateral</span>
+                            <span className="text-[12px] font-bold text-slate-400 dark:text-white/40">Select NFT(s)</span>
                             <span className="text-[12px] font-medium text-slate-400 dark:text-white/40">{selectedNfts.length}/4 Selected</span>
                           </div>
                           
@@ -397,7 +397,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                           </div>
 
                           <div className="flex flex-col mt-5 mb-2 px-1">
-                            <button className="w-full py-2.5 flex items-center justify-center gap-2 rounded-xl border border-[#00A8E8]/20 bg-[#00A8E8]/5 hover:bg-[#00A8E8]/10 text-[#00A8E8] text-[14px] font-bold transition-all shadow-sm outline-none focus:outline-none">
+                            <button className="w-full py-2.5 flex items-center justify-center gap-2 rounded-xl border border-[#00A8E8]/20 bg-[#00A8E8]/5 hover:bg-[#00A8E8]/10 text-[#00A8E8] text-[14px] font-bold transition-all shadow-sm outline-none focus:outline-none focus:ring-0">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM40,56H216V88H40ZM216,200H40V104H216V200ZM72,136a8,8,0,0,1,8-8h24a8,8,0,0,1,0,16H80A8,8,0,0,1,72,136Zm8,40h64a8,8,0,0,1,0,16H80a8,8,0,0,1,0-16Z"></path></svg>
                               Manage NFTs
                             </button>
@@ -442,8 +442,8 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                                 <CaretDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isCollateralDropdownOpen ? 'rotate-180' : ''}`} />
                               </div>
                               
-                              <div className={`absolute top-full right-0 mt-2 w-[140px] bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-xl shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                                <div className="flex flex-col p-1.5">
+                              <div className={`absolute top-full right-0 mt-2 w-[140px] bg-white dark:bg-[#111827] border border-black/10 dark:border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200 ease-in-out origin-top-right ${isCollateralDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                                <div className="flex flex-col gap-0.5 p-1.5">
                                   {['USDC', 'USDT', 'NFT'].map(type => (
                                     <div 
                                       key={type}
