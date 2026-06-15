@@ -351,9 +351,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                                       {type === 'NFT' && <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[11px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
                                       <span className="text-[14px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                     </div>
-                                    {collateralType === type && (
-                                      <div className="w-2 h-2 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-1"></div>
-                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -363,7 +360,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       )}
                     </div>
 
-                    <div className={`flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent border-none shadow-none focus-within:ring-0' : ''}`}>
+                    <div className={`flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent border-none shadow-none focus-within:ring-0 focus-within:border-transparent' : ''}`}>
                       
                       {collateralType === 'NFT' ? (
                         <div className="flex flex-col relative w-full h-auto mt-2">
@@ -456,9 +453,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                                         {type === 'NFT' && <div className="w-5 h-5 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[10px] font-black shrink-0 border border-[#00A8E8]/20">NFT</div>}
                                         <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-none">{type}</span>
                                       </div>
-                                      {collateralType === type && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#00A8E8] shadow-[0_0_8px_rgba(0,168,232,0.6)] mr-0.5"></div>
-                                      )}
                                     </div>
                                   ))}
                                 </div>
