@@ -360,7 +360,7 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                       )}
                     </div>
 
-                    <div className={`flex flex-col bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] rounded-[16px] relative focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 transition-all shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent border-none shadow-none focus-within:ring-0 focus-within:border-transparent' : ''}`}>
+                    <div className={`flex flex-col rounded-[16px] relative transition-all ${collateralType === 'NFT' ? 'bg-transparent dark:bg-transparent' : 'bg-[#F9FAFB] dark:bg-[#0B0F14] border border-slate-200 dark:border-[#1F2937] focus-within:border-[#00A8E8]/50 focus-within:ring-2 focus-within:ring-[#00A8E8]/10 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none'}`}>
                       
                       {collateralType === 'NFT' ? (
                         <div className="flex flex-col relative w-full h-auto mt-2">
