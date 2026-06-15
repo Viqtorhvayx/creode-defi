@@ -510,7 +510,6 @@ export const BorrowingModule: React.FC<BorrowingModuleProps> = ({ theme }) => {
                         <span className="text-[12px] font-medium text-slate-700 dark:text-white/80">2,450.75 {collateralType}</span>
                       </div>
                     )}
-                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col animate-in slide-in-from-right-4 duration-300">
