@@ -46,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   ];
 
   return (
-    <div className="w-[140px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 relative">
+    <div className="w-[140px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-transparent px-2 py-6 shrink-0 relative overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
       <div className="flex flex-col gap-2">
         {/* Primary Menu */}
         {primaryMenu.map((item) => {
