@@ -11,6 +11,7 @@ import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 
 import { VaultTab } from '../components/VaultTab';
+import { P2PTab } from '../components/P2PTab';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -59,6 +60,12 @@ export default function Dashboard() {
         return (
           <div className="py-8">
             <VaultTab theme={theme} />
+          </div>
+        );
+      case 'P2P':
+        return (
+          <div className="py-8">
+            <P2PTab theme={theme} />
           </div>
         );
       default:
