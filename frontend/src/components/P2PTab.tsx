@@ -5,7 +5,7 @@ import {
   ArrowsDownUp,
   Faders,
   CheckCircle,
-  FileSearch
+  MagnifyingGlass
 } from '@phosphor-icons/react';
 
 interface P2PTabProps {
@@ -335,7 +335,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-[72px] h-[72px] bg-blue-50 dark:bg-[#3B82F6]/10 rounded-full flex items-center justify-center mb-5 text-[#3B82F6]">
-            <FileSearch size={36} weight="duotone" />
+            <MagnifyingGlass size={36} weight="duotone" />
           </div>
           <h3 className="text-[16px] font-bold text-slate-900 dark:text-white mb-1.5">No Orders Yet</h3>
           <p className="text-[13px] font-medium text-slate-500 dark:text-white/50 mb-6">You haven't placed any P2P orders.</p>
