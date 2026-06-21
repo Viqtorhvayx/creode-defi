@@ -103,7 +103,7 @@ export default function Dashboard() {
         />
 
         {/* Scrollable Main Content */}
-        <main className="flex-1 flex flex-col overflow-y-auto w-full relative">
+        <main className="flex-1 flex flex-col overflow-y-auto w-full relative [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
           <div className="pl-6 pr-[42px] md:pr-[46px] w-full flex-1">
             <div className="max-w-[1400px] mr-auto min-h-[600px] mt-8 w-full">
               {renderTabContent()}
