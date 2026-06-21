@@ -11,8 +11,6 @@ import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 
 import { VaultTab } from '../components/VaultTab';
-import { LendingModule } from '../components/LendingModule';
-import { BorrowingModule } from '../components/BorrowingModule';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -57,27 +55,24 @@ export default function Dashboard() {
 
   const renderTabContent = () => {
     switch (activeMainTab) {
-      // Removed Landing Page (Home)
       case 'Vault':
         return (
           <div className="py-8">
             <VaultTab theme={theme} />
           </div>
         );
-      case 'Lend':
-        return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8">
-            <LendingModule points={userPoints} theme={theme} />
-          </div>
-        );
-      case 'Borrow':
-        return (
-          <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 py-8">
-            <BorrowingModule xp={userXP} theme={theme} />
-          </div>
-        );
       default:
-        return null;
+        return (
+          <div className="flex flex-col items-center justify-center h-full min-h-[400px] animate-in fade-in slide-in-from-bottom-6 duration-500">
+            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-[#111827] flex items-center justify-center mb-4 border border-slate-200 dark:border-white/5">
+              <span className="text-2xl opacity-50">🚧</span>
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{activeMainTab}</h2>
+            <p className="text-[14px] font-medium text-slate-500 dark:text-white/40 text-center max-w-md">
+              This module is currently under development. Please check back later.
+            </p>
+          </div>
+        );
     }
   };
 

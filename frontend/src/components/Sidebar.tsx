@@ -11,7 +11,11 @@ import {
   ChartLineUp, 
   Users, 
   Gear, 
-  SignOut 
+  SignOut,
+  ChartPie,
+  FileText,
+  ShieldCheck,
+  Lifebuoy
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 
@@ -23,15 +27,22 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab }) => {
   const primaryMenu = [
+    { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
     { id: 'Vault', icon: LockKey, label: 'Vault' },
-    { id: 'Lend', icon: TrendUp, label: 'Lend' },
-    { id: 'Borrow', icon: ArrowsDownUp, label: 'Borrow' },
+    { id: 'Earn', icon: TrendUp, label: 'Earn' },
+    { id: 'P2P', icon: Users, label: 'P2P' },
   ];
 
   const secondaryMenu = [
-    { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
-    { id: 'P2P', icon: Users, label: 'P2P' },
     { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
+    { id: 'Portfolio', icon: ChartPie, label: 'Portfolio' },
+    { id: 'Settings', icon: Gear, label: 'Settings' },
+  ];
+
+  const tertiaryMenu = [
+    { id: 'Docs', icon: FileText, label: 'Docs' },
+    { id: 'Audits', icon: ShieldCheck, label: 'Audits' },
+    { id: 'Support', icon: Lifebuoy, label: 'Support' },
   ];
 
   return (
@@ -86,18 +97,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
         {/* Second Divider */}
         <div className="w-full border-t border-black/10 dark:border-white/5 my-2"></div>
 
-        {/* Bottom Section (Settings & Log out) */}
-        <button
-          onClick={() => setActiveTab('Settings')}
-          className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 w-full font-bold text-[13px] ${
-            activeTab === 'Settings'
-              ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-transparent dark:bg-[#00A8E8]/15 dark:text-[#00A8E8] dark:border-transparent dark:shadow-none'
-              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
-          }`}
-        >
-          <Gear size={18} weight={activeTab === 'Settings' ? "fill" : "regular"} />
-          <span>Settings</span>
-        </button>
+        {/* Tertiary Menu */}
+        {tertiaryMenu.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 w-full font-bold text-[13px] ${
+                isActive
+                  ? 'bg-[#00A8E8]/10 text-[#00A8E8] border border-transparent dark:bg-[#00A8E8]/15 dark:text-[#00A8E8] dark:border-transparent dark:shadow-none'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
+              }`}
+            >
+              <Icon size={18} weight={isActive ? "fill" : "regular"} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
 
         <button className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
           <SignOut size={18} />
