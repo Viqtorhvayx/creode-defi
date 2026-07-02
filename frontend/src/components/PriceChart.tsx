@@ -21,6 +21,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const [volume24h, setVolume24h] = useState<string | null>(null);
   const [marketCap, setMarketCap] = useState<string | null>(null);
   const [hbarLogoUrl, setHbarLogoUrl] = useState<string | null>(null);
+  const [marketCapRank, setMarketCapRank] = useState<number | null>(null);
 
   const PYTH_HBAR_FEED_ID = "3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd";
   const PYTH_HERMES_URL = "https://hermes.pyth.network/v2/updates/price/latest";
@@ -83,6 +84,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
           if (data?.image?.large) {
             setHbarLogoUrl(data.image.large);
           }
+          if (data?.market_cap_rank) {
+            setMarketCapRank(data.market_cap_rank);
+          }
         }
       } catch (err) {
         console.error("CoinGecko Logo Error:", err);
@@ -122,7 +126,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       timeScale: { borderVisible: false, timeVisible: true },
       rightPriceScale: {
         borderVisible: false, autoScale: true,
-        scaleMargins: { top: 0.1, bottom: 0.2 },
+        scaleMargins: { top: 0.25, bottom: 0.25 },
       },
       handleScroll: false, handleScale: false,
     });
@@ -249,20 +253,20 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Market Cap</span>
           <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">{marketCap || "$3.76B"}</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
+        <div className="w-px h-8 bg-[#EAECEF] dark:bg-white/10"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">24h Volume</span>
           <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">{volume24h || "$128.45M"}</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
+        <div className="w-px h-8 bg-[#EAECEF] dark:bg-white/10"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Circulating Supply</span>
           <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">42.39B HBAR</span>
         </div>
-        <div className="w-px h-8 bg-slate-200 dark:bg-white/5"></div>
+        <div className="w-px h-8 bg-[#EAECEF] dark:bg-white/10"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
           <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Rank</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">#18</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">{marketCapRank || "18"}</span>
         </div>
       </div>
     </div>

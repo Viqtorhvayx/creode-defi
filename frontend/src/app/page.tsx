@@ -12,6 +12,7 @@ import { Sidebar } from '../components/Sidebar';
 
 import { VaultTab } from '../components/VaultTab';
 import { P2PTab } from '../components/P2PTab';
+import { EarnTab } from '../components/EarnTab';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -58,14 +59,20 @@ export default function Dashboard() {
     switch (activeMainTab) {
       case 'Vault':
         return (
-          <div className="py-8">
+          <div className="pt-[39px] pb-8">
             <VaultTab theme={theme} />
           </div>
         );
       case 'P2P':
         return (
-          <div className="py-8">
+          <div className="pt-[39px] pb-8">
             <P2PTab theme={theme} />
+          </div>
+        );
+      case 'Earn':
+        return (
+          <div className="pt-[39px] pb-8">
+            <EarnTab theme={theme} />
           </div>
         );
       default:
@@ -112,7 +119,7 @@ export default function Dashboard() {
         {/* Scrollable Main Content */}
         <main className="flex-1 flex flex-col overflow-y-auto w-full relative [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
           <div className="pl-6 pr-[42px] md:pr-[46px] w-full flex-1">
-            <div className="max-w-[1400px] mr-auto min-h-[600px] mt-8 w-full">
+            <div className="max-w-[1400px] mr-auto min-h-[600px] w-full">
               {renderTabContent()}
             </div>
           </div>

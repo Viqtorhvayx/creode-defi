@@ -5,8 +5,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
-import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, Percent, ArrowsClockwise } from '@phosphor-icons/react';
+import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
+import { ChevronDown } from 'lucide-react';
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -138,7 +139,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               <div className="flex flex-col justify-center h-full flex-1">
                 <input 
                   type="number" 
-                  placeholder="0" 
+                  placeholder="0.00" 
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-2" 
@@ -177,7 +178,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">{activeToken.charAt(0)}</span>
                     )}
                     <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
-                    <svg className={`w-3.5 h-3.5 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                    <ChevronDown className={`w-4 h-4 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
                   </div>
 
                   {/* Token Dropdown Menu */}
@@ -317,12 +318,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {hasDeposited ? (
             <div className="flex items-center gap-4 w-full">
               <button 
-                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
+                className="flex-1 h-14 rounded-lg text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Deposit
               </button>
               <button 
-                className="flex-1 h-14 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
+                className="flex-1 h-14 rounded-lg text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8]/15 hover:bg-[#00A8E8]/25 text-[#00A8E8] active:bg-[#00A8E8] dark:active:bg-[#00A8E8] active:text-white dark:active:text-white active:shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:active:shadow-[0_0_20px_rgba(0,168,232,0.3)]"
               >
                 Withdraw
               </button>
@@ -334,7 +335,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   setHasDeposited(true);
                 }
               }}
-              className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] transition-all duration-300 active:scale-[0.98] tracking-wide"
+              className="w-full h-14 bg-[#00A8E8] dark:bg-[#00A8E8] hover:bg-[#0090C7] dark:hover:bg-[#0090C7] text-white rounded-lg text-[15px] font-bold flex items-center justify-center shadow-[0_4px_14px_rgba(0,168,232,0.25)] dark:shadow-[0_0_20px_rgba(0,168,232,0.3)] transition-all duration-300 active:scale-[0.98] tracking-wide"
             >
               Deposit to Vault
             </button>
