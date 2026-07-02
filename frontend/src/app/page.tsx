@@ -84,46 +84,51 @@ export default function Dashboard() {
     <div className="flex flex-col h-screen overflow-hidden bg-background transition-colors duration-500">
       
       {/* Top Header (Full Width) */}
-      <header className="w-full flex items-center border-b border-black/5 dark:border-white/5 z-50 bg-background/80 backdrop-blur-md relative">
-        {/* Left: Logo (aligned with Sidebar) */}
-        <div className="w-[140px] flex items-center shrink-0 px-2 pt-6 pb-6">
-          <div 
-            className="cursor-pointer scale-[0.85] origin-left"
-            onClick={() => setActiveMainTab('Vault')}
-          >
-            <Logo theme={theme} />
+      {activeMainTab !== 'P2P' && (
+        <header className="w-full flex items-center border-b border-black/5 dark:border-white/5 z-50 bg-background/80 backdrop-blur-md relative">
+          {/* Left: Logo (aligned with Sidebar) */}
+          <div className="w-[140px] flex items-center shrink-0 px-2 pt-6 pb-6">
+            <div 
+              className="cursor-pointer scale-[0.85] origin-left"
+              onClick={() => setActiveMainTab('Vault')}
+            >
+              <Logo theme={theme} />
+            </div>
           </div>
-        </div>
 
-        {/* Right: Controls (aligned with main content) */}
-        <div className="flex-1 pl-6 pr-[42px] md:pr-[46px] pt-6 pb-6">
-          <div className="max-w-[1400px] w-full mr-auto flex justify-end pr-3 md:pr-4">
-            <Header 
-              theme={theme} 
-              toggleTheme={toggleTheme} 
+          {/* Right: Controls (aligned with main content) */}
+          <div className="flex-1 pl-6 pr-[42px] md:pr-[46px] pt-6 pb-6">
+            <div className="max-w-[1400px] w-full mr-auto flex justify-end pr-3 md:pr-4">
+              <Header 
+                theme={theme} 
+                toggleTheme={toggleTheme} 
+                activeTab={activeMainTab}
+                setActiveTab={setActiveMainTab}
+              />
+            </div>
+          </div>
+        </header>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 min-h-0">
+        {/* Left Sidebar (Fixed Width) */}
+        {activeMainTab !== 'P2P' && (
+          <aside className="w-[140px] shrink-0 border-r border-black/5 dark:border-white/5 overflow-y-auto pl-2 py-8 bg-background/50 relative z-40">
+            <Sidebar 
+              theme={theme}
               activeTab={activeMainTab}
               setActiveTab={setActiveMainTab}
             />
-          </div>
-        </div>
-      </header>
+          </aside>
+        )}
 
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* Left Sidebar */}
-        <Sidebar 
-          theme={theme}
-          activeTab={activeMainTab}
-          setActiveTab={setActiveMainTab}
-        />
-
-        {/* Scrollable Main Content */}
-        <main className="flex-1 flex flex-col overflow-y-auto w-full relative [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
-          <div className="pl-6 pr-[42px] md:pr-[46px] w-full flex-1">
-            <div className="max-w-[1400px] mr-auto min-h-[600px] w-full">
-              {renderTabContent()}
-            </div>
+        {/* Right Main Content Area */}
+        <main className="flex-1 overflow-y-auto pl-6 pr-[42px] md:pr-[46px] relative z-10 w-full min-w-0" style={{ backgroundImage: `radial-gradient(ellipse at 50% -20%, ${theme === 'dark' ? 'rgba(0, 168, 232, 0.05)' : 'rgba(0, 168, 232, 0.05)'}, transparent 50%)` }}>
+          <div className="max-w-[1400px] w-full mr-auto h-full flex flex-col pt-2 pr-3 md:pr-4">
+            {renderTabContent()}
+            <Footer />
           </div>
-          <Footer />
         </main>
       </div>
     </div>
