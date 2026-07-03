@@ -106,7 +106,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               </div>
               
               {/* Chart Graphic Area */}
-              <div className={`flex-1 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} relative rounded-lg overflow-hidden flex flex-col`}>
+              <div className={`flex-1 w-full relative overflow-hidden flex flex-col`}>
                 <div className="flex items-center gap-2 p-2 text-xs">
                   <span className={textMuted}>Crypto BTC/USD</span>
                   <span className={textMuted}>•</span>
