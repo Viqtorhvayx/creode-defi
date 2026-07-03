@@ -327,8 +327,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             <div className="px-4 pb-4">
               {activeTradeMode === 'Market' ? (
                 <>
-                  {/* Pay Input Section (Label removed) */}
-                  <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[12px] p-4 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2`}>
+                  {/* Pay Input Section (Label removed but height restored) */}
+                  <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[12px] p-4 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[88px]`}>
                     <input 
                       type="text" 
                       value="0.0" 
