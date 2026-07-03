@@ -71,7 +71,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         <div className="flex-1 flex flex-col gap-6 min-w-0 w-full">
           
           {/* Top Row: Chart (Left) and Market Activity (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6 items-start">
             
             {/* Chart Area */}
             <div className={`${cardBg} border ${borderColor} rounded-[16px] p-4 flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
