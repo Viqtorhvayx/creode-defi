@@ -71,10 +71,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         <div className="flex-1 flex flex-col gap-6 min-w-0 w-full">
           
           {/* Top Row: Chart (Left) and Market Activity (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6 items-start">
             
             {/* Chart Area */}
-            <div className={`lg:col-span-3 ${cardBg} border ${borderColor} rounded-[16px] p-4 flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] p-4 flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
               {/* Toolbar */}
               <div className={`flex flex-wrap items-center justify-between gap-3 pb-3 border-b ${borderColor} mb-3`}>
                 <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -125,18 +125,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
 
             {/* Market Activity Area */}
-            <div className={`lg:col-span-1 ${cardBg} border ${borderColor} rounded-[16px] flex flex-col h-[550px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col h-[550px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
               <div className="p-4 pb-2 text-sm font-semibold border-b border-transparent">
                 Market Activity
               </div>
               
               <div className="flex-1 overflow-hidden">
-                <table className="w-full text-xs text-right">
+                <table className="w-full text-[11px] text-right">
                   <thead className={`sticky top-0 ${cardBg} z-10`}>
                     <tr className={`${textMuted}`}>
-                      <th className="font-normal py-2 px-4 text-left">Price (USD)</th>
-                      <th className="font-normal py-2 px-4">Size (BTC)</th>
-                      <th className="font-normal py-2 px-4">Time</th>
+                      <th className="font-normal py-2 px-3 text-left">Price (USD)</th>
+                      <th className="font-normal py-2 px-3">Size (BTC)</th>
+                      <th className="font-normal py-2 px-3">Time</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -156,15 +156,15 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       { p: "70,550.9912", s: "440.09K", t: "16:02", d: "up" },
                     ].map((row, i) => (
                       <tr key={i} className="hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer">
-                        <td className="py-2 px-4 text-left flex items-center gap-1 font-medium" style={{ color: row.d === 'up' ? greenColor : redColor }}>
+                        <td className="py-2 px-3 text-left flex items-center gap-1 font-medium" style={{ color: row.d === 'up' ? greenColor : redColor }}>
                           {row.d === 'up' ? 
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> : 
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg> : 
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                           }
-                          ${row.p}
+                          {row.p}
                         </td>
-                        <td className="py-2 px-4 font-medium">{row.s}</td>
-                        <td className={`py-2 px-4 ${textMuted}`}>{row.t}</td>
+                        <td className="py-2 px-3 font-medium">{row.s}</td>
+                        <td className={`py-2 px-3 ${textMuted}`}>{row.t}</td>
                       </tr>
                     ))}
                   </tbody>
