@@ -8,8 +8,6 @@ interface P2PTabProps {
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
-  const [sliderValue, setSliderValue] = useState(0);
-  const [takeProfit, setTakeProfit] = useState(false);
 
   // Common colors
   const bgColor = theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white';
@@ -65,13 +63,14 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         </div>
       </div>
 
-      {/* MAIN GRID */}
-      <div className="grid lg:grid-cols-[1fr_350px] gap-4 items-start">
+      {/* MAIN LAYOUT */}
+      <div className="flex flex-col xl:flex-row gap-4 items-start">
         
-        {/* === LEFT & MIDDLE COMBINED COLUMN === */}
-        <div className="flex flex-col gap-4 min-w-0">
+        {/* === LEFT & MIDDLE WRAPPER === */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0 w-full">
           
-          <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+          {/* Top Row: Chart & Market Activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
             
             {/* Chart Area */}
             <div className={`${cardBg} border ${borderColor} rounded-2xl p-4 flex flex-col h-[550px]`}>
@@ -130,7 +129,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 Market Activity
               </div>
               
-              <div className="flex-1 overflow-y-auto no-scrollbar">
+              <div className="flex-1 overflow-hidden">
                 <table className="w-full text-xs text-right">
                   <thead className={`sticky top-0 ${cardBg} z-10`}>
                     <tr className={`${textMuted}`}>
@@ -174,16 +173,15 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
 
           </div>
-          {/* End of Top Row Grid */}
 
-          {/* Lower Section: Combined Tabs Panel */}
-          <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col h-[300px] overflow-hidden`}>
+          {/* Bottom Row: Merged Tabs Panel */}
+          <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col min-h-[300px] overflow-hidden`}>
             {/* Tabs */}
-            <div className={`flex flex-wrap items-center gap-6 px-6 pt-4 border-b ${borderColor}`}>
+            <div className={`flex items-center gap-6 px-6 pt-4 border-b ${borderColor}`}>
               {['Orders', 'Positions', 'Assets', 'Open Peer Orders'].map((tab) => (
                 <div 
                   key={tab}
-                  className={`pb-3 text-sm cursor-pointer relative transition-colors ${activeOrderTab === tab ? 'text-white font-medium' : textMuted + ' hover:text-white'}`}
+                  className={`pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
                   onClick={() => setActiveOrderTab(tab as any)}
                 >
                   {tab}
@@ -194,10 +192,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               ))}
             </div>
             
-            {/* Content Based on Tab */}
-            <div className="flex-1 overflow-y-auto no-scrollbar p-2">
+            {/* Table Content */}
+            <div className="flex-1 overflow-hidden p-2">
               {activeOrderTab === 'Orders' && (
-                <table className="w-full text-left text-xs min-w-[700px]">
+                <table className="w-full text-left text-xs">
                   <thead>
                     <tr className={textMuted}>
                       <th className="font-normal py-3 px-4">Pair</th>
@@ -210,6 +208,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1e2330]">
+                    {/* Row 1 */}
                     <tr className="hover:bg-white/5 transition-colors group">
                       <td className="py-3 px-4 font-medium">BTC-USD</td>
                       <td className="py-3 px-4 text-[#808a9d]">Limit</td>
@@ -217,8 +216,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <td className="py-3 px-4 font-medium">0.2541 BTC</td>
                       <td className="py-3 px-4 font-medium">$69,500.00</td>
                       <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
-                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 16:02</td>
+                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 16:02 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
                     </tr>
+                    {/* Row 2 */}
                     <tr className="hover:bg-white/5 transition-colors group">
                       <td className="py-3 px-4 font-medium">ETH-USD</td>
                       <td className="py-3 px-4 text-[#808a9d]">Limit</td>
@@ -226,8 +226,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <td className="py-3 px-4 font-medium">2.0000 ETH</td>
                       <td className="py-3 px-4 font-medium">$3,400.00</td>
                       <td className="py-3 px-4"><span className="text-[#f59e0b] font-medium">Partially Filled</span></td>
-                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:48</td>
+                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:48 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
                     </tr>
+                    {/* Row 3 */}
                     <tr className="hover:bg-white/5 transition-colors group">
                       <td className="py-3 px-4 font-medium">SOL-USD</td>
                       <td className="py-3 px-4 text-[#808a9d]">Limit</td>
@@ -235,8 +236,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <td className="py-3 px-4 font-medium">10.00 SOL</td>
                       <td className="py-3 px-4 font-medium">$160.00</td>
                       <td className="py-3 px-4"><span className="text-[#00c076] font-medium">Filled</span></td>
-                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:30</td>
+                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:30 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
                     </tr>
+                    {/* Row 4 */}
                     <tr className="hover:bg-white/5 transition-colors group">
                       <td className="py-3 px-4 font-medium">BTC-USD</td>
                       <td className="py-3 px-4 text-[#808a9d]">Trigger</td>
@@ -244,14 +246,24 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <td className="py-3 px-4 font-medium">0.1250 BTC</td>
                       <td className="py-3 px-4 font-medium">$68,000.00</td>
                       <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
-                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:10</td>
+                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:10 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
+                    </tr>
+                    {/* Row 5 */}
+                    <tr className="hover:bg-white/5 transition-colors group">
+                      <td className="py-3 px-4 font-medium">ETH-USD</td>
+                      <td className="py-3 px-4 text-[#808a9d]">Limit</td>
+                      <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
+                      <td className="py-3 px-4 font-medium">1.2500 ETH</td>
+                      <td className="py-3 px-4 font-medium">$3,200.00</td>
+                      <td className="py-3 px-4"><span className="text-[#808a9d] font-medium">Cancelled</span></td>
+                      <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 14:55 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
                     </tr>
                   </tbody>
                 </table>
               )}
 
               {activeOrderTab === 'Open Peer Orders' && (
-                <table className="w-full text-left text-xs min-w-[700px]">
+                <table className="w-full text-left text-xs">
                   <thead>
                     <tr className={textMuted}>
                       <th className="font-normal py-3 px-4">User</th>
@@ -288,7 +300,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <td className="py-3 px-4 text-right font-medium">{row.a}</td>
                         <td className="py-3 px-4 text-[#3b82f6] font-medium">{row.pay}</td>
                         <td className="py-3 px-4 text-right">
-                          <button className={`text-[10px] font-bold px-4 py-1.5 rounded bg-transparent border ${row.action === 'Buy' ? 'border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10' : 'border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10'} transition-colors`}>
+                          <button className={`text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border ${row.action === 'Buy' ? 'border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10' : 'border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10'} transition-colors`}>
                             {row.action}
                           </button>
                         </td>
@@ -297,19 +309,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </tbody>
                 </table>
               )}
-              
-              {(activeOrderTab === 'Positions' || activeOrderTab === 'Assets') && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-sm text-[#808a9d]">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-3 opacity-50"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-                  No data available
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        {/* === RIGHT COLUMN === */}
-        <div className="flex flex-col gap-4">
+        {/* === RIGHT WRAPPER === */}
+        <div className="flex flex-col gap-4 w-full xl:w-[350px] shrink-0">
           
           {/* TRADE PANEL (MOST IMPORTANT) */}
           <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col`}>
@@ -320,7 +325,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cursor-pointer hover:stroke-white"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </div>
 
-            {/* Long / Short Tabs */}
+            {/* Long / Short Tabs - FULLY ROUNDED */}
             <div className="p-4 pb-2">
               <div className="flex bg-[#0b0e14] rounded-full p-1 relative w-full h-11 items-center font-semibold text-sm">
                  <div className="flex-1 text-center text-black z-10 cursor-pointer h-full flex items-center justify-center">Long</div>
@@ -381,6 +386,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
                     <span className="text-sm font-semibold">$1,000.00</span>
                   </div>
+
+                  {/* Removed sliders/take-profit as requested */}
 
                   {/* CTA Button */}
                   <button className="w-full bg-gradient-to-r from-[#4f46e5] to-[#9333ea] hover:opacity-90 text-white font-bold py-3.5 rounded-xl transition-opacity mb-6 text-sm shadow-[0_0_15px_rgba(79,70,229,0.3)]">
