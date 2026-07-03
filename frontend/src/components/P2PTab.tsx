@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { P2PCandleChart } from './P2PCandleChart';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -78,8 +79,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           {/* Chart Area */}
           <div className={`${cardBg} border ${borderColor} rounded-2xl p-4 flex flex-col h-[550px]`}>
             {/* Toolbar */}
-            <div className={`flex items-center justify-between pb-3 border-b ${borderColor} mb-3`}>
-              <div className="flex items-center gap-3">
+            <div className={`flex flex-wrap items-center justify-between gap-3 pb-3 border-b ${borderColor} mb-3`}>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <span className={`text-sm cursor-pointer ${textMuted} hover:${textMain}`}>1m</span>
                 <span className={`text-sm cursor-pointer ${textMuted} hover:${textMain}`}>5m</span>
                 <span className={`text-sm cursor-pointer ${textMuted} hover:${textMain}`}>15m</span>
@@ -121,40 +122,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               </div>
               
               <div className="flex-1 w-full relative">
-                 {/* Right Axis */}
-                 <div className="absolute right-0 top-0 bottom-0 w-[80px] border-l border-[#1e2330] flex flex-col justify-between py-10 pr-2 items-end text-[10px] text-[#808a9d]">
-                    <span>60000.0000</span>
-                    <span>59800.0000</span>
-                    <span>59600.0000</span>
-                    <span>59400.0000</span>
-                    <span className="bg-[#ff5353] text-white px-1 py-[2px] rounded w-full text-right my-1">59007.0000</span>
-                    <span>59200.0000</span>
-                    <span>59000.0000</span>
-                    <span>58800.0000</span>
-                    <span>58600.0000</span>
-                    <span>58400.0000</span>
-                 </div>
-                 
-                 {/* Bottom Axis */}
-                 <div className="absolute left-0 right-[80px] bottom-0 h-[24px] border-t border-[#1e2330] flex items-center justify-between px-10 text-[10px] text-[#808a9d]">
-                    <span>12:00</span>
-                    <span>15:00</span>
-                    <span>18:00</span>
-                    <span>21:00</span>
-                    <span>20</span>
-                    <span>03:00</span>
-                    <span>06:00</span>
-                    <span>09</span>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                 </div>
-                 
-                 {/* Simulated Candlesticks */}
-                 <div className="absolute left-[50px] right-[100px] top-[40px] bottom-[50px] flex items-end opacity-70">
-                    <svg width="100%" height="100%" preserveAspectRatio="none">
-                      <polyline points="0,300 20,250 40,280 60,150 80,180 100,50 120,60 140,80 160,30 180,90 200,120 220,100 240,150 260,180 280,200 300,160 320,180" fill="none" stroke={greenColor} strokeWidth="2" />
-                      <polyline points="320,180 340,220 360,200 380,250 400,280 420,210 440,250 460,290 480,270 500,240 520,320 540,280" fill="none" stroke={redColor} strokeWidth="2" />
-                    </svg>
-                 </div>
+                 <P2PCandleChart theme={theme} />
               </div>
             </div>
           </div>
@@ -414,19 +382,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             <div className="px-4 pb-4">
               {activeTradeMode === 'Market' ? (
                 <>
-                  {/* Pay Input Section (WIDE INPUT BOX AS REQUESTED) */}
-                  <div className="w-full bg-[#0b0e14] border border-[#1e2330] rounded-xl p-3 mb-4 focus-within:border-[#3b82f6] transition-colors group flex flex-col">
+                  {/* Pay Input Section */}
+                  <div className="w-full bg-[#0b0e14] border border-[#1e2330] rounded-xl p-4 mb-4 focus-within:border-[#4f46e5] transition-colors group flex flex-col">
                     <div className="flex items-center gap-1 mb-1">
                       <span className={`text-xs ${textMuted}`}>Pay</span>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                      {/* VERY WIDE INPUT FIELD */}
+                    <div className="flex items-center justify-between mt-1 gap-2">
                       <input 
                         type="text" 
                         value="0.0" 
                         readOnly
-                        className="bg-transparent text-white text-2xl font-semibold outline-none w-[70%] min-w-0" 
+                        className="bg-transparent text-white text-xl font-semibold outline-none w-full min-w-0" 
                       />
                       
                       {/* TOKEN SELECTOR */}
