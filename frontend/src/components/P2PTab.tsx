@@ -21,7 +21,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const redColor = '#ff5353';
 
   return (
-    <div className={`w-full flex flex-col gap-4 font-sans ${textMain}`}>
+    <div className={`w-full flex flex-col gap-4 ${textMain}`}>
       
       {/* TOP TRADING BAR */}
       <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] p-4 flex items-center justify-between shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
