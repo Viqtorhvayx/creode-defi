@@ -7,8 +7,7 @@ interface P2PTabProps {
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
-  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets'>('Orders');
-  const [sliderValue, setSliderValue] = useState(0);
+  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [takeProfit, setTakeProfit] = useState(false);
 
   // Common colors
@@ -127,102 +126,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Lower Left: Tabs Panel (Orders, Positions, Assets) */}
-          <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col h-[300px] overflow-hidden`}>
-            {/* Tabs */}
-            <div className={`flex items-center gap-6 px-6 pt-4 border-b ${borderColor}`}>
-              {['Orders', 'Positions', 'Assets'].map((tab) => (
-                <div 
-                  key={tab}
-                  className={`pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
-                  onClick={() => setActiveOrderTab(tab as any)}
-                >
-                  {tab}
-                  {activeOrderTab === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b82f6] rounded-t-sm" />
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            {/* Table Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className={textMuted}>
-                    <th className="font-normal py-3 px-4">Pair</th>
-                    <th className="font-normal py-3 px-4">Type</th>
-                    <th className="font-normal py-3 px-4">Side</th>
-                    <th className="font-normal py-3 px-4">Amount</th>
-                    <th className="font-normal py-3 px-4">Price</th>
-                    <th className="font-normal py-3 px-4">Status</th>
-                    <th className="font-normal py-3 px-4">Created</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1e2330]">
-                  {/* Row 1 */}
-                  <tr className="hover:bg-white/5 transition-colors group">
-                    <td className="py-3 px-4 font-medium">BTC-USD</td>
-                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
-                    <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
-                    <td className="py-3 px-4 font-medium">0.2541 BTC</td>
-                    <td className="py-3 px-4 font-medium">$69,500.00</td>
-                    <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
-                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 16:02 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
-                  </tr>
-                  {/* Row 2 */}
-                  <tr className="hover:bg-white/5 transition-colors group">
-                    <td className="py-3 px-4 font-medium">ETH-USD</td>
-                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
-                    <td className="py-3 px-4 text-[#ff5353] font-medium">Sell</td>
-                    <td className="py-3 px-4 font-medium">2.0000 ETH</td>
-                    <td className="py-3 px-4 font-medium">$3,400.00</td>
-                    <td className="py-3 px-4"><span className="text-[#f59e0b] font-medium">Partially Filled</span></td>
-                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:48 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
-                  </tr>
-                  {/* Row 3 */}
-                  <tr className="hover:bg-white/5 transition-colors group">
-                    <td className="py-3 px-4 font-medium">SOL-USD</td>
-                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
-                    <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
-                    <td className="py-3 px-4 font-medium">10.00 SOL</td>
-                    <td className="py-3 px-4 font-medium">$160.00</td>
-                    <td className="py-3 px-4"><span className="text-[#00c076] font-medium">Filled</span></td>
-                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:30 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
-                  </tr>
-                  {/* Row 4 */}
-                  <tr className="hover:bg-white/5 transition-colors group">
-                    <td className="py-3 px-4 font-medium">BTC-USD</td>
-                    <td className="py-3 px-4 text-[#808a9d]">Trigger</td>
-                    <td className="py-3 px-4 text-[#ff5353] font-medium">Sell</td>
-                    <td className="py-3 px-4 font-medium">0.1250 BTC</td>
-                    <td className="py-3 px-4 font-medium">$68,000.00</td>
-                    <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
-                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:10 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
-                  </tr>
-                  {/* Row 5 */}
-                  <tr className="hover:bg-white/5 transition-colors group">
-                    <td className="py-3 px-4 font-medium">ETH-USD</td>
-                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
-                    <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
-                    <td className="py-3 px-4 font-medium">1.2500 ETH</td>
-                    <td className="py-3 px-4 font-medium">$3,200.00</td>
-                    <td className="py-3 px-4"><span className="text-[#808a9d] font-medium">Cancelled</span></td>
-                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 14:55 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            <div className={`py-3 flex justify-center items-center text-xs text-[#3b82f6] cursor-pointer hover:text-white transition-colors border-t ${borderColor}`}>
-              Show More <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-          </div>
         </div>
 
         {/* === MIDDLE COLUMN === */}
         <div className="flex flex-col gap-4">
-          
           {/* Market Activity Panel */}
           <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col h-[550px] overflow-hidden`}>
             <div className="p-4 pb-2 text-sm font-semibold">
@@ -271,23 +178,77 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               </table>
             </div>
           </div>
+        </div>
 
-          {/* Lower Middle: Open Peer Orders */}
-          <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col h-[300px] overflow-hidden`}>
-            
-            <div className="flex items-center justify-between p-4 pb-2">
-              <span className="text-sm font-semibold">Open Peer Orders</span>
-              <div className="flex items-center gap-2">
-                <div className={`flex items-center gap-1 text-xs ${textMuted} bg-[#0b0e14] px-2 py-1 rounded cursor-pointer`}>
-                  All Pairs <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-                <div className={`flex items-center gap-1 text-xs ${textMuted} bg-[#0b0e14] px-2 py-1 rounded cursor-pointer`}>
-                  All <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
+        {/* === BOTTOM SPANNING COLUMN === */}
+        <div className={`col-span-2 ${cardBg} border ${borderColor} rounded-2xl flex flex-col h-[300px] overflow-hidden`}>
+          {/* Tabs */}
+          <div className={`flex items-center gap-6 px-6 pt-4 border-b ${borderColor}`}>
+            {['Orders', 'Positions', 'Assets', 'Open Peer Orders'].map((tab) => (
+              <div 
+                key={tab}
+                className={`pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
+                onClick={() => setActiveOrderTab(tab as any)}
+              >
+                {tab}
+                {activeOrderTab === tab && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b82f6] rounded-t-sm" />
+                )}
               </div>
-            </div>
+            ))}
+          </div>
+          
+          {/* Table Content Area */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            {activeOrderTab === 'Orders' && (
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className={textMuted}>
+                    <th className="font-normal py-3 px-4">Pair</th>
+                    <th className="font-normal py-3 px-4">Type</th>
+                    <th className="font-normal py-3 px-4">Side</th>
+                    <th className="font-normal py-3 px-4">Amount</th>
+                    <th className="font-normal py-3 px-4">Price</th>
+                    <th className="font-normal py-3 px-4">Status</th>
+                    <th className="font-normal py-3 px-4">Created</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#1e2330]">
+                  {/* Row 1 */}
+                  <tr className="hover:bg-white/5 transition-colors group">
+                    <td className="py-3 px-4 font-medium">BTC-USD</td>
+                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
+                    <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
+                    <td className="py-3 px-4 font-medium">0.2541 BTC</td>
+                    <td className="py-3 px-4 font-medium">$69,500.00</td>
+                    <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
+                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 16:02 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
+                  </tr>
+                  {/* Row 2 */}
+                  <tr className="hover:bg-white/5 transition-colors group">
+                    <td className="py-3 px-4 font-medium">ETH-USD</td>
+                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
+                    <td className="py-3 px-4 text-[#ff5353] font-medium">Sell</td>
+                    <td className="py-3 px-4 font-medium">2.0000 ETH</td>
+                    <td className="py-3 px-4 font-medium">$3,400.00</td>
+                    <td className="py-3 px-4"><span className="text-[#f59e0b] font-medium">Partially Filled</span></td>
+                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:48 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
+                  </tr>
+                  {/* Row 3 */}
+                  <tr className="hover:bg-white/5 transition-colors group">
+                    <td className="py-3 px-4 font-medium">SOL-USD</td>
+                    <td className="py-3 px-4 text-[#808a9d]">Limit</td>
+                    <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
+                    <td className="py-3 px-4 font-medium">10.00 SOL</td>
+                    <td className="py-3 px-4 font-medium">$160.00</td>
+                    <td className="py-3 px-4"><span className="text-[#00c076] font-medium">Filled</span></td>
+                    <td className="py-3 px-4 flex justify-between items-center text-[#808a9d]">May 20, 15:30 <span className="opacity-0 group-hover:opacity-100 cursor-pointer">⋮</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            {activeOrderTab === 'Open Peer Orders' && (
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className={textMuted}>
@@ -304,7 +265,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     { initial: 'B', name: 'BlockWave', bg: 'bg-[#8b5cf6]', stats: '95% | 156 trades', p: '70,550.99', a: '1.2310 BTC', pay: 'USDT', action: 'Buy' },
                     { initial: 'C', name: 'CryptoKnight', bg: 'bg-[#10b981]', stats: '97% | 278 trades', p: '70,548.88', a: '0.5321 BTC', pay: 'USDC', action: 'Buy' },
                     { initial: 'D', name: 'DeFiMaster', bg: 'bg-[#f59e0b]', stats: '96% | 189 trades', p: '70,546.12', a: '0.9213 BTC', pay: 'USDT', action: 'Sell' },
-                    { initial: 'E', name: 'HederaLover', bg: 'bg-[#a855f7]', stats: '94% | 134 trades', p: '70,545.01', a: '1.0010 BTC', pay: 'USDC', action: 'Buy' },
                   ].map((row, i) => (
                     <tr key={i} className="hover:bg-white/5 transition-colors">
                       <td className="py-2 px-3">
@@ -333,17 +293,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            )}
             
-            <div className={`py-3 flex justify-center items-center text-xs text-[#3b82f6] cursor-pointer hover:text-white transition-colors border-t ${borderColor}`}>
-              View More Orders <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
+            {(activeOrderTab === 'Positions' || activeOrderTab === 'Assets') && (
+              <div className="flex items-center justify-center h-full pb-8">
+                <span className={`text-sm ${textMuted}`}>No {activeOrderTab.toLowerCase()} found.</span>
+              </div>
+            )}
           </div>
-
         </div>
 
         {/* === RIGHT COLUMN === */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 row-span-2">
           
           {/* TRADE PANEL (MOST IMPORTANT) */}
           <div className={`${cardBg} border ${borderColor} rounded-2xl flex flex-col`}>
@@ -356,10 +317,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
             {/* Long / Short Tabs */}
             <div className="p-4 pb-2">
-              <div className="flex bg-[#0b0e14] rounded-xl p-1 relative w-full h-11 items-center font-semibold text-sm">
+              <div className="flex bg-[#0b0e14] rounded-full p-1 relative w-full h-11 items-center font-semibold text-sm">
                  <div className="flex-1 text-center text-black z-10 cursor-pointer h-full flex items-center justify-center">Long</div>
                  <div className={`flex-1 text-center ${textMuted} hover:text-white z-10 cursor-pointer h-full flex items-center justify-center`}>Short</div>
-                 <div className="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-[#86efac] rounded-lg shadow-sm transition-all"></div>
+                 <div className="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-[#86efac] rounded-full shadow-sm transition-all"></div>
               </div>
             </div>
 
@@ -408,51 +369,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </div>
 
                   {/* Balance Info */}
-                  <div className="flex justify-between items-end mb-4">
+                  <div className="flex justify-between items-end mb-6">
                     <div className="flex flex-col gap-1 text-xs">
                       <span className={textMuted}>You Can</span>
                       <span className={textMuted}>Available <span className="text-white">0.00</span></span>
                     </div>
                     <span className="text-sm font-semibold">$1,000.00</span>
-                  </div>
-
-                  {/* Slider */}
-                  <div className="mb-6 px-1">
-                    <div className="relative w-full h-1 bg-[#1e2330] rounded-full flex items-center">
-                      <div className="absolute left-0 h-1 bg-[#3b82f6] rounded-full" style={{ width: '15%' }}></div>
-                      <div className="absolute left-[15%] w-3 h-3 bg-[#3b82f6] rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer"></div>
-                      
-                      {/* Tick Marks */}
-                      <div className="absolute w-full flex justify-between px-[2px]">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e2330]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e2330]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e2330]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e2330]"></div>
-                      </div>
-                    </div>
-                    <div className={`flex justify-between w-full text-[10px] ${textMuted} mt-3 px-[2px]`}>
-                       <span className="opacity-0">0%</span>
-                       <span>25%</span>
-                       <span>50%</span>
-                       <span>75%</span>
-                       <span>100%</span>
-                    </div>
-                  </div>
-
-                  {/* Take Profit Toggle */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`flex items-center gap-1 text-sm ${textMuted} cursor-pointer hover:text-white transition-colors`}>
-                      Take Profit / Stop Loss
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    {/* Toggle Switch */}
-                    <div 
-                      className={`w-9 h-5 rounded-full p-[2px] cursor-pointer transition-colors ${takeProfit ? 'bg-[#3b82f6]' : 'bg-[#1e2330]'}`}
-                      onClick={() => setTakeProfit(!takeProfit)}
-                    >
-                      <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${takeProfit ? 'translate-x-4' : 'translate-x-0'}`}></div>
-                    </div>
                   </div>
 
                   {/* CTA Button */}
