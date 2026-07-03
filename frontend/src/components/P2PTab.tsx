@@ -374,14 +374,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <span className={textMuted}>Leverage</span>
                       <span className="font-medium">-</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className={textMuted}>Liq. Price</span>
-                      <span className="font-medium">-</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={textMuted}>Est. Liquidation Price</span>
-                      <span className="font-medium">-</span>
-                    </div>
                   </div>
                 </>
               ) : (
