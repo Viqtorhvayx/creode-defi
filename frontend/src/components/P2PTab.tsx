@@ -65,7 +65,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
       </div>
 
       {/* MAIN LAYOUT */}
-      <div className="flex flex-col xl:flex-row gap-6 items-start w-full">
+      <div className="flex flex-col xl:flex-row gap-6 items-stretch w-full">
         
         {/* === LEFT & MIDDLE WRAPPER === */}
         <div className="flex-1 flex flex-col gap-6 min-w-0 w-full">
@@ -275,14 +275,13 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </tbody>
                 </table>
               )}
-            </div>
           </div>
         </div>
 
         {/* === RIGHT WRAPPER: Trade Panel === */}
-        <div className="flex flex-col gap-6 w-full xl:w-[350px] shrink-0">
+        <div className="flex flex-col gap-6 w-full xl:w-[350px] shrink-0 h-full">
           
-          <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+          <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             
             {/* Removed the "Slippage / Time" header completely as requested */}
             <div className="pt-4"></div>
@@ -307,6 +306,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                  ></div>
               </div>
             </div>
+
+            {/* SPACER to push content down and create a nice little space */}
+            <div className="flex-1"></div>
 
             {/* Trade Mode Tabs */}
             <div className={`flex items-center gap-6 px-4 pt-2 border-b ${borderColor} mb-4`}>
@@ -395,8 +397,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Side Info Card (Trade with confidence) */}
-          <div className="bg-gradient-to-br from-[#1e1b2e] to-[#12101a] border border-[#2d2442] rounded-[16px] p-5 flex items-center justify-between shadow-lg">
+          {/* Side Info Card (Trade with confidence) - mt-auto pushes it to the bottom baseline! */}
+          <div className="mt-auto bg-gradient-to-br from-[#1e1b2e] to-[#12101a] border border-[#2d2442] rounded-[16px] p-5 flex items-center justify-between shadow-lg">
             <div className="flex flex-col max-w-[200px]">
               <span className="font-bold mb-2 text-sm text-white">Trade with confidence</span>
               <span className={`text-xs text-[#a59eb8] leading-relaxed`}>Low fees, deep liquidity, and best execution.</span>
