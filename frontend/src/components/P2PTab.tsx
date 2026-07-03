@@ -289,7 +289,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
             {/* Long / Short Tabs - FULLY ROUNDED TOGGLE */}
             <div className="px-4 pb-2">
-              <div className={`flex ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} rounded-full p-1 relative w-full h-11 items-center font-semibold text-sm`}>
+              <div className="flex border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none rounded-[14px] p-1 relative w-full h-11 items-center font-semibold text-sm">
                  <div 
                    className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Long' ? 'text-black' : textMuted + ' hover:text-white'}`}
                    onClick={() => setTradeSide('Long')}
@@ -303,7 +303,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                    Short
                  </div>
                  <div 
-                   className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#86efac] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
+                   className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-[10px] shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#86efac] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
                  ></div>
               </div>
             </div>
@@ -356,7 +356,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </div>
 
                   {/* CTA Button */}
-                  <button className="w-full bg-gradient-to-r from-[#4f46e5] to-[#9333ea] hover:opacity-90 text-white font-bold py-3.5 rounded-[12px] transition-opacity mb-6 text-sm shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+                  <button className="w-full bg-[#00A8E8] hover:opacity-90 text-white font-bold py-3.5 rounded-[12px] transition-opacity mb-6 text-sm shadow-[0_0_15px_rgba(0,168,232,0.3)]">
                     Connect Wallet
                   </button>
 
