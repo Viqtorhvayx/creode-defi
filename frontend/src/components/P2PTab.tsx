@@ -21,7 +21,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const redColor = '#ff5353';
 
   return (
-    <div className={`w-full flex flex-col gap-4 font-sans ${textMain}`}>
+    <div className={`w-full flex flex-col gap-4 ${textMain}`}>
       
       {/* TOP TRADING BAR */}
       <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] p-4 flex items-center justify-between shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
@@ -29,7 +29,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-[#f7931a] flex items-center justify-center text-white font-bold">₿</div>
             <div className="flex items-center gap-1 cursor-pointer">
-              <span className="text-xl font-bold">BTC-USD</span>
+              <span className="text-xl font-bold tracking-tight">BTC-USD</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
           </div>
@@ -39,7 +39,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className="flex gap-8">
             <div className="flex flex-col">
               <span className={`text-xs ${textMuted} mb-1`}>Mark Price</span>
-              <span className="text-lg font-semibold">$70,552.2546</span>
+              <span className="text-lg font-bold tracking-tight">$70,552.2546</span>
             </div>
             <div className="flex flex-col">
               <span className={`text-xs ${textMuted} mb-1`}>24h Change</span>
@@ -333,7 +333,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       type="text" 
                       value="0.0" 
                       readOnly
-                      className={`bg-transparent ${textMain} text-2xl font-bold outline-none w-full min-w-0`} 
+                      className={`bg-transparent ${textMain} text-2xl font-bold tracking-tight outline-none w-full min-w-0`} 
                     />
                     
                     {/* TOKEN SELECTOR */}
