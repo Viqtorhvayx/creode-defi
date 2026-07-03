@@ -275,6 +275,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </tbody>
                 </table>
               )}
+            </div>
           </div>
         </div>
 
@@ -329,22 +330,22 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             <div className="px-4 pb-4">
               {activeTradeMode === 'Market' ? (
                 <>
-                  {/* Pay Input Section (Label removed but height restored) */}
-                  <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[12px] p-4 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[88px]`}>
+                  {/* Pay Input Section (Label removed but height restored and sizing locked) */}
+                  <div className={`shrink-0 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-5 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[96px]`}>
                     <input 
                       type="text" 
                       value="0.0" 
                       readOnly
-                      className={`bg-transparent ${textMain} text-xl font-semibold outline-none w-full min-w-0`} 
+                      className={`bg-transparent ${textMain} text-2xl font-bold outline-none w-full min-w-0`} 
                     />
                     
                     {/* TOKEN SELECTOR */}
-                    <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-3 py-1.5 cursor-pointer shrink-0`}>
-                      <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center">
-                         <span className="text-white text-[10px] font-bold">$</span>
+                    <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-4 py-2 cursor-pointer shrink-0`}>
+                      <div className="w-6 h-6 bg-[#2775ca] rounded-full flex items-center justify-center">
+                         <span className="text-white text-xs font-bold">$</span>
                       </div>
-                      <span className="text-sm font-medium">USDC</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <span className="text-sm font-bold">USDC</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                   </div>
 
