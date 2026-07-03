@@ -308,9 +308,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               </div>
             </div>
 
-            {/* SPACER to push content down and create a nice little space */}
-            <div className="flex-1"></div>
-
             {/* Trade Mode Tabs */}
             <div className={`flex items-center gap-6 px-4 pt-2 border-b ${borderColor} mb-4`}>
               {['Market', 'Limit', 'Trigger'].map((tab) => (
