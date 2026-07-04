@@ -177,16 +177,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           {/* Bottom Row: Merged Tabs Panel (Spans across both Chart and Market Activity) */}
           <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col min-h-[300px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             {/* Tabs */}
-            <div className={`flex items-center gap-6 px-6 pt-4 border-b ${borderColor}`}>
+            <div className={`flex items-center px-3 pt-4 border-b ${borderColor}`}>
               {['Orders', 'Positions', 'Assets', 'Open Peer Orders'].map((tab) => (
                 <div 
                   key={tab}
-                  className={`pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
+                  className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
                   onClick={() => setActiveOrderTab(tab as any)}
                 >
                   {tab}
                   {activeOrderTab === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-sm" />
+                    <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
                   )}
                 </div>
               ))}
@@ -309,16 +309,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
 
             {/* Trade Mode Tabs */}
-            <div className={`flex items-center gap-6 px-4 pt-2 border-b ${borderColor} mb-4`}>
+            <div className={`flex items-center px-1 pt-2 border-b ${borderColor} mb-4`}>
               {['Market', 'Limit', 'Trigger'].map((tab) => (
                 <div 
                   key={tab}
-                  className={`pb-3 text-sm cursor-pointer relative transition-colors ${activeTradeMode === tab ? 'text-white font-medium' : textMuted + ' hover:text-white'}`}
+                  className={`px-3 pb-3 text-sm cursor-pointer relative transition-colors ${activeTradeMode === tab ? 'text-white font-medium' : textMuted + ' hover:text-white'}`}
                   onClick={() => setActiveTradeMode(tab as any)}
                 >
                   {tab}
                   {activeTradeMode === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-sm" />
+                    <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
                   )}
                 </div>
               ))}
