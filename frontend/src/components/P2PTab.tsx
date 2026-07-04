@@ -10,6 +10,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('');
+  const [priceAmount, setPriceAmount] = useState<string>('');
 
   // Match VaultTab colors
   const bgColor = theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white';
@@ -326,7 +327,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
 
             <div className="px-4 pb-4">
-              {activeTradeMode === 'Market' ? (
+              {activeTradeMode === 'Market' && (
                 <>
                   {/* Pay Input Section (Label removed but height restored and sizing locked) */}
                   <div className={`shrink-0 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-5 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[96px]`}>
@@ -363,27 +364,124 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </button>
 
                   {/* Info Section */}
-                  <div className="flex flex-col gap-3 text-xs pb-2">
+                  <div className="flex flex-col gap-3 text-[11px] pb-2 font-semibold">
                     <div className="flex justify-between">
                       <span className={textMuted}>Open Fee</span>
-                      <span className="font-medium">US$0</span>
+                      <span className={`${textMain}`}>US$0</span>
                     </div>
                     <div className="flex justify-between">
                       <span className={textMuted}>Collateral in</span>
-                      <span className="font-medium">USDC</span>
+                      <span className={`${textMain}`}>USDC</span>
                     </div>
                     <div className="flex justify-between">
                       <span className={textMuted}>Leverage</span>
-                      <span className="font-medium">-</span>
+                      <span className={`${textMain}`}>-</span>
                     </div>
                   </div>
                 </>
-              ) : (
-                /* EMPTY STATE FOR LIMIT / TRIGGER */
+              )}
+
+              {activeTradeMode === 'Limit' && (
+                <>
+                  {/* Pay Input Section */}
+                  <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-4 mb-3 focus-within:border-[#00A8E8]/50 transition-colors group flex flex-col gap-2`}>
+                    <div className="flex justify-between items-center px-1">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Pay: $0</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 px-1">
+                      <input 
+                        type="number" 
+                        placeholder="0.0" 
+                        value={payAmount}
+                        onChange={(e) => setPayAmount(e.target.value)}
+                        className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
+                      />
+                      <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-3 py-1.5 cursor-pointer shrink-0`}>
+                        <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center">
+                           <span className="text-white text-[10px] font-bold">$</span>
+                        </div>
+                        <span className="text-[13px] font-bold tracking-tight">USDC.e</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price Input Section */}
+                  <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-4 mb-5 focus-within:border-[#00A8E8]/50 transition-colors group flex flex-col gap-2`}>
+                    <div className="flex justify-between items-center px-1">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Price</span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Mark: $59,820.4800</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 px-1">
+                      <input 
+                        type="number" 
+                        placeholder="0.0" 
+                        value={priceAmount}
+                        onChange={(e) => setPriceAmount(e.target.value)}
+                        className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
+                      />
+                      <span className="text-[13px] font-bold tracking-tight pr-1">USD</span>
+                    </div>
+                  </div>
+
+                  {/* Pos.Size Slider */}
+                  <div className="mb-6 px-1">
+                    <div className="flex justify-between text-[11px] font-semibold mb-3">
+                      <span className={textMuted}>Pos.Size</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full">
+                        {/* Markers */}
+                        <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        
+                        <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-[#00A8E8] rounded-full z-10"></div>
+                        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] cursor-pointer z-20"></div>
+                      </div>
+                      <span className="text-[13px] font-bold tracking-tight w-12 text-right">10.00 ×</span>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <button className="w-full bg-[#00A8E8] hover:opacity-90 text-white font-bold py-3.5 rounded-[12px] transition-opacity mb-6 text-sm shadow-[0_0_15px_rgba(0,168,232,0.3)]">
+                    Connect Wallet
+                  </button>
+
+                  {/* Info Section */}
+                  <div className="flex flex-col gap-3 text-[11px] font-semibold pb-2 px-1">
+                    <div className="flex justify-between">
+                      <span className={textMuted}>Open Fee</span>
+                      <span className={`${textMain}`}>-</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={textMuted}>Collateral In</span>
+                      <span className={`${textMain}`}>USD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={textMuted}>Leverage</span>
+                      <span className={`${textMain}`}>-</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={textMuted}>Entry Price</span>
+                      <span className={`${textMain}`}>-</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={textMuted}>Liq. Price</span>
+                      <span className={`${textMain}`}>-</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeTradeMode === 'Trigger' && (
+                /* EMPTY STATE FOR TRIGGER */
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-4"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                   <p className={`text-sm ${textMuted}`}>Not available in {activeTradeMode} mode.</p>
-                  <p className={`text-xs ${textMuted} mt-1`}>Switch to Market to trade.</p>
+                  <p className={`text-xs ${textMuted} mt-1`}>Switch to Market or Limit to trade.</p>
                 </div>
               )}
             </div>
