@@ -15,7 +15,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const cardBg = theme === 'dark' ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = theme === 'dark' ? 'border-white/5' : 'border-slate-100';
   
-  const textMuted = theme === 'dark' ? 'text-[#808a9d]' : 'text-slate-500';
+  const textMuted = theme === 'dark' ? 'text-white/60' : 'text-slate-500';
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const greenColor = '#00c076';
   const redColor = '#ff5353';
@@ -391,7 +391,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className="mt-auto bg-gradient-to-br from-[#1e1b2e] to-[#12101a] border border-[#2d2442] rounded-[16px] p-5 flex items-center justify-between shadow-lg">
             <div className="flex flex-col max-w-[200px]">
               <span className="font-bold mb-2 text-sm text-white">Trade with confidence</span>
-              <span className={`text-xs text-[#a59eb8] leading-relaxed`}>Low fees, deep liquidity, and best execution.</span>
+              <span className={`text-xs ${textMuted} leading-relaxed`}>Low fees, deep liquidity, and best execution.</span>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
