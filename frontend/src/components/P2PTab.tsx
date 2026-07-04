@@ -350,12 +350,32 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </div>
 
                   {/* Balance Info */}
-                  <div className="flex justify-between items-end mb-6">
+                  <div className="flex justify-between items-end mb-5">
                     <div className="flex flex-col gap-1 text-xs">
                       <span className={textMuted}>You Can</span>
                       <span className={textMuted}>Available <span className={`${textMain} font-bold tracking-tight`}>0.00</span></span>
                     </div>
                     <span className="text-sm font-bold tracking-tight">$1,000.00</span>
+                  </div>
+
+                  {/* Pos.Size Slider */}
+                  <div className="mb-6 px-1">
+                    <div className="flex justify-between text-[11px] font-semibold mb-3">
+                      <span className={textMuted}>Pos.Size</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full">
+                        {/* Markers */}
+                        <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
+                        
+                        <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-[#00A8E8] rounded-full z-10"></div>
+                        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] cursor-pointer z-20"></div>
+                      </div>
+                      <span className="text-[13px] font-bold tracking-tight w-12 text-right">10.00 ×</span>
+                    </div>
                   </div>
 
                   {/* CTA Button */}
