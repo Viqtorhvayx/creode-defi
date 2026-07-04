@@ -38,23 +38,23 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
           <div className="flex gap-8">
             <div className="flex flex-col">
-              <span className={`text-xs ${textMuted} mb-1`}>Mark Price</span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Mark Price</span>
               <span className="text-lg font-bold tracking-tight">$70,552.2546</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-xs ${textMuted} mb-1`}>24h Change</span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Change</span>
               <span className="text-sm font-medium" style={{ color: greenColor }}>+19.28%</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-xs ${textMuted} mb-1`}>24h Vol</span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Vol</span>
               <span className="text-sm font-medium">$391.41</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-xs ${textMuted} mb-1`}>Open Interest <span className={textMuted}>(</span><span style={{ color: greenColor }}>68%</span><span className={textMuted}>/</span><span style={{ color: redColor }}>32%</span><span className={textMuted}>)</span></span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Open Interest <span className={textMuted}>(</span><span style={{ color: greenColor }}>68%</span><span className={textMuted}>/</span><span style={{ color: redColor }}>32%</span><span className={textMuted}>)</span></span>
               <span className="text-sm font-medium">$173.56 M / $260.59 M</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-xs ${textMuted} mb-1`}>Funding/1h</span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Funding/1h</span>
               <span className="text-sm font-medium" style={{ color: greenColor }}>~0.0024% <span style={{ color: redColor }}>-0.0253%</span></span>
             </div>
           </div>
