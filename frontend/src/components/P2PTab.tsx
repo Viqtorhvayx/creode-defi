@@ -186,7 +186,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 >
                   {tab}
                   {activeOrderTab === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b82f6] rounded-t-sm" />
+                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-sm" />
                   )}
                 </div>
               ))}
@@ -318,7 +318,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 >
                   {tab}
                   {activeTradeMode === tab && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3b82f6] rounded-t-sm" />
+                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-sm" />
                   )}
                 </div>
               ))}
@@ -388,12 +388,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           </div>
 
           {/* Side Info Card (Trade with confidence) - mt-auto pushes it to the bottom baseline! */}
-          <div className="mt-auto bg-gradient-to-br from-[#1e1b2e] to-[#12101a] border border-[#2d2442] rounded-[16px] p-5 flex items-center justify-between shadow-lg">
+          <div className={`mt-auto bg-gradient-to-br ${theme === 'dark' ? 'from-[#00283a] to-[#001017] border-[#003d5c]' : 'from-[#e6f7ff] to-white border-[#b3e6ff]'} border rounded-[16px] p-5 flex items-center justify-between shadow-lg`}>
             <div className="flex flex-col max-w-[200px]">
-              <span className="font-bold mb-2 text-sm text-white">Trade with confidence</span>
+              <span className={`font-bold mb-2 text-sm ${theme === 'dark' ? 'text-white' : 'text-[#005c80]'}`}>Trade with confidence</span>
               <span className={`text-xs ${textMuted} leading-relaxed`}>Low fees, deep liquidity, and best execution.</span>
             </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.4)]">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#00A8E8] to-[#007ba8] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,168,232,0.4)]">
                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
             </div>
           </div>
