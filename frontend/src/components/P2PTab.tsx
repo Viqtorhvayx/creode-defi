@@ -43,19 +43,19 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Change</span>
-              <span className="text-sm font-medium" style={{ color: greenColor }}>+19.28%</span>
+              <span className="text-sm font-bold tracking-tight" style={{ color: greenColor }}>+19.28%</span>
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Vol</span>
-              <span className="text-sm font-medium">$391.41</span>
+              <span className="text-sm font-bold tracking-tight">$391.41</span>
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Open Interest <span className={textMuted}>(</span><span style={{ color: greenColor }}>68%</span><span className={textMuted}>/</span><span style={{ color: redColor }}>32%</span><span className={textMuted}>)</span></span>
-              <span className="text-sm font-medium">$173.56 M / $260.59 M</span>
+              <span className="text-sm font-bold tracking-tight">$173.56 M / $260.59 M</span>
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Funding/1h</span>
-              <span className="text-sm font-medium" style={{ color: greenColor }}>~0.0024% <span style={{ color: redColor }}>-0.0253%</span></span>
+              <span className="text-sm font-bold tracking-tight" style={{ color: greenColor }}>~0.0024% <span style={{ color: redColor }}>-0.0253%</span></span>
             </div>
           </div>
         </div>
@@ -209,22 +209,22 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </thead>
                   <tbody className={`divide-y ${theme === 'dark' ? 'divide-white/5' : 'divide-slate-100'}`}>
                     <tr className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
-                      <td className="py-3 px-4 font-medium">BTC-USD</td>
-                      <td className={`py-3 px-4 ${textMuted}`}>Limit</td>
-                      <td className="py-3 px-4 text-[#00c076] font-medium">Buy</td>
-                      <td className="py-3 px-4 font-medium">0.2541 BTC</td>
-                      <td className="py-3 px-4 font-medium">$69,500.00</td>
-                      <td className="py-3 px-4"><span className="text-[#3b82f6] font-medium">Open</span></td>
-                      <td className={`py-3 px-4 flex justify-between items-center ${textMuted}`}>May 20, 16:02</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">BTC-USD</td>
+                      <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
+                      <td className="py-3 px-4 text-[#00c076] font-bold tracking-tight">Buy</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">0.2541 BTC</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">$69,500.00</td>
+                      <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
+                      <td className={`py-3 px-4 font-bold tracking-tight flex justify-between items-center ${textMuted}`}>May 20, 16:02</td>
                     </tr>
                     <tr className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
-                      <td className="py-3 px-4 font-medium">ETH-USD</td>
-                      <td className={`py-3 px-4 ${textMuted}`}>Limit</td>
-                      <td className="py-3 px-4 text-[#ff5353] font-medium">Sell</td>
-                      <td className="py-3 px-4 font-medium">2.0000 ETH</td>
-                      <td className="py-3 px-4 font-medium">$3,400.00</td>
-                      <td className="py-3 px-4"><span className="text-[#f59e0b] font-medium">Partially Filled</span></td>
-                      <td className={`py-3 px-4 flex justify-between items-center ${textMuted}`}>May 20, 15:48</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">ETH-USD</td>
+                      <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
+                      <td className="py-3 px-4 text-[#ff5353] font-bold tracking-tight">Sell</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">2.0000 ETH</td>
+                      <td className="py-3 px-4 font-bold tracking-tight">$3,400.00</td>
+                      <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#f59e0b] font-bold tracking-tight">Partially Filled</span></td>
+                      <td className={`py-3 px-4 font-bold tracking-tight flex justify-between items-center ${textMuted}`}>May 20, 15:48</td>
                     </tr>
                   </tbody>
                 </table>
@@ -254,7 +254,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                               {row.initial}
                             </div>
                             <div className="flex flex-col">
-                              <div className="flex items-center gap-1 font-medium">
+                              <div className="flex items-center gap-1 font-bold tracking-tight">
                                 {row.name}
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="#3b82f6" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                               </div>
@@ -262,9 +262,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-right font-medium">${row.p}</td>
-                        <td className="py-3 px-4 text-right font-medium">{row.a}</td>
-                        <td className="py-3 px-4 text-[#3b82f6] font-medium">{row.pay}</td>
+                        <td className="py-3 px-4 text-right font-bold tracking-tight">${row.p}</td>
+                        <td className="py-3 px-4 text-right font-bold tracking-tight">{row.a}</td>
+                        <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{row.pay}</td>
                         <td className="py-3 px-4 text-right">
                           <button className={`text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border ${row.action === 'Buy' ? 'border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10' : 'border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10'} transition-colors`}>
                             {row.action}
@@ -341,7 +341,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <div className="w-6 h-6 bg-[#2775ca] rounded-full flex items-center justify-center">
                          <span className="text-white text-xs font-bold">$</span>
                       </div>
-                      <span className="text-sm font-bold">USDC</span>
+                      <span className="text-sm font-bold tracking-tight">USDC</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                   </div>
@@ -350,9 +350,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   <div className="flex justify-between items-end mb-6">
                     <div className="flex flex-col gap-1 text-xs">
                       <span className={textMuted}>You Can</span>
-                      <span className={textMuted}>Available <span className={textMain}>0.00</span></span>
+                      <span className={textMuted}>Available <span className={`${textMain} font-bold tracking-tight`}>0.00</span></span>
                     </div>
-                    <span className="text-sm font-semibold">$1,000.00</span>
+                    <span className="text-sm font-bold tracking-tight">$1,000.00</span>
                   </div>
 
                   {/* CTA Button */}
