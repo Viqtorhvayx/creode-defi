@@ -9,6 +9,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
+  const [payAmount, setPayAmount] = useState<string>('');
 
   // Match VaultTab colors
   const bgColor = theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white';
@@ -330,10 +331,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   {/* Pay Input Section (Label removed but height restored and sizing locked) */}
                   <div className={`shrink-0 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-5 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[96px]`}>
                     <input 
-                      type="text" 
-                      value="0.0" 
-                      readOnly
-                      className={`bg-transparent ${textMain} text-2xl font-bold tracking-tight outline-none w-full min-w-0`} 
+                      type="number" 
+                      placeholder="0.00" 
+                      value={payAmount}
+                      onChange={(e) => setPayAmount(e.target.value)}
+                      className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0" 
                     />
                     
                     {/* TOKEN SELECTOR */}
