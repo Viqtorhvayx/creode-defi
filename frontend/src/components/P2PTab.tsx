@@ -11,6 +11,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('');
   const [priceAmount, setPriceAmount] = useState<string>('');
+  const [posSize, setPosSize] = useState<number>(10);
 
   // Match VaultTab colors
   const bgColor = theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white';
@@ -330,7 +331,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               {activeTradeMode === 'Market' && (
                 <>
                   {/* Pay Input Section (Label removed but height restored and sizing locked) */}
-                  <div className={`shrink-0 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-5 py-6 mb-4 focus-within:border-[#4f46e5] transition-colors group flex items-center justify-between gap-2 min-h-[96px]`}>
+                  <div className={`shrink-0 w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-5 py-6 mb-4 focus-within:border-[#00A8E8]/50 transition-colors group flex items-center justify-between gap-2 min-h-[96px]`}>
                     <input 
                       type="number" 
                       placeholder="0.00" 
@@ -371,10 +372,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
                         <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
                         
-                        <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-[#00A8E8] rounded-full z-10"></div>
-                        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] cursor-pointer z-20"></div>
+                        <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10" style={{ width: `${posSize}%` }}></div>
+                        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          value={posSize} 
+                          onChange={(e) => setPosSize(Number(e.target.value))} 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30 m-0 p-0"
+                        />
                       </div>
-                      <span className="text-[13px] font-bold tracking-tight w-12 text-right">10.00 ×</span>
+                      <span className="text-[13px] font-bold tracking-tight w-14 text-right">{posSize.toFixed(2)} ×</span>
                     </div>
                   </div>
 
@@ -405,8 +414,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 <>
                   {/* Pay Input Section */}
                   <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-slate-100'} border ${borderColor} rounded-[16px] p-4 mb-3 focus-within:border-[#00A8E8]/50 transition-colors group flex flex-col gap-2`}>
-                    <div className="flex justify-between items-center px-1">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Pay: $0</span>
+                    <div className="flex justify-end items-center px-1">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
                     </div>
                     <div className="flex items-center justify-between gap-2 px-1">
@@ -417,12 +425,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         onChange={(e) => setPayAmount(e.target.value)}
                         className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                       />
-                      <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-3 py-1.5 cursor-pointer shrink-0`}>
-                        <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center">
-                           <span className="text-white text-[10px] font-bold">$</span>
+                      <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-4 py-2 cursor-pointer shrink-0`}>
+                        <div className="w-6 h-6 bg-[#2775ca] rounded-full flex items-center justify-center">
+                           <span className="text-white text-xs font-bold">$</span>
                         </div>
-                        <span className="text-[13px] font-bold tracking-tight">USDC.e</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <span className="text-sm font-bold tracking-tight">USDC.e</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </div>
                     </div>
                   </div>
@@ -458,10 +466,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
                         <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#2a3040]"></div>
                         
-                        <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-[#00A8E8] rounded-full z-10"></div>
-                        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] cursor-pointer z-20"></div>
+                        <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10" style={{ width: `${posSize}%` }}></div>
+                        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-2 border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          value={posSize} 
+                          onChange={(e) => setPosSize(Number(e.target.value))} 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30 m-0 p-0"
+                        />
                       </div>
-                      <span className="text-[13px] font-bold tracking-tight w-12 text-right">10.00 ×</span>
+                      <span className="text-[13px] font-bold tracking-tight w-14 text-right">{posSize.toFixed(2)} ×</span>
                     </div>
                   </div>
 
