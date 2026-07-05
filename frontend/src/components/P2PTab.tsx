@@ -336,7 +336,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       placeholder="0.00" 
                       value={payAmount}
                       onChange={(e) => setPayAmount(e.target.value)}
-                      className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[42px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0" 
+                      className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0" 
                     />
                     
                     {/* TOKEN SELECTOR */}
@@ -412,7 +412,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex items-center justify-between gap-2 px-1">
                       <input 
                         type="number" 
-                        placeholder="0.0" 
+                        placeholder="0.00" 
                         value={payAmount}
                         onChange={(e) => setPayAmount(e.target.value)}
                         className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
@@ -436,7 +436,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex items-center justify-between gap-2 px-1">
                       <input 
                         type="number" 
-                        placeholder="0.0" 
+                        placeholder="0.00" 
                         value={priceAmount}
                         onChange={(e) => setPriceAmount(e.target.value)}
                         className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
