@@ -13,6 +13,7 @@ import { Sidebar } from '../components/Sidebar';
 import { VaultTab } from '../components/VaultTab';
 import { P2PTab } from '../components/P2PTab';
 import { EarnTab } from '../components/EarnTab';
+import { ActivityTab } from '../components/ActivityTab';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -73,6 +74,12 @@ export default function Dashboard() {
         return (
           <div className="pt-[39px] pb-8">
             <EarnTab theme={theme} />
+          </div>
+        );
+      case 'Activity':
+        return (
+          <div className="pt-[39px] pb-8">
+            <ActivityTab theme={theme} />
           </div>
         );
       default:
