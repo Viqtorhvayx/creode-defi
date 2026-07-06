@@ -29,15 +29,17 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
     <div className={`w-full max-w-[1200px] mx-auto flex flex-col gap-6 ${textMain} px-4 font-['Inter']`}>
       
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-[24px] font-bold">Activity Log</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-[18px] font-bold text-slate-900 dark:text-white tracking-tight mb-1 leading-none">
+          Activity Log
+        </h1>
       </div>
 
       {/* CODE Points Banner */}
       <div className={`w-full ${theme === 'dark' ? 'bg-[#00A8E8]/10' : 'bg-[#f0f9ff]'} border ${theme === 'dark' ? 'border-[#00A8E8]/20' : 'border-[#00A8E8]/20'} rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4`}>
         <div className="flex items-center gap-3">
-          <Sparkle weight="fill" className="text-[#00A8E8] shrink-0" size={20} />
-          <span className={`text-[14px] font-medium ${theme === 'dark' ? 'text-[#00A8E8]' : 'text-[#00709e]'}`}>
+          <Sparkle weight="fill" className={`${textMain} shrink-0`} size={20} />
+          <span className={`text-[14px] font-medium ${textMain}`}>
             Earn CODE points for every protocol interaction. Points will be incentivized in future updates.
           </span>
         </div>
