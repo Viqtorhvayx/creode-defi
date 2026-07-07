@@ -150,7 +150,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       {/* Header Info */}
       <div className="mb-6 flex flex-col">
-        <h1 className="text-[18px] font-bold text-slate-900 dark:text-white tracking-tight mb-1 leading-none">
+        <h1 className="text-[24px] font-bold text-slate-900 dark:text-white tracking-tight mb-1 leading-none">
           {activeTab === 'Community' ? 'Community' : 'Yield Hub'}
         </h1>
         <p className="text-[11px] font-semibold text-slate-500 dark:text-white/60 leading-none mt-1">

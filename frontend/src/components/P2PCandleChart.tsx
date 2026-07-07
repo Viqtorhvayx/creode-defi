@@ -59,34 +59,31 @@ export const P2PCandleChart: React.FC<P2PCandleChartProps> = ({ theme }) => {
       wickDownColor: '#ff5353',
     });
 
-    // Generate some dummy candlestick data that looks like the image (downward trend then spike)
-    const data = [];
-    let currentTime = Math.floor(Date.now() / 1000) - (100 * 3600); // Start 100 hours ago
-    let currentPrice = 72000;
+    const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingview/history";
+    const loadData = async () => {
+      try {
+        const to = Math.floor(Date.now() / 1000);
+        const from = to - (100 * 3600); // 100 hours ago
+        const response = await fetch(`${PYTH_BENCHMARKS_URL}?symbol=Crypto.BTC/USD&resolution=60&from=${from}&to=${to}`);
+        const data = await response.json();
+        
+        if (data.s === "ok") {
+          const candleData = data.t.map((t: number, i: number) => ({
+            time: t,
+            open: data.o[i],
+            high: data.h[i],
+            low: data.l[i],
+            close: data.c[i],
+          }));
+          candleSeries.setData(candleData);
+          chart.timeScale().fitContent();
+        }
+      } catch (err) {
+        console.error("Failed to load candle data:", err);
+      }
+    };
 
-    for (let i = 0; i < 100; i++) {
-      const open = currentPrice;
-      const change = (Math.random() - 0.5) * 500;
-      // Make it trend downward overall, but have some spikes
-      const trend = i > 70 ? 200 : -100; 
-      const close = open + change + trend;
-      const high = Math.max(open, close) + Math.random() * 200;
-      const low = Math.min(open, close) - Math.random() * 200;
-
-      data.push({
-        time: currentTime as any,
-        open,
-        high,
-        low,
-        close,
-      });
-
-      currentPrice = close;
-      currentTime += 3600; // 1 hour per candle
-    }
-
-    candleSeries.setData(data);
-    chart.timeScale().fitContent();
+    loadData();
 
     const handleResize = () => {
       if (chartContainerRef.current) {

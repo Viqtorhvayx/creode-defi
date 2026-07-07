@@ -30,7 +30,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
       
       {/* Header */}
       <div className="mb-2 flex flex-col">
-        <h1 className="text-[18px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+        <h1 className="text-[24px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
           Activity
         </h1>
       </div>

@@ -16,7 +16,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
   const timeRanges = ['7D', '30D', '90D', '1Y', 'All'];
 
   return (
-    <div className={`w-full max-w-[1200px] mx-auto flex flex-col gap-6 ${textMain} px-4 font-['Inter'] pb-10`}>
+    <div className={`w-full max-w-[1200px] mx-auto flex flex-col gap-6 ${textMain} px-4 pb-10`}>
       
       {/* Header */}
       <div className="mb-2 flex flex-col">
@@ -75,7 +75,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
                 d="M 0,160 C 100,150 150,155 250,140 C 350,125 400,140 500,125 C 600,110 650,115 750,85 C 850,55 900,50 1000,25" 
                 fill="none" 
                 stroke="#00A8E8" 
-                strokeWidth="3" 
+                strokeWidth="2" 
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
