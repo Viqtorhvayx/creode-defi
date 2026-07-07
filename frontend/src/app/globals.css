@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/**
+ * @dev Global Styling Configuration for CREODE Protocol.
+ * @author Viqtorhvayx
+ */
+
+:root {
+  --background: #FFFFFF;
+  --surface: #F8F9FA;
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --accent-blue: #00A8E8;
+  --accent-blue-hover: #0086B8;
+  --accent-glow: rgba(0, 168, 232, 0.3);
+  --border: rgba(0, 0, 0, 0.05);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  --background: #0B0E14;
+  --surface: #151A22;
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --accent-blue: #00A8E8;
+  --accent-blue-hover: #33C2FF;
+  /* Enhanced glow for Dark Mode to ensure hover parity with Light Mode */
+  --accent-glow: rgba(0, 168, 232, 0.4);
+  --border: #2A313C;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-muted: var(--accent-blue-hover);
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+@utility glass-panel {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl transition-all duration-500 shadow-xl;
+}
+
+@utility glass-panel-light {
+  @apply bg-white/40 backdrop-blur-xl border border-white/20 rounded-3xl transition-all duration-500 shadow-lg;
+}
+
+@utility nav-pill {
+  @apply flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-500 font-bold text-sm cursor-pointer;
+}
+
+@utility bounce-hover {
+  @apply transition-all duration-500 hover:-translate-y-1.5 active:scale-95;
+}
+
+/* Force San Francisco Font Stack Globally */
+body {
+  @apply bg-background text-black dark:text-white antialiased transition-colors duration-500;
+}
+
+/* Specific Exception: Numerical data in white boxes must remain black */
+.dark .industrial-input, 
+.dark .text-numerical-on-white {
+  @apply text-black! dark:text-black!;
+}
+
+@utility industrial-panel {
+  /**
+   * Updated: Senior Architect Specification
+   * High-end Glassmorphism with standard bounce animation.
+   */
+  @apply glass-panel p-6 shadow-sm hover:shadow-xl hover:shadow-[var(--accent-glow)] hover:-translate-y-1.5;
+}
+
+.dark .industrial-panel {
+  @apply bg-white/5 border-white/10;
+}
+
+.light .industrial-panel {
+  @apply glass-panel-light border-white/20;
+}
+
+@utility industrial-input {
+  /* Enforce white background and black text in BOTH modes for high contrast numerical display */
+  @apply w-full bg-white! border border-black/10 rounded-xl p-3 text-black! outline-none focus:border-accent-blue transition-colors;
+}
+
+@utility btn-action {
+  /* Updated border-radius to 60px as per architectural requirement */
+  @apply bg-accent-blue text-white font-bold rounded-[60px] px-6 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95 disabled:opacity-50;
+}
+
+@utility btn-wallet {
+  /* Reduced border-radius as requested */
+  @apply bg-black/5 dark:bg-white/5 text-black/60 dark:text-white font-bold rounded-xl px-4 py-2 text-[11px] transition-all duration-200 hover:bg-black/10 dark:hover:bg-white/10 hover:text-accent-blue;
+}
+
+@utility btn-wallet-active {
+  @apply bg-accent-blue! text-white! border-none!;
+}
+
+.transition-bounce {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes hover-pop-animation {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-12px) scale(1.04); }
+  50% { transform: translateY(-4px) scale(1.01); }
+  70% { transform: translateY(-8px) scale(1.03); }
+  100% { transform: translateY(-6px) scale(1.02); }
+}
+
+@utility interactive-pop {
+  @apply shadow-md hover:shadow-2xl transition-shadow duration-300;
+}
+.interactive-pop:hover {
+  animation: hover-pop-animation 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  z-index: 10;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(2.5rem); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-bottom-6 {
+  from { transform: translateY(1.5rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-in {
+  animation-duration: 500ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in {
+  animation-name: fade-in;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slide-in-bottom;
+}
+
+.slide-in-from-bottom-6 {
+  animation-name: slide-in-bottom-6;
+}
+
+.slide-in-from-right-10 {
+  animation-name: slide-in-right;
+}
+
+@utility uniswap-input-box {
+  @apply bg-black/[0.03] dark:bg-white/[0.03] rounded-3xl p-4 border border-black/5 dark:border-white/5 transition-all focus-within:border-[#00A8E8]/50 focus-within:shadow-[0_0_20px_rgba(0,168,232,0.1)] flex flex-col justify-between;
+}
+
+/* Enforce Title/Sentence Case globally for buttons and labels */
+button, label, h3, h4, span {
+  text-transform: none !important;
+}
