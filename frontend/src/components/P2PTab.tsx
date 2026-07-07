@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { P2PCandleChart } from './P2PCandleChart';
+import { ChevronDown } from 'lucide-react';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -341,12 +342,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     />
                     
                     {/* TOKEN SELECTOR */}
-                    <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-4 py-2 cursor-pointer shrink-0`}>
-                      <div className="w-6 h-6 bg-[#2775ca] rounded-full flex items-center justify-center">
-                         <span className="text-white text-xs font-bold">$</span>
+                    <div className="flex items-center justify-between gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
+                      <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0 shadow-sm dark:shadow-none">
+                         <span className="text-white text-[10px] font-bold">$</span>
                       </div>
-                      <span className="text-sm font-bold tracking-tight">USDC</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
+                      <ChevronDown className="w-4 h-4 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 rotate-0" />
                     </div>
                   </div>
 
@@ -425,12 +426,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         onChange={(e) => setPayAmount(e.target.value)}
                         className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[28px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                       />
-                      <div className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#1e2330] hover:bg-[#2a3040]' : 'bg-white hover:bg-slate-50'} shadow-sm transition-colors rounded-full px-4 py-2 cursor-pointer shrink-0`}>
-                        <div className="w-6 h-6 bg-[#2775ca] rounded-full flex items-center justify-center">
-                           <span className="text-white text-xs font-bold">$</span>
+                      <div className="flex items-center justify-between gap-2 px-4 py-2 min-w-[104px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
+                        <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0 shadow-sm dark:shadow-none">
+                           <span className="text-white text-[10px] font-bold">$</span>
                         </div>
-                        <span className="text-sm font-bold tracking-tight">USDC.e</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC.e</span>
+                        <ChevronDown className="w-4 h-4 text-slate-500 dark:text-white/60 ml-1 transition-transform duration-200 rotate-0" />
                       </div>
                     </div>
                   </div>
