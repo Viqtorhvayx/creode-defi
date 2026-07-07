@@ -341,10 +341,21 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </button>
           )}
 
-          {/* Footer Subtext */}
-          <div className="flex items-center justify-center gap-1.5 mt-5">
-            <ShieldCheck size={14} className="text-slate-400 dark:text-white/40" />
-            <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">Your funds are locked and secured on Hedera</span>
+          {/* Secured by Hedera Premium Badge */}
+          <div className="flex justify-center mt-6 mb-2 w-full">
+            <div className="relative flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-[16px] bg-[#0A0E14]/80 backdrop-blur-xl border border-white/10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
+              {/* Subtle inner ambient glow */}
+              <div className="absolute left-6 w-10 h-10 bg-white/10 rounded-full blur-[12px]"></div>
+              
+              <ShieldCheck 
+                size={18} 
+                className="text-white relative z-10 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" 
+                weight="regular" 
+              />
+              <span className="text-[12px] font-bold text-white tracking-[0.08em] uppercase relative z-10 font-['Inter']">
+                Secured by Hedera
+              </span>
+            </div>
           </div>
 
           </div>
