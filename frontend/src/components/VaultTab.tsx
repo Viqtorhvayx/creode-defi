@@ -108,10 +108,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2.5 px-4 py-2.5 w-fit rounded-[16px] border border-white/10 bg-black/40 backdrop-blur-md shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] relative overflow-hidden">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#B2FF05]/40 blur-xl rounded-full pointer-events-none"></div>
-              <LockKey weight="regular" className="text-[#B2FF05] relative z-10 shrink-0" size={18} />
-              <span className="text-[13px] font-bold text-white tracking-wide font-sans relative z-10">Secured by Hedera</span>
+            <div className="flex flex-col items-start px-3 py-2 w-fit rounded-[14px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">Secured by</span>
+              <div className="flex items-center gap-2 mt-1.5">
+                {hbarLogoUrlSmall ? (
+                  <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
+                )}
+                <span className="text-sm font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
+              </div>
             </div>
           </div>
 
