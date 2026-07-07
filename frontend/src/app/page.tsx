@@ -15,6 +15,7 @@ import { P2PTab } from '../components/P2PTab';
 import { EarnTab } from '../components/EarnTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
+import { SettingsTab } from '../components/SettingsTab';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -87,6 +88,12 @@ export default function Dashboard() {
         return (
           <div className="pt-[39px] pb-8">
             <PortfolioTab theme={theme} />
+          </div>
+        );
+      case 'Settings':
+        return (
+          <div className="pt-[39px] pb-8">
+            <SettingsTab theme={theme} />
           </div>
         );
       default:
