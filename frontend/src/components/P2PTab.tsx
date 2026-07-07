@@ -306,7 +306,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                    Short
                  </div>
                  <div 
-                   className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#86efac] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
+                   className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#10B981] left-1' : 'bg-red-500 left-[calc(50%+2px)]'}`}
                  ></div>
               </div>
             </div>
