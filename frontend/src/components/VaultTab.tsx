@@ -108,16 +108,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               </div>
             </div>
             
-            <div className="flex flex-col items-start px-3 py-2 w-fit rounded-[14px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">Secured by</span>
-              <div className="flex items-center gap-2 mt-1.5">
-                {hbarLogoUrlSmall ? (
-                  <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                ) : (
-                  <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
-                )}
-                <span className="text-sm font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
-              </div>
+            <div className="flex items-center gap-2.5 px-4 py-2.5 w-fit rounded-[16px] border border-white/10 bg-black/40 backdrop-blur-md shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] relative overflow-hidden">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#B2FF05]/40 blur-xl rounded-full pointer-events-none"></div>
+              <LockKey weight="regular" className="text-[#B2FF05] relative z-10 shrink-0" size={18} />
+              <span className="text-[13px] font-bold text-white tracking-wide font-sans relative z-10">Secured by Hedera</span>
             </div>
           </div>
 
@@ -341,21 +335,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </button>
           )}
 
-          {/* Secured by Hedera Premium Badge */}
-          <div className="flex justify-center mt-6 mb-2 w-full">
-            <div className="relative flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-[16px] bg-[#0A0E14]/80 backdrop-blur-xl border border-white/10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.6)]">
-              {/* Subtle inner ambient glow */}
-              <div className="absolute left-6 w-10 h-10 bg-white/10 rounded-full blur-[12px]"></div>
-              
-              <ShieldCheck 
-                size={18} 
-                className="text-white relative z-10 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" 
-                weight="regular" 
-              />
-              <span className="text-[12px] font-bold text-white tracking-[0.08em] uppercase relative z-10 font-['Inter']">
-                Secured by Hedera
-              </span>
-            </div>
+          {/* Footer Subtext */}
+          <div className="flex items-center justify-center gap-1.5 mt-5">
+            <ShieldCheck size={14} className="text-slate-400 dark:text-white/40" />
+            <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">Your funds are locked and secured on Hedera</span>
           </div>
 
           </div>
