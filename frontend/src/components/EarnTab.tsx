@@ -12,7 +12,9 @@ import {
   Info, 
   ArrowsClockwise, 
   ShieldCheck, 
-  ArrowRight 
+  ArrowRight,
+  StarFour,
+  Crosshair
 } from '@phosphor-icons/react';
 
 interface EarnTabProps {
@@ -20,7 +22,7 @@ interface EarnTabProps {
 }
 
 export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
-  const [activeTab, setActiveTab] = useState('Yield Hub');
+  const [activeTab, setActiveTab] = useState('Discover Strategies');
   
   const StrategyCard = ({
     token1Color,
@@ -30,116 +32,98 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     pair,
     riskLevel,
     strategyName,
+    description,
     apy,
-    tvlHbar,
     tvlUsd,
-    priceRangeStart,
-    priceRangeEnd,
-    rangeMin,
-    rangeMax,
-    riskColorClass,
+    feeTier,
+    rangeMode,
+    rebalance,
     riskBgClass,
     riskTextClass,
-    riskBorderClass,
   }: any) => {
-    
-    // Calculate slider width and position
-    const totalRange = rangeMax - rangeMin;
-    const highlightStart = ((priceRangeStart - rangeMin) / totalRange) * 100;
-    const highlightWidth = ((priceRangeEnd - priceRangeStart) / totalRange) * 100;
-
     return (
-      <div className={`flex flex-col h-full p-5 rounded-[16px] border transition-all duration-200 hover:border-[#00A8E8]/60 ${
+      <div className={`flex flex-col h-full p-5 rounded-[16px] border transition-all duration-200 hover:shadow-md ${
         theme === 'dark' 
-          ? 'bg-[#0F141A] border-white/5' 
-          : 'bg-white border-slate-200'
+          ? 'bg-[#0F141A] border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.2)]' 
+          : 'bg-white border-slate-200 shadow-sm'
       }`}>
-        {/* Header */}
-        <div className="flex justify-between items-start mb-5">
-          <div className="flex -space-x-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs z-10 border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Color}`}>
+        {/* Token Icons & Risk Badge */}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex -space-x-1.5">
+            <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-white font-bold text-[10px] z-10 border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Color}`}>
               {token1Label}
             </div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Color}`}>
+            <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-white font-bold text-[10px] border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Color}`}>
               {token2Label}
             </div>
           </div>
-          <div className={`px-3 py-1 rounded-full text-[11px] font-bold ${riskBgClass} ${riskTextClass}`}>
-            {riskLevel} Risk
+          <div className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold ${riskBgClass} ${riskTextClass}`}>
+            {riskLevel}
           </div>
         </div>
 
-        {/* Pair & Strategy */}
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-[15px] font-bold tracking-tight text-slate-900 dark:text-white">{pair}</h3>
-            <div className="w-3.5 h-3.5 rounded-full bg-[#00A8E8] text-white flex items-center justify-center text-[9px]">✓</div>
+        {/* Pair & Strategy Type */}
+        <div className="mb-2">
+          <div className="flex items-center gap-2 mb-1.5">
+            <h3 className="text-[16px] font-bold tracking-tight text-slate-900 dark:text-white leading-none">{pair}</h3>
+            <div className="px-2 py-0.5 rounded-md bg-[#00A8E8]/10 text-[#00A8E8] text-[10px] font-bold">
+              Concentrated Liquidity
+            </div>
           </div>
-          <p className="text-[12px] font-medium text-slate-500 dark:text-white/50">{strategyName}</p>
+          <p className="text-[12px] font-medium text-slate-500 dark:text-white/60 leading-snug line-clamp-2 h-[34px]">
+            {description}
+          </p>
         </div>
 
-        {/* Stats */}
-        <div className="flex justify-between mb-5">
-          <div>
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-[11px] font-semibold text-slate-500 dark:text-white/50">Live APY</span>
+        {/* Stats: APY & TVL */}
+        <div className="flex justify-between mb-5 mt-4">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1 mb-0.5">
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-white/50">APY</span>
               <Info size={12} className="text-slate-400" />
             </div>
-            <div className="text-[22px] font-bold tracking-tight text-[#00A8E8]">{apy}%</div>
+            <div className="text-[22px] font-bold tracking-tight text-[#00A8E8] leading-none">{apy}</div>
           </div>
-          <div className="text-right">
-            <div className="flex items-center justify-end gap-1 mb-1">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1 mb-0.5">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-white/50">TVL</span>
               <Info size={12} className="text-slate-400" />
             </div>
-            <div className="text-[13px] font-bold text-slate-900 dark:text-white tracking-tight">{tvlHbar} HBAR</div>
-            <div className="text-[11px] font-medium text-slate-500 dark:text-white/50">{tvlUsd} USD</div>
+            <div className="text-[15px] font-bold text-slate-900 dark:text-white tracking-tight leading-none mt-auto">{tvlUsd}</div>
           </div>
         </div>
 
-        {/* Price Range */}
-        <div className="mb-5">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-1">
-              <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50">Active Price Range</span>
-              <Info size={14} className="text-slate-400" />
-            </div>
-            <span className="text-[12px] font-bold text-slate-900 dark:text-white">{priceRangeStart.toFixed(2)} - {priceRangeEnd.toFixed(2)} USD</span>
-          </div>
-          
-          <div className="relative h-2 w-full bg-slate-100 dark:bg-white/10 rounded-full mb-2">
-            <div 
-              className={`absolute h-full rounded-full ${riskColorClass}`} 
-              style={{ left: `${highlightStart}%`, width: `${highlightWidth}%` }}
-            >
-              <div className={`absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white dark:border-[#0F141A] ${riskColorClass}`}></div>
-              <div className={`absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white dark:border-[#0F141A] ${riskColorClass}`}></div>
+        {/* Metadata Row */}
+        <div className="grid grid-cols-4 gap-2 mb-6 pt-4 border-t border-slate-100 dark:border-white/5">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-white/50">Protocol</span>
+            <div className="flex -space-x-1">
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[6px] z-10 border ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Color}`}>
+                {token1Label}
+              </div>
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[6px] border ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Color}`}>
+                {token2Label}
+              </div>
             </div>
           </div>
-          
-          <div className="flex justify-between text-[10px] font-medium text-slate-400">
-            <span>{rangeMin.toFixed(2)}</span>
-            <span>{(rangeMin + totalRange * 0.25).toFixed(2)}</span>
-            <span>{(rangeMin + totalRange * 0.5).toFixed(2)}</span>
-            <span>{(rangeMin + totalRange * 0.75).toFixed(2)}</span>
-            <span>{rangeMax.toFixed(2)}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-white/50">Fee Tier</span>
+            <span className="text-[11px] font-bold text-slate-900 dark:text-white">{feeTier}</span>
           </div>
-        </div>
-
-        {/* Auto Rebalancing */}
-        <div className={`flex items-center justify-center gap-2 py-2 rounded-lg mb-5 border ${riskBgClass} ${riskBorderClass}`}>
-          <ArrowsClockwise size={14} className={riskTextClass} />
-          <span className={`text-[12px] font-bold tracking-tight ${riskTextClass}`}>Auto-Rebalancing: ON</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-white/50">Range Mode</span>
+            <span className="text-[11px] font-bold text-slate-900 dark:text-white">{rangeMode}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-white/50">Rebalance</span>
+            <span className="text-[11px] font-bold text-slate-900 dark:text-white">{rebalance}</span>
+          </div>
         </div>
 
         {/* Action Button */}
         <div className="mt-auto">
-          <button className={`w-full py-3 rounded-lg border text-[14px] font-bold transition-colors ${
-            theme === 'dark' 
-              ? 'border-[#00A8E8]/50 text-[#00A8E8] hover:bg-[#00A8E8]/10' 
-              : 'border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/5'
-          }`}>
-            View Strategy
+          <button className="w-full py-2.5 rounded-lg bg-[#00A8E8] hover:bg-[#0090C7] text-white text-[13px] font-bold transition-all shadow-sm active:scale-[0.98]">
+            View Details
           </button>
         </div>
       </div>
@@ -150,203 +134,311 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       {/* Header Info */}
       <div className="mb-6 flex flex-col">
-        <h1 className="text-[24px] font-bold text-slate-900 dark:text-white tracking-tight mb-1 leading-none">
-          {activeTab === 'Community' ? 'Community' : 'Yield Hub'}
+        <h1 className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight mb-2 leading-none">
+          Earn
         </h1>
-        <p className="text-[11px] font-semibold text-slate-500 dark:text-white/60 leading-none mt-1">
-          {activeTab === 'Community'
-            ? "Shape the future of Creode; Vote, propose and infleunce what's next"
-            : "Discover and deploy optimized yield strategies with concentrated liquidity."}
+        <p className="text-[13px] font-medium text-slate-500 dark:text-white/60 leading-none">
+          Discover and deploy into advanced yield strategies powered by concentrated liquidity.
         </p>
       </div>
 
       {/* Internal Tabs */}
-      <div className="flex w-full mb-8 border-b border-slate-200 dark:border-white/10 relative">
-        <div className={`flex rounded-t-[10px] border-t border-l border-r ${theme === 'dark' ? 'border-white/10 bg-transparent' : 'border-slate-200 bg-white/50'} relative bottom-[-1px]`}>
-          {['Yield Hub', 'Community'].map((tab) => {
-            const isActive = activeTab === tab;
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 text-[14px] font-bold relative transition-all duration-200 ${
-                  isActive 
-                    ? (theme === 'dark' ? 'bg-[#0B0F14] text-[#00A8E8]' : 'bg-white text-[#00A8E8]')
-                    : 'text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
-                }`}
-              >
-                {tab}
-                {isActive && (
-                  <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10"></div>
-                )}
-              </button>
-            );
-          })}
-        </div>
+      <div className="flex w-full mb-8 gap-3">
+        {['Discover Strategies', 'My Positions', 'Community'].map((tab) => {
+          const isActive = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-5 py-2.5 rounded-[12px] text-[13px] font-bold transition-all duration-200 border ${
+                isActive 
+                  ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm'
+                  : 'bg-white border-slate-200 text-slate-700 hover:border-[#00A8E8]/50 hover:text-[#00A8E8] dark:bg-[#0F141A] dark:border-white/10 dark:text-white/80'
+              }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
 
-      {activeTab === 'Yield Hub' ? (
+      {activeTab === 'Discover Strategies' ? (
         <>
-          {/* Top Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* TVL */}
-        <div className={`flex items-start gap-4 p-6 rounded-[16px] border ${theme === 'dark' ? 'bg-[#0F141A] border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0 bg-[#00A8E8]/10 text-[#00A8E8]">
-            <ChartLineUp size={28} weight="bold" />
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-[13px] font-semibold text-slate-500 dark:text-white/60">Total Value Locked</span>
-              <Info size={14} className="text-slate-400" />
+          {/* Top Overview Row (Single Card) */}
+          <div className={`flex w-full rounded-[16px] border shadow-sm mb-6 ${
+            theme === 'dark' ? 'bg-[#0F141A] border-white/5' : 'bg-white border-slate-200'
+          }`}>
+            {/* TVL */}
+            <div className="flex-1 p-6 flex flex-col justify-center border-r border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60">Total Value Locked (TVL)</span>
+                <Info size={14} className="text-slate-400" />
+              </div>
+              <div className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight mb-2 leading-none">$28.46M</div>
+              <div className="flex items-center gap-1">
+                <span className="text-[12px] font-bold text-emerald-500">+8.32%</span>
+                <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">7D</span>
+              </div>
             </div>
-            <div className="text-[20px] font-bold text-slate-900 dark:text-white tracking-tight">12,450.75 HBAR</div>
-            <div className="flex items-center gap-3 mt-1.5">
-              <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">$1,105.45 USD</span>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">+8.45%</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Avg APY */}
-        <div className={`flex items-start gap-4 p-6 rounded-[16px] border ${theme === 'dark' ? 'bg-[#0F141A] border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0 bg-[#00A8E8]/10 text-[#00A8E8]">
-            <Coins size={28} weight="bold" />
+            {/* Avg APY */}
+            <div className="flex-1 p-6 flex flex-col justify-center border-r border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60">Weighted Avg. APY</span>
+                <Info size={14} className="text-slate-400" />
+              </div>
+              <div className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight mb-2 leading-none">36.78%</div>
+              <div className="flex items-center gap-1">
+                <span className="text-[12px] font-bold text-emerald-500">+2.61%</span>
+                <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">7D</span>
+              </div>
+            </div>
+
+            {/* Active Strategies */}
+            <div className="flex-1 p-6 flex flex-col justify-center border-r border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60">Active Strategies</span>
+                <Info size={14} className="text-slate-400" />
+              </div>
+              <div className="text-[28px] font-bold text-slate-900 dark:text-white tracking-tight mb-2 leading-none">12</div>
+              <div className="text-[12px] font-medium text-slate-500 dark:text-white/50">Across 6 Protocols</div>
+            </div>
+
+            {/* Auto-Compounding */}
+            <div className="flex-1 p-6 flex items-center justify-between">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60">Auto-Compounding</span>
+                  <div className="px-2 py-0.5 rounded-sm bg-emerald-50 text-emerald-500 text-[10px] font-bold">ON</div>
+                </div>
+                <p className="text-[11px] font-medium text-slate-500 dark:text-white/50 leading-snug max-w-[150px]">
+                  Earnings are automatically compounded to boost yield.
+                </p>
+              </div>
+              <button className="w-10 h-10 rounded-full bg-[#F0F8FF] text-[#00A8E8] flex items-center justify-center hover:bg-[#E0F0FF] transition-colors">
+                <ArrowsClockwise size={20} weight="bold" />
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-[13px] font-semibold text-slate-500 dark:text-white/60">Avg. APY Across Strategies</span>
-              <Info size={14} className="text-slate-400" />
+
+          {/* Smart Liquidity Engine Info Strip */}
+          <div className="flex items-center justify-between w-full p-4 rounded-[12px] bg-[#F4F9FF] dark:bg-[#00A8E8]/5 border border-[#E6F0FA] dark:border-[#00A8E8]/10 mb-8">
+            <div className="flex items-center gap-3">
+              <StarFour size={18} className="text-[#00A8E8]" weight="fill" />
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold text-slate-900 dark:text-white">Smart Liquidity Engine</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/60">All strategies use Concentrated Liquidity to maximize capital efficiency.</span>
+              </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[20px] font-bold text-slate-900 dark:text-white tracking-tight">24.78%</span>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">+2.18%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Active Strategies */}
-        <div className={`flex items-start gap-4 p-6 rounded-[16px] border ${theme === 'dark' ? 'bg-[#0F141A] border-white/5' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0 bg-[#00A8E8]/10 text-[#00A8E8]">
-            <Users size={28} weight="bold" />
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-[13px] font-semibold text-slate-500 dark:text-white/60">Active Strategies</span>
-              <Info size={14} className="text-slate-400" />
+              <Crosshair size={18} className="text-[#00A8E8]" weight="bold" />
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold text-slate-900 dark:text-white">Dynamic Range Management</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/60">Auto-adjusts to market conditions</span>
+              </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[20px] font-bold text-slate-900 dark:text-white tracking-tight">8</span>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">+1 New</span>
+              <ArrowsClockwise size={18} className="text-[#00A8E8]" weight="bold" />
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold text-slate-900 dark:text-white">Rebalancing Active</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/60">Maximizing fees & yield</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={18} className="text-[#00A8E8]" weight="bold" />
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold text-slate-900 dark:text-white">Capital Efficient</span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-white/60">Higher yield with lower risk</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Controls Row */}
-      <div className="flex justify-end items-center gap-4 mb-6">
-        <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold border transition-colors ${theme === 'dark' ? 'border-white/10 bg-[#0F141A] hover:bg-white/5 text-white' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-900'}`}>
-          All Strategies <CaretDown size={14} />
-        </button>
-        <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold border transition-colors ${theme === 'dark' ? 'border-white/10 bg-[#0F141A] hover:bg-white/5 text-white' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-900'}`}>
-          Sort by: APY (High → Low) <CaretDown size={14} />
-        </button>
-        <div className={`flex items-center rounded-lg border p-1 ${theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-slate-200 bg-white'}`}>
-          <button className="p-1.5 rounded-md bg-[#00A8E8] text-white">
-            <GridFour size={16} weight="fill" />
-          </button>
-          <button className={`p-1.5 rounded-md transition-colors ${theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-800'}`}>
-            <List size={16} />
-          </button>
-        </div>
-      </div>
+          {/* Filter & Sort Row */}
+          <div className="flex items-center justify-between w-full mb-6">
+            <div className="flex items-center gap-3">
+              <button className="flex items-center justify-between gap-6 px-4 py-2.5 rounded-[12px] bg-white dark:bg-[#0F141A] border border-slate-200 dark:border-white/10 text-[13px] font-semibold text-slate-700 dark:text-white hover:border-[#00A8E8]/50 transition-colors">
+                All Strategies <CaretDown size={14} className="text-slate-400" />
+              </button>
+              <button className="flex items-center justify-between gap-6 px-4 py-2.5 rounded-[12px] bg-white dark:bg-[#0F141A] border border-slate-200 dark:border-white/10 text-[13px] font-semibold text-slate-700 dark:text-white hover:border-[#00A8E8]/50 transition-colors">
+                All Assets <CaretDown size={14} className="text-slate-400" />
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] font-medium text-slate-500 dark:text-white/60">Sort by</span>
+                <button className="flex items-center justify-between gap-4 px-4 py-2.5 rounded-[12px] bg-white dark:bg-[#0F141A] border border-slate-200 dark:border-white/10 text-[13px] font-semibold text-slate-900 dark:text-white hover:border-[#00A8E8]/50 transition-colors">
+                  Highest APY <CaretDown size={14} className="text-slate-400" />
+                </button>
+              </div>
+              <div className={`flex items-center rounded-lg border p-1 ${theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-slate-200 bg-white'}`}>
+                <button className="p-1.5 rounded-md bg-[#00A8E8] text-white transition-colors">
+                  <GridFour size={16} weight="fill" />
+                </button>
+                <button className={`p-1.5 rounded-md transition-colors ${theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-800'}`}>
+                  <List size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
 
       {/* Strategy Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StrategyCard 
-          token1Color="bg-black" token1Label="H"
-          token2Color="bg-blue-500" token2Label="$"
-          pair="HBAR/USDC"
-          riskLevel="Low"
-          strategyName="Conservative Strategy"
-          apy={12.45}
-          tvlHbar="2,450.75"
-          tvlUsd="$218.45"
-          priceRangeStart={0.07}
-          priceRangeEnd={0.10}
-          rangeMin={0.04}
-          rangeMax={0.16}
-          riskColorClass="bg-emerald-500"
-          riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/5'}
-          riskTextClass="text-emerald-500 dark:text-emerald-400"
-          riskBorderClass="border-emerald-500/20"
-        />
-        <StrategyCard 
-          token1Color="bg-black" token1Label="H"
-          token2Color="bg-teal-500" token2Label="T"
-          pair="HBAR/USDT"
-          riskLevel="Medium"
-          strategyName="Balanced Strategy"
-          apy={24.78}
-          tvlHbar="5,670.34"
-          tvlUsd="$501.22"
-          priceRangeStart={0.08}
-          priceRangeEnd={0.12}
-          rangeMin={0.04}
-          rangeMax={0.20}
-          riskColorClass="bg-amber-500"
-          riskBgClass={theme === 'dark' ? 'bg-amber-500/10' : 'bg-amber-500/5'}
-          riskTextClass="text-amber-500 dark:text-amber-400"
-          riskBorderClass="border-amber-500/20"
-        />
-        <StrategyCard 
-          token1Color="bg-black" token1Label="H"
-          token2Color="bg-orange-500" token2Label="S"
-          pair="HBAR/SAUCE"
-          riskLevel="High"
-          strategyName="Aggressive Strategy"
-          apy={38.62}
-          tvlHbar="4,329.66"
-          tvlUsd="$382.76"
-          priceRangeStart={0.10}
-          priceRangeEnd={0.18}
-          rangeMin={0.04}
-          rangeMax={0.30}
-          riskColorClass="bg-rose-500"
-          riskBgClass={theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-500/5'}
-          riskTextClass="text-rose-500 dark:text-rose-400"
-          riskBorderClass="border-rose-500/20"
-        />
+      <div className="h-[430px] overflow-y-auto pr-2 mb-8" style={{ scrollbarWidth: 'thin' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StrategyCard 
+            token1Color="bg-black" token1Label="H"
+            token2Color="bg-blue-500" token2Label="$"
+            pair="HBAR/USDC"
+            riskLevel="Conservative"
+            strategyName="Conservative Strategy"
+            description="Stable pair strategy focused on consistent yield."
+            apy="28.65%"
+            tvlUsd="$8.45M"
+            feeTier="0.05%"
+            rangeMode="Wide"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-[#00A8E8]/10' : 'bg-blue-50'}
+            riskTextClass="text-[#00A8E8]"
+          />
+          <StrategyCard 
+            token1Color="bg-black" token1Label="H"
+            token2Color="bg-purple-500" token2Label="W"
+            pair="HBAR/wETH"
+            riskLevel="Conservative"
+            strategyName="Conservative Strategy"
+            description="Blue-chip pair strategy focused on consistent yield."
+            apy="31.20%"
+            tvlUsd="$5.12M"
+            feeTier="0.3%"
+            rangeMode="Wide"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-[#00A8E8]/10' : 'bg-blue-50'}
+            riskTextClass="text-[#00A8E8]"
+          />
+          <StrategyCard 
+            token1Color="bg-black" token1Label="H"
+            token2Color="bg-orange-500" token2Label="S"
+            pair="HBAR/SAUCE"
+            riskLevel="Balanced"
+            strategyName="Balanced Strategy"
+            description="Optimized liquidity range with auto-rebalancing across SaucerSwap and Hedera Native Staking."
+            apy="45.20%"
+            tvlUsd="$6.42M"
+            feeTier="0.3%"
+            rangeMode="Dynamic"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
+            riskTextClass="text-emerald-500"
+          />
+          <StrategyCard 
+            token1Color="bg-orange-500" token1Label="S"
+            token2Color="bg-black" token2Label="H"
+            pair="SAUCE/HBAR"
+            riskLevel="Balanced"
+            strategyName="Balanced Strategy"
+            description="Optimized liquidity range with auto-rebalancing across SaucerSwap."
+            apy="48.15%"
+            tvlUsd="$4.80M"
+            feeTier="0.3%"
+            rangeMode="Dynamic"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
+            riskTextClass="text-emerald-500"
+          />
+          <StrategyCard 
+            token1Color="bg-black" token1Label="H"
+            token2Color="bg-green-500" token2Label="D"
+            pair="HBAR/DOVU"
+            riskLevel="Aggressive"
+            strategyName="Aggressive Strategy"
+            description="Higher risk, higher reward. Tight range strategy for maximum fee capture."
+            apy="68.90%"
+            tvlUsd="$2.15M"
+            feeTier="0.3%"
+            rangeMode="Narrow"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50'}
+            riskTextClass="text-rose-500"
+          />
+          <StrategyCard 
+            token1Color="bg-black" token1Label="H"
+            token2Color="bg-yellow-500" token2Label="P"
+            pair="HBAR/PACK"
+            riskLevel="Aggressive"
+            strategyName="Aggressive Strategy"
+            description="Volatile pair strategy targeting maximum yield through high fee generation."
+            apy="82.40%"
+            tvlUsd="$1.05M"
+            feeTier="1.0%"
+            rangeMode="Narrow"
+            rebalance="Auto"
+            riskBgClass={theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50'}
+            riskTextClass="text-rose-500"
+          />
+        </div>
       </div>
 
-      {/* Info Banner */}
-      <div className={`w-full flex items-center justify-between p-6 rounded-[16px] relative overflow-hidden border ${
+      {/* Community Pulse Banner */}
+      <div className={`w-full flex items-center justify-between p-6 rounded-[16px] border ${
         theme === 'dark' 
-          ? 'bg-gradient-to-r from-[#00A8E8]/10 to-transparent border-[#00A8E8]/20' 
-          : 'bg-gradient-to-r from-blue-50/80 to-white border-blue-100'
+          ? 'bg-[#0F141A] border-white/10' 
+          : 'bg-white border-slate-200 shadow-sm'
       }`}>
-        <div className="flex items-start gap-4 z-10">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-[#00A8E8] text-white shadow-lg shadow-[#00A8E8]/20">
-            <ShieldCheck size={24} weight="fill" />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg mb-1">Automated. Optimized. Always Working.</h3>
-            <p className="text-sm text-slate-600 dark:text-white/70 max-w-xl mb-3">
-              Our smart strategies use concentrated liquidity and automated rebalancing to maximize your yield across market conditions.
-            </p>
-            <button className="text-sm font-bold text-[#00A8E8] flex items-center gap-1 hover:gap-2 transition-all">
-              Learn how it works <ArrowRight size={14} weight="bold" />
-            </button>
-          </div>
-        </div>
-
-        {/* Abstract Illustration */}
-        <div className="absolute right-8 bottom-0 flex items-end gap-2 z-0">
-          <div className="w-8 h-12 bg-[#00A8E8]/30 dark:bg-[#00A8E8]/20 rounded-t-md relative shadow-sm"></div>
-          <div className="w-8 h-20 bg-[#00A8E8]/60 dark:bg-[#00A8E8]/40 rounded-t-md relative shadow-sm"></div>
-          <div className="w-8 h-16 bg-[#00A8E8] rounded-t-md relative shadow-md">
-            <div className="absolute -left-3 top-1 w-10 h-10 bg-[#0F141A] dark:bg-white rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-[#00A8E8] font-black text-xl">C</span>
+        <div className="flex items-center gap-12 w-full">
+          {/* Left: Title & Icon */}
+          <div className="flex items-start gap-4 shrink-0">
+            <div className="w-12 h-12 rounded-[12px] flex items-center justify-center shrink-0 bg-[#00A8E8]/10 text-[#00A8E8]">
+              <Users size={24} weight="fill" />
             </div>
+            <div>
+              <h3 className="font-bold text-lg mb-1 text-slate-900 dark:text-white leading-none">Community Pulse</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-white/60">
+                Which pair should we optimize next?
+              </p>
+            </div>
+          </div>
+
+          {/* Center: Poll Results */}
+          <div className="flex-1 flex items-center gap-6">
+            <div className="flex-1 flex flex-col gap-1.5">
+              <div className="flex justify-between text-[12px] font-bold">
+                <span className="text-slate-700 dark:text-white">HBAR / BONZO</span>
+                <span className="text-slate-500">32%</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+                <div className="h-full bg-slate-300 dark:bg-slate-500 rounded-full" style={{ width: '32%' }}></div>
+              </div>
+            </div>
+            
+            <div className="flex-1 flex flex-col gap-1.5">
+              <div className="flex justify-between text-[12px] font-bold">
+                <span className="text-[#00A8E8]">SAUCE / USDC</span>
+                <span className="text-[#00A8E8]">41%</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+                <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '41%' }}></div>
+              </div>
+            </div>
+            
+            <div className="flex-1 flex flex-col gap-1.5">
+              <div className="flex justify-between text-[12px] font-bold">
+                <span className="text-slate-700 dark:text-white">HBAR / PACK</span>
+                <span className="text-slate-500">27%</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+                <div className="h-full bg-slate-300 dark:bg-slate-500 rounded-full" style={{ width: '27%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: CTA */}
+          <div className="shrink-0 pl-6 border-l border-slate-100 dark:border-white/10">
+            <button className={`px-5 py-2.5 rounded-lg border text-[13px] font-bold transition-colors ${
+              theme === 'dark' 
+                ? 'border-white/20 text-white hover:bg-white/5' 
+                : 'border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+            }`}>
+              View Polls
+            </button>
           </div>
         </div>
       </div>
