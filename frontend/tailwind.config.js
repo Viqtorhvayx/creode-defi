@@ -26,6 +26,29 @@ module.exports = {
       fontFamily: {
         industrial: ["Inter", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        'pulse-once': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.5', transform: 'scale(1.05)' },
+        },
+        'draw': {
+          'to': { strokeDashoffset: '0' }
+        },
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pulse-ring': {
+          '0%': { transform: 'scale(1)', opacity: '0.5' },
+          '100%': { transform: 'scale(1.1)', opacity: '0' },
+        }
+      },
+      animation: {
+        'pulse-once': 'pulse-once 0.5s ease-in-out',
+        'draw': 'draw 0.3s ease-in-out forwards',
+        'fade-in-up': 'fade-in-up 0.2s ease-out forwards',
+        'pulse-ring': 'pulse-ring 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards'
+      }
     },
   },
   plugins: [],
