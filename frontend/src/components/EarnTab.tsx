@@ -69,7 +69,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     riskTextClass,
   }: any) => {
     return (
-      <div className={`flex flex-col h-full p-5 rounded-[16px] border shrink-0 snap-start transition-all duration-200 w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333333%-16px)] ${
+      <div className={`flex flex-col h-full p-5 rounded-[16px] border transition-all duration-200 w-full ${
         theme === 'dark' 
           ? 'bg-[#0F141A] border-white/5 shadow-sm' 
           : 'bg-white border-[#EAECEF] shadow-sm'
@@ -282,8 +282,8 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Strategy Grid (Horizontal Slider) */}
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 mb-6 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
+          {/* Strategy Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <StrategyCard 
               token1Logo={hbarLogoUrlSmall} token1Fallback="H" token1Bg="bg-black"
               token2Logo={wbtcLogoUrlSmall} token2Fallback="B" token2Bg="bg-[#F7931A]"
