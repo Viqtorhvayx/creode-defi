@@ -10,7 +10,10 @@ import {
   Drop,
   CaretLeft,
   CaretRight,
-  ArrowRight
+  ArrowRight,
+  CaretDown,
+  GridFour,
+  List
 } from '@phosphor-icons/react';
 
 interface EarnTabProps {
@@ -19,6 +22,7 @@ interface EarnTabProps {
 
 export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   const [activeTab, setActiveTab] = useState('Yield Hub');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   
   // State for token logos
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
@@ -52,6 +56,119 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
 
     fetchLogos();
   }, []);
+
+  const strategies = [
+    {
+      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
+      token2Logo: wbtcLogoUrlSmall, token2Fallback: "B", token2Bg: "bg-[#F7931A]",
+      pair: "HBAR / wBTC", riskLevel: "Balanced", apy: "14.2%", tvl: "$8.5M",
+      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
+      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+    },
+    {
+      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
+      token2Logo: null, token2Fallback: "D", token2Bg: "bg-purple-600",
+      pair: "HBAR / DOVU", riskLevel: "Aggressive", apy: "62.1%", tvl: "$1.2M",
+      riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
+      riskTextClass: "text-rose-600 dark:text-rose-500"
+    },
+    {
+      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
+      token2Logo: wethLogoUrlSmall, token2Fallback: "E", token2Bg: "bg-blue-600",
+      pair: "HBAR / wETH", riskLevel: "Balanced", apy: "11.4%", tvl: "$5.1M",
+      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
+      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+    },
+    {
+      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
+      token2Logo: usdcLogoUrlSmall, token2Fallback: "U", token2Bg: "bg-[#2775CA]",
+      pair: "HBAR / USDC", riskLevel: "Balanced", apy: "10.2%", tvl: "$6.8M",
+      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
+      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+    },
+    {
+      token1Logo: sauceLogoUrlSmall, token1Fallback: "S", token1Bg: "bg-red-500",
+      token2Logo: usdcLogoUrlSmall, token2Fallback: "U", token2Bg: "bg-[#2775CA]",
+      pair: "SAUCE / USDC", riskLevel: "Balanced", apy: "18.5%", tvl: "$2.9M",
+      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
+      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+    }
+  ];
+
+  // StrategyCard Component for Grid View
+  const StrategyCard = ({
+    token1Logo,
+    token1Fallback,
+    token1Bg,
+    token2Logo,
+    token2Fallback,
+    token2Bg,
+    pair,
+    riskLevel,
+    apy,
+    tvl,
+    riskBgClass,
+    riskTextClass,
+  }: any) => {
+    return (
+      <div className={`flex flex-col h-full p-5 rounded-[16px] border transition-all duration-200 w-full ${
+        theme === 'dark' 
+          ? 'bg-[#0F141A] border-white/5 shadow-sm' 
+          : 'bg-white border-[#EAECEF] shadow-sm'
+      }`}>
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex -space-x-2">
+            {token1Logo ? (
+              <img src={token1Logo} alt="Token 1" className={`w-9 h-9 rounded-full border-2 z-10 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
+            ) : (
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs z-10 border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Bg}`}>
+                {token1Fallback}
+              </div>
+            )}
+            {token2Logo ? (
+              <img src={token2Logo} alt="Token 2" className={`w-9 h-9 rounded-full border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
+            ) : (
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Bg}`}>
+                {token2Fallback}
+              </div>
+            )}
+          </div>
+          <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${riskBgClass} ${riskTextClass}`}>
+            {riskLevel}
+          </div>
+        </div>
+
+        {/* Pair */}
+        <div className="mb-8">
+          <h3 className="text-[17px] font-bold tracking-tight text-slate-900 dark:text-white">{pair}</h3>
+        </div>
+
+        {/* Stats */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col">
+            <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50 mb-0.5">APY</span>
+            <span className="text-[17px] font-bold text-[#00A8E8]">{apy}</span>
+          </div>
+          <div className="flex flex-col text-right">
+            <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50 mb-0.5">TVL</span>
+            <span className="text-[17px] font-bold text-slate-900 dark:text-white">{tvl}</span>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-auto">
+          <button className={`w-full py-2.5 rounded-[8px] border text-[13px] font-bold transition-colors ${
+            theme === 'dark' 
+              ? 'border-white/10 text-slate-300 hover:bg-white/5' 
+              : 'border-[#EAECEF] text-[#00A8E8] hover:bg-slate-50 hover:border-[#00A8E8]/50'
+          }`}>
+            View Strategy
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // StrategyRow Component for List View
   const StrategyRow = ({
@@ -129,8 +246,8 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
-      {/* Internal Tabs */}
-      <div className="flex w-full mb-8 relative">
+      {/* Internal Tabs and View Mode Toggles */}
+      <div className="flex w-full justify-between items-center mb-8 relative">
         <div className={`flex rounded-full border p-1 ${theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-[#EAECEF] bg-slate-50'}`}>
           {['Yield Hub', 'Community'].map((tab) => {
             const isActive = activeTab === tab;
@@ -149,6 +266,45 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
             );
           })}
         </div>
+
+        {activeTab === 'Yield Hub' && (
+          <div className="flex items-center gap-4">
+            {/* Sort Dropdown */}
+            <button className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-bold border transition-colors ${
+              theme === 'dark' 
+                ? 'border-white/10 bg-[#0F141A] hover:bg-white/5 text-slate-300' 
+                : 'border-[#EAECEF] bg-white hover:bg-slate-50 text-slate-700'
+            }`}>
+              Sort by: APY (High → Low) <CaretDown size={14} weight="bold" />
+            </button>
+
+            {/* View Mode Toggle */}
+            <div className={`flex items-center rounded-[8px] border p-1 ${
+              theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-[#EAECEF] bg-white'
+            }`}>
+              <button 
+                onClick={() => setViewMode('grid')} 
+                className={`p-1.5 rounded-md transition-colors ${
+                  viewMode === 'grid' 
+                    ? 'bg-[#00A8E8] text-white' 
+                    : (theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-800')
+                }`}
+              >
+                <GridFour size={16} weight={viewMode === 'grid' ? "fill" : "bold"} />
+              </button>
+              <button 
+                onClick={() => setViewMode('list')} 
+                className={`p-1.5 rounded-md transition-colors ${
+                  viewMode === 'list' 
+                    ? 'bg-[#00A8E8] text-white' 
+                    : (theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-800')
+                }`}
+              >
+                <List size={16} weight={viewMode === 'list' ? "fill" : "bold"} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {activeTab === 'Yield Hub' ? (
@@ -280,77 +436,38 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Strategy Table (List View) */}
-          <div className={`flex flex-col rounded-[16px] border overflow-hidden mb-6 ${
-            theme === 'dark' ? 'bg-[#0F141A] border-white/5 shadow-sm' : 'bg-white border-[#EAECEF] shadow-sm'
-          }`}>
-            {/* Table Header */}
-            <div className={`hidden md:grid grid-cols-[1fr_140px_100px_120px_140px] gap-4 items-center px-6 py-4 border-b text-[12px] font-semibold ${
-              theme === 'dark' ? 'border-white/5 text-white/50' : 'border-slate-100 text-slate-500'
+          {/* Strategy View Mode */}
+          {viewMode === 'list' ? (
+            <div className={`flex flex-col rounded-[16px] border overflow-hidden mb-6 ${
+              theme === 'dark' ? 'bg-[#0F141A] border-white/5 shadow-sm' : 'bg-white border-[#EAECEF] shadow-sm'
             }`}>
-              <div>Strategy</div>
-              <div className="text-center">Risk Profile</div>
-              <div className="text-center">TVL</div>
-              <div className="flex items-center justify-center gap-1">
-                Current APY <Info size={14} className="opacity-70" />
+              {/* Table Header */}
+              <div className={`hidden md:grid grid-cols-[1fr_140px_100px_120px_140px] gap-4 items-center px-6 py-4 border-b text-[12px] font-semibold ${
+                theme === 'dark' ? 'border-white/5 text-white/50' : 'border-slate-100 text-slate-500'
+              }`}>
+                <div>Strategy</div>
+                <div className="text-center">Risk Profile</div>
+                <div className="text-center">TVL</div>
+                <div className="flex items-center justify-center gap-1">
+                  Current APY <Info size={14} className="opacity-70" />
+                </div>
+                <div className="text-right">Action</div>
               </div>
-              <div className="text-right">Action</div>
-            </div>
 
-            {/* Table Body */}
-            <div className="flex flex-col">
-              <StrategyRow 
-                token1Logo={hbarLogoUrlSmall} token1Fallback="H" token1Bg="bg-black"
-                token2Logo={wbtcLogoUrlSmall} token2Fallback="B" token2Bg="bg-[#F7931A]"
-                pair="HBAR / wBTC"
-                riskLevel="Balanced"
-                apy="14.2%"
-                tvl="$8.5M"
-                riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
-                riskTextClass="text-emerald-600 dark:text-emerald-500"
-              />
-              <StrategyRow 
-                token1Logo={hbarLogoUrlSmall} token1Fallback="H" token1Bg="bg-black"
-                token2Logo={null} token2Fallback="D" token2Bg="bg-purple-600"
-                pair="HBAR / DOVU"
-                riskLevel="Aggressive"
-                apy="62.1%"
-                tvl="$1.2M"
-                riskBgClass={theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50'}
-                riskTextClass="text-rose-600 dark:text-rose-500"
-              />
-              <StrategyRow 
-                token1Logo={hbarLogoUrlSmall} token1Fallback="H" token1Bg="bg-black"
-                token2Logo={wethLogoUrlSmall} token2Fallback="E" token2Bg="bg-blue-600"
-                pair="HBAR / wETH"
-                riskLevel="Balanced"
-                apy="11.4%"
-                tvl="$5.1M"
-                riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
-                riskTextClass="text-emerald-600 dark:text-emerald-500"
-              />
-              <StrategyRow 
-                token1Logo={hbarLogoUrlSmall} token1Fallback="H" token1Bg="bg-black"
-                token2Logo={usdcLogoUrlSmall} token2Fallback="U" token2Bg="bg-[#2775CA]"
-                pair="HBAR / USDC"
-                riskLevel="Balanced"
-                apy="10.2%"
-                tvl="$6.8M"
-                riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
-                riskTextClass="text-emerald-600 dark:text-emerald-500"
-              />
-              <StrategyRow 
-                token1Logo={sauceLogoUrlSmall} token1Fallback="S" token1Bg="bg-red-500"
-                token2Logo={usdcLogoUrlSmall} token2Fallback="U" token2Bg="bg-[#2775CA]"
-                pair="SAUCE / USDC"
-                riskLevel="Balanced"
-                apy="18.5%"
-                tvl="$2.9M"
-                riskBgClass={theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'}
-                riskTextClass="text-emerald-600 dark:text-emerald-500"
-              />
+              {/* Table Body */}
+              <div className="flex flex-col">
+                {strategies.map((strat, idx) => (
+                  <StrategyRow key={idx} {...strat} />
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              {strategies.map((strat, idx) => (
+                <StrategyCard key={idx} {...strat} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="flex flex-col items-center justify-center mt-2 mb-4">
