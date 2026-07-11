@@ -244,13 +244,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <button
                   key={days}
                   onClick={() => setDisplayLockDays(days)}
-                  className={`flex-1 py-2.5 rounded-[12px] text-[13px] font-bold transition-all duration-200 border ${displayLockDays === days ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
+                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-200 border ${displayLockDays === days ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
                 >
                   {days} Days
                 </button>
               ))}
               <div className="flex-1">
-                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[12px] transition-all duration-200 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
+                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[8px] transition-all duration-200 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
                   <input 
                     type="number"
                     placeholder="Custom"
