@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
-import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CircleNotch } from '@phosphor-icons/react';
+import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { ChevronDown } from 'lucide-react';
 
@@ -20,6 +20,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [hasDeposited, setHasDeposited] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [showNewVault, setShowNewVault] = useState<boolean>(false);
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
   const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
   const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>(null);
@@ -30,11 +33,6 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
   const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>(null);
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [showNewVault, setShowNewVault] = useState<boolean>(false);
-  const [portfolioValue, setPortfolioValue] = useState<number>(18642.75);
-  const [animatedPortfolioValue, setAnimatedPortfolioValue] = useState<number>(18642.75);
 
   const { balance } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -51,22 +49,6 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (animatedPortfolioValue < portfolioValue) {
-      const step = (portfolioValue - animatedPortfolioValue) / 20;
-      const interval = setInterval(() => {
-        setAnimatedPortfolioValue(prev => {
-          if (prev + step >= portfolioValue) {
-            clearInterval(interval);
-            return portfolioValue;
-          }
-          return prev + step;
-        });
-      }, 30);
-      return () => clearInterval(interval);
-    }
-  }, [portfolioValue, animatedPortfolioValue]);
 
   React.useEffect(() => {
     const fetchLogos = async () => {
@@ -99,6 +81,25 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const maturityDate = new Date();
   maturityDate.setDate(maturityDate.getDate() + displayLockDays);
   const formattedMaturityDate = maturityDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+  const handleDeposit = () => {
+    if (Number(depositAmount) <= 0) return;
+    setIsProcessing(true);
+    
+    // Simulate API call / processing delay
+    setTimeout(() => {
+      setIsProcessing(false);
+      setIsSuccess(true);
+      
+      // Keep success state for a moment, then update UI
+      setTimeout(() => {
+        setHasDeposited(true);
+        setIsSuccess(false);
+        setDepositAmount('');
+        setShowNewVault(true);
+      }, 1500); // Wait 1.5s to show success state before switching to "Deposited" layout
+    }, 1200); // 1.2s processing time
+  };
 
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
@@ -145,7 +146,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
             <label className="text-[13px] font-semibold text-slate-700 dark:text-white/80 mb-2">Deposit Amount</label>
-            <div className="flex items-center justify-between w-full h-[96px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] transition-all duration-200 hover:border-slate-300 dark:hover:border-white/20 focus-within:border-[#00A8E8] focus-within:ring-4 focus-within:ring-[#00A8E8]/10">
+            <div className="flex items-center justify-between w-full h-[96px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] transition-all">
               
               {/* Left Side: Input & USD Value */}
               <div className="flex flex-col justify-center h-full flex-1">
@@ -195,7 +196,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
                   {/* Token Dropdown Menu */}
                   <div 
-                    className={`absolute top-full right-0 mt-2 w-[220px] bg-white dark:bg-[#0F141A] backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-150 ease-out origin-top-right ${isDropdownOpen ? 'translate-y-0 scale-100 opacity-100 pointer-events-auto' : 'translate-y-1 scale-95 opacity-0 pointer-events-none'}`}
+                    className={`absolute top-full right-0 mt-2 w-[220px] bg-white dark:bg-[#0F141A] backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-150 ease-out origin-top ${isDropdownOpen ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto' : 'translate-y-1 opacity-0 scale-95 pointer-events-none'}`}
                   >
                     <div className="flex flex-col gap-0.5 max-h-[280px] overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
                       {TOKENS.map(token => (
@@ -244,13 +245,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <div className="flex items-center justify-between w-[96px]">
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
-                    className={`text-[11px] font-bold px-2 py-1 rounded-[6px] transition-colors duration-200 ${selectedPercent === '25%' ? 'bg-[#00A8E8] text-white' : 'text-[#00A8E8] hover:bg-[#00A8E8]/10'}`}>25%</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>25%</button>
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
-                    className={`text-[11px] font-bold px-2 py-1 rounded-[6px] transition-colors duration-200 ${selectedPercent === '50%' ? 'bg-[#00A8E8] text-white' : 'text-[#00A8E8] hover:bg-[#00A8E8]/10'}`}>50%</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>50%</button>
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === 'MAX' ? null : 'MAX')}
-                    className={`text-[11px] font-bold px-2 py-1 rounded-[6px] transition-colors duration-200 ${selectedPercent === 'MAX' ? 'bg-[#00A8E8] text-white' : 'text-[#00A8E8] hover:bg-[#00A8E8]/10'}`}>MAX</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>MAX</button>
                 </div>
               </div>
 
@@ -265,13 +266,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <button
                   key={days}
                   onClick={() => setDisplayLockDays(days)}
-                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-200 border ${displayLockDays === days ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm shadow-inner' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8] hover:shadow-md'}`}
+                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-150 ease-out border hover:shadow-md active:shadow-inner active:duration-100 ${displayLockDays === days ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
                 >
                   {days} Days
                 </button>
               ))}
               <div className="flex-1">
-                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[8px] transition-all duration-200 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm shadow-inner' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50 hover:shadow-md'}`}>
+                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[8px] transition-all duration-150 ease-out hover:shadow-md active:shadow-inner active:duration-100 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
                   <input 
                     type="number"
                     placeholder="Custom"
@@ -334,58 +335,48 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit / Withdraw Buttons */}
           <div className="mt-auto pt-4 w-full">
             {hasDeposited ? (
-              <div className="flex items-center gap-4 w-full animate-fade-in-up">
+              <div className="flex items-center gap-4 w-full">
                 <button 
                   className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white"
                 >
                   Deposit
                 </button>
                 <button 
-                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8] hover:bg-[#0090C7] text-white shadow-sm hover:shadow-md hover:brightness-105"
+                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8] hover:bg-[#0090C7] text-white shadow-sm"
                 >
                   Withdraw
                 </button>
               </div>
             ) : (
-              <div className="relative w-full">
-                {isSuccess && <div className="absolute inset-0 rounded-[8px] bg-[#16C784]/20 animate-pulse-ring z-0 pointer-events-none"></div>}
-                <button 
-                  disabled={isProcessing || isSuccess}
-                  onClick={() => {
-                    if (Number(depositAmount) > 0) {
-                      setIsProcessing(true);
-                      setTimeout(() => {
-                        setIsProcessing(false);
-                        setIsSuccess(true);
-                        setTimeout(() => {
-                          setHasDeposited(true);
-                          setShowNewVault(true);
-                          const amount = parseFloat(depositAmount) || 0;
-                          setPortfolioValue(prev => prev + amount);
-                          setTimeout(() => setIsSuccess(false), 2000);
-                        }, 1500);
-                      }, 1500);
-                    }
-                  }}
-                  className={`relative z-10 w-full h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 tracking-wide overflow-hidden shadow-sm hover:brightness-105 hover:shadow-md ${!isProcessing && !isSuccess ? 'active:scale-[0.98]' : ''} ${isSuccess ? 'bg-[#16C784] text-white border border-[#16C784]' : 'bg-[#00A8E8] hover:bg-[#0090C7] text-white border border-[#00A8E8]'}`}
-                >
-                  {isProcessing ? (
-                    <div className="flex items-center gap-2">
-                      <CircleNotch size={18} className="animate-spin" weight="bold" />
-                      <span>Processing...</span>
-                    </div>
-                  ) : isSuccess ? (
-                    <div className="flex items-center gap-2">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                        <path d="M5 13l4 4L19 7" strokeDasharray="24" strokeDashoffset="24" className="animate-draw" />
-                      </svg>
-                      <span>Deposited Successfully</span>
-                    </div>
-                  ) : (
-                    <span>Deposit to Vault</span>
-                  )}
-                </button>
-              </div>
+              <button 
+                onClick={handleDeposit}
+                disabled={isProcessing || isSuccess}
+                className={`w-full h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-100 ease-in active:scale-[0.98] tracking-wide shadow-sm relative ${
+                  isSuccess 
+                    ? 'bg-emerald-500 text-white pointer-events-none' 
+                    : isProcessing 
+                      ? 'bg-[#00A8E8]/80 text-white cursor-not-allowed' 
+                      : 'bg-[#00A8E8] hover:bg-[#0090C7] hover:brightness-105 hover:shadow-md text-white'
+                }`}
+              >
+                {isSuccess && (
+                  <div className="absolute inset-0 rounded-[8px] bg-emerald-500 animate-ping-once pointer-events-none"></div>
+                )}
+                
+                {isProcessing ? (
+                  <div className="flex items-center gap-2 z-10">
+                    <CircleNotch size={18} weight="bold" className="animate-spin" />
+                    <span>Processing...</span>
+                  </div>
+                ) : isSuccess ? (
+                  <div className="flex items-center gap-2 z-10">
+                    <CheckCircle size={18} weight="bold" />
+                    <span>Deposited Successfully</span>
+                  </div>
+                ) : (
+                  <span className="z-10">Deposit to Vault</span>
+                )}
+              </button>
             )}
           </div>
 
@@ -412,31 +403,34 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                {/* Dynamic New Vault Row */}
+                {/* Newly Deposited Vault (Animated) */}
                 {showNewVault && (
-                  <tr className="animate-fade-in-up hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        {activeToken === 'HBAR' && hbarLogoUrlSmall ? <img src={hbarLogoUrlSmall} alt="HBAR" className="w-8 h-8 rounded-full" /> :
-                         activeToken === 'USDT' && usdtLogoUrlSmall ? <img src={usdtLogoUrlSmall} alt="USDT" className="w-8 h-8 rounded-full" /> :
-                         activeToken === 'USDC' && usdcLogoUrlSmall ? <img src={usdcLogoUrlSmall} alt="USDC" className="w-8 h-8 rounded-full" /> :
-                         activeToken === 'SAUCE' && sauceLogoUrlSmall ? <img src={sauceLogoUrlSmall} alt="SAUCE" className="w-8 h-8 rounded-full" /> :
-                         activeToken === 'PACK' && packLogoUrlSmall ? <img src={packLogoUrlSmall} alt="PACK" className="w-8 h-8 rounded-full" /> :
-                         <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[12px] font-black">{activeToken.charAt(0)}</div>}
+                        {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
+                          <img src={hbarLogoUrlSmall} alt="HBAR" className="w-8 h-8 rounded-full" />
+                        ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
+                          <img src={usdtLogoUrlSmall} alt="USDT" className="w-8 h-8 rounded-full" />
+                        ) : activeToken === 'USDC' && usdcLogoUrlSmall ? (
+                          <img src={usdcLogoUrlSmall} alt="USDC" className="w-8 h-8 rounded-full" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[12px] font-black">{activeToken.charAt(0)}</div>
+                        )}
                         <span className="text-[14px] font-bold text-slate-900 dark:text-white">{activeToken}</span>
                       </div>
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className="text-[14px] font-bold text-slate-900 dark:text-white">{Number(depositAmount).toLocaleString('en-US')} {activeToken}</span>
-                        <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">${(parseFloat(depositAmount) * 0.089).toFixed(2)}</span>
+                        <span className="text-[14px] font-bold text-slate-900 dark:text-white">{depositAmount || '0'} {activeToken}</span>
+                        <span className="text-[12px] font-medium text-slate-500 dark:text-white/50">--</span>
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="text-[14px] font-bold text-[#10B981]">{[7,30,60].includes(displayLockDays) ? (displayLockDays === 7 ? '1.20%' : displayLockDays === 30 ? '3.30%' : '5.40%') : '--'}</span>
+                      <span className="text-[14px] font-bold text-[#10B981]">{displayLockDays === 7 ? '1.20%' : displayLockDays === 30 ? '3.30%' : displayLockDays === 60 ? '5.40%' : '--'}</span>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="text-[14px] font-bold text-[#10B981]">0.00 {activeToken}</span>
+                      <span className="text-[14px] font-bold text-[#10B981]">+0.00 {activeToken}</span>
                     </td>
                     <td className="px-6 py-5">
                       <span className="text-[13px] font-semibold text-slate-700 dark:text-white/80">{formattedMaturityDate}</span>
@@ -448,23 +442,24 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           <span className="text-[11px] font-semibold text-slate-400 dark:text-white/40">{displayLockDays} days left</span>
                         </div>
                         <div className="w-full h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '0%' }}></div>
+                          <div className="h-full bg-[#00A8E8] rounded-full transition-all duration-1000 ease-out" style={{ width: '0%' }}></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-5">
                       <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></div>
-                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Active</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></div>
+                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Just Added</span>
                       </div>
                     </td>
                     <td className="px-6 py-5 text-right">
-                      <button className="text-[12px] font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 px-3 py-1.5 rounded-[8px] transition-colors hover:shadow-sm">
+                      <button className="text-[12px] font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 px-3 py-1.5 rounded-[8px] transition-colors">
                         Emergency Unlock
                       </button>
                     </td>
                   </tr>
                 )}
+
                 {/* Vault Row 1 */}
                 <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-5">
@@ -649,7 +644,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
             <div className="flex flex-col h-full z-10">
               <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Portfolio</span>
-              <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">${animatedPortfolioValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+              <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">$18,642.75</span>
               
               <div className="mt-auto pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-start w-full">
                 <div className="flex items-center gap-1.5 mb-1.5">
