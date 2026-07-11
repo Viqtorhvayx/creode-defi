@@ -255,8 +255,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         </div>
         <div className="w-px h-8 bg-[#EAECEF] dark:bg-white/10"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
-          <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">Total Value Locked (TVL)</span>
-          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">24.58M HBAR <span className="text-[11px] text-slate-500 dark:text-white/50 font-medium ml-1">($2.19M USD)</span></span>
+          <span className="text-[11px] font-semibold text-slate-500 dark:text-white/40 mb-1">TVL</span>
+          <span className="text-[13px] font-bold text-slate-900 dark:text-white/90">24.58M HBAR</span>
         </div>
         <div className="w-px h-8 bg-[#EAECEF] dark:bg-white/10"></div>
         <div className="flex flex-col text-left flex-1 pl-6">
