@@ -96,16 +96,19 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
         {/* RIGHT COLUMN: Vault Lock Card */}
         <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-white dark:bg-[#0F141A] border border-slate-100 dark:border-white/5 rounded-[16px] p-6 lg:p-8 flex flex-col relative overflow-hidden h-full shadow-sm">
+          <div className="bg-white dark:bg-[#0F141A] border border-[#00A8E8]/50 rounded-[16px] p-6 lg:p-8 flex flex-col relative overflow-hidden h-full">
           
           {/* Header Row */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <CustomVaultIcon className="w-8 h-8 text-[#00A8E8]" />
-              <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white leading-none">Vault</h3>
+          <div className="flex justify-between items-start lg:items-center mb-6">
+            <div className="flex items-center gap-4 mt-[-6px] lg:mt-[-12px]">
+              <CustomVaultIcon className="w-12 h-12 text-black dark:text-white" />
+              <div className="flex flex-col mt-2 lg:mt-0">
+                <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-0.5 leading-none">Vault</h3>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-white/60">Time-locked savings</span>
+              </div>
             </div>
             
-            <div className="flex flex-col items-start px-3 py-1.5 w-fit rounded-[12px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none">
+            <div className="flex flex-col items-start px-3 py-1.5 w-fit rounded-[12px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none mt-[-6px] lg:mt-[-12px]">
               <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-none mb-1">Secured by</span>
               <div className="flex items-center gap-1.5">
                 {hbarLogoUrlSmall ? (
@@ -217,15 +220,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </div>
 
                 {/* Shortcut Buttons */}
-                <div className="flex items-center justify-end gap-3 w-full pr-1">
+                <div className="flex items-center justify-between w-[96px]">
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>25%</button>
-                  <span className="text-slate-200 dark:text-white/20 text-[10px]">|</span>
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>50%</button>
-                  <span className="text-slate-200 dark:text-white/20 text-[10px]">|</span>
                   <button 
                     onClick={() => setSelectedPercent(prev => prev === 'MAX' ? null : 'MAX')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>MAX</button>
@@ -249,12 +250,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </button>
               ))}
               <div className="flex-1">
-                <div className={`flex flex-col px-3 py-[3px] bg-white dark:bg-[#0B0F14] border rounded-[12px] transition-all duration-200 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8]' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
-                  <span className="text-[9px] text-slate-400 dark:text-white/50 font-medium">Custom</span>
+                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[12px] transition-all duration-200 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
                   <input 
                     type="number"
-                    placeholder="Enter days"
-                    className="bg-transparent outline-none border-none text-[12px] font-bold w-full text-slate-900 dark:text-white p-0 m-0 leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    placeholder="Custom"
+                    className="bg-transparent outline-none border-none text-[13px] font-bold w-full text-center text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 p-0 m-0 leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       if (!isNaN(val)) setDisplayLockDays(val);
@@ -290,7 +290,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           {/* Warning Text */}
           <div className="flex items-start gap-2 mb-6 bg-red-50 dark:bg-red-500/10 p-3 rounded-[12px] border border-red-100 dark:border-red-500/20">
-            <Warning size={16} weight="fill" className="text-red-500 mt-[1px] shrink-0" />
+            <Warning size={16} weight="regular" className="text-red-500 mt-[1px] shrink-0" />
             <span className="text-[12px] font-medium text-red-600 dark:text-red-400 leading-snug">Withdrawing before maturity incurs a 5% fee and forfeits pending yield.</span>
           </div>
 
@@ -315,12 +315,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             {hasDeposited ? (
               <div className="flex items-center gap-4 w-full">
                 <button 
-                  className="flex-1 h-12 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white"
+                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white"
                 >
                   Deposit
                 </button>
                 <button 
-                  className="flex-1 h-12 rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8] hover:bg-[#0090C7] text-white shadow-sm"
+                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8] hover:bg-[#0090C7] text-white shadow-sm"
                 >
                   Withdraw
                 </button>
@@ -332,7 +332,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     setHasDeposited(true);
                   }
                 }}
-                className="w-full h-12 bg-[#00A8E8] hover:bg-[#0090C7] text-white rounded-[12px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide shadow-sm"
+                className="w-full h-12 bg-[#00A8E8] hover:bg-[#0090C7] text-white rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide shadow-sm"
               >
                 Deposit to Vault
               </button>
