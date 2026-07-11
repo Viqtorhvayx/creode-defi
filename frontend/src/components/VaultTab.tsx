@@ -124,7 +124,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
             <label className="text-[13px] font-semibold text-slate-700 dark:text-white/80 mb-2">Deposit Amount</label>
-            <div className="flex items-center justify-between w-full h-[96px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] transition-all focus-within:border-[#00A8E8]/50">
+            <div className="flex items-center justify-between w-full h-[96px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] transition-all">
               
               {/* Left Side: Input & USD Value */}
               <div className="flex flex-col justify-center h-full flex-1">
@@ -145,7 +145,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   {/* Token Selector Trigger */}
                   <div 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[96px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between gap-1 px-3 py-1.5 w-[96px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                   >
                     {activeToken === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
