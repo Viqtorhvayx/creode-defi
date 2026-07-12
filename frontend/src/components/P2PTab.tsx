@@ -8,7 +8,7 @@ interface P2PTabProps {
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
-  const [activeMarketTab, setActiveMarketTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
+  const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('');
@@ -77,22 +77,24 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           
           {/* Top Row: Market Chart Module */}
           <div className="w-full">
-            <div className="flex items-center gap-6 mb-4 mt-[3px]">
-              {['Market Overview', 'Order Book'].map((tab) => (
-                <div 
-                  key={tab}
-                  className={`pb-2 text-[14px] cursor-pointer relative transition-colors ${activeMarketTab === tab ? 'text-[#00A8E8] font-bold' : textMuted + ' font-semibold hover:' + textMain}`}
-                  onClick={() => setActiveMarketTab(tab as any)}
-                >
-                  {tab}
-                  {activeMarketTab === tab && (
-                    <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
-                  )}
-                </div>
-              ))}
-            </div>
-
             <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+              
+              {/* Chart Tabs (Market Overview / Order Book) */}
+              <div className={`flex items-center gap-6 border-b ${borderColor} mb-6`}>
+                {['Market Overview', 'Order Book'].map((tab) => (
+                  <div 
+                    key={tab}
+                    className={`pb-3 text-[14px] cursor-pointer relative transition-colors ${activeChartTab === tab ? 'text-[#00A8E8] font-bold' : textMuted + ' font-semibold hover:' + textMain}`}
+                    onClick={() => setActiveChartTab(tab as any)}
+                  >
+                    {tab}
+                    {activeChartTab === tab && (
+                      <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
               {/* Toolbar */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex flex-col gap-1">
@@ -253,14 +255,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         <div className="flex flex-col gap-6 w-full xl:w-[350px] shrink-0 h-full">
           
           <div className="w-full">
-            <div className="flex items-center mb-4 mt-[3px]">
-              <span className={`text-[15px] font-bold tracking-tight pb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Create P2P Order</span>
-            </div>
-            
             <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden`}>
               
               {/* Buy / Sell Toggle */}
-              <div className="p-4 pb-2">
+              <div className="px-6 pt-6 pb-2">
                 <div className={`flex ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-black/5'} border p-1 rounded-full relative w-full h-[42px] items-center font-bold text-[14px]`}>
                    <div 
                      className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Long' ? 'text-white' : textMuted + ' hover:text-white'}`}
