@@ -77,7 +77,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           
           {/* Top Row: Market Chart Module */}
           <div className="w-full">
-            <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col h-[550px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col h-[620px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
               
               {/* Chart Tabs (Market Overview / Order Book) */}
               <div className={`flex items-center gap-6 border-b ${borderColor} mb-6`}>
@@ -255,11 +255,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         <div className="lg:col-span-5 flex flex-col gap-6 w-full h-full">
           
           <div className="w-full h-full">
-            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden h-[550px]`}>
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden h-[620px]`}>
               
               {/* Buy / Sell Toggle */}
               <div className="px-6 pt-6 pb-2">
-                <div className={`flex ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-black/5'} border p-1 rounded-full relative w-full h-[42px] items-center font-bold text-[14px]`}>
+                <div className={`flex ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-black/5'} border p-1 rounded-full relative w-full h-[48px] items-center font-bold text-[14px]`}>
                    <div 
                      className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Long' ? 'text-white' : textMuted + ' hover:text-white'}`}
                      onClick={() => setTradeSide('Long')}
@@ -267,13 +267,13 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                      Buy
                    </div>
                    <div 
-                     className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Short' ? 'text-slate-900 dark:text-white' : textMuted + ' hover:text-white'}`}
+                     className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Short' ? 'text-white' : textMuted + ' hover:text-white'}`}
                      onClick={() => setTradeSide('Short')}
                    >
                      Sell
                    </div>
                    <div 
-                     className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#00c076] left-1' : 'bg-white dark:bg-[#1e2330] left-[calc(50%+2px)] border dark:border-white/10'}`}
+                     className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#00c076] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
                    ></div>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 {/* Amount Input */}
-                <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] p-3 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
+                <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
                   <div className="flex items-center justify-between gap-2">
                     <input 
                       type="text" 
