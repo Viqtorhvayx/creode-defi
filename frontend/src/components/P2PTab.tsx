@@ -12,14 +12,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   
   const [orderSide, setOrderSide] = useState<'Long' | 'Short'>('Long');
   const [orderType, setOrderType] = useState<'Market' | 'Limit'>('Market');
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
   
   const [amount, setAmount] = useState('1,500.00');
   const [sliderValue, setSliderValue] = useState(25);
   
   const [activeBottomTab, setActiveBottomTab] = useState<'My Orders' | 'Positions' | 'Assets' | 'Open Peer Offers'>('My Orders');
-  
-  // Mock connected state for demonstration
-  const [isConnected, setIsConnected] = useState(false);
 
   // Styles
   const cardBg = theme === 'dark' ? 'bg-[#0F141A]' : 'bg-white';
@@ -27,8 +25,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-white/60' : 'text-slate-500';
   
-  const greenColor = '#10B981'; 
-  const redColor = '#EF4444';
+  const greenColor = '#10B981'; // Match design
+  const blueColor = '#00A8E8';
 
   return (
     <div className={`w-full flex flex-col gap-6 ${textMain}`}>
@@ -117,8 +115,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
         {/* 2. ORDER PANEL (RIGHT) */}
         <div className={`w-full xl:w-[400px] shrink-0 ${cardBg} border ${borderColor} rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] p-6 flex flex-col h-full`}>
-          {/* Removed "Create P2P Order" heading */}
-
           {/* Long/Short Toggle */}
           <div className={`flex bg-slate-50 dark:bg-white/5 border ${borderColor} rounded-full p-1 mb-5 relative w-full h-[46px] items-center font-bold text-[14px]`}>
             <div 
@@ -154,42 +150,40 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             ))}
           </div>
 
-          {/* Market Order Info Box - Reduced height, inline text */}
-          <div className="bg-[#10B981]/10 border border-[#10B981]/20 rounded-xl px-3 py-3 flex items-center gap-2 mb-6 h-[48px]">
-            <Zap className="w-4 h-4 text-[#10B981] shrink-0" />
-            <div className="flex items-center gap-1.5 w-full">
-              <span className="text-[12px] font-bold text-slate-900 dark:text-white leading-none">Market Order:</span>
-              <span className={`text-[11px] text-slate-600 dark:text-white/70 font-medium whitespace-nowrap overflow-hidden text-ellipsis leading-none mt-[1px]`}>Your order will be executed instantly at the best available price.</span>
+          {/* Market Order Info Box */}
+          <div className="bg-[#10B981]/10 border border-[#10B981]/20 rounded-xl p-4 flex gap-3 mb-6">
+            <Zap className="w-5 h-5 text-[#10B981] shrink-0 mt-0.5" />
+            <div className="flex flex-col">
+              <span className="text-[13px] font-bold text-slate-900 dark:text-white mb-1">Market Order</span>
+              <span className={`text-[11px] text-slate-600 dark:text-white/70 leading-relaxed font-medium`}>Your order will be executed instantly at the best available price.</span>
             </div>
           </div>
 
-          {/* Amount Input - Reduced height to match info box (48px) */}
+          {/* Amount Input */}
           <div className="flex flex-col mb-2">
-            <div className="flex justify-between items-end mb-1.5">
-              <label className={`text-[12px] font-bold ${textMuted}`}>Amount (You pay)</label>
-              <span className={`text-[11px] font-bold ${textMuted}`}>≈ ${amount} USD</span>
-            </div>
-            <div className={`flex items-center justify-between w-full h-[48px] px-3 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors`}>
-              <div className="flex flex-col justify-center w-full">
+            <label className={`text-[13px] font-bold ${textMuted} mb-2`}>Amount (You pay)</label>
+            <div className={`flex items-center justify-between w-full h-[88px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors`}>
+              <div className="flex flex-col justify-center h-full">
                 <input 
                   type="text" 
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="bg-transparent outline-none border-none text-[16px] font-bold w-full text-left [appearance:textfield] text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 m-0 p-0 leading-none" 
+                  className="bg-transparent outline-none border-none text-[28px] font-bold w-full text-left [appearance:textfield] text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 m-0 p-0 leading-none mb-1" 
                 />
+                <span className={`text-[13px] font-bold ${textMuted}`}>≈ ${amount} USD</span>
               </div>
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer">
-                <div className="w-4 h-4 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
-                   <span className="text-white text-[9px] font-bold">$</span>
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer">
+                <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
+                   <span className="text-white text-[10px] font-bold">$</span>
                 </div>
-                <span className="text-[12px] font-bold text-slate-900 dark:text-white">USDC</span>
+                <span className="text-[13px] font-bold text-slate-900 dark:text-white">USDC</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
               </div>
             </div>
           </div>
 
-          {/* Available */}
-          <div className="flex justify-between items-center mb-6 px-1 mt-1">
+          {/* Available & Equivalent */}
+          <div className="flex justify-between items-center mb-6 px-1">
             <span className={`text-[12px] font-bold ${textMuted}`}>Available: <span className="text-[#00A8E8] cursor-pointer hover:underline">5,420 USDC</span></span>
             <span className={`text-[12px] font-bold ${textMain}`}>$123.75</span>
           </div>
@@ -248,12 +242,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
           {/* CTA */}
           <button 
-            onClick={() => {
-              if (!isConnected) setIsConnected(true);
-            }}
-            className={`mt-auto w-full ${!isConnected ? 'bg-[#00A8E8] hover:bg-[#0090C7]' : (orderSide === 'Long' ? 'bg-[#10B981] hover:bg-[#059669]' : 'bg-[#EF4444] hover:bg-[#DC2626]')} text-white font-bold text-[15px] py-4 rounded-[12px] shadow-sm transition-colors tracking-wide`}
+            className="mt-auto w-full bg-[#10B981] hover:bg-[#059669] text-white font-bold text-[15px] py-4 rounded-[12px] shadow-sm transition-colors tracking-wide"
+            onClick={() => setIsWalletConnected(true)}
           >
-            {!isConnected ? 'Connect Wallet' : (orderSide === 'Long' ? 'Long' : 'Short')}
+            {isWalletConnected ? orderSide : 'Connect Wallet'}
           </button>
         </div>
 
@@ -280,11 +272,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         {/* Empty State */}
         <div className="flex-1 flex flex-col items-center justify-center py-16">
           <div className="relative mb-6">
-            <div className="w-[84px] h-[84px] rounded-full bg-[#00A8E8]/5 dark:bg-[#00A8E8]/10 flex items-center justify-center">
-              <FileText className="w-10 h-10 text-[#00A8E8]/40 dark:text-[#00A8E8]/40 stroke-[1.5]" />
+            <div className="w-[84px] h-[84px] rounded-full bg-[#00A8E8]/10 dark:bg-[#00A8E8]/5 flex items-center justify-center">
+              <FileText className="w-10 h-10 text-[#00A8E8]/40 dark:text-[#00A8E8]/30 stroke-[1.5]" />
             </div>
             <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-white dark:bg-[#0F141A] shadow-sm flex items-center justify-center p-1.5">
-              <div className="w-full h-full rounded-full bg-[#00A8E8]/10 flex items-center justify-center">
+              <div className="w-full h-full rounded-full bg-[#00A8E8]/20 dark:bg-[#00A8E8]/20 flex items-center justify-center">
                 <Search className="w-4 h-4 text-[#00A8E8] stroke-[3]" />
               </div>
             </div>
@@ -293,7 +285,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <p className={`text-[14px] font-bold ${textMuted} mb-6 text-center`}>
             You haven't created any P2P orders yet.
           </p>
-          <button className="bg-[#00A8E8] hover:bg-[#0090C7] text-white font-bold text-[13px] px-6 py-2.5 rounded-lg shadow-sm transition-colors">
+          <button className="bg-[#00A8E8] hover:opacity-90 text-white font-bold text-[13px] px-6 py-2.5 rounded-lg shadow-sm transition-colors">
             Place Your First Order
           </button>
         </div>
