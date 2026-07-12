@@ -22,7 +22,7 @@ interface EarnTabProps {
 
 export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   const [activeTab, setActiveTab] = useState('Yield Hub');
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   
   // State for token logos
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
