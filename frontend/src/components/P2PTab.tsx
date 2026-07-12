@@ -10,13 +10,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeTimeFilter, setActiveTimeFilter] = useState('24H');
   
-  const [orderSide, setOrderSide] = useState<'Buy' | 'Sell'>('Buy');
+  const [orderSide, setOrderSide] = useState<'Long' | 'Short'>('Long');
   const [orderType, setOrderType] = useState<'Market' | 'Limit'>('Market');
   
   const [amount, setAmount] = useState('1,500.00');
   const [sliderValue, setSliderValue] = useState(25);
   
   const [activeBottomTab, setActiveBottomTab] = useState<'My Orders' | 'Positions' | 'Assets' | 'Open Peer Offers'>('My Orders');
+  
+  // Mock connected state for demonstration
+  const [isConnected, setIsConnected] = useState(false);
 
   // Styles
   const cardBg = theme === 'dark' ? 'bg-[#0F141A]' : 'bg-white';
@@ -24,8 +27,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-white/60' : 'text-slate-500';
   
-  const greenColor = '#10B981'; // Match design
-  const blueColor = '#3B82F6';
+  const greenColor = '#10B981'; 
+  const redColor = '#EF4444';
 
   return (
     <div className={`w-full flex flex-col gap-6 ${textMain}`}>
@@ -45,11 +48,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   <div 
                     key={tab}
                     onClick={() => setActiveChartTab(tab as any)}
-                    className={`pb-2 text-[14px] font-bold cursor-pointer relative transition-colors ${activeChartTab === tab ? 'text-[#3B82F6]' : textMuted + ' hover:' + textMain}`}
+                    className={`pb-2 text-[14px] font-bold cursor-pointer relative transition-colors ${activeChartTab === tab ? 'text-[#00A8E8]' : textMuted + ' hover:' + textMain}`}
                   >
                     {tab}
                     {activeChartTab === tab && (
-                      <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#3B82F6] rounded-t-full" />
+                      <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full" />
                     )}
                   </div>
                 ))}
@@ -74,7 +77,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                    <button
                      key={time}
                      onClick={() => setActiveTimeFilter(time)}
-                     className={`px-3 py-1.5 text-[12px] font-bold rounded-md transition-colors ${activeTimeFilter === time ? 'bg-white dark:bg-[#0F141A] text-[#3B82F6] shadow-sm border border-slate-200 dark:border-white/10' : textMuted + ' hover:' + textMain}`}
+                     className={`px-3 py-1.5 text-[12px] font-bold rounded-md transition-colors ${activeTimeFilter === time ? 'bg-white dark:bg-[#0F141A] text-[#00A8E8] shadow-sm border border-slate-200 dark:border-white/10' : textMuted + ' hover:' + textMain}`}
                    >
                      {time}
                    </button>
@@ -114,24 +117,24 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
         {/* 2. ORDER PANEL (RIGHT) */}
         <div className={`w-full xl:w-[400px] shrink-0 ${cardBg} border ${borderColor} rounded-[16px] shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] p-6 flex flex-col h-full`}>
-          <h2 className="text-[18px] font-bold tracking-tight mb-5">Create P2P Order</h2>
+          {/* Removed "Create P2P Order" heading */}
 
-          {/* Buy/Sell Toggle */}
+          {/* Long/Short Toggle */}
           <div className={`flex bg-slate-50 dark:bg-white/5 border ${borderColor} rounded-full p-1 mb-5 relative w-full h-[46px] items-center font-bold text-[14px]`}>
             <div 
-              className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${orderSide === 'Buy' ? 'text-white' : textMuted + ' hover:' + textMain}`}
-              onClick={() => setOrderSide('Buy')}
+              className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${orderSide === 'Long' ? 'text-white' : textMuted + ' hover:' + textMain}`}
+              onClick={() => setOrderSide('Long')}
             >
-              Buy
+              Long
             </div>
             <div 
-              className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${orderSide === 'Sell' ? 'text-white' : textMuted + ' hover:' + textMain}`}
-              onClick={() => setOrderSide('Sell')}
+              className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${orderSide === 'Short' ? 'text-white' : textMuted + ' hover:' + textMain}`}
+              onClick={() => setOrderSide('Short')}
             >
-              Sell
+              Short
             </div>
             <div 
-              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${orderSide === 'Buy' ? 'bg-[#10B981] left-1' : 'bg-[#EF4444] left-[calc(50%+2px)]'}`}
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${orderSide === 'Long' ? 'bg-[#10B981] left-1' : 'bg-[#EF4444] left-[calc(50%+2px)]'}`}
             ></div>
           </div>
 
@@ -141,51 +144,53 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               <div 
                 key={tab}
                 onClick={() => setOrderType(tab as any)}
-                className={`pb-2 text-[14px] font-bold cursor-pointer relative transition-colors ${orderType === tab ? 'text-[#3B82F6]' : textMuted + ' hover:' + textMain}`}
+                className={`pb-2 text-[14px] font-bold cursor-pointer relative transition-colors ${orderType === tab ? 'text-[#00A8E8]' : textMuted + ' hover:' + textMain}`}
               >
                 {tab}
                 {orderType === tab && (
-                  <div className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-[#3B82F6] rounded-t-full" />
+                  <div className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full" />
                 )}
               </div>
             ))}
           </div>
 
-          {/* Market Order Info Box */}
-          <div className="bg-[#10B981]/10 border border-[#10B981]/20 rounded-xl p-4 flex gap-3 mb-6">
-            <Zap className="w-5 h-5 text-[#10B981] shrink-0 mt-0.5" />
-            <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-slate-900 dark:text-white mb-1">Market Order</span>
-              <span className={`text-[12px] text-slate-600 dark:text-white/70 leading-relaxed font-medium`}>Your order will be executed instantly at the best available price.</span>
+          {/* Market Order Info Box - Reduced height, inline text */}
+          <div className="bg-[#10B981]/10 border border-[#10B981]/20 rounded-xl px-3 py-3 flex items-center gap-2 mb-6 h-[48px]">
+            <Zap className="w-4 h-4 text-[#10B981] shrink-0" />
+            <div className="flex items-center gap-1.5 w-full">
+              <span className="text-[12px] font-bold text-slate-900 dark:text-white leading-none">Market Order:</span>
+              <span className={`text-[11px] text-slate-600 dark:text-white/70 font-medium whitespace-nowrap overflow-hidden text-ellipsis leading-none mt-[1px]`}>Your order will be executed instantly at the best available price.</span>
             </div>
           </div>
 
-          {/* Amount Input */}
+          {/* Amount Input - Reduced height to match info box (48px) */}
           <div className="flex flex-col mb-2">
-            <label className={`text-[13px] font-bold ${textMuted} mb-2`}>Amount (You pay)</label>
-            <div className={`flex items-center justify-between w-full h-[88px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] focus-within:border-[#3B82F6] dark:focus-within:border-[#3B82F6] transition-colors`}>
-              <div className="flex flex-col justify-center h-full">
+            <div className="flex justify-between items-end mb-1.5">
+              <label className={`text-[12px] font-bold ${textMuted}`}>Amount (You pay)</label>
+              <span className={`text-[11px] font-bold ${textMuted}`}>≈ ${amount} USD</span>
+            </div>
+            <div className={`flex items-center justify-between w-full h-[48px] px-3 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] focus-within:border-[#00A8E8] dark:focus-within:border-[#00A8E8] transition-colors`}>
+              <div className="flex flex-col justify-center w-full">
                 <input 
                   type="text" 
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="bg-transparent outline-none border-none text-[28px] font-bold w-full text-left [appearance:textfield] text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 m-0 p-0 leading-none mb-1" 
+                  className="bg-transparent outline-none border-none text-[16px] font-bold w-full text-left [appearance:textfield] text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 m-0 p-0 leading-none" 
                 />
-                <span className={`text-[13px] font-bold ${textMuted}`}>≈ ${amount} USD</span>
               </div>
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer">
-                <div className="w-5 h-5 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
-                   <span className="text-white text-[10px] font-bold">$</span>
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer">
+                <div className="w-4 h-4 bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
+                   <span className="text-white text-[9px] font-bold">$</span>
                 </div>
-                <span className="text-[13px] font-bold text-slate-900 dark:text-white">USDC</span>
+                <span className="text-[12px] font-bold text-slate-900 dark:text-white">USDC</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
               </div>
             </div>
           </div>
 
-          {/* Available & Equivalent */}
-          <div className="flex justify-between items-center mb-6 px-1">
-            <span className={`text-[12px] font-bold ${textMuted}`}>Available: <span className="text-[#3B82F6] cursor-pointer hover:underline">5,420 USDC</span></span>
+          {/* Available */}
+          <div className="flex justify-between items-center mb-6 px-1 mt-1">
+            <span className={`text-[12px] font-bold ${textMuted}`}>Available: <span className="text-[#00A8E8] cursor-pointer hover:underline">5,420 USDC</span></span>
             <span className={`text-[12px] font-bold ${textMain}`}>$123.75</span>
           </div>
 
@@ -193,23 +198,23 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className="mb-8 px-2 mt-4">
             <div className="relative h-1.5 bg-slate-100 dark:bg-white/5 rounded-full w-full">
               {/* Active Track */}
-              <div className="absolute left-0 top-0 bottom-0 bg-[#3B82F6] rounded-full z-10" style={{ width: `${sliderValue}%` }}></div>
+              <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10" style={{ width: `${sliderValue}%` }}></div>
               
               {/* Markers & Labels */}
               {[0, 25, 50, 75, 100].map(val => (
                 <div key={val} className="absolute top-1/2 -translate-y-1/2" style={{ left: `${val}%` }}>
-                  <div className={`w-2.5 h-2.5 rounded-full -ml-[5px] relative z-20 ${val <= sliderValue ? 'bg-[#3B82F6]' : 'bg-slate-200 dark:bg-white/20'}`}></div>
+                  <div className={`w-2.5 h-2.5 rounded-full -ml-[5px] relative z-20 ${val <= sliderValue ? 'bg-[#00A8E8]' : 'bg-slate-200 dark:bg-white/20'}`}></div>
                   <span className={`absolute top-4 left-1/2 -translate-x-1/2 text-[11px] font-bold ${val === sliderValue ? textMain : textMuted}`}>{val}%</span>
                 </div>
               ))}
               
               {/* Current Value Tooltip above thumb */}
               <div 
-                className="absolute top-[-28px] -ml-[18px] w-[36px] h-[20px] bg-[#3B82F6] text-white text-[10px] font-bold flex items-center justify-center rounded-md z-30 pointer-events-none"
+                className="absolute top-[-28px] -ml-[18px] w-[36px] h-[20px] bg-[#00A8E8] text-white text-[10px] font-bold flex items-center justify-center rounded-md z-30 pointer-events-none"
                 style={{ left: `${sliderValue}%` }}
               >
                 {sliderValue}%
-                <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#3B82F6]"></div>
+                <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#00A8E8]"></div>
               </div>
 
               <input 
@@ -242,8 +247,13 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           </div>
 
           {/* CTA */}
-          <button className="mt-auto w-full bg-[#10B981] hover:bg-[#059669] text-white font-bold text-[15px] py-4 rounded-[12px] shadow-sm transition-colors tracking-wide">
-            Place Market Order
+          <button 
+            onClick={() => {
+              if (!isConnected) setIsConnected(true);
+            }}
+            className={`mt-auto w-full ${!isConnected ? 'bg-[#00A8E8] hover:bg-[#0090C7]' : (orderSide === 'Long' ? 'bg-[#10B981] hover:bg-[#059669]' : 'bg-[#EF4444] hover:bg-[#DC2626]')} text-white font-bold text-[15px] py-4 rounded-[12px] shadow-sm transition-colors tracking-wide`}
+          >
+            {!isConnected ? 'Connect Wallet' : (orderSide === 'Long' ? 'Long' : 'Short')}
           </button>
         </div>
 
@@ -257,11 +267,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             <div 
               key={tab}
               onClick={() => setActiveBottomTab(tab as any)}
-              className={`pb-3 text-[14px] font-bold cursor-pointer relative transition-colors ${activeBottomTab === tab ? 'text-[#3B82F6]' : textMuted + ' hover:' + textMain}`}
+              className={`pb-3 text-[14px] font-bold cursor-pointer relative transition-colors ${activeBottomTab === tab ? 'text-[#00A8E8]' : textMuted + ' hover:' + textMain}`}
             >
               {tab}
               {activeBottomTab === tab && (
-                <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#3B82F6] rounded-t-full" />
+                <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full" />
               )}
             </div>
           ))}
@@ -270,12 +280,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         {/* Empty State */}
         <div className="flex-1 flex flex-col items-center justify-center py-16">
           <div className="relative mb-6">
-            <div className="w-[84px] h-[84px] rounded-full bg-blue-50 dark:bg-blue-500/5 flex items-center justify-center">
-              <FileText className="w-10 h-10 text-[#3B82F6]/40 dark:text-[#3B82F6]/30 stroke-[1.5]" />
+            <div className="w-[84px] h-[84px] rounded-full bg-[#00A8E8]/5 dark:bg-[#00A8E8]/10 flex items-center justify-center">
+              <FileText className="w-10 h-10 text-[#00A8E8]/40 dark:text-[#00A8E8]/40 stroke-[1.5]" />
             </div>
             <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-white dark:bg-[#0F141A] shadow-sm flex items-center justify-center p-1.5">
-              <div className="w-full h-full rounded-full bg-blue-100 dark:bg-[#3B82F6]/20 flex items-center justify-center">
-                <Search className="w-4 h-4 text-[#3B82F6] stroke-[3]" />
+              <div className="w-full h-full rounded-full bg-[#00A8E8]/10 flex items-center justify-center">
+                <Search className="w-4 h-4 text-[#00A8E8] stroke-[3]" />
               </div>
             </div>
           </div>
@@ -283,7 +293,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <p className={`text-[14px] font-bold ${textMuted} mb-6 text-center`}>
             You haven't created any P2P orders yet.
           </p>
-          <button className="bg-[#3B82F6] hover:bg-blue-600 text-white font-bold text-[13px] px-6 py-2.5 rounded-lg shadow-sm transition-colors">
+          <button className="bg-[#00A8E8] hover:bg-[#0090C7] text-white font-bold text-[13px] px-6 py-2.5 rounded-lg shadow-sm transition-colors">
             Place Your First Order
           </button>
         </div>
