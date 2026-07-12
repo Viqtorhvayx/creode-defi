@@ -70,10 +70,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
       </div>
 
       {/* MAIN LAYOUT */}
-      <div className="flex flex-col xl:flex-row gap-6 items-stretch w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full mb-6">
         
         {/* === LEFT & MIDDLE WRAPPER === */}
-        <div className="flex-1 flex flex-col gap-6 min-w-0 w-full">
+        <div className="lg:col-span-7 flex flex-col gap-6 w-full">
           
           {/* Top Row: Market Chart Module */}
           <div className="w-full">
@@ -252,10 +252,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
           </div>
         </div>        {/* === RIGHT WRAPPER: Order Input Panel === */}
-        <div className="flex flex-col gap-6 w-full xl:w-[350px] shrink-0 h-full">
+        <div className="lg:col-span-5 flex flex-col gap-6 w-full h-full">
           
-          <div className="w-full">
-            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden`}>
+          <div className="w-full h-full">
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden h-[550px]`}>
               
               {/* Buy / Sell Toggle */}
               <div className="px-6 pt-6 pb-2">
@@ -294,7 +294,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 ))}
               </div>
 
-              <div className="px-4 pb-4">
+              <div className="px-4 pb-4 flex flex-col flex-1 h-full">
                 {/* Info Box */}
                 <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
@@ -337,23 +337,31 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 {/* Slider */}
-                <div className="mb-8 px-1 mt-6">
-                  <div className="relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full">
+                <div className="mb-8 px-1 mt-6 relative">
+                  <div className="relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full flex items-center">
+                    <input 
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={posSize}
+                      onChange={(e) => setPosSize(Number(e.target.value))}
+                      className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
+                    />
                     {/* Markers */}
-                    <div className="absolute left-[0%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040]"></div>
-                    <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040]"></div>
-                    <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040]"></div>
-                    <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040]"></div>
-                    <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040]"></div>
+                    <div className="absolute left-[0%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                    <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                    <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                    <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                    <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
                     
                     {/* Active Track */}
-                    <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10" style={{ width: `25%` }}></div>
+                    <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10 pointer-events-none" style={{ width: `${posSize}%` }}></div>
                     
                     {/* Marker Label */}
-                    <div className="absolute left-[25%] bottom-[12px] -translate-x-1/2 bg-[#00A8E8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]">25%</div>
+                    <div className="absolute bottom-[12px] -translate-x-1/2 bg-[#00A8E8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] pointer-events-none z-20" style={{ left: `${posSize}%` }}>{posSize}%</div>
                     
                     {/* Thumb */}
-                    <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-[3px] border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `25%` }}></div>
+                    <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-[3px] border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
                   </div>
                   <div className={`flex justify-between mt-3 text-[10px] font-bold ${textMuted}`}>
                     <span>0%</span>
@@ -365,7 +373,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 {/* Summary Table */}
-                <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1">
+                <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1 mt-auto">
                   <div className="flex justify-between">
                     <span className={textMuted}>You will receive (Est.)</span>
                     <span className="text-[#00c076] font-bold">1,841.48 USDT</span>
