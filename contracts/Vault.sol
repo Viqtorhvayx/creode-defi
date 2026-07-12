@@ -10,7 +10,7 @@ pragma solidity ^0.8.0;
 
 contract Vault {
     address public owner;
-    address public constant TREASURY = 0x2d553C56de9153dC98d853f8ec15850b5AFD004c;
+    address public treasury;
     
     struct UserDeposit {
         uint256 amount;
@@ -31,7 +31,9 @@ contract Vault {
         _locked = false;
     }
 
-    constructor() {
+    constructor(address _treasury) {
+        require(_treasury != address(0), "Invalid treasury address");
+        treasury = _treasury;
         owner = msg.sender;
     }
 
@@ -71,7 +73,7 @@ contract Vault {
         dep.amount -= _amount;
         
         if (penalty > 0) {
-            (bool successTreasury, ) = payable(TREASURY).call{value: penalty}("");
+            (bool successTreasury, ) = payable(treasury).call{value: penalty}("");
             require(successTreasury, "Transfer to Treasury failed");
         }
         
