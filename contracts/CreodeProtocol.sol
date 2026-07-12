@@ -39,7 +39,12 @@ interface IPyth {
 }
 
 contract CreodeProtocol is ReentrancyGuard {
-    address public constant TREASURY = 0x2d553C56De9153dc98D853f8EC15850b5aFd004c;
+    address public treasury;
+    
+    constructor(address _treasury) {
+        require(_treasury != address(0), "Invalid treasury address");
+        treasury = _treasury;
+    }
     
     // Pyth Config authored by Viqtorhvayx
     IPyth public constant PYTH = IPyth(0xA2aa501b19aff2d071422477c9df6362a220268a); // Hedera Testnet
@@ -106,7 +111,7 @@ contract CreodeProtocol is ReentrancyGuard {
         totalDeposited -= principal;
 
         if (fee > 0) {
-            (bool s1, ) = payable(TREASURY).call{value: fee}("");
+            (bool s1, ) = payable(treasury).call{value: fee}("");
             require(s1, "Treasury transfer failed");
         }
 

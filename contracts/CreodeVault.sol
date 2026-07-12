@@ -22,8 +22,8 @@ contract CreodeVault {
         _status = _NOT_ENTERED;
     }
 
-    // Official Treasury address (Hedera Account 0.0.8665514)
-    address public constant TREASURY = 0x2d553C56de9153dC98d853f8ec15850b5AFD004c;
+    // Official Treasury address (Passed in constructor)
+    address public treasury;
     
     // Constants
     uint256 public constant PROTOCOL_FEE_BASIS_POINTS = 10; // 0.1%
@@ -46,7 +46,9 @@ contract CreodeVault {
     event Deposited(address indexed user, uint256 amount, uint256 fee);
     event Withdrawn(address indexed user, uint256 amount, uint256 yield, uint256 penalty);
 
-    constructor() {
+    constructor(address _treasury) {
+        require(_treasury != address(0), "Invalid treasury address");
+        treasury = _treasury;
         _status = _NOT_ENTERED;
     }
 
@@ -136,7 +138,7 @@ contract CreodeVault {
         uint256 fees = accumulatedFees;
         require(fees > 0, "There are currently no accumulated fees to claim");
         accumulatedFees = 0;
-        (bool success, ) = payable(TREASURY).call{value: fees}("");
+        (bool success, ) = payable(treasury).call{value: fees}("");
         require(success, "Failed to transfer accumulated fees to treasury");
     }
 
