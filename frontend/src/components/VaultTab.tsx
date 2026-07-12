@@ -167,7 +167,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   {/* Token Selector Trigger */}
                   <div 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between gap-1 px-3 py-1.5 w-[96px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between gap-1 px-3 py-1.5 w-[96px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-md cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
                     {activeToken === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
                       <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
@@ -196,7 +196,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
                   {/* Token Dropdown Menu */}
                   <div 
-                    className={`absolute top-full right-0 mt-2 w-[220px] bg-white dark:bg-[#0F141A] backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-[0_0_10px_rgba(0,168,232,0.1)] z-50 transition-all duration-200 ease-in-out origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
+                    className={`absolute top-full right-0 mt-2 w-[220px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl z-50 transition-all duration-200 ease-in-out origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}
                   >
                     <div className="flex flex-col gap-0.5 max-h-[280px] overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full">
                       {TOKENS.map(token => (
