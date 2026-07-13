@@ -7,7 +7,7 @@ import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X, Info } from 'lucide-react';
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -39,6 +39,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'JAM'];
   const [activeToken, setActiveToken] = useState('HBAR');
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [tempCustomDays, setTempCustomDays] = useState<string>('');
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -271,18 +273,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   {days} Days
                 </button>
               ))}
-              <div className="flex-1">
-                <div className={`flex items-center px-3 h-10 bg-white dark:bg-[#0B0F14] border rounded-[8px] transition-all duration-150 ease-out hover:shadow-md active:shadow-inner active:duration-100 ${![7,30,60].includes(displayLockDays) ? 'border-[#00A8E8] shadow-sm' : 'border-slate-200 dark:border-white/10 focus-within:border-[#00A8E8]/50'}`}>
-                  <input 
-                    type="number"
-                    placeholder="Custom"
-                    className="bg-transparent outline-none border-none text-[13px] font-bold w-full text-center text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 p-0 m-0 leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
-                      if (!isNaN(val)) setDisplayLockDays(val);
-                    }}
-                  />
-                </div>
+              <div className="flex-1 flex">
+                <button
+                  onClick={() => {
+                    setTempCustomDays(![7, 30, 60].includes(displayLockDays) ? displayLockDays.toString() : '');
+                    setIsCustomModalOpen(true);
+                  }}
+                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-150 ease-out border hover:shadow-md active:shadow-inner active:duration-100 ${![7, 30, 60].includes(displayLockDays) ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
+                >
+                  Custom
+                </button>
               </div>
             </div>
           </div>
@@ -657,6 +657,62 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           </div>
         </div>
       </div>
+
+      {/* Custom Duration Modal */}
+      {isCustomModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-[#0F141A] rounded-[16px] border border-slate-200 dark:border-white/10 p-6 sm:p-8 w-full max-w-sm relative shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col items-center text-center">
+            
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsCustomModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:text-white/40 dark:hover:text-white/80 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Icon */}
+            <div className="w-16 h-16 rounded-full bg-[#00A8E8]/10 flex items-center justify-center mb-5 text-[#00A8E8]">
+              <CalendarBlank size={32} weight="bold" />
+            </div>
+
+            <h3 className="text-[20px] font-bold text-slate-900 dark:text-white mb-2">Set Custom Duration</h3>
+            <p className="text-[14px] text-slate-500 dark:text-white/60 mb-6">Enter the number of days you want to lock your HBAR.</p>
+
+            {/* Input Box */}
+            <div className="w-full flex items-center bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] px-4 py-3 mb-4 focus-within:border-[#00A8E8] transition-colors">
+              <input 
+                type="number"
+                placeholder="Enter number of days"
+                value={tempCustomDays}
+                onChange={(e) => setTempCustomDays(e.target.value)}
+                className="bg-transparent outline-none border-none text-[15px] font-medium w-full text-left text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 p-0 m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="text-[14px] font-semibold text-slate-500 dark:text-white/50 ml-2">Days</span>
+            </div>
+
+            {/* Helper Text */}
+            <div className="flex items-start gap-2 w-full mb-8 text-left">
+              <Info size={14} className="text-slate-400 dark:text-white/40 shrink-0 mt-0.5" />
+              <p className="text-[12px] text-slate-500 dark:text-white/50 leading-tight">APY varies based on number of days and tokens chosen.</p>
+            </div>
+
+            {/* Action Button */}
+            <button 
+              onClick={() => {
+                const val = parseInt(tempCustomDays);
+                if (!isNaN(val) && val > 0) {
+                  setDisplayLockDays(val);
+                  setIsCustomModalOpen(false);
+                }
+              }}
+              className="w-full py-3.5 bg-[#00A8E8] hover:bg-[#0092C8] text-white text-[15px] font-bold rounded-[12px] transition-colors shadow-sm"
+            >
+              Set
+            </button>
+          </div>
+        </div>
+      )}
       
     </div>
   );
