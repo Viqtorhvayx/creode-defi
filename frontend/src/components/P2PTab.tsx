@@ -392,7 +392,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[12px] transition-colors text-[14px] shadow-sm">
+                <button className="w-full bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
                   Place Market Order
                 </button>
 

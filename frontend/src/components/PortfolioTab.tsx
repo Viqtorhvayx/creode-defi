@@ -245,7 +245,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             <div className="font-bold">$10,500.00</div>
             <div className="text-[#16C784] font-bold">+$340.00</div>
             <div className="flex justify-end">
-              <button className="px-4 py-1.5 rounded-md border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
+              <button className="px-4 py-1.5 rounded-[8px] border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
                 Manage
               </button>
             </div>
@@ -262,7 +262,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             <div className="font-bold">$12,000.00</div>
             <div className="text-[#16C784] font-bold">+$120.00</div>
             <div className="flex justify-end">
-              <button className="px-4 py-1.5 rounded-md border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
+              <button className="px-4 py-1.5 rounded-[8px] border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
                 Manage
               </button>
             </div>

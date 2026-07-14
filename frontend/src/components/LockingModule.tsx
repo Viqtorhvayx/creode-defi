@@ -262,8 +262,8 @@ export const LockingModule: React.FC<LockingModuleProps> = ({ theme }) => {
         {error && <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-[24px] text-[11px] text-red-500 font-bold text-center animate-pulse">{error}</div>}
 
         <div className="grid grid-cols-2 gap-6 mt-6">
-          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-6 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[30px]">Deposit</button>
-          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-6 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover !rounded-[30px]">Set strategy</button>
+          <button onClick={handleDeposit} disabled={isPending || !amount} className="nav-pill !py-6 bg-[#00A8E8] text-white text-sm font-bold shadow-[0_20px_50px_rgba(0,168,232,0.3)] bounce-hover !rounded-[8px]">Deposit</button>
+          <button onClick={handleSetMaturity} disabled={isPending} className="nav-pill !py-6 bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#00A8E8]/10 hover:border-[#00A8E8]/40 transition-all bounce-hover !rounded-[8px]">Set strategy</button>
         </div>
         
         <button onClick={handleWithdraw} disabled={isPending} className="w-full text-[11px] font-bold py-6 text-white/20 hover:text-red-500 transition-all bounce-hover">Emergency liquidate (5% Penalty)</button>

@@ -694,7 +694,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   setIsCustomModalOpen(false);
                 }
               }}
-              className="w-full py-3.5 bg-[#00A8E8] hover:bg-[#0092C8] text-white text-[15px] font-bold rounded-[12px] transition-colors shadow-sm"
+              className="w-full py-3.5 bg-[#00A8E8] hover:bg-[#0092C8] text-white text-[15px] font-bold rounded-[8px] transition-colors shadow-sm"
             >
               Set
             </button>
