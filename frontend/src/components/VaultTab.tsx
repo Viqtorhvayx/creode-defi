@@ -380,7 +380,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <table className="w-full text-left border-collapse whitespace-nowrap">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-                  <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">Asset</th>
+                  <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">Asset & Amount Locked</th>
                   <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">APY</th>
                   <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">Accrued Yield</th>
                   <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">Unlocks On</th>
@@ -404,7 +404,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[12px] font-black shrink-0">{activeToken.charAt(0)}</div>
                         )}
-                        <span className="text-[14px] font-bold text-slate-900 dark:text-white">{activeToken}</span>
+                        <div className="flex flex-col flex-1 min-w-[140px]">
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-[14px] font-bold text-slate-900 dark:text-white">{activeToken}</span>
+                            <span className="text-[14px] font-bold text-slate-900 dark:text-white">{depositAmount || '0'} {activeToken}</span>
+                          </div>
+                          <div className="flex justify-end w-full mt-0.5">
+                            <span className="text-[12px] font-medium text-slate-500 dark:text-[#64748B]">--</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -450,7 +458,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[12px] font-black shrink-0">H</div>
                       )}
-                      <span className="text-[14px] font-bold text-slate-900 dark:text-white">HBAR</span>
+                      <div className="flex flex-col flex-1 min-w-[140px]">
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">HBAR</span>
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">10,000 HBAR</span>
+                        </div>
+                        <div className="flex justify-end w-full mt-0.5">
+                          <span className="text-[12px] font-medium text-slate-500 dark:text-[#64748B]">$1,250.00</span>
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-4">
@@ -487,7 +503,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       <div className="w-8 h-8 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[13px] font-black shrink-0">
                         D
                       </div>
-                      <span className="text-[14px] font-bold text-slate-900 dark:text-white">DOVU</span>
+                      <div className="flex flex-col flex-1 min-w-[140px]">
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">DOVU</span>
+                          <span className="text-[14px] font-bold text-slate-900 dark:text-white">50,000 DOVU</span>
+                        </div>
+                        <div className="flex justify-end w-full mt-0.5">
+                          <span className="text-[12px] font-medium text-slate-500 dark:text-[#64748B]">$450.00</span>
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-4">
