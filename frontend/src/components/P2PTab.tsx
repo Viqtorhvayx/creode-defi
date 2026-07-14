@@ -401,14 +401,24 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           </div>
 
 
-          {/* Side Info Card (Trade with confidence) - mt-auto pushes it to the bottom baseline! */}
-          <div className={`mt-auto bg-gradient-to-br ${theme === 'dark' ? 'from-[#00283a] to-[#001017] border-[#003d5c]' : 'from-[#e6f7ff] to-white border-[#b3e6ff]'} border rounded-[16px] p-5 flex items-center justify-between shadow-lg`}>
-            <div className="flex flex-col max-w-[200px]">
-              <span className={`font-bold mb-2 text-sm ${theme === 'dark' ? 'text-white' : 'text-[#005c80]'}`}>Trade with confidence</span>
-              <span className={`text-xs ${textMuted} leading-relaxed`}>Low fees, deep liquidity, and best execution.</span>
+          {/* Side Info Card (Trade with confidence) */}
+          <div className={`mt-auto ${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+            {/* Headline / Header */}
+            <div className={`flex items-center px-3 pt-4 border-b ${borderColor}`}>
+              <div className={`px-3 pb-3 text-[14px] cursor-pointer relative font-bold text-slate-900 dark:text-white`}>
+                Trade with confidence
+                <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
+              </div>
             </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-[#00A8E8] to-[#007ba8] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,168,232,0.4)]">
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+            
+            {/* Content */}
+            <div className="p-6 flex items-center justify-between">
+              <span className={`text-[13px] font-medium ${textMuted} leading-relaxed max-w-[220px]`}>
+                Low fees, deep liquidity, and best execution.
+              </span>
+              <div className="w-12 h-12 bg-gradient-to-br from-[#00A8E8] to-[#007ba8] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,168,232,0.4)]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+              </div>
             </div>
           </div>
         </div>
