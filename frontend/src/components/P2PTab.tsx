@@ -255,7 +255,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         <div className="lg:col-span-5 flex flex-col gap-6 w-full h-full">
           
           <div className="w-full h-full">
-            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden h-[620px]`}>
+            <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)] overflow-hidden min-h-[620px] h-auto`}>
               
               {/* Buy / Sell Toggle */}
               <div className="px-6 pt-6 pb-2">
@@ -294,7 +294,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 ))}
               </div>
 
-              <div className="px-4 pb-4 flex flex-col flex-1 h-full">
+              <div className="px-4 pb-6 flex flex-col flex-1 h-full">
                 {/* Info Box */}
                 <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
