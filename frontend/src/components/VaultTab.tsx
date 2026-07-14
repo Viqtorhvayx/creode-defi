@@ -42,8 +42,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [activeToken, setActiveToken] = useState('HBAR');
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [tempCustomDays, setTempCustomDays] = useState<string>('');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -333,7 +335,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Deposit Button */}
+          {/* Deposit / Withdraw Buttons */}
           <div className="mt-auto pt-4 w-full">
             <button 
               onClick={handleDeposit}
@@ -645,9 +647,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       </div>
 
       {/* Custom Duration Modal */}
-      {isCustomModalOpen && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md px-4">
-          <div className="bg-white dark:bg-[#0F141A] rounded-[16px] border border-slate-200 dark:border-white/10 p-6 sm:p-8 w-full max-w-sm relative shadow-2xl flex flex-col items-center text-center mx-auto">
+      {isMounted && isCustomModalOpen && createPortal(
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-md px-4">
+          <div className="bg-white dark:bg-[#0F141A] rounded-[16px] border border-slate-200 dark:border-white/10 p-6 sm:p-8 w-full max-w-sm relative shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col items-center text-center">
             
             {/* Close Button */}
             <button 
