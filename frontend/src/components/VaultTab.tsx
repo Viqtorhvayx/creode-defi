@@ -3,6 +3,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
@@ -332,52 +333,37 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          {/* Deposit / Withdraw Buttons */}
+          {/* Deposit Button */}
           <div className="mt-auto pt-4 w-full">
-            {hasDeposited ? (
-              <div className="flex items-center gap-4 w-full">
-                <button 
-                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white"
-                >
-                  Deposit
-                </button>
-                <button 
-                  className="flex-1 h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-300 active:scale-[0.98] tracking-wide bg-[#00A8E8] hover:bg-[#0090C7] text-white shadow-sm"
-                >
-                  Withdraw
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={handleDeposit}
-                disabled={isProcessing || isSuccess}
-                className={`w-full h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-100 ease-in active:scale-[0.98] tracking-wide shadow-sm relative ${
-                  isSuccess 
-                    ? 'bg-emerald-500 text-white pointer-events-none' 
-                    : isProcessing 
-                      ? 'bg-[#00A8E8]/80 text-white cursor-not-allowed' 
-                      : 'bg-[#00A8E8] hover:bg-[#0090C7] hover:brightness-105 hover:shadow-md text-white'
-                }`}
-              >
-                {isSuccess && (
-                  <div className="absolute inset-0 rounded-[8px] bg-emerald-500 animate-ping-once pointer-events-none"></div>
-                )}
-                
-                {isProcessing ? (
-                  <div className="flex items-center gap-2 z-10">
-                    <CircleNotch size={18} weight="bold" className="animate-spin" />
-                    <span>Processing...</span>
-                  </div>
-                ) : isSuccess ? (
-                  <div className="flex items-center gap-2 z-10">
-                    <CheckCircle size={18} weight="bold" />
-                    <span>Deposited Successfully</span>
-                  </div>
-                ) : (
-                  <span className="z-10">Deposit to Vault</span>
-                )}
-              </button>
-            )}
+            <button 
+              onClick={handleDeposit}
+              disabled={isProcessing || isSuccess}
+              className={`w-full h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-100 ease-in active:scale-[0.98] tracking-wide shadow-sm relative ${
+                isSuccess 
+                  ? 'bg-emerald-500 text-white pointer-events-none' 
+                  : isProcessing 
+                    ? 'bg-[#00A8E8]/80 text-white cursor-not-allowed' 
+                    : 'bg-[#00A8E8] hover:bg-[#0090C7] hover:brightness-105 hover:shadow-md text-white'
+              }`}
+            >
+              {isSuccess && (
+                <div className="absolute inset-0 rounded-[8px] bg-emerald-500 animate-ping-once pointer-events-none"></div>
+              )}
+              
+              {isProcessing ? (
+                <div className="flex items-center gap-2 z-10">
+                  <CircleNotch size={18} weight="bold" className="animate-spin" />
+                  <span>Processing...</span>
+                </div>
+              ) : isSuccess ? (
+                <div className="flex items-center gap-2 z-10">
+                  <CheckCircle size={18} weight="bold" />
+                  <span>Deposited Successfully</span>
+                </div>
+              ) : (
+                <span className="z-10">Deposit to Vault</span>
+              )}
+            </button>
           </div>
 
           </div>
@@ -659,9 +645,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       </div>
 
       {/* Custom Duration Modal */}
-      {isCustomModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[#0F141A] rounded-[16px] border border-slate-200 dark:border-white/10 p-6 sm:p-8 w-full max-w-sm relative shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col items-center text-center">
+      {isCustomModalOpen && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md px-4">
+          <div className="bg-white dark:bg-[#0F141A] rounded-[16px] border border-slate-200 dark:border-white/10 p-6 sm:p-8 w-full max-w-sm relative shadow-2xl flex flex-col items-center text-center mx-auto">
             
             {/* Close Button */}
             <button 
@@ -711,7 +697,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               Set
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       
     </div>
