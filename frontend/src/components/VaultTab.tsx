@@ -81,8 +81,29 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     
     const fetchPrice = async () => {
       try {
-        const res = await fetch('https://api.saucerswap.finance/tokens');
-        if (!res.ok) return; // Silent fail if unauthorized or other HTTP error
+        const apiKey = process.env.NEXT_PUBLIC_SAUCERSWAP_API_KEY || '';
+        const headers: Record<string, string> = apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {};
+        
+        const res = await fetch('https://api.saucerswap.finance/tokens', { headers });
+        
+        if (!res.ok) {
+          // Fallback to mock prices if unauthorized (SaucerSwap API requires key)
+          const mockPrices: Record<string, number> = {
+            'HBAR': 0.05,
+            'USDC': 1.00,
+            'USDT': 1.00,
+            'SAUCE': 0.03,
+            'DOVU': 0.001,
+            'PACK': 0.0001,
+            'WETH': 3000.00,
+            'WBTC': 60000.00,
+            'JAM': 0.002,
+            'BONZO': 0.0005
+          };
+          setTokenPriceUsd(mockPrices[activeToken] || 0);
+          return;
+        }
+        
         const data = await res.json();
         
         if (Array.isArray(data)) {
