@@ -377,7 +377,91 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         <h3 className="text-[18px] font-bold tracking-tight text-slate-900 dark:text-white mb-4">Your Active Vaults</h3>
         <div className="bg-white dark:bg-[#0B0F14] border border-slate-100 dark:border-white/5 rounded-[16px] overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse whitespace-nowrap">
+            <table className="w-full text-center border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Asset</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Amount Locked</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">APY</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Accrued Yield</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Unlocks On</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Progress</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Status</th>
+                  <th className="px-3 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                {/* Newly Deposited Vault (Animated) */}
+                {showNewVault && (
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <td className="px-3 py-4 align-top">
+                      <div className="flex items-center justify-center gap-2">
+                        {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
+                          <img src={hbarLogoUrlSmall} alt="HBAR" className="w-6 h-6 rounded-full shrink-0" />
+                        ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
+                          <img src={usdtLogoUrlSmall} alt="USDT" className="w-6 h-6 rounded-full shrink-0" />
+                        ) : activeToken === 'USDC' && usdcLogoUrlSmall ? (
+                          <img src={usdcLogoUrlSmall} alt="USDC" className="w-6 h-6 rounded-full shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[10px] font-black shrink-0">{activeToken.charAt(0)}</div>
+                        )}
+                        <span className="text-[13px] font-bold text-slate-900 dark:text-white">{activeToken}</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <div className="flex flex-col items-center justify-center h-full">
+                        <span className="text-[13px] font-bold text-slate-900 dark:text-white whitespace-nowrap">{depositAmount || '0'} {activeToken}</span>
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-white/50 mt-1">--</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <span className="text-[13px] font-bold text-[#10B981] flex justify-center">{displayLockDays === 7 ? '1.20%' : displayLockDays === 30 ? '3.30%' : displayLockDays === 60 ? '5.40%' : '--'}</span>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <span className="text-[13px] font-bold text-[#10B981] flex justify-center whitespace-nowrap">+0.00 {activeToken}</span>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <span className="text-[12px] font-semibold text-slate-700 dark:text-white/80 whitespace-nowrap flex justify-center">{formattedMaturityDate}</span>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <div className="flex flex-col items-center justify-center w-full min-w-[100px]">
+                        <span className="text-[13px] font-bold text-[#00A8E8] mb-1">0%</span>
+                        <div className="w-full h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-1">
+                          <div className="h-full bg-[#00A8E8] rounded-full transition-all duration-1000 ease-out" style={{ width: '0%' }}></div>
+                        </div>
+                        <span className="text-[10px] font-semibold text-slate-400 dark:text-white/40 whitespace-nowrap">{displayLockDays} days left</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <div className="inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 whitespace-nowrap">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse shrink-0"></div>
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Just Added</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 align-top text-center">
+                      <button className="text-[12px] font-bold text-white bg-red-500 hover:bg-red-600 w-[80px] py-1.5 rounded-[8px] transition-colors shadow-sm flex items-center justify-center mx-auto">
+                        Unlock
+                      </button>
+                    </td>
+                  </tr>
+                )}
+
+                {/* Vault Row 1: Matured Position (HBAR) */}
+                <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex items-center justify-center gap-2">
+                      {hbarLogoUrlSmall ? (
+                        <img src={hbarLogoUrlSmall} alt="HBAR" className="w-6 h-6 rounded-full shrink-0" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[10px] font-black shrink-0">H</div>
+                      )}
+                      <span className="text-[13px] font-bold text-slate-900 dark:text-white">HBAR</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <span className="text-[13px] font-bold text-slate-900 dark:text-white whitespace-nowrap">10,000 HBAR</span>
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-white/50 mt-1">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-wider">Asset</th>
@@ -442,7 +526,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     </td>
                     <td className="px-6 py-5 text-right">
                       <button className="text-[12px] font-bold text-red-500 hover:text-white bg-red-50 hover:bg-red-500 dark:bg-red-500/10 dark:hover:bg-red-500 px-3 py-1.5 rounded-[8px] transition-colors">
-                        Emergency Unlock
+                        Unlock
                       </button>
                     </td>
                   </tr>
@@ -531,6 +615,87 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   </td>
                   <td className="px-6 py-5 text-right">
                     <button className="text-[13px] font-bold text-white bg-red-500 hover:bg-red-600 px-6 py-2 rounded-[8px] transition-colors shadow-sm">
+                      Unlock
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            ,250.00</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[13px] font-bold text-slate-900 dark:text-white flex justify-center">8.2%</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[13px] font-bold text-[#10B981] flex justify-center whitespace-nowrap">+342.50 HBAR</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[12px] font-semibold text-slate-700 dark:text-white/80 whitespace-nowrap flex justify-center">Matured</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex flex-col items-center justify-center w-full min-w-[100px]">
+                      <span className="text-[13px] font-bold text-[#00A8E8] mb-1">100%</span>
+                      <div className="w-full h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden flex items-center mb-1">
+                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '100%' }}></div>
+                      </div>
+                      <span className="text-[10px] font-semibold text-slate-400 dark:text-white/40 whitespace-nowrap">0 days left</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 whitespace-nowrap">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 shrink-0"></div>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Completed</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top text-center">
+                    <button className="text-[12px] font-bold text-white bg-[#10B981] hover:bg-[#059669] w-[80px] py-1.5 rounded-[8px] transition-colors shadow-sm flex items-center justify-center mx-auto">
+                      Withdraw
+                    </button>
+                  </td>
+                </tr>
+
+                {/* Vault Row 2: Active Unmatured Position (DOVU) */}
+                <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[10px] font-black shrink-0">
+                        D
+                      </div>
+                      <span className="text-[13px] font-bold text-slate-900 dark:text-white">DOVU</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <span className="text-[13px] font-bold text-slate-900 dark:text-white whitespace-nowrap">50,000 DOVU</span>
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-white/50 mt-1">$450.00</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[13px] font-bold text-slate-900 dark:text-white flex justify-center">14.5%</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[13px] font-bold text-[#10B981] flex justify-center whitespace-nowrap">+1,205.10 DOVU</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <span className="text-[12px] font-semibold text-slate-700 dark:text-white/80 whitespace-nowrap flex justify-center">12th, Nov, 2024</span>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="flex flex-col items-center justify-center w-full min-w-[100px]">
+                      <span className="text-[13px] font-bold text-[#00A8E8] mb-1">50%</span>
+                      <div className="w-full h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden flex items-center mb-1">
+                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '50%' }}></div>
+                      </div>
+                      <span className="text-[10px] font-semibold text-slate-400 dark:text-white/40 whitespace-nowrap">14 days left</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top">
+                    <div className="inline-flex items-center px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 whitespace-nowrap">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 shrink-0"></div>
+                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 tracking-tight">Locked</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 align-top text-center">
+                    <button className="text-[12px] font-bold text-white bg-red-500 hover:bg-red-600 w-[80px] py-1.5 rounded-[8px] transition-colors shadow-sm flex items-center justify-center mx-auto">
                       Unlock
                     </button>
                   </td>
