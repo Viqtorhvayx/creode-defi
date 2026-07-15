@@ -3,6 +3,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import { TOKEN_MAPPINGS, SaucerSwapToken } from '../utils/tokenMapping';
 import { createPortal } from 'react-dom';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
@@ -55,6 +56,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [showNewVault, setShowNewVault] = useState<boolean>(false);
+
+
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
   const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
   const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>(null);
@@ -71,6 +74,38 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'JAM'];
   const [activeToken, setActiveToken] = useState('HBAR');
+  const [tokenPriceUsd, setTokenPriceUsd] = useState<number>(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch('https://api.saucerswap.finance/tokens');
+        if (!res.ok) return; // Silent fail if unauthorized or other HTTP error
+        const data = await res.json();
+        
+        if (Array.isArray(data)) {
+          const tokenId = TOKEN_MAPPINGS[activeToken] || TOKEN_MAPPINGS['HBAR'];
+          const tokenData = data.find((t: SaucerSwapToken) => t.id === tokenId || t.symbol === activeToken);
+          
+          if (tokenData && tokenData.priceUsd) {
+            setTokenPriceUsd(Number(tokenData.priceUsd));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch token price", err);
+      }
+    };
+
+    fetchPrice();
+    interval = setInterval(fetchPrice, 15000); // 15 seconds polling
+
+    return () => clearInterval(interval);
+  }, [activeToken]);
+
+  const fiatDisplayValue = (Number(depositAmount || 0) * tokenPriceUsd).toFixed(2);
+
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [tempCustomDays, setTempCustomDays] = useState<string>('');
   const [isMounted, setIsMounted] = useState(false);
@@ -193,7 +228,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   onChange={(e) => setDepositAmount(e.target.value)}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[36px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-1" 
                 />
-                <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">$0.00</span>
+                <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">${fiatDisplayValue}</span>
               </div>
 
               {/* Right Side: Token Selector & Percentages */}
