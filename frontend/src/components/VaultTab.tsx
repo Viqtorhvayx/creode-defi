@@ -14,6 +14,37 @@ interface VaultTabProps {
   theme: 'light' | 'dark';
 }
 
+
+const getBaseRates = (token: string) => {
+  const t = token.toUpperCase();
+  if (['USDT', 'USDC'].includes(t)) return { d7: 4.0, d30: 6.5, d60: 9.0 };
+  if (['SAUCE', 'PACK', 'BONZO', 'JAM'].includes(t)) return { d7: 8.0, d30: 14.0, d60: 22.0 };
+  // Default to Blue-Chip
+  return { d7: 3.5, d30: 5.5, d60: 8.0 };
+};
+
+const calculateAPY = (token: string, days: number): string => {
+  if (!days || days <= 0) return '--';
+  const rates = getBaseRates(token);
+  
+  if (days === 7) return rates.d7.toFixed(2) + '%';
+  if (days === 30) return rates.d30.toFixed(2) + '%';
+  if (days === 60) return rates.d60.toFixed(2) + '%';
+  
+  let rate = 0;
+  if (days < 7) {
+    rate = (rates.d7 / 7) * days;
+  } else if (days < 30) {
+    rate = rates.d7 + ((rates.d30 - rates.d7) * (days - 7)) / (30 - 7);
+  } else if (days < 60) {
+    rate = rates.d30 + ((rates.d60 - rates.d30) * (days - 30)) / (60 - 30);
+  } else {
+    rate = rates.d60 + ((rates.d60 - rates.d30) * (days - 60)) / (60 - 30);
+  }
+  
+  return rate.toFixed(2) + '%';
+};
+
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
@@ -414,7 +445,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                       </div>
                     </td>
                     <td className="px-6 py-5 align-middle text-center">
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">{displayLockDays === 7 ? '1.20%' : displayLockDays === 30 ? '3.30%' : displayLockDays === 60 ? '5.40%' : '--'}</span>
+                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">{calculateAPY(activeToken, displayLockDays)}</span>
                     </td>
                     <td className="px-6 py-5 align-middle text-center">
                       <span className="text-[13px] font-medium text-[#10B981]">+0.00 {activeToken}</span>
