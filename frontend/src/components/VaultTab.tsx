@@ -327,19 +327,21 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <div className="flex items-center justify-between w-full pb-5 border-b border-slate-100 dark:border-white/5">
               <div className="flex flex-col items-center">
                 <span className="text-[12px] font-semibold text-slate-600 dark:text-white/50 mb-1">7 Days</span>
-                <span className="text-[14px] font-bold text-[#10B981]">1.20%</span>
+                <span className="text-[14px] font-bold text-[#10B981]">{calculateAPY(activeToken, 7)}</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-[12px] font-semibold text-slate-600 dark:text-white/50 mb-1">30 Days</span>
-                <span className="text-[14px] font-bold text-[#10B981]">3.30%</span>
+                <span className="text-[14px] font-bold text-[#10B981]">{calculateAPY(activeToken, 30)}</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-[12px] font-semibold text-slate-600 dark:text-white/50 mb-1">60 Days</span>
-                <span className="text-[14px] font-bold text-[#10B981]">5.40%</span>
+                <span className="text-[14px] font-bold text-[#10B981]">{calculateAPY(activeToken, 60)}</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-[12px] font-semibold text-slate-600 dark:text-white/50 mb-1">Custom</span>
-                <span className="text-[14px] font-bold text-slate-400 dark:text-white/40">--</span>
+                <span className={`text-[14px] font-bold ${![7, 30, 60].includes(displayLockDays) ? 'text-[#10B981]' : 'text-slate-400 dark:text-white/40'}`}>
+                  {![7, 30, 60].includes(displayLockDays) ? calculateAPY(activeToken, displayLockDays) : '--'}
+                </span>
               </div>
             </div>
           </div>
