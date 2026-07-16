@@ -1,8 +1,14 @@
 {
-  "address": "0x000000000000000000000000000000000087c738",
+  "address": "0xD3F49c5C41Bc2dA0C7e09243182B5ac542EB8a0A",
   "abi": [
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_treasury",
+          "type": "address"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
@@ -18,13 +24,37 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "principal",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
           "name": "fee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "apyBps",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maturityTimestamp",
           "type": "uint256"
         }
       ],
@@ -37,17 +67,54 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "user",
+          "name": "token",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "maturityDate",
+          "name": "amount",
           "type": "uint256"
         }
       ],
-      "name": "MaturitySet",
+      "name": "FeesClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minDeposit",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rate7D",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rate30D",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rate60D",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenConfigured",
       "type": "event"
     },
     {
@@ -62,7 +129,19 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "principal",
           "type": "uint256"
         },
         {
@@ -83,7 +162,7 @@
     },
     {
       "inputs": [],
-      "name": "APY_BASIS_POINTS",
+      "name": "MAX_EARLY_PENALTY_BPS",
       "outputs": [
         {
           "internalType": "uint256",
@@ -96,20 +175,7 @@
     },
     {
       "inputs": [],
-      "name": "EARLY_WITHDRAWAL_PENALTY_BASIS_POINTS",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "PROTOCOL_FEE_BASIS_POINTS",
+      "name": "PROTOCOL_FEE_BPS",
       "outputs": [
         {
           "internalType": "uint256",
@@ -134,20 +200,13 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "TREASURY",
-      "outputs": [
+      "inputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
         }
       ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "accumulatedFees",
       "outputs": [
         {
@@ -163,11 +222,16 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "user",
+          "name": "token",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "durationDays",
+          "type": "uint256"
         }
       ],
-      "name": "calculateEarnings",
+      "name": "calculateCustomAPY",
       "outputs": [
         {
           "internalType": "uint256",
@@ -179,17 +243,98 @@
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
       "name": "claimFees",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate7D",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate30D",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate60D",
+          "type": "uint256"
+        }
+      ],
+      "name": "configureToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "durationDays",
+          "type": "uint256"
+        }
+      ],
       "name": "deposit",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_treasury",
+          "type": "address"
+        }
+      ],
+      "name": "setTreasury",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -200,8 +345,89 @@
           "type": "address"
         }
       ],
-      "name": "deposits",
+      "name": "tokenConfigs",
       "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isActive",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minDeposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate7D",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate30D",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate60D",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "treasury",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userDepositCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "userDeposits",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        },
         {
           "internalType": "uint256",
           "name": "principal",
@@ -218,9 +444,9 @@
           "type": "uint256"
         },
         {
-          "internalType": "bool",
-          "name": "isMaturitySet",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "apyBps",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -230,17 +456,10 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "durationDays",
+          "name": "depositId",
           "type": "uint256"
         }
       ],
-      "name": "setMaturity",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "withdraw",
       "outputs": [],
       "stateMutability": "nonpayable",

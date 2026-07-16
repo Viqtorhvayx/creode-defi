@@ -47,7 +47,7 @@ contract CreodeProtocol is ReentrancyGuard {
     }
     
     // Pyth Config authored by Viqtorhvayx
-    IPyth public constant PYTH = IPyth(0xA2aa501b19aff2d071422477c9df6362a220268a); // Hedera Testnet
+    IPyth public constant PYTH = IPyth(0xA2AA501B19AFF2D071422477C9Df6362a220268A); // Hedera Testnet
     bytes32 public constant HBAR_USD_FEED = 0x3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd;
 
     // Financial State
