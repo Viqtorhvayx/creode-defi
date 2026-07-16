@@ -10,6 +10,29 @@ import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { ChevronDown, X, Info } from 'lucide-react';
+import { BrowserProvider, Contract, parseUnits } from 'ethers';
+import { useWalletClient } from 'wagmi';
+import vaultArtifact from '../context/abis.json';
+
+// EVM token addresses on Hedera Testnet (address(0) = native HBAR)
+const TOKEN_EVM_ADDRESSES: Record<string, string> = {
+  HBAR:  '0x0000000000000000000000000000000000000000',
+  USDC:  '0x0000000000000000000000000000000006F89AC',
+  USDT:  '0x0000000000000000000000000000000006602D4',
+  SAUCE: '0x00000000000000000000000000000000000B2FD5',
+  PACK:  '0x0000000000000000000000000000000049356A8',
+  JAM:   '0x000000000000000000000000000000000137D14',
+  WETH:  '0x00000000000000000000000000000000000D235E',
+  WBTC:  '0x00000000000000000000000000000000001008C6',
+  BONZO: '0x0000000000000000000000000000000016450E2',
+};
+const TOKEN_DECIMALS: Record<string, number> = {
+  HBAR: 8, USDC: 6, USDT: 6, SAUCE: 6, PACK: 6, JAM: 6, WETH: 8, WBTC: 8, BONZO: 6,
+};
+const ERC20_ABI = [
+  'function approve(address spender, uint256 amount) external returns (bool)',
+  'function allowance(address owner, address spender) external view returns (uint256)',
+];
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -69,7 +92,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>(null);
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
-  const { balance } = useWallet();
+  const { balance, isConnected } = useWallet();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'JAM'];
@@ -174,23 +197,62 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   maturityDate.setDate(maturityDate.getDate() + displayLockDays);
   const formattedMaturityDate = maturityDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
-  const handleDeposit = () => {
+  const { data: walletClient } = useWalletClient();
+
+  const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) return;
+    if (!isConnected || !walletClient) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+
+    const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS;
+    if (!vaultAddress) {
+      alert('Vault contract address not configured.');
+      return;
+    }
+
     setIsProcessing(true);
-    
-    // Simulate API call / processing delay
-    setTimeout(() => {
+
+    try {
+      const provider = new BrowserProvider(walletClient as any);
+      const signer = await provider.getSigner();
+      const vault = new Contract(vaultAddress, (vaultArtifact as any).CreodeVault, signer);
+
+      const tokenEvm = TOKEN_EVM_ADDRESSES[activeToken] || TOKEN_EVM_ADDRESSES['HBAR'];
+      const decimals = TOKEN_DECIMALS[activeToken] ?? 8;
+      const amountParsed = parseUnits(depositAmount, decimals);
+      const durationDays = displayLockDays;
+
+      let tx;
+
+      if (activeToken === 'HBAR') {
+        tx = await vault.deposit(tokenEvm, 0, durationDays, { value: amountParsed });
+      } else {
+        const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
+        const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
+        await approveTx.wait();
+        tx = await vault.deposit(tokenEvm, amountParsed, durationDays);
+      }
+
+      await tx.wait();
+
       setIsProcessing(false);
       setIsSuccess(true);
-      
-      // Keep success state for a moment, then update UI
+
       setTimeout(() => {
         setHasDeposited(true);
         setIsSuccess(false);
         setDepositAmount('');
         setShowNewVault(true);
-      }, 1500); // Wait 1.5s to show success state before switching to "Deposited" layout
-    }, 1200); // 1.2s processing time
+      }, 1500);
+
+    } catch (err) {
+      setIsProcessing(false);
+      const e = err as any;
+      console.error('[Vault] Deposit failed:', e);
+      alert('Deposit failed: ' + (e?.reason || e?.message || 'Unknown error'));
+    }
   };
 
   return (
@@ -405,7 +467,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Warning Text */}
           <div className="flex items-start gap-2 mb-6 bg-red-50 dark:bg-red-500/10 p-3 rounded-[12px] border border-red-100 dark:border-red-500/20">
             <Warning size={16} weight="regular" className="text-red-500 mt-[1px] shrink-0 animate-pulse-once" />
-            <span className="text-[12px] font-medium text-red-600 dark:text-red-400 leading-snug">Withdrawing before maturity incurs a 5% fee and forfeits pending yield.</span>
+            <span className="text-[12px] font-medium text-red-600 dark:text-red-400 leading-snug">Early withdrawal incurs a time-decay penalty of up to 2% on principal. Accrued yield is still paid out in full.</span>
           </div>
 
           {/* Summary Row */}
