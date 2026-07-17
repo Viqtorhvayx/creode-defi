@@ -10,13 +10,17 @@ import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { ChevronDown, X, Info } from 'lucide-react';
-import { BrowserProvider, Contract, parseUnits } from 'ethers';
+import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
 import vaultArtifact from '../context/abis.json';
 
-// EVM token addresses on Hedera Testnet (address(0) = native HBAR)
+// The CreodeVault contract is ERC20/HTS-only: deposits require token approval and
+// yield is funded from the Treasury allowance. Native HBAR cannot be approved or
+// pulled via transferFrom, so "HBAR" here maps to WHBAR (the HTS-wrapped form).
+// Set NEXT_PUBLIC_WHBAR_ADDRESS to the WHBAR token's EVM address to enable it.
+const WHBAR_ADDRESS = process.env.NEXT_PUBLIC_WHBAR_ADDRESS || '';
 const TOKEN_EVM_ADDRESSES: Record<string, string> = {
-  HBAR:  '0x0000000000000000000000000000000000000000',
+  HBAR:  WHBAR_ADDRESS || '0x0000000000000000000000000000000000000000',
   USDC:  '0x000000000000000000000000000000000006f89a',
   USDT:  '0x0000000000000000000000000000000000019c4c',
   SAUCE: '0x00000000000000000000000000000000000b2ad5',
@@ -29,10 +33,46 @@ const TOKEN_EVM_ADDRESSES: Record<string, string> = {
 const TOKEN_DECIMALS: Record<string, number> = {
   HBAR: 8, USDC: 6, USDT: 6, SAUCE: 6, PACK: 6, JAM: 6, WETH: 8, WBTC: 8, BONZO: 6,
 };
+// Reverse lookup: lowercased EVM address -> symbol, for rendering on-chain rows.
+const SYMBOL_BY_ADDRESS: Record<string, string> = Object.entries(TOKEN_EVM_ADDRESSES).reduce(
+  (acc, [sym, addr]) => { if (addr && addr !== '0x0000000000000000000000000000000000000000') acc[addr.toLowerCase()] = sym; return acc; },
+  {} as Record<string, string>
+);
 const ERC20_ABI = [
   'function approve(address spender, uint256 amount) external returns (bool)',
   'function allowance(address owner, address spender) external view returns (uint256)',
 ];
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const VAULT_ABI = (vaultArtifact as any).CreodeVault;
+const MAX_LOCK_DAYS = 365; // guard against nonsensical durations / APY extrapolation
+
+// A single on-chain deposit row, normalised for display.
+interface VaultRow {
+  id: string;
+  symbol: string;
+  amount: string;       // human-readable principal
+  apyPct: number;       // e.g. 6.5
+  accruedYield: string; // human-readable
+  maturityLabel: string;
+  progressPct: number;
+  matured: boolean;
+}
+
+// Client-side mirror of the contract's yield math (capped at the full term).
+const computeAccruedYield = (
+  principal: bigint,
+  apyBps: bigint,
+  startTs: bigint,
+  maturityTs: bigint
+): bigint => {
+  const nowSec = BigInt(Math.floor(Date.now() / 1000));
+  const duration = maturityTs - startTs;
+  if (duration <= 0n) return 0n;
+  let elapsed = nowSec - startTs;
+  if (elapsed < 0n) elapsed = 0n;
+  if (elapsed > duration) elapsed = duration;
+  return (principal * apyBps * elapsed) / (10000n * 31536000n);
+};
 
 interface VaultTabProps {
   theme: 'light' | 'dark';
@@ -69,16 +109,25 @@ const calculateAPY = (token: string, days: number): string => {
   return rate.toFixed(2) + '%';
 };
 
+// Numeric variant of calculateAPY (percent, e.g. 6.5). Returns 0 for invalid input.
+const getApyPercent = (token: string, days: number): number => {
+  const parsed = parseFloat(calculateAPY(token, days));
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [selectedPercent, setSelectedPercent] = useState<string | null>(null);
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
   const [lockDaysInput, setLockDaysInput] = useState<string>('30');
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
   const [depositAmount, setDepositAmount] = useState<string>('');
-  const [hasDeposited, setHasDeposited] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [showNewVault, setShowNewVault] = useState<boolean>(false);
+
+  // Live on-chain vault state.
+  const [vaults, setVaults] = useState<VaultRow[]>([]);
+  const [isLoadingVaults, setIsLoadingVaults] = useState<boolean>(false);
+  const [rowBusyId, setRowBusyId] = useState<string | null>(null);
 
 
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
@@ -198,6 +247,68 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const formattedMaturityDate = maturityDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
   const { data: walletClient } = useWalletClient();
+  const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS || '';
+  const rpcUrl = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';
+
+  // Estimated earnings for the current deposit form (principal * APY * term/365).
+  const estimatedEarnings =
+    Number(depositAmount || 0) * (getApyPercent(activeToken, displayLockDays) / 100) * (displayLockDays / 365);
+
+  // Fetch the connected user's live deposits from the vault (read-only RPC).
+  const fetchVaults = React.useCallback(async () => {
+    const userAddr = walletClient?.account?.address;
+    if (!userAddr || !vaultAddress) {
+      setVaults([]);
+      return;
+    }
+    setIsLoadingVaults(true);
+    try {
+      const provider = new JsonRpcProvider(rpcUrl);
+      const vault = new Contract(vaultAddress, VAULT_ABI, provider);
+      const [ids, records] = await vault.getUserDeposits(userAddr);
+
+      const nowSec = Math.floor(Date.now() / 1000);
+      const rows: VaultRow[] = [];
+      for (let i = 0; i < records.length; i++) {
+        const r = records[i];
+        if (r.withdrawn || r.principal === 0n) continue;
+
+        const tokenAddr = String(r.token).toLowerCase();
+        const symbol = SYMBOL_BY_ADDRESS[tokenAddr] || `${tokenAddr.slice(0, 6)}…`;
+        const decimals = TOKEN_DECIMALS[symbol] ?? 18;
+
+        const start = Number(r.startTimestamp);
+        const maturity = Number(r.maturityTimestamp);
+        const matured = nowSec >= maturity;
+        const progressPct = maturity > start
+          ? Math.min(100, Math.max(0, Math.round(((nowSec - start) / (maturity - start)) * 100)))
+          : 0;
+
+        const yieldRaw = computeAccruedYield(r.principal, r.apyBps, r.startTimestamp, r.maturityTimestamp);
+
+        rows.push({
+          id: String(ids[i]),
+          symbol,
+          amount: formatUnits(r.principal, decimals),
+          apyPct: Number(r.apyBps) / 100,
+          accruedYield: formatUnits(yieldRaw, decimals),
+          maturityLabel: new Date(maturity * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+          progressPct,
+          matured,
+        });
+      }
+      setVaults(rows);
+    } catch (err) {
+      console.error('[Vault] Failed to load deposits:', err);
+      setVaults([]);
+    } finally {
+      setIsLoadingVaults(false);
+    }
+  }, [walletClient, vaultAddress, rpcUrl]);
+
+  useEffect(() => {
+    fetchVaults();
+  }, [fetchVaults]);
 
   const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) return;
@@ -205,10 +316,18 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       alert('Please connect your wallet first.');
       return;
     }
-
-    const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS;
     if (!vaultAddress) {
       alert('Vault contract address not configured.');
+      return;
+    }
+
+    const tokenEvm = TOKEN_EVM_ADDRESSES[activeToken] || '';
+    if (!tokenEvm || tokenEvm === ZERO_ADDRESS) {
+      alert(
+        activeToken === 'HBAR'
+          ? 'HBAR deposits require a WHBAR token address. Set NEXT_PUBLIC_WHBAR_ADDRESS to enable it.'
+          : `${activeToken} is not configured with a token address.`
+      );
       return;
     }
 
@@ -217,34 +336,27 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     try {
       const provider = new BrowserProvider(walletClient as any);
       const signer = await provider.getSigner();
-      const vault = new Contract(vaultAddress, (vaultArtifact as any).CreodeVault, signer);
+      const vault = new Contract(vaultAddress, VAULT_ABI, signer);
 
-      const tokenEvm = TOKEN_EVM_ADDRESSES[activeToken] || TOKEN_EVM_ADDRESSES['HBAR'];
       const decimals = TOKEN_DECIMALS[activeToken] ?? 8;
       const amountParsed = parseUnits(depositAmount, decimals);
       const durationDays = displayLockDays;
 
-      let tx;
+      // ERC20/HTS flow: approve the vault, then depositToVault.
+      const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
+      const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
+      await approveTx.wait();
 
-      if (activeToken === 'HBAR') {
-        tx = await vault.deposit(tokenEvm, 0, durationDays, { value: amountParsed });
-      } else {
-        const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
-        const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
-        await approveTx.wait();
-        tx = await vault.deposit(tokenEvm, amountParsed, durationDays);
-      }
-
+      const tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays);
       await tx.wait();
 
       setIsProcessing(false);
       setIsSuccess(true);
 
       setTimeout(() => {
-        setHasDeposited(true);
         setIsSuccess(false);
         setDepositAmount('');
-        setShowNewVault(true);
+        fetchVaults();
       }, 1500);
 
     } catch (err) {
@@ -252,6 +364,33 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       const e = err as any;
       console.error('[Vault] Deposit failed:', e);
       alert('Deposit failed: ' + (e?.reason || e?.message || 'Unknown error'));
+    }
+  };
+
+  // Exit a deposit: matured -> withdraw, otherwise -> unlock (early, with penalty).
+  const handleExit = async (row: VaultRow) => {
+    if (!isConnected || !walletClient) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+    if (!vaultAddress) {
+      alert('Vault contract address not configured.');
+      return;
+    }
+    setRowBusyId(row.id);
+    try {
+      const provider = new BrowserProvider(walletClient as any);
+      const signer = await provider.getSigner();
+      const vault = new Contract(vaultAddress, VAULT_ABI, signer);
+      const tx = row.matured ? await vault.withdraw(row.id) : await vault.unlock(row.id);
+      await tx.wait();
+      await fetchVaults();
+    } catch (err) {
+      const e = err as any;
+      console.error('[Vault] Exit failed:', e);
+      alert('Exit failed: ' + (e?.reason || e?.message || 'Unknown error'));
+    } finally {
+      setRowBusyId(null);
     }
   };
 
@@ -482,7 +621,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
             <div className="flex justify-between items-center w-full">
               <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50">Estimated Earnings</span>
-              <span className="text-[13px] font-bold text-[#10B981]">+4.50 {activeToken}</span>
+              <span className="text-[13px] font-bold text-[#10B981]">+{estimatedEarnings.toFixed(estimatedEarnings >= 1 ? 2 : 4)} {activeToken}</span>
             </div>
           </div>
 
@@ -542,230 +681,95 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                {/* Newly Deposited Vault (Animated) */}
-                {showNewVault && (
-                  <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <td className="px-6 py-5 align-middle">
-                      <div className="flex items-center justify-center gap-3">
-                        {activeToken === 'HBAR' && hbarLogoUrlSmall ? (
-                          <img src={hbarLogoUrlSmall} alt="HBAR" className="w-7 h-7 rounded-full" />
-                        ) : activeToken === 'USDT' && usdtLogoUrlSmall ? (
-                          <img src={usdtLogoUrlSmall} alt="USDT" className="w-7 h-7 rounded-full" />
-                        ) : activeToken === 'USDC' && usdcLogoUrlSmall ? (
-                          <img src={usdcLogoUrlSmall} alt="USDC" className="w-7 h-7 rounded-full" />
-                        ) : (
-                          <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[11px] font-black">{activeToken.charAt(0)}</div>
-                        )}
-                        <span className="text-[13px] font-medium text-slate-900 dark:text-white">{activeToken}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <span className="text-[13px] font-medium text-slate-900 dark:text-white">{depositAmount || '0'} {activeToken}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">{calculateAPY(activeToken, displayLockDays)}</span>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <span className="text-[13px] font-medium text-[#10B981]">+0.00 {activeToken}</span>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">{formattedMaturityDate}</span>
-                    </td>
-                    <td className="px-6 py-5 align-middle">
-                      <div className="flex items-center justify-center gap-3 w-full">
-                        <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">0%</span>
-                        <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#00A8E8] rounded-full transition-all duration-1000 ease-out" style={{ width: '0%' }}></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-[#00A8E8]/30 bg-[#00A8E8]/5">
-                        <span className="text-[12px] font-medium text-[#00A8E8]">Locked</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 align-middle text-center">
-                      <button className="w-[120px] h-[34px] text-[12px] font-medium text-red-500 border border-red-500 rounded-[6px] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center mx-auto">
-                        Unlock
-                      </button>
-                    </td>
-                  </tr>
-                )}
+                {(() => {
+                  const logoBySymbol: Record<string, string | null> = {
+                    HBAR: hbarLogoUrlSmall, USDT: usdtLogoUrlSmall, USDC: usdcLogoUrlSmall,
+                    SAUCE: sauceLogoUrlSmall, PACK: packLogoUrlSmall, WBTC: wbtcLogoUrlSmall,
+                    WETH: wethLogoUrlSmall, BONZO: bonzoLogoUrlSmall, JAM: jamLogoUrlSmall,
+                  };
 
-                {/* Hardcoded Row 1 */}
-                <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3">
-                      {hbarLogoUrlSmall ? (
-                        <img src={hbarLogoUrlSmall} alt="HBAR" className="w-7 h-7 rounded-full" />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[11px] font-black">H</div>
-                      )}
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">HBAR</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">1,000.00 HBAR</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">8.00%</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-[#10B981]">+45.32 HBAR</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">15th, Aug, 2026</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">65%</span>
-                      <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '65%' }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-[#00A8E8]/30 bg-[#00A8E8]/5">
-                        <span className="text-[12px] font-medium text-[#00A8E8]">Locked</span>
-                      </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <button className="w-[120px] h-[34px] text-[12px] font-medium text-red-500 border border-red-500 rounded-[6px] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center mx-auto">
-                      Unlock
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Hardcoded Row 2 */}
-                <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3">
-                      {usdcLogoUrlSmall ? (
-                        <img src={usdcLogoUrlSmall} alt="USDC" className="w-7 h-7 rounded-full" />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[11px] font-black">U</div>
-                      )}
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">USDC</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">500.00 USDC</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">6.00%</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-[#10B981]">+15.25 USDC</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">22nd, Jul, 2026</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">38%</span>
-                      <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '38%' }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-[#00A8E8]/30 bg-[#00A8E8]/5">
-                        <span className="text-[12px] font-medium text-[#00A8E8]">Locked</span>
-                      </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <button className="w-[120px] h-[34px] text-[12px] font-medium text-red-500 border border-red-500 rounded-[6px] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center mx-auto">
-                      Unlock
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Hardcoded Row 3 */}
-                <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center text-[12px] font-black">
-                        D
-                      </div>
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">DOVU</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">2,000.00 DOVU</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">12.00%</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-[#10B981]">+120.75 DOVU</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">05th, Sep, 2026</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">42%</span>
-                      <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '42%' }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-[#00A8E8]/30 bg-[#00A8E8]/5">
-                        <span className="text-[12px] font-medium text-[#00A8E8]">Locked</span>
-                      </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <button className="w-[120px] h-[34px] text-[12px] font-medium text-red-500 border border-red-500 rounded-[6px] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center mx-auto">
-                      Unlock
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Hardcoded Row 4 */}
-                <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-[#10B981]/10 text-[#10B981] flex items-center justify-center text-[12px] font-black">
-                        W
-                      </div>
-                      <span className="text-[13px] font-medium text-slate-900 dark:text-white">wETH</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">0.7500 wETH</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-900 dark:text-white">7.50%</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-[#10B981]">+0.0421 wETH</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">30th, Jul, 2026</span>
-                  </td>
-                  <td className="px-6 py-5 align-middle">
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">55%</span>
-                      <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: '55%' }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-[#00A8E8]/30 bg-[#00A8E8]/5">
-                        <span className="text-[12px] font-medium text-[#00A8E8]">Locked</span>
-                      </div>
-                  </td>
-                  <td className="px-6 py-5 align-middle text-center">
-                    <button className="w-[120px] h-[34px] text-[12px] font-medium text-red-500 border border-red-500 rounded-[6px] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center mx-auto">
-                      Unlock
-                    </button>
-                  </td>
-                </tr>
-
+                  if (!isConnected) {
+                    return (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-10 text-center text-[13px] text-slate-400 dark:text-white/40">
+                          Connect your wallet to view your vaults.
+                        </td>
+                      </tr>
+                    );
+                  }
+                  if (isLoadingVaults) {
+                    return (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-10">
+                          <div className="flex items-center justify-center gap-2 text-[13px] text-slate-400 dark:text-white/40">
+                            <CircleNotch size={16} className="animate-spin" /> Loading your vaults…
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  if (vaults.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-10 text-center text-[13px] text-slate-400 dark:text-white/40">
+                          No active vaults yet. Deposit above to get started.
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return vaults.map((row) => {
+                    const logo = logoBySymbol[row.symbol];
+                    const busy = rowBusyId === row.id;
+                    return (
+                      <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-5 align-middle">
+                          <div className="flex items-center justify-center gap-3">
+                            {logo ? (
+                              <img src={logo} alt={row.symbol} className="w-7 h-7 rounded-full" />
+                            ) : (
+                              <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#1F2937] flex items-center justify-center text-[11px] font-black">{row.symbol.charAt(0)}</div>
+                            )}
+                            <span className="text-[13px] font-medium text-slate-900 dark:text-white">{row.symbol}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <span className="text-[13px] font-medium text-slate-900 dark:text-white">{Number(row.amount).toLocaleString(undefined, { maximumFractionDigits: 4 })} {row.symbol}</span>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <span className="text-[13px] font-medium text-slate-900 dark:text-white">{row.apyPct.toFixed(2)}%</span>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <span className="text-[13px] font-medium text-[#10B981]">+{Number(row.accruedYield).toLocaleString(undefined, { maximumFractionDigits: 4 })} {row.symbol}</span>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <span className="text-[13px] font-medium text-slate-700 dark:text-white/80">{row.maturityLabel}</span>
+                        </td>
+                        <td className="px-6 py-5 align-middle">
+                          <div className="flex items-center justify-center gap-3 w-full">
+                            <span className="text-[13px] font-medium text-slate-700 dark:text-white/80 w-8 text-right">{row.progressPct}%</span>
+                            <div className="w-16 h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+                              <div className="h-full bg-[#00A8E8] rounded-full" style={{ width: `${row.progressPct}%` }}></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <div className={`inline-flex items-center justify-center px-3 py-1 rounded-full border ${row.matured ? "border-[#10B981]/30 bg-[#10B981]/5" : "border-[#00A8E8]/30 bg-[#00A8E8]/5"}`}>
+                            <span className={`text-[12px] font-medium ${row.matured ? "text-[#10B981]" : "text-[#00A8E8]"}`}>{row.matured ? "Matured" : "Locked"}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 align-middle text-center">
+                          <button
+                            onClick={() => handleExit(row)}
+                            disabled={busy}
+                            className={`w-[120px] h-[34px] text-[12px] font-medium rounded-[6px] transition-colors flex items-center justify-center mx-auto disabled:opacity-60 ${row.matured ? "text-[#10B981] border border-[#10B981] hover:bg-emerald-50 dark:hover:bg-[#10B981]/10" : "text-red-500 border border-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"}`}
+                          >
+                            {busy ? <CircleNotch size={14} className="animate-spin" /> : (row.matured ? "Withdraw" : "Unlock")}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </table>
           </div>
@@ -882,7 +886,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             </div>
 
             <h3 className="text-[20px] font-bold text-slate-900 dark:text-white mb-2">Set Custom Duration</h3>
-            <p className="text-[14px] text-slate-500 dark:text-white/60 mb-6">Enter the number of days you want to lock your HBAR.</p>
+            <p className="text-[14px] text-slate-500 dark:text-white/60 mb-6">Enter the number of days you want to lock (1–{MAX_LOCK_DAYS}).</p>
 
             {/* Input Box */}
             <div className="w-full flex items-center bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] px-4 py-3 mb-4 focus-within:border-[#00A8E8] transition-colors">
@@ -906,10 +910,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <button 
               onClick={() => {
                 const val = parseInt(tempCustomDays);
-                if (!isNaN(val) && val > 0) {
-                  setDisplayLockDays(val);
-                  setIsCustomModalOpen(false);
+                if (isNaN(val) || val <= 0) {
+                  alert('Please enter a lock duration of at least 1 day.');
+                  return;
                 }
+                if (val > MAX_LOCK_DAYS) {
+                  alert(`Maximum lock duration is ${MAX_LOCK_DAYS} days.`);
+                  return;
+                }
+                setDisplayLockDays(val);
+                setIsCustomModalOpen(false);
               }}
               className="w-full py-3.5 bg-[#00A8E8] hover:bg-[#0092C8] text-white text-[15px] font-bold rounded-[8px] transition-colors shadow-sm"
             >
