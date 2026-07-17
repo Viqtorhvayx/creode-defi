@@ -1,0 +1,50 @@
+{
+  "faucet": "0x9f5EDe50c22B842BfA51704924C861E9818C59cB",
+  "tokens": {
+    "USDC": {
+      "address": "0xbaFA3542B937356F274C5d75980464A1E1771bBC",
+      "decimals": 6,
+      "name": "USD Coin"
+    },
+    "USDT": {
+      "address": "0x954cD4785B624385B5cF6dDe46F02D5dC93056DD",
+      "decimals": 6,
+      "name": "Tether USD"
+    },
+    "SAUCE": {
+      "address": "0x752bE95ef30230a5e3232f0cCD9C8F11B98feb3c",
+      "decimals": 6,
+      "name": "SAUCE"
+    },
+    "PACK": {
+      "address": "0x577EEE816392cc978CB3c6f379E7E1bA30d71417",
+      "decimals": 6,
+      "name": "HashPack"
+    },
+    "JAM": {
+      "address": "0x77798522C373E2BE063F4622f621EA1d6af0AB95",
+      "decimals": 6,
+      "name": "Tune.FM"
+    },
+    "WETH": {
+      "address": "0xB3925eD92F79B241f93974c9AF9b797733b64C7a",
+      "decimals": 8,
+      "name": "Wrapped Ether"
+    },
+    "WBTC": {
+      "address": "0x18818721eE0B3b7081b6F8229610017b2DC7eE1a",
+      "decimals": 8,
+      "name": "Wrapped BTC"
+    },
+    "BONZO": {
+      "address": "0x903B36c2A90E7A418bfB187D3a0782b528E62C65",
+      "decimals": 6,
+      "name": "Bonzo Finance"
+    },
+    "WHBAR": {
+      "address": "0xcEf65C15F8ff12e7b8334465CFCA1097ff596c0A",
+      "decimals": 8,
+      "name": "Wrapped Hbar"
+    }
+  }
+}
