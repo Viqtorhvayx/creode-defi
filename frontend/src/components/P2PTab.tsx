@@ -295,107 +295,219 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               </div>
 
               <div className="px-4 pb-6 flex flex-col flex-1 h-full">
-                {/* Info Box */}
-                <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                  <div className="flex flex-col">
-                    <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight mb-0.5">Market Order</span>
-                    <span className="text-[11px] font-medium text-slate-600 dark:text-white/70 leading-tight">Your order will be executed instantly at the best available price.</span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-end mb-2">
-                  <span className={`text-[12px] font-semibold ${textMuted}`}>Amount (You pay)</span>
-                </div>
-
-                {/* Amount Input */}
-                <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="0.00" 
-                      value="1,500.00"
-                      readOnly
-                      className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
-                    />
-                    
-                    <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors shrink-0">
-                      <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
-                         <span className="text-white text-[10px] font-bold">$</span>
+                
+                {/* === MARKET MODE === */}
+                {activeTradeMode === 'Market' && (
+                  <div className="flex flex-col flex-1 h-full">
+                    {/* Info Box */}
+                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight mb-0.5">Market Order</span>
+                        <span className="text-[11px] font-medium text-slate-600 dark:text-white/70 leading-tight">Your order will be executed instantly at the best available price.</span>
                       </div>
-                      <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
-                      <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
                     </div>
-                  </div>
-                  <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ $1,500.00 USD</div>
-                </div>
 
-                {/* Balance */}
-                <div className="flex justify-between items-center mb-6 px-1">
-                  <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold">5,420 USDC</span></span>
-                  <span className="text-[12px] font-bold tracking-tight">$123.75</span>
-                </div>
-
-                {/* Slider */}
-                <div className="mb-8 px-1 mt-6 relative">
-                  <div className="relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full flex items-center">
-                    <input 
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={posSize}
-                      onChange={(e) => setPosSize(Number(e.target.value))}
-                      className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
-                    />
-                    {/* Markers */}
-                    <div className="absolute left-[0%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
-                    <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
-                    <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
-                    <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
-                    <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
-                    
-                    {/* Active Track */}
-                    <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10 pointer-events-none" style={{ width: `${posSize}%` }}></div>
-                    
-                    {/* Marker Label */}
-                    <div className="absolute bottom-[12px] -translate-x-1/2 bg-[#00A8E8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] pointer-events-none z-20" style={{ left: `${posSize}%` }}>{posSize}%</div>
-                    
-                    {/* Thumb */}
-                    <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-[3px] border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
-                  </div>
-                  <div className={`flex justify-between mt-3 text-[10px] font-bold ${textMuted}`}>
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
-                  </div>
-                </div>
-
-                {/* Summary Table */}
-                <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1 mt-auto">
-                  <div className="flex justify-between">
-                    <span className={textMuted}>You will receive (Est.)</span>
-                    <span className="text-[#00c076] font-bold">1,841.48 USDT</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className={textMuted}>Estimated Price</span>
-                    <span className={`${textMain}`}>0.08149 USDT</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1">
-                      <span className={textMuted}>Slippage Tolerance</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div className="flex justify-between items-end mb-2">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount (You pay)</span>
                     </div>
-                    <span className={`${textMain}`}>0.50%</span>
+
+                    {/* Amount Input */}
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00c076] transition-colors group`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="0.00" 
+                          value="1,500.00"
+                          readOnly
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                        />
+                        
+                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                          <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
+                             <span className="text-white text-[10px] font-bold">$</span>
+                          </div>
+                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
+                          <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
+                        </div>
+                      </div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ $1,500.00 USD</div>
+                    </div>
+
+                    {/* Balance */}
+                    <div className="flex justify-between items-center mb-6 px-1">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold">5,420 USDC</span></span>
+                      <span className="text-[12px] font-bold tracking-tight">$123.75</span>
+                    </div>
+
+                    {/* Slider */}
+                    <div className="mb-8 px-1 mt-6 relative">
+                      <div className="relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full flex items-center">
+                        <input 
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={posSize}
+                          onChange={(e) => setPosSize(Number(e.target.value))}
+                          className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
+                        />
+                        {/* Markers */}
+                        <div className="absolute left-[0%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        
+                        {/* Active Track */}
+                        <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10 pointer-events-none" style={{ width: `${posSize}%` }}></div>
+                        
+                        {/* Marker Label */}
+                        <div className="absolute bottom-[12px] -translate-x-1/2 bg-[#00A8E8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] pointer-events-none z-20" style={{ left: `${posSize}%` }}>{posSize}%</div>
+                        
+                        {/* Thumb */}
+                        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-[3px] border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
+                      </div>
+                      <div className={`flex justify-between mt-3 text-[10px] font-bold ${textMuted}`}>
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+
+                    {/* Summary Table */}
+                    <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1 mt-auto">
+                      <div className="flex justify-between">
+                        <span className={textMuted}>You will receive (Est.)</span>
+                        <span className="text-[#00c076] font-bold">1,841.48 USDT</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className={textMuted}>Estimated Price</span>
+                        <span className={`${textMain}`}>0.08149 USDT</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1">
+                          <span className={textMuted}>Slippage Tolerance</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </div>
+                        <span className={`${textMain}`}>0.50%</span>
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <button className="w-full bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
+                      Place Market Order
+                    </button>
                   </div>
-                </div>
+                )}
 
-                {/* CTA Button */}
-                <button className="w-full bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
-                  Place Market Order
-                </button>
+                {/* === LIMIT MODE === */}
+                {activeTradeMode === 'Limit' && (
+                  <div className="flex flex-col flex-1 h-full">
+                    {/* Limit Alert Box */}
+                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+                        <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline>
+                      </svg>
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight mb-0.5">Limit Order</span>
+                        <span className="text-[11px] font-medium text-slate-600 dark:text-white/70 leading-tight">Your order will be placed at the specified price or better.</span>
+                      </div>
+                    </div>
 
+                    {/* Amount Input */}
+                    <div className="flex justify-between items-end mb-2">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount (You pay)</span>
+                    </div>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00c076] transition-colors group`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="0.00" 
+                          value="1,500.00"
+                          readOnly
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                        />
+                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                          <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
+                             <span className="text-white text-[10px] font-bold">$</span>
+                          </div>
+                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
+                          <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
+                        </div>
+                      </div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ $1,500.00 USD</div>
+                    </div>
+
+                    {/* Price Input */}
+                    <div className="flex justify-between items-end mb-2 mt-1">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Price (Limit)</span>
+                    </div>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-5 focus-within:border-[#00c076] transition-colors group`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="0.00" 
+                          value="0.0825"
+                          readOnly
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                        />
+                        <div className="flex items-center justify-end gap-2 px-3 py-1.5 min-w-[60px] shrink-0">
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none pr-1">USDT</span>
+                        </div>
+                      </div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>Mark: $0.0814</div>
+                    </div>
+
+                    {/* Balance & Total */}
+                    <div className="flex justify-between items-center mb-6 px-1">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold">5,420 USDC</span></span>
+                      <span className="text-[12px] font-bold tracking-tight">$123.75</span>
+                    </div>
+
+                    {/* Slider */}
+                    <div className="mb-8 px-1 relative">
+                      <div className="relative h-1.5 bg-slate-200 dark:bg-[#1e2330] rounded-full flex items-center">
+                        <input 
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={posSize}
+                          onChange={(e) => setPosSize(Number(e.target.value))}
+                          className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
+                        />
+                        {/* Markers */}
+                        <div className="absolute left-[0%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[50%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[75%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        <div className="absolute left-[100%] top-1/2 -translate-y-1/2 w-[3px] h-[8px] bg-slate-300 dark:bg-[#2a3040] pointer-events-none"></div>
+                        
+                        {/* Active Track */}
+                        <div className="absolute left-0 top-0 bottom-0 bg-[#00A8E8] rounded-full z-10 pointer-events-none" style={{ width: `${posSize}%` }}></div>
+                        
+                        {/* Marker Label */}
+                        <div className="absolute bottom-[12px] -translate-x-1/2 bg-[#00A8E8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] pointer-events-none z-20" style={{ left: `${posSize}%` }}>{posSize}%</div>
+                        
+                        {/* Thumb */}
+                        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-[#00A8E8] rounded-full shadow-[0_0_10px_rgba(0,168,232,0.5)] border-[3px] border-white dark:border-[#0b0e14] z-20 pointer-events-none" style={{ left: `${posSize}%` }}></div>
+                      </div>
+                      <div className={`flex justify-between mt-3 text-[10px] font-bold ${textMuted}`}>
+                        <span>0%</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <button className="w-full mt-auto bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
+                      Place Limit Order
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
