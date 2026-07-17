@@ -15,23 +15,19 @@ An industrial-grade decentralized finance protocol engineered for the Hedera Tes
 *   **3-Week Yield Cycle**: HBAR deposits earn a fixed **0.3% yield** applied precisely every 21 days.
 *   **Early Liquidation Penalty**: A **5% penalty** is enforced on any withdrawals made before the preset maturity date, directed to the Protocol Treasury.
 
-### 2. Liquidity Provision (Lending)
-*   **Points-Based Incentive**: Instead of immediate yield, liquidity providers earn **Lending Points** based on the volume and duration of assets provided.
-*   **Asset Support**: Native HBAR and major HTS stablecoins.
+### 2. Earn (Yield Hub)
+*   **Rate Discovery**: Browse live APY tiers across supported assets to find the best yield before locking.
 
-### 3. Reputation-Based Borrowing (XP System)
-*   **Borrowing XP**: A non-transferable reputation metric that determines a user's creditworthiness.
-*   **Dynamic LTV**: Your Loan-to-Value (LTV) ratio scales with your XP. Higher XP unlocks better borrowing terms.
-*   **Safety Gating**: Borrowing is automatically locked if a user's XP falls below the critical threshold (15 XP).
+### 3. Peer-to-Peer Trading
+*   **Direct Trading**: Trade assets peer-to-peer with live price/candle charting.
 
 ---
 
 ## 🛠️ Smart Contract Architecture
 
-The protocol is built on two core Solidity contracts deployed on the Hedera EVM:
+The protocol is built on a single core Solidity contract deployed on the Hedera EVM:
 
-*   **`CreodeXP.sol`**: Manages the reputation layer. Handles XP minting, burning, and balance tracking. Ownership is typically transferred to the Vault for automated updates.
-*   **`CreodeVault.sol`**: The central logic engine. Manages asset locking, yield calculations, point generation, and collateralized borrowing. Integrates directly with the XP system to enforce credit limits.
+*   **`CreodeVault.sol`**: The central logic engine. Manages asset locking, tiered APY calculations, entry fees, and early-withdrawal penalties.
 
 ---
 
