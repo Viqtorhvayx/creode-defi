@@ -34,10 +34,17 @@ async function main() {
         process.exit(1);
     }
 
+    // Admin (DEFAULT_ADMIN_ROLE) defaults to the deployer; override with ADMIN_WALLET
+    // (e.g. a multi-sig) in .env for production.
+    const adminAddress = process.env.ADMIN_WALLET && process.env.ADMIN_WALLET.startsWith('0x')
+        ? process.env.ADMIN_WALLET
+        : deployer.address;
+    console.log(`Using admin (DEFAULT_ADMIN_ROLE): ${adminAddress}`);
+
     const CreodeVault = await hre.ethers.getContractFactory("CreodeVault");
-    
-    // Deploying...
-    const vault = await CreodeVault.deploy(treasuryAddress);
+
+    // Deploying... constructor(address _admin, address _treasury)
+    const vault = await CreodeVault.deploy(adminAddress, treasuryAddress);
     await vault.waitForDeployment();
     
     const evmAddress = await vault.getAddress();

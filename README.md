@@ -13,7 +13,7 @@ An industrial-grade decentralized finance protocol engineered for the Hedera Tes
 ### 1. Saving & Structured Locking
 *   **Time-Locked Deposits**: Support for HBAR and Stablecoins (USDT/USDC via HTS). Users set a specific future withdrawal date upon deposit.
 *   **3-Week Yield Cycle**: HBAR deposits earn a fixed **0.3% yield** applied precisely every 21 days.
-*   **Early Liquidation Penalty**: A **5% penalty** is enforced on any withdrawals made before the preset maturity date, directed to the Protocol Treasury.
+*   **Early Liquidation Penalty**: A time-decaying penalty of **up to 2%** on principal is enforced on withdrawals made before the preset maturity date, directed to the Protocol Treasury. Accrued yield is still paid out in full.
 
 ### 2. Earn (Yield Hub)
 *   **Rate Discovery**: Browse live APY tiers across supported assets to find the best yield before locking.
@@ -27,7 +27,9 @@ An industrial-grade decentralized finance protocol engineered for the Hedera Tes
 
 The protocol is built on a single core Solidity contract deployed on the Hedera EVM:
 
-*   **`CreodeVault.sol`**: The central logic engine. Manages asset locking, tiered APY calculations, entry fees, and early-withdrawal penalties.
+*   **`CreodeVault.sol`**: The central logic engine (Solidity `^0.8.20`, OpenZeppelin `AccessControl` / `ReentrancyGuard` / `Pausable` / `SafeERC20`). Manages multi-token asset locking, tiered APY with linear interpolation, a hard-capped global entry fee (0.25%, max 1%), matured withdrawals, and time-decaying early-exit penalties (up to 2%).
+
+> **Yield & Treasury model:** Principal is custodied by the vault; **yield is funded from the Treasury** and pulled via HTS allowance (`transferFrom`) at exit. The Treasury must `approve` the vault as a spender for each yield-bearing token and hold sufficient balance. All assets are handled through the ERC20/HTS interface, so "HBAR" refers to **WHBAR** (the HTS-wrapped form).
 
 ---
 
