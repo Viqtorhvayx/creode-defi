@@ -15,7 +15,7 @@ import { ToastProvider } from "@/context/ToastContext";
 
 export const metadata: Metadata = {
   title: "CREODE DEFI | Hedera Testnet",
-  description: "Advanced Saving, Lending, and Borrowing platform on Hedera. Engineered by Viqtorhvayx.",
+  description: "Advanced Saving and Peer-to-Peer Trading platform on Hedera. Engineered by Viqtorhvayx.",
 };
 
 export default function RootLayout({
