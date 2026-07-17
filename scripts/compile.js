@@ -47,11 +47,9 @@ const compile = (filename) => {
 };
 
 try {
-    const xp = compile('CreodeXP.sol');
     const vault = compile('CreodeVault.sol');
 
     const abis = {
-        CreodeXP: xp.abi,
         CreodeVault: vault.abi
     };
 

@@ -10,8 +10,7 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
   const transactions = [
     { id: '1', type: 'Deposit', amount: '2,500.00 HBAR', date: 'May 15, 2026', status: 'Confirmed', hash: '0.0.123456...789' },
     { id: '2', type: 'Yield', amount: '7.50 HBAR', date: 'May 14, 2026', status: 'Confirmed', hash: '0.0.987654...321' },
-    { id: '3', type: 'Borrow', amount: '500.00 HBAR', date: 'May 12, 2026', status: 'Confirmed', hash: '0.0.456123...456' },
-    { id: '4', type: 'Repay', amount: '100.00 HBAR', date: 'May 10, 2026', status: 'Confirmed', hash: '0.0.789123...123' },
+    { id: '3', type: 'Withdraw', amount: '500.00 HBAR', date: 'May 12, 2026', status: 'Confirmed', hash: '0.0.456123...456' },
   ];
 
   const labelColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
@@ -48,7 +47,7 @@ export const ActivityTable: React.FC<ActivityTableProps> = ({ theme }) => {
                     <div className={`w-2 h-2 rounded-full ${
                       tx.type === 'Deposit' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 
                       tx.type === 'Yield' ? 'bg-[#00A8E8] shadow-[0_0_10px_rgba(0,168,232,0.5)]' :
-                      tx.type === 'Borrow' ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' :
+                      tx.type === 'Withdraw' ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]' :
                       'bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]'
                     }`} />
                     <span className="text-sm font-bold tracking-tight text-white">{tx.type}</span>

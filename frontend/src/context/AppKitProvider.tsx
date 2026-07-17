@@ -35,7 +35,7 @@ if (typeof window !== 'undefined') {
     projectId,
     metadata: {
       name: 'CREODE Protocol',
-      description: 'Advanced Saving, Lending, and Borrowing on Hedera.',
+      description: 'Advanced Saving and Peer-to-Peer Trading on Hedera.',
       url: 'https://frontend-weld-iota-18.vercel.app',
       icons: ['https://avatars.githubusercontent.com/u/179241380'],
     },
