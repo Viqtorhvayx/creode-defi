@@ -9,8 +9,32 @@ import "./interfaces/IERC20.sol";
  * Features:
  * - Dynamic linear interpolation for APY based on lock duration.
  * - Minimum deposit thresholds based on decimals.
- * - 0.25% Entry fee routed to treasury.
- * - Yield retention and up to 2% time-decay penalty on early principal withdrawals.
+ * - 0.25% Entry fee routed to treasury atomically on deposit.
+ * - Yield paid out of the Treasury (not the Vault's own balance) for HTS tokens,
+ *   pulled via a standard ERC20 allowance the Treasury grants this contract.
+ * - Up to 2% time-decay penalty on early principal withdrawals, routed to
+ *   treasury atomically alongside the withdrawal.
+ *
+ * IMPORTANT — Treasury funding model:
+ * The Vault no longer assumes yield is backed by its own token balance for HTS
+ * tokens. Instead, on withdraw() it pulls the accrued yield directly out of the
+ * `treasury` address via `IERC20(token).transferFrom(treasury, user, yieldAmount)`.
+ * For this to succeed, the Treasury account MUST call
+ * `IERC20(token).approve(vaultAddress, <sufficiently large amount>)` for every
+ * HTS token configured on this vault, and must hold enough of that token to
+ * cover outstanding yield obligations. This contract cannot enforce that the
+ * Treasury is actually funded — insufficient Treasury balance/allowance will
+ * simply revert the withdrawal.
+ *
+ * KNOWN LIMITATION — native HBAR yield is NOT pulled from the Treasury.
+ * Hedera's native-HBAR allowance-pull mechanism (the HAS/IHRC-632 system
+ * contract) is a distinct, less common code path from standard ERC20
+ * `transferFrom`, and its exact interface needs to be verified against current
+ * Hedera testnet/mainnet docs before being relied on for real fund movement.
+ * Rather than guess at that interface in a contract that moves real money,
+ * native HBAR yield continues to be paid out of the Vault's own HBAR balance,
+ * same as before this change. Revisit this once the HAS allowance flow has
+ * been verified end-to-end.
  */
 contract CreodeVault {
     // Reentrancy Guard
@@ -44,12 +68,10 @@ contract CreodeVault {
     mapping(address => TokenConfig) public tokenConfigs; // address(0) represents native HBAR
     mapping(address => mapping(uint256 => UserDeposit)) public userDeposits;
     mapping(address => uint256) public userDepositCount;
-    mapping(address => uint256) public accumulatedFees;
 
     event TokenConfigured(address indexed token, uint256 minDeposit, uint256 rate7D, uint256 rate30D, uint256 rate60D);
     event Deposited(address indexed user, uint256 depositId, address indexed token, uint256 principal, uint256 fee, uint256 apyBps, uint256 maturityTimestamp);
     event Withdrawn(address indexed user, uint256 depositId, address indexed token, uint256 principal, uint256 yield, uint256 penalty);
-    event FeesClaimed(address indexed token, uint256 amount);
 
     modifier nonReentrant() {
         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
@@ -95,7 +117,7 @@ contract CreodeVault {
     function calculateCustomAPY(address token, uint256 durationDays) public view returns (uint256) {
         TokenConfig memory config = tokenConfigs[token];
         require(config.isActive, "Token not active");
-        
+
         if (durationDays <= 7) {
             return config.rate7D;
         } else if (durationDays <= 30) {
@@ -122,14 +144,14 @@ contract CreodeVault {
         require(config.isActive, "Token not supported");
 
         uint256 actualAmount = amount;
-        
+
         if (token == address(0)) {
             require(msg.value > 0, "Msg value must be > 0");
             actualAmount = msg.value;
         } else {
             require(msg.value == 0, "Do not send HBAR with ERC20 deposit");
             require(amount > 0, "Amount must be > 0");
-            
+
             // Transfer ERC20 from user to this contract
             // Make sure the user has approved the contract
             bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
@@ -138,11 +160,13 @@ contract CreodeVault {
 
         require(actualAmount >= config.minDeposit, "Amount below minimum deposit");
 
-        // 25 BPS global entry fee
+        // 25 BPS global entry fee, routed to treasury atomically.
         uint256 fee = (actualAmount * PROTOCOL_FEE_BPS) / 10000;
         uint256 principal = actualAmount - fee;
 
-        accumulatedFees[token] += fee;
+        if (fee > 0) {
+            _payOut(token, treasury, fee);
+        }
 
         uint256 apyBps = calculateCustomAPY(token, durationDays);
         uint256 maturity = block.timestamp + (durationDays * 1 days);
@@ -155,7 +179,7 @@ contract CreodeVault {
             maturityTimestamp: maturity,
             apyBps: apyBps
         });
-        
+
         userDepositCount[msg.sender]++;
 
         emit Deposited(msg.sender, depositId, token, principal, fee, apyBps, maturity);
@@ -167,54 +191,60 @@ contract CreodeVault {
         require(dep.principal > 0, "Deposit already withdrawn");
 
         uint256 timeElapsed = block.timestamp - dep.depositTimestamp;
-        
+
         // Accrued Yield = (Principal * APY * Time Elapsed) / (365 days in seconds)
         // APY is in basis points, so divide by 10000
         uint256 yieldAmount = (dep.principal * dep.apyBps * timeElapsed) / (10000 * SECONDS_IN_YEAR);
-        
+
         uint256 penalty = 0;
         if (block.timestamp < dep.maturityTimestamp) {
             uint256 remainingTime = dep.maturityTimestamp - block.timestamp;
             uint256 totalDuration = dep.maturityTimestamp - dep.depositTimestamp;
-            
+
             // Current Penalty % = 2.00% * (Remaining Time / Total Lock Duration)
             // Penalty = (Principal * MaxPenaltyBps * remainingTime) / (totalDuration * 10000)
             penalty = (dep.principal * MAX_EARLY_PENALTY_BPS * remainingTime) / (totalDuration * 10000);
-            
-            accumulatedFees[dep.tokenAddress] += penalty;
         }
 
         uint256 finalPrincipal = dep.principal - penalty;
-        uint256 totalPayout = finalPrincipal + yieldAmount;
-        
         address token = dep.tokenAddress;
         dep.principal = 0; // Burn state to prevent re-entry logic abuse
 
-        if (token == address(0)) {
-            require(address(this).balance >= totalPayout, "Insufficient HBAR liquidity");
-            (bool success, ) = payable(msg.sender).call{value: totalPayout}("");
-            require(success, "HBAR transfer failed");
-        } else {
-            require(IERC20(token).balanceOf(address(this)) >= totalPayout, "Insufficient ERC20 liquidity");
-            require(IERC20(token).transfer(msg.sender, totalPayout), "ERC20 transfer failed");
+        // Principal (net of any early penalty) is paid from the Vault's own balance.
+        _payOut(token, msg.sender, finalPrincipal);
+
+        // Early-withdrawal penalty is routed to the Treasury atomically, same tx.
+        if (penalty > 0) {
+            _payOut(token, treasury, penalty);
+        }
+
+        // Yield is pulled from the Treasury for HTS tokens. Native HBAR yield is
+        // still paid from the Vault's own balance — see contract-level comment.
+        if (yieldAmount > 0) {
+            if (token == address(0)) {
+                _payOut(token, msg.sender, yieldAmount);
+            } else {
+                require(
+                    IERC20(token).transferFrom(treasury, msg.sender, yieldAmount),
+                    "Yield pull from treasury failed"
+                );
+            }
         }
 
         emit Withdrawn(msg.sender, depositId, token, finalPrincipal, yieldAmount, penalty);
     }
 
-    function claimFees(address token) external nonReentrant {
-        uint256 fees = accumulatedFees[token];
-        require(fees > 0, "No fees to claim");
-        accumulatedFees[token] = 0;
-
+    /// @dev Pays `amount` of `token` (address(0) = native HBAR) out of this
+    /// contract's own balance to `to`.
+    function _payOut(address token, address to, uint256 amount) private {
         if (token == address(0)) {
-            (bool success, ) = payable(treasury).call{value: fees}("");
-            require(success, "HBAR fee claim failed");
+            require(address(this).balance >= amount, "Insufficient HBAR liquidity");
+            (bool success, ) = payable(to).call{value: amount}("");
+            require(success, "HBAR transfer failed");
         } else {
-            require(IERC20(token).transfer(treasury, fees), "ERC20 fee claim failed");
+            require(IERC20(token).balanceOf(address(this)) >= amount, "Insufficient ERC20 liquidity");
+            require(IERC20(token).transfer(to, amount), "ERC20 transfer failed");
         }
-        
-        emit FeesClaimed(token, fees);
     }
 
     receive() external payable {}
