@@ -5,7 +5,7 @@ const TOKENS = [
     {
         name: "HBAR (native)",
         address: "0x0000000000000000000000000000000000000000",
-        minDeposit: 100_0000_0000,  // 100 HBAR in tinybars (8 decimals)
+        minDeposit: 10_000_000_000,  // 100 HBAR (8 decimals)
         rate7D:  350,   // 3.50% APY
         rate30D: 550,   // 5.50% APY
         rate60D: 800,   // 8.00% APY
@@ -27,9 +27,25 @@ const TOKENS = [
         rate60D: 900,
     },
     {
+        name: "WETH",
+        address: "0x00000000000000000000000000000000000D235E",
+        minDeposit: 300_000,  // 0.003 WETH (8 decimals)
+        rate7D:  350,   // 3.50% APY
+        rate30D: 550,   // 5.50% APY
+        rate60D: 800,   // 8.00% APY
+    },
+    {
+        name: "WBTC",
+        address: "0x00000000000000000000000000000000001008C6",
+        minDeposit: 15_000,  // 0.00015 WBTC (8 decimals)
+        rate7D:  350,
+        rate30D: 550,
+        rate60D: 800,
+    },
+    {
         name: "SAUCE",
         address: "0x00000000000000000000000000000000000b2ad5", // 0.0.731861
-        minDeposit: 100_000_000,  // 100 SAUCE (6 decimals)
+        minDeposit: 200_000_000,  // 200 SAUCE (6 decimals)
         rate7D:  800,   // 8.00% APY
         rate30D: 1400,  // 14.00% APY
         rate60D: 2200,  // 22.00% APY
@@ -37,7 +53,16 @@ const TOKENS = [
     {
         name: "PACK",
         address: "0x0000000000000000000000000000000000492a28", // 0.0.4794920
-        minDeposit: 1_000_000_000, // 1000 PACK (6 decimals)
+        minDeposit: 100_000_000_000, // 100,000 PACK (6 decimals)
+        rate7D:  800,
+        rate30D: 1400,
+        rate60D: 2200,
+    },
+    {
+        name: "BONZO",
+        // !!! PLACEHOLDER — confirm the real Hedera EVM address before running against mainnet/testnet.
+        address: "0x00000000000000000000000000000000016450E2",
+        minDeposit: 200_000_000_000, // 200,000 BONZO (6 decimals)
         rate7D:  800,
         rate30D: 1400,
         rate60D: 2200,
@@ -45,7 +70,7 @@ const TOKENS = [
     {
         name: "JAM",
         address: "0x0000000000000000000000000000000000138334", // 0.0.1278772
-        minDeposit: 100_000_000,
+        minDeposit: 2_000_000_000, // 2,000 JAM (6 decimals)
         rate7D:  800,
         rate30D: 1400,
         rate60D: 2200,
