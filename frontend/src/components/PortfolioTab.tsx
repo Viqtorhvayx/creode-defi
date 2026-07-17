@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Minus, ArrowRight } from '@phosphor-icons/react';
+import { FaucetDropdown } from './FaucetDropdown';
 
 interface PortfolioTabProps {
   theme: 'light' | 'dark';
@@ -19,10 +20,11 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
     <div className={`w-full max-w-[1200px] mx-auto flex flex-col gap-6 ${textMain} px-4 pb-10`}>
       
       {/* Header */}
-      <div className="mb-2 flex flex-col">
+      <div className="mb-2 flex items-center justify-between gap-4">
         <h1 className="text-[24px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
           Portfolio Overview
         </h1>
+        <FaucetDropdown theme={theme} />
       </div>
 
       {/* Top Chart Card */}
