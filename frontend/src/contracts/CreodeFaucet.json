@@ -1,5 +1,5 @@
 {
-  "address": "0xbaC03178715Ba054E1832dAE6b069e44234aa567",
+  "address": "0x2449135C532f78ed43C9c4a99307aAA987D39A41",
   "abi": [
     {
       "inputs": [
@@ -7,6 +7,11 @@
           "internalType": "address[]",
           "name": "_tokens",
           "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "nonpayable",
@@ -76,9 +81,15 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
           "indexed": false,
           "internalType": "uint256",
-          "name": "dripWhole",
+          "name": "amount",
           "type": "uint256"
         }
       ],
@@ -138,8 +149,14 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "dripWhole",
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "dripAmount",
       "outputs": [
         {
           "internalType": "uint256",
@@ -256,12 +273,17 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
-          "name": "_dripWhole",
+          "name": "amount",
           "type": "uint256"
         }
       ],
-      "name": "setDrip",
+      "name": "setDripAmount",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -272,6 +294,11 @@
           "internalType": "address[]",
           "name": "_tokens",
           "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
         }
       ],
       "name": "setTokens",
