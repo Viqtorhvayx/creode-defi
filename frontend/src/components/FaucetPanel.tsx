@@ -107,7 +107,8 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
       const provider = new BrowserProvider(walletClient as any);
       const signer = await provider.getSigner();
       const faucet = new Contract(FAUCET_ADDRESS, (faucetArtifact as any).abi, signer);
-      const tx = await faucet.claim();
+      // Explicit gas limit: 8 HTS transfers make the wallet's estimateGas flaky.
+      const tx = await faucet.claim({ gasLimit: 2000000 });
       await tx.wait();
       setJustClaimed(true);
       setTimeout(() => setJustClaimed(false), 4000);
