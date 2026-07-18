@@ -12,9 +12,10 @@ interface FaucetDropdownProps {
   className?: string;
 }
 
-// Tokens dripped by the faucet (200 of each, daily). Order mirrors the vault UI.
-const FAUCET_TOKENS = ['USDC', 'USDT', 'SAUCE', 'PACK', 'JAM', 'WETH', 'WBTC', 'BONZO', 'WHBAR'];
-const DRIP_AMOUNT = 200;
+// HTS tokens dripped by the faucet (50 of each, daily). HBAR is native — get it
+// from the official Hedera faucet (faucet.hedera.com), not here.
+const FAUCET_TOKENS = ['USDC', 'USDT', 'SAUCE', 'PACK', 'JAM', 'WETH', 'WBTC', 'BONZO'];
+const DRIP_AMOUNT = 50;
 
 const FAUCET_ADDRESS = process.env.NEXT_PUBLIC_FAUCET_ADDRESS || (faucetArtifact as any).address;
 const RPC_URL = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';

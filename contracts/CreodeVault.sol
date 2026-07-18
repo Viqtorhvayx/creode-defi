@@ -13,17 +13,15 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * @notice Time-locked, multi-token savings vault for the Hedera network.
  *
  * Architecture:
- *  - All supported assets are handled through the ERC20 / HTS token interface
- *    (SafeERC20). On Hedera, HTS tokens expose the ERC20 ABI via the token's
- *    EVM address, so USDT/USDC/SAUCE/... and WHBAR are all driven uniformly.
- *    NOTE: "HBAR" in the tier table below refers to WHBAR (the HTS-wrapped
- *    form). Native HBAR cannot be `approve`d or pulled via `transferFrom`,
- *    which this design (yield funded from Treasury allowance) requires.
+ *  - Supports native HBAR (token == address(0), deposited via msg.value) and
+ *    HTS/ERC20 fungible tokens. HTS tokens expose the ERC20 ABI at their EVM
+ *    address, so USDT/USDC/SAUCE/... are driven via SafeERC20 uniformly.
  *
- *  - Principal is custodied by the vault. Yield is NOT minted or held here:
- *    it is pulled from the Treasury via HTS allowance (`safeTransferFrom`)
- *    at exit time. The Treasury MUST approve this contract as a spender for
- *    every yield-bearing token, and hold enough balance to cover payouts.
+ *  - Principal is custodied by the vault. HTS-token yield is pulled from the
+ *    Treasury via allowance (`safeTransferFrom`) at exit — the Treasury MUST
+ *    approve this contract for every yield-bearing token and hold a balance.
+ *    Native-HBAR yield is paid from the vault's own HBAR reserve (see
+ *    `fundHbarReserve`), since native HBAR cannot be pulled from the Treasury.
  *
  *  - Percentages use Basis Points (BPS): 10_000 = 100%.
  */
@@ -200,7 +198,7 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
         uint256 apy30DBps,
         uint256 apy60DBps
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(token != address(0), "Token is zero address");
+        // address(0) is allowed here: it represents native HBAR.
         tokenConfigs[token] = TokenConfig({
             supported: true,
             minDeposit: minDeposit,
@@ -294,14 +292,16 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
     // ─────────────────────────────────────────────────────────────────────
 
     /**
-     * @notice Lock `_amount` of `_token` for `_duration` days.
-     * @dev Requires prior token approval of `_amount` to this contract.
+     * @notice Lock tokens (or native HBAR) for `_duration` days.
+     * @dev For ERC20/HTS tokens, requires prior approval of `_amount`; pass
+     *      `_token = address(0)` and send HBAR as msg.value to lock native HBAR.
      *      Charges globalFeeBPS on the gross amount (routed to Treasury),
      *      locks the remainder as principal, and snapshots the APY.
      * @return depositId The id of the newly created deposit.
      */
     function depositToVault(address _token, uint256 _amount, uint256 _duration)
         external
+        payable
         nonReentrant
         whenNotPaused
         returns (uint256 depositId)
@@ -309,16 +309,31 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
         TokenConfig memory cfg = tokenConfigs[_token];
         require(cfg.supported, "Token not supported");
         require(_duration > 0, "Duration must be > 0");
-        require(_amount >= cfg.minDeposit, "Below minimum deposit");
 
-        // Pull the gross amount in first (requires allowance).
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+        // Resolve the gross amount and take custody.
+        uint256 grossAmount;
+        if (_token == address(0)) {
+            // Native HBAR: the deposit amount is the attached value.
+            require(msg.value > 0, "No HBAR sent");
+            grossAmount = msg.value;
+        } else {
+            require(msg.value == 0, "No HBAR for token deposit");
+            require(_amount > 0, "Amount must be > 0");
+            grossAmount = _amount;
+            IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+        }
+        require(grossAmount >= cfg.minDeposit, "Below minimum deposit");
 
         // Route the entry fee straight to the Treasury; lock the remainder.
-        uint256 fee = (_amount * globalFeeBPS) / BPS_DENOMINATOR;
-        uint256 principal = _amount - fee;
+        uint256 fee = (grossAmount * globalFeeBPS) / BPS_DENOMINATOR;
+        uint256 principal = grossAmount - fee;
         if (fee > 0) {
-            IERC20(_token).safeTransfer(treasury, fee);
+            if (_token == address(0)) {
+                (bool ok, ) = payable(treasury).call{value: fee}("");
+                require(ok, "HBAR fee transfer failed");
+            } else {
+                IERC20(_token).safeTransfer(treasury, fee);
+            }
         }
 
         uint256 apyBps = quoteAPY(_token, _duration);
@@ -363,12 +378,17 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
         // Effects before interactions.
         dep.withdrawn = true;
 
-        // Return 100% of principal from the vault's own custody.
-        IERC20(token).safeTransfer(msg.sender, principal);
-
-        // Pull the yield from the Treasury allowance and forward it to the user.
-        if (yieldAmount > 0) {
-            IERC20(token).safeTransferFrom(treasury, msg.sender, yieldAmount);
+        if (token == address(0)) {
+            // Native HBAR: principal (custody) + yield (vault's HBAR reserve).
+            (bool ok, ) = payable(msg.sender).call{value: principal + yieldAmount}("");
+            require(ok, "HBAR payout failed");
+        } else {
+            // Return 100% of principal from the vault's own custody.
+            IERC20(token).safeTransfer(msg.sender, principal);
+            // Pull the yield from the Treasury allowance and forward it to the user.
+            if (yieldAmount > 0) {
+                IERC20(token).safeTransferFrom(treasury, msg.sender, yieldAmount);
+            }
         }
 
         emit Withdrawn(_depositId, msg.sender, token, principal, yieldAmount);
@@ -408,15 +428,25 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
         // Effects before interactions.
         dep.withdrawn = true;
 
-        // Penalty stays with the protocol Treasury.
-        if (penalty > 0) {
-            IERC20(token).safeTransfer(treasury, penalty);
-        }
-        // Remaining principal back to the user (from vault custody).
-        IERC20(token).safeTransfer(msg.sender, principalReturned);
-        // Accrued yield pulled from the Treasury allowance.
-        if (yieldAmount > 0) {
-            IERC20(token).safeTransferFrom(treasury, msg.sender, yieldAmount);
+        if (token == address(0)) {
+            // Native HBAR: penalty -> treasury, remaining principal + yield -> user.
+            if (penalty > 0) {
+                (bool okp, ) = payable(treasury).call{value: penalty}("");
+                require(okp, "HBAR penalty transfer failed");
+            }
+            (bool oku, ) = payable(msg.sender).call{value: principalReturned + yieldAmount}("");
+            require(oku, "HBAR payout failed");
+        } else {
+            // Penalty stays with the protocol Treasury.
+            if (penalty > 0) {
+                IERC20(token).safeTransfer(treasury, penalty);
+            }
+            // Remaining principal back to the user (from vault custody).
+            IERC20(token).safeTransfer(msg.sender, principalReturned);
+            // Accrued yield pulled from the Treasury allowance.
+            if (yieldAmount > 0) {
+                IERC20(token).safeTransferFrom(treasury, msg.sender, yieldAmount);
+            }
         }
 
         emit UnlockedEarly(_depositId, msg.sender, token, principalReturned, penalty, yieldAmount);
@@ -458,4 +488,19 @@ contract CreodeVault is AccessControl, ReentrancyGuard, Pausable {
     function userDepositCount(address user) external view returns (uint256) {
         return _userDepositIds[user].length;
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Native HBAR reserve
+    // ─────────────────────────────────────────────────────────────────────
+
+    /// @notice Total HBAR held by the vault (locked principal + yield reserve).
+    function hbarReserve() external view returns (uint256) {
+        return address(this).balance;
+    }
+
+    /// @notice Top up the HBAR reserve used to pay native-HBAR yield.
+    function fundHbarReserve() external payable {}
+
+    /// @notice Accept plain HBAR transfers into the reserve.
+    receive() external payable {}
 }
