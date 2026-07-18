@@ -41,6 +41,7 @@ const SYMBOL_BY_ADDRESS: Record<string, string> = Object.entries(TOKEN_EVM_ADDRE
 const ERC20_ABI = [
   'function approve(address spender, uint256 amount) external returns (bool)',
   'function allowance(address owner, address spender) external view returns (uint256)',
+  'function balanceOf(address owner) external view returns (uint256)',
 ];
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const VAULT_ABI = (vaultArtifact as any).CreodeVault;
@@ -128,6 +129,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [vaults, setVaults] = useState<VaultRow[]>([]);
   const [isLoadingVaults, setIsLoadingVaults] = useState<boolean>(false);
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
+
+  // Live wallet balances for each supported token (keyed by symbol).
+  const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
 
 
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
@@ -310,6 +314,55 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     fetchVaults();
   }, [fetchVaults]);
 
+  // Fetch the connected wallet's balance for every supported token.
+  const fetchBalances = React.useCallback(async () => {
+    const userAddr = walletClient?.account?.address;
+    if (!userAddr) { setTokenBalances({}); return; }
+    try {
+      const provider = new JsonRpcProvider(rpcUrl);
+      const entries = await Promise.all(
+        TOKENS.map(async (sym) => {
+          const addr = TOKEN_EVM_ADDRESSES[sym];
+          if (!addr || addr === ZERO_ADDRESS) return [sym, '0.00'] as const;
+          try {
+            const erc20 = new Contract(addr, ERC20_ABI, provider);
+            const raw = await erc20.balanceOf(userAddr);
+            const dec = TOKEN_DECIMALS[sym] ?? 18;
+            return [sym, formatUnits(raw, dec)] as const;
+          } catch {
+            return [sym, '0.00'] as const;
+          }
+        })
+      );
+      setTokenBalances(Object.fromEntries(entries));
+    } catch (err) {
+      console.error('[Vault] Failed to load balances:', err);
+    }
+  }, [walletClient, rpcUrl]);
+
+  useEffect(() => {
+    fetchBalances();
+    const id = setInterval(fetchBalances, 20000); // keep balances fresh (e.g. after a faucet claim)
+    return () => clearInterval(id);
+  }, [fetchBalances]);
+
+  // Human-friendly balance for a token (trimmed).
+  const displayBalance = (sym: string): string => {
+    const v = Number(tokenBalances[sym] ?? 0);
+    if (!v) return '0.00';
+    return v.toLocaleString(undefined, { maximumFractionDigits: v >= 1 ? 2 : 6 });
+  };
+
+  // 25% / 50% / MAX shortcut → fill the deposit input from the wallet balance.
+  const applyPercent = (label: string) => {
+    setSelectedPercent((prev) => (prev === label ? null : label));
+    const bal = Number(tokenBalances[activeToken] ?? 0);
+    if (!bal) return;
+    const pct = label === 'MAX' ? 1 : label === '50%' ? 0.5 : 0.25;
+    const dec = TOKEN_DECIMALS[activeToken] ?? 6;
+    setDepositAmount((bal * pct).toFixed(Math.min(dec, 6)));
+  };
+
   const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) return;
     if (!isConnected || !walletClient) {
@@ -357,6 +410,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         setIsSuccess(false);
         setDepositAmount('');
         fetchVaults();
+        fetchBalances();
       }, 1500);
 
     } catch (err) {
@@ -385,6 +439,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       const tx = row.matured ? await vault.withdraw(row.id) : await vault.unlock(row.id);
       await tx.wait();
       await fetchVaults();
+      await fetchBalances();
     } catch (err) {
       const e = err as any;
       console.error('[Vault] Exit failed:', e);
@@ -525,7 +580,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           
                           <div className="flex flex-col items-end">
                             <span className={`text-[12px] font-semibold ${activeToken === token ? 'text-[#00A8E8]/80' : 'text-slate-600 dark:text-white/70 group-hover:text-[#00A8E8]/80 dark:group-hover:text-[#00A8E8]/80'}`}>
-                              {token === 'HBAR' ? (balance || "0.00") : "0.00"}
+                              {displayBalance(token)}
                             </span>
                           </div>
                         </div>
@@ -536,14 +591,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
                 {/* Shortcut Buttons */}
                 <div className="flex items-center justify-between w-[96px]">
-                  <button 
-                    onClick={() => setSelectedPercent(prev => prev === '25%' ? null : '25%')}
+                  <button
+                    onClick={() => applyPercent('25%')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>25%</button>
-                  <button 
-                    onClick={() => setSelectedPercent(prev => prev === '50%' ? null : '50%')}
+                  <button
+                    onClick={() => applyPercent('50%')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>50%</button>
-                  <button 
-                    onClick={() => setSelectedPercent(prev => prev === 'MAX' ? null : 'MAX')}
+                  <button
+                    onClick={() => applyPercent('MAX')}
                     className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>MAX</button>
                 </div>
               </div>
