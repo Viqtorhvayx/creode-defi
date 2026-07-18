@@ -2,17 +2,26 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { CircleNotch, CheckCircle, Clock } from '@phosphor-icons/react';
-import { BrowserProvider, JsonRpcProvider, Contract } from 'ethers';
+import { BrowserProvider, JsonRpcProvider, Contract, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
 
-// HTS tokens dripped by the faucet (50 of each, daily). HBAR is native — get it
-// from the official Hedera faucet (faucet.hedera.com), not here.
-const FAUCET_TOKENS = ['USDC', 'USDT', 'SAUCE', 'PACK', 'JAM', 'WETH', 'WBTC', 'BONZO'];
-const DRIP_AMOUNT = 50;
+// HTS tokens dripped by the faucet (~$500 worth of each, daily). HBAR is native
+// — get it from the official Hedera faucet (faucet.hedera.com), not here.
+const FAUCET_TOKENS: { sym: string; address: string; decimals: number }[] = [
+  { sym: 'USDC',  address: '0x000000000000000000000000000000000092e8A7', decimals: 6 },
+  { sym: 'USDT',  address: '0x000000000000000000000000000000000092E8a8', decimals: 6 },
+  { sym: 'SAUCE', address: '0x000000000000000000000000000000000092e8A9', decimals: 6 },
+  { sym: 'PACK',  address: '0x000000000000000000000000000000000092e8aB', decimals: 6 },
+  { sym: 'JAM',   address: '0x000000000000000000000000000000000092E8aC', decimals: 6 },
+  { sym: 'WETH',  address: '0x000000000000000000000000000000000092E8Ae', decimals: 8 },
+  { sym: 'WBTC',  address: '0x000000000000000000000000000000000092e8b1', decimals: 8 },
+  { sym: 'BONZO', address: '0x000000000000000000000000000000000092e8B3', decimals: 6 },
+];
 
-const FAUCET_ADDRESS = process.env.NEXT_PUBLIC_FAUCET_ADDRESS || (faucetArtifact as any).address;
+// Use the committed address directly so a stale host env var can't override it.
+const FAUCET_ADDRESS = (faucetArtifact as any).address;
 const RPC_URL = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';
 
 const formatCountdown = (secs: number): string => {
@@ -25,6 +34,14 @@ const formatCountdown = (secs: number): string => {
   return `${s}s`;
 };
 
+// Compact display for amounts that range from 0.008 to 5,000,000.
+const compactAmount = (v: number): string => {
+  if (v === 0) return '0';
+  if (v >= 1000) return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(v);
+  if (v >= 1) return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return v.toLocaleString(undefined, { maximumFractionDigits: 4 });
+};
+
 /**
  * Self-contained faucet UI block (no trigger button / positioning).
  * Designed to be embedded inside the wallet dropdown.
@@ -35,6 +52,7 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
   const [isClaiming, setIsClaiming] = useState(false);
   const [justClaimed, setJustClaimed] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [drips, setDrips] = useState<Record<string, string>>({});
 
   const refreshCooldown = useCallback(async () => {
     const userAddr = walletClient?.account?.address;
@@ -49,6 +67,30 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
   }, [walletClient]);
 
   useEffect(() => { refreshCooldown(); }, [refreshCooldown]);
+
+  // Load each token's drip amount once.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!FAUCET_ADDRESS) return;
+      try {
+        const provider = new JsonRpcProvider(RPC_URL);
+        const faucet = new Contract(FAUCET_ADDRESS, (faucetArtifact as any).abi, provider);
+        const entries = await Promise.all(
+          FAUCET_TOKENS.map(async (t) => {
+            try {
+              const raw = await faucet.dripAmount(t.address);
+              return [t.sym, compactAmount(Number(formatUnits(raw, t.decimals)))] as const;
+            } catch {
+              return [t.sym, '—'] as const;
+            }
+          })
+        );
+        if (!cancelled) setDrips(Object.fromEntries(entries));
+      } catch { /* ignore */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -91,17 +133,17 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
         <span className="text-[9px] font-bold uppercase tracking-wide text-[#00A8E8] bg-[#00A8E8]/10 px-2 py-0.5 rounded-full">Testnet</span>
       </div>
       <p className={`text-[11px] ${textMuted} mb-2.5 leading-snug`}>
-        Claim {DRIP_AMOUNT} of each token once every 24h. (HBAR: faucet.hedera.com)
+        Claim ~$500 worth of each token once every 24h. (HBAR: faucet.hedera.com)
       </p>
 
       <div className="grid grid-cols-4 gap-1.5 mb-3">
-        {FAUCET_TOKENS.map((sym) => (
+        {FAUCET_TOKENS.map((t) => (
           <div
-            key={sym}
+            key={t.sym}
             className={`flex flex-col items-center justify-center py-1.5 rounded-lg border ${borderColor} ${theme === 'dark' ? 'bg-white/[0.02]' : 'bg-slate-50'}`}
           >
-            <span className="text-[10px] font-bold text-[#00A8E8]">+{DRIP_AMOUNT}</span>
-            <span className={`text-[9px] font-semibold ${textMuted}`}>{sym}</span>
+            <span className="text-[10px] font-bold text-[#00A8E8] leading-tight">{drips[t.sym] ?? '…'}</span>
+            <span className={`text-[9px] font-semibold ${textMuted}`}>{t.sym}</span>
           </div>
         ))}
       </div>
@@ -130,7 +172,7 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
         ) : !isConnected ? (
           'Connect wallet to claim'
         ) : (
-          `Claim ${DRIP_AMOUNT} of each`
+          'Claim ~$500 of each'
         )}
       </button>
     </div>
