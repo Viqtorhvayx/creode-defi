@@ -29,7 +29,9 @@ The protocol is built on a single core Solidity contract deployed on the Hedera 
 
 *   **`CreodeVault.sol`**: The central logic engine (Solidity `^0.8.20`, OpenZeppelin `AccessControl` / `ReentrancyGuard` / `Pausable` / `SafeERC20`). Manages multi-token asset locking, tiered APY with linear interpolation, a hard-capped global entry fee (0.25%, max 1%), matured withdrawals, and time-decaying early-exit penalties (up to 2%).
 
-> **Yield & Treasury model:** Principal is custodied by the vault; **yield is funded from the Treasury** and pulled via HTS allowance (`transferFrom`) at exit. The Treasury must `approve` the vault as a spender for each yield-bearing token and hold sufficient balance. All assets are handled through the ERC20/HTS interface, so "HBAR" refers to **WHBAR** (the HTS-wrapped form).
+> **Assets:** native **HBAR** (`address(0)`, deposited via `msg.value` — no wrapping) plus **HTS fungible tokens** (created via the Hedera Token Service precompile, so they're visible in HashPack and expose the ERC20 interface).
+>
+> **Yield & Treasury model:** Principal is custodied by the vault. For **HTS tokens**, yield is funded from the **Treasury** and pulled via allowance (`transferFrom`) at exit — the Treasury must `approve` the vault and hold a balance. For **native HBAR**, yield is paid from a **HBAR reserve pre-funded into the vault** (`fundHbarReserve`), since a contract cannot pull native HBAR from an account.
 
 ---
 
