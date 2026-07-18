@@ -3,20 +3,23 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IMintableERC20 {
-    function mint(address to, uint256 amount) external;
+interface IFaucetToken {
+    function transfer(address to, uint256 amount) external returns (bool);
     function decimals() external view returns (uint8);
+    function balanceOf(address account) external view returns (uint256);
 }
 
 /**
  * @title CreodeFaucet
- * @notice Testnet faucet: lets any user claim a fixed amount of each supported
- *         token once per cooldown window (default 24h), to fund dapp testing.
- *         Relies on the MockERC20 open `mint()`.  Testnet only.
+ * @notice Testnet faucet that hands out a fixed amount of each supported token
+ *         once per cooldown. Tokens are HTS tokens (no open mint), so the faucet
+ *         holds a reserve and TRANSFERS the drip — fund it after deployment.
+ *         Recipients must be able to receive the token (HTS auto-association).
+ *         Testnet only.
  */
 contract CreodeFaucet is Ownable {
-    /// @notice Whole-token amount dropped per token per claim (scaled by decimals at claim time).
-    uint256 public dripWhole = 200;
+    /// @notice Whole-token amount dropped per token per claim (scaled by decimals).
+    uint256 public dripWhole = 50;
     /// @notice Minimum time between a user's claims.
     uint256 public cooldown = 1 days;
 
@@ -40,9 +43,9 @@ contract CreodeFaucet is Ownable {
 
         uint256 len = tokens.length;
         for (uint256 i = 0; i < len; i++) {
-            IMintableERC20 t = IMintableERC20(tokens[i]);
+            IFaucetToken t = IFaucetToken(tokens[i]);
             uint256 amount = dripWhole * (10 ** t.decimals());
-            t.mint(msg.sender, amount);
+            require(t.transfer(msg.sender, amount), "Faucet: drip transfer failed");
         }
         emit Claimed(msg.sender, len, block.timestamp);
     }
@@ -77,5 +80,10 @@ contract CreodeFaucet is Ownable {
     function setCooldown(uint256 _cooldown) external onlyOwner {
         cooldown = _cooldown;
         emit CooldownUpdated(_cooldown);
+    }
+
+    /// @notice Reclaim leftover reserve of a token to the owner.
+    function sweep(address token, address to, uint256 amount) external onlyOwner {
+        require(IFaucetToken(token).transfer(to, amount), "sweep failed");
     }
 }
