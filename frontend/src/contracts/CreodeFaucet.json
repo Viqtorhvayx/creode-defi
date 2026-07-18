@@ -1,5 +1,5 @@
 {
-  "address": "0x9f5EDe50c22B842BfA51704924C861E9818C59cB",
+  "address": "0xbaC03178715Ba054E1832dAE6b069e44234aa567",
   "abi": [
     {
       "inputs": [
@@ -275,6 +275,29 @@
         }
       ],
       "name": "setTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "sweep",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

@@ -14,28 +14,30 @@ import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } f
 import { useWalletClient } from 'wagmi';
 import vaultArtifact from '../context/abis.json';
 
-// The CreodeVault contract is ERC20/HTS-only: deposits require token approval and
-// yield is funded from the Treasury allowance. Native HBAR cannot be approved or
-// pulled via transferFrom, so "HBAR" here maps to WHBAR (the HTS-wrapped form).
-// Set NEXT_PUBLIC_WHBAR_ADDRESS to the WHBAR token's EVM address to enable it.
-const WHBAR_ADDRESS = process.env.NEXT_PUBLIC_WHBAR_ADDRESS || '0xcEf65C15F8ff12e7b8334465CFCA1097ff596c0A';
+// Assets: native HBAR (address(0)) + 8 HTS tokens. HTS tokens expose the ERC20
+// interface at their EVM address, so the wallet signs a normal approval and the
+// vault pulls via transferFrom. Native HBAR uses msg.value (no approval, no wrap).
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const TOKEN_EVM_ADDRESSES: Record<string, string> = {
-  HBAR:  WHBAR_ADDRESS,
-  USDC:  '0xbaFA3542B937356F274C5d75980464A1E1771bBC',
-  USDT:  '0x954cD4785B624385B5cF6dDe46F02D5dC93056DD',
-  SAUCE: '0x752bE95ef30230a5e3232f0cCD9C8F11B98feb3c',
-  PACK:  '0x577EEE816392cc978CB3c6f379E7E1bA30d71417',
-  JAM:   '0x77798522C373E2BE063F4622f621EA1d6af0AB95',
-  WETH:  '0xB3925eD92F79B241f93974c9AF9b797733b64C7a',
-  WBTC:  '0x18818721eE0B3b7081b6F8229610017b2DC7eE1a',
-  BONZO: '0x903B36c2A90E7A418bfB187D3a0782b528E62C65',
+  HBAR:  ZERO_ADDRESS, // native HBAR
+  USDC:  '0x000000000000000000000000000000000092e8A7',
+  USDT:  '0x000000000000000000000000000000000092E8a8',
+  SAUCE: '0x000000000000000000000000000000000092e8A9',
+  PACK:  '0x000000000000000000000000000000000092e8aB',
+  JAM:   '0x000000000000000000000000000000000092E8aC',
+  WETH:  '0x000000000000000000000000000000000092E8Ae',
+  WBTC:  '0x000000000000000000000000000000000092e8b1',
+  BONZO: '0x000000000000000000000000000000000092e8B3',
 };
+// Decimals of the values STORED on-chain / read back. Native HBAR principal is
+// held in tinybar (8dp); the deposit *value* and wallet balance are 18dp (weibar)
+// and handled explicitly where sent/read.
 const TOKEN_DECIMALS: Record<string, number> = {
   HBAR: 8, USDC: 6, USDT: 6, SAUCE: 6, PACK: 6, JAM: 6, WETH: 8, WBTC: 8, BONZO: 6,
 };
-// Reverse lookup: lowercased EVM address -> symbol, for rendering on-chain rows.
+// Reverse lookup: lowercased EVM address -> symbol (address(0) => HBAR).
 const SYMBOL_BY_ADDRESS: Record<string, string> = Object.entries(TOKEN_EVM_ADDRESSES).reduce(
-  (acc, [sym, addr]) => { if (addr && addr !== '0x0000000000000000000000000000000000000000') acc[addr.toLowerCase()] = sym; return acc; },
+  (acc, [sym, addr]) => { acc[addr.toLowerCase()] = sym; return acc; },
   {} as Record<string, string>
 );
 const ERC20_ABI = [
@@ -43,7 +45,6 @@ const ERC20_ABI = [
   'function allowance(address owner, address spender) external view returns (uint256)',
   'function balanceOf(address owner) external view returns (uint256)',
 ];
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const VAULT_ABI = (vaultArtifact as any).CreodeVault;
 const MAX_LOCK_DAYS = 365; // guard against nonsensical durations / APY extrapolation
 
@@ -253,7 +254,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const { data: walletClient } = useWalletClient();
   // Env override wins; committed fallback keeps the live site working without
   // relying on a NEXT_PUBLIC_VAULT_ADDRESS being set in the host (e.g. Vercel).
-  const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS || '0xc600fEd0F697A2f61213f449d2b896bf1f29CD84';
+  const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS || '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139';
   const rpcUrl = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';
 
   // Estimated earnings for the current deposit form (principal * APY * term/365).
@@ -325,8 +326,12 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       const entries = await Promise.all(
         TOKENS.map(async (sym) => {
           const addr = TOKEN_EVM_ADDRESSES[sym];
-          if (!addr || addr === ZERO_ADDRESS) return [sym, '0.00'] as const;
           try {
+            if (sym === 'HBAR' || addr === ZERO_ADDRESS) {
+              // Native HBAR balance is 18-decimal weibar at the EVM boundary.
+              const raw = await provider.getBalance(userAddr);
+              return [sym, formatUnits(raw, 18)] as const;
+            }
             const erc20 = new Contract(addr, ERC20_ABI, provider);
             const raw = await erc20.balanceOf(userAddr);
             const dec = TOKEN_DECIMALS[sym] ?? 18;
@@ -390,13 +395,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       return;
     }
 
+    const isHbar = activeToken === 'HBAR';
     const tokenEvm = TOKEN_EVM_ADDRESSES[activeToken] || '';
-    if (!tokenEvm || tokenEvm === ZERO_ADDRESS) {
-      alert(
-        activeToken === 'HBAR'
-          ? 'HBAR deposits require a WHBAR token address. Set NEXT_PUBLIC_WHBAR_ADDRESS to enable it.'
-          : `${activeToken} is not configured with a token address.`
-      );
+    if (!isHbar && !tokenEvm) {
+      alert(`${activeToken} is not configured with a token address.`);
       return;
     }
 
@@ -407,17 +409,22 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       if (!(await ensureHederaTestnet(provider))) { setIsProcessing(false); return; }
       const signer = await provider.getSigner();
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
-
-      const decimals = TOKEN_DECIMALS[activeToken] ?? 8;
-      const amountParsed = parseUnits(depositAmount, decimals);
       const durationDays = displayLockDays;
 
-      // ERC20/HTS flow: approve the vault, then depositToVault.
-      const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
-      const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
-      await approveTx.wait();
-
-      const tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays);
+      let tx;
+      if (isHbar) {
+        // Native HBAR: send value (18-dec weibar at the tx boundary), no approval.
+        const value = parseUnits(depositAmount, 18);
+        tx = await vault.depositToVault(ZERO_ADDRESS, 0, durationDays, { value });
+      } else {
+        // HTS/ERC20: the wallet signs a normal approval, then deposit.
+        const decimals = TOKEN_DECIMALS[activeToken] ?? 6;
+        const amountParsed = parseUnits(depositAmount, decimals);
+        const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
+        const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
+        await approveTx.wait();
+        tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays);
+      }
       await tx.wait();
 
       setIsProcessing(false);
