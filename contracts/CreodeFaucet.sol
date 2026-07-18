@@ -11,41 +11,42 @@ interface IFaucetToken {
 
 /**
  * @title CreodeFaucet
- * @notice Testnet faucet that hands out a fixed amount of each supported token
- *         once per cooldown. Tokens are HTS tokens (no open mint), so the faucet
- *         holds a reserve and TRANSFERS the drip — fund it after deployment.
- *         Recipients must be able to receive the token (HTS auto-association).
- *         Testnet only.
+ * @notice Testnet faucet that hands out a fixed, PER-TOKEN amount of each
+ *         supported token once per cooldown (default 24h). Amounts are sized so
+ *         each drip is worth roughly the same USD value (~$500). Tokens are HTS
+ *         tokens (no open mint), so the faucet holds a reserve and TRANSFERS the
+ *         drip — fund it after deployment. Recipients must be able to receive
+ *         the token (HTS auto-association). Testnet only.
  */
 contract CreodeFaucet is Ownable {
-    /// @notice Whole-token amount dropped per token per claim (scaled by decimals).
-    uint256 public dripWhole = 50;
     /// @notice Minimum time between a user's claims.
     uint256 public cooldown = 1 days;
 
     address[] public tokens;
+    /// @notice Amount dripped per claim, in the token's smallest unit.
+    mapping(address => uint256) public dripAmount;
     mapping(address => uint256) public lastClaim;
 
     event Claimed(address indexed user, uint256 tokenCount, uint256 timestamp);
     event TokensUpdated(uint256 count);
-    event DripUpdated(uint256 dripWhole);
+    event DripUpdated(address indexed token, uint256 amount);
     event CooldownUpdated(uint256 cooldown);
 
-    constructor(address[] memory _tokens) Ownable(msg.sender) {
-        tokens = _tokens;
-        emit TokensUpdated(_tokens.length);
+    constructor(address[] memory _tokens, uint256[] memory _amounts) Ownable(msg.sender) {
+        _setTokens(_tokens, _amounts);
     }
 
-    /// @notice Claim `dripWhole` of every supported token. Once per cooldown per user.
+    /// @notice Claim the configured amount of every supported token. Once per cooldown per user.
     function claim() external {
         require(block.timestamp >= nextClaimTime(msg.sender), "Faucet: cooldown active");
         lastClaim[msg.sender] = block.timestamp;
 
         uint256 len = tokens.length;
         for (uint256 i = 0; i < len; i++) {
-            IFaucetToken t = IFaucetToken(tokens[i]);
-            uint256 amount = dripWhole * (10 ** t.decimals());
-            require(t.transfer(msg.sender, amount), "Faucet: drip transfer failed");
+            uint256 amt = dripAmount[tokens[i]];
+            if (amt > 0) {
+                require(IFaucetToken(tokens[i]).transfer(msg.sender, amt), "Faucet: drip transfer failed");
+            }
         }
         emit Claimed(msg.sender, len, block.timestamp);
     }
@@ -67,14 +68,22 @@ contract CreodeFaucet is Ownable {
     }
 
     // ── Admin ────────────────────────────────────────────────────────────
-    function setTokens(address[] calldata _tokens) external onlyOwner {
+    function _setTokens(address[] memory _tokens, uint256[] memory _amounts) internal {
+        require(_tokens.length == _amounts.length, "length mismatch");
         tokens = _tokens;
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            dripAmount[_tokens[i]] = _amounts[i];
+        }
         emit TokensUpdated(_tokens.length);
     }
 
-    function setDrip(uint256 _dripWhole) external onlyOwner {
-        dripWhole = _dripWhole;
-        emit DripUpdated(_dripWhole);
+    function setTokens(address[] calldata _tokens, uint256[] calldata _amounts) external onlyOwner {
+        _setTokens(_tokens, _amounts);
+    }
+
+    function setDripAmount(address token, uint256 amount) external onlyOwner {
+        dripAmount[token] = amount;
+        emit DripUpdated(token, amount);
     }
 
     function setCooldown(uint256 _cooldown) external onlyOwner {
