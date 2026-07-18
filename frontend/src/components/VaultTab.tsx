@@ -365,6 +365,20 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     setDepositAmount((bal * pct).toFixed(Math.min(dec, 6)));
   };
 
+  // Ensure the wallet is on Hedera Testnet (296); attempt an auto-switch otherwise.
+  // Signing on the wrong chain hits addresses with no code → cryptic "missing revert data".
+  const ensureHederaTestnet = async (provider: BrowserProvider): Promise<boolean> => {
+    try {
+      const net = await provider.getNetwork();
+      if (Number(net.chainId) === 296) return true;
+      await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]);
+      return true;
+    } catch {
+      alert('Wrong network. Please switch your wallet to Hedera Testnet (chain ID 296) and try again.');
+      return false;
+    }
+  };
+
   const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) return;
     if (!isConnected || !walletClient) {
@@ -390,6 +404,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
     try {
       const provider = new BrowserProvider(walletClient as any);
+      if (!(await ensureHederaTestnet(provider))) { setIsProcessing(false); return; }
       const signer = await provider.getSigner();
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
 
@@ -436,6 +451,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     setRowBusyId(row.id);
     try {
       const provider = new BrowserProvider(walletClient as any);
+      if (!(await ensureHederaTestnet(provider))) { setRowBusyId(null); return; }
       const signer = await provider.getSigner();
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
       const tx = row.matured ? await vault.withdraw(row.id) : await vault.unlock(row.id);
