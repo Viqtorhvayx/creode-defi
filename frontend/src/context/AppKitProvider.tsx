@@ -9,13 +9,15 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { hederaTestnet, sepolia } from '@reown/appkit/networks';
+import { hederaTestnet } from '@reown/appkit/networks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { http } from 'viem';
 
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || 'e5ca5702a767d682a832959e7f1c57bb';
-const networks = [hederaTestnet, sepolia] as any; // Cast to any to bypass strict Wagmi mapping issues
+// Hedera Testnet only — an extra chain (e.g. Sepolia) just lets wallets sign on
+// the wrong network, where the contracts have no code ("missing revert data").
+const networks = [hederaTestnet] as any;
 
 const wagmiAdapter = new WagmiAdapter({
   projectId,
@@ -23,7 +25,6 @@ const wagmiAdapter = new WagmiAdapter({
   ssr: false,
   transports: {
     [hederaTestnet.id]: http('https://testnet.hashio.io/api'),
-    [sepolia.id]: http(),
   },
 });
 
