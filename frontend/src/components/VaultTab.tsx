@@ -452,15 +452,17 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       if (isHbar) {
         // Native HBAR: send value (18-dec weibar at the tx boundary), no approval.
         const value = parseUnits(depositAmount, 18);
-        tx = await vault.depositToVault(ZERO_ADDRESS, 0, durationDays, { value });
+        tx = await vault.depositToVault(ZERO_ADDRESS, 0, durationDays, { value, gasLimit: 1200000 });
       } else {
         // HTS/ERC20: the wallet signs a normal approval, then deposit.
+        // Explicit gas limits skip the wallet's estimateGas, which is unreliable
+        // for HTS operations on Hedera (a failed estimate silently blocks the tx).
         const decimals = TOKEN_DECIMALS[activeToken] ?? 6;
         const amountParsed = parseUnits(depositAmount, decimals);
         const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
-        const approveTx = await tokenContract.approve(vaultAddress, amountParsed);
+        const approveTx = await tokenContract.approve(vaultAddress, amountParsed, { gasLimit: 1200000 });
         await approveTx.wait();
-        tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays);
+        tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays, { gasLimit: 1200000 });
       }
       await tx.wait();
 
@@ -498,7 +500,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       if (!(await ensureHederaTestnet(provider))) { setRowBusyId(null); return; }
       const signer = await provider.getSigner();
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
-      const tx = row.matured ? await vault.withdraw(row.id) : await vault.unlock(row.id);
+      // Explicit gas limit: HTS yield transfers make the wallet's estimateGas flaky.
+      const tx = row.matured
+        ? await vault.withdraw(row.id, { gasLimit: 1500000 })
+        : await vault.unlock(row.id, { gasLimit: 1500000 });
       await tx.wait();
       await fetchVaults();
       await fetchBalances();
