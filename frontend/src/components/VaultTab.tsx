@@ -133,6 +133,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
   // Live wallet balances for each supported token (keyed by symbol).
   const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
+  // Per-token minimum deposit (human units), read from the vault config.
+  const [minDeposits, setMinDeposits] = useState<Record<string, number>>({});
 
 
   const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
@@ -356,6 +358,30 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     return () => clearInterval(id);
   }, [fetchBalances]);
 
+  // Read each token's minimum deposit from the vault config (human units).
+  const fetchMins = React.useCallback(async () => {
+    try {
+      const provider = new JsonRpcProvider(rpcUrl);
+      const vault = new Contract(vaultAddress, VAULT_ABI, provider);
+      const entries = await Promise.all(
+        TOKENS.map(async (sym) => {
+          try {
+            const cfg = await vault.tokenConfigs(TOKEN_EVM_ADDRESSES[sym]);
+            const dec = TOKEN_DECIMALS[sym] ?? 6; // HBAR min is stored in tinybar (8dp)
+            return [sym, Number(formatUnits(cfg.minDeposit, dec))] as const;
+          } catch {
+            return [sym, 0] as const;
+          }
+        })
+      );
+      setMinDeposits(Object.fromEntries(entries));
+    } catch (err) {
+      console.error('[Vault] Failed to load minimums:', err);
+    }
+  }, [rpcUrl, vaultAddress]);
+
+  useEffect(() => { fetchMins(); }, [fetchMins]);
+
   // Human-friendly balance for a token (trimmed).
   const displayBalance = (sym: string): string => {
     const v = Number(tokenBalances[sym] ?? 0);
@@ -395,6 +421,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     }
     if (!vaultAddress) {
       alert('Vault contract address not configured.');
+      return;
+    }
+
+    // Clear, friendly minimum check (the on-chain revert surfaces as cryptic
+    // "missing revert data" on Hedera's gas estimator otherwise).
+    const min = minDeposits[activeToken] ?? 0;
+    if (min > 0 && Number(depositAmount) < min) {
+      alert(`Minimum deposit for ${activeToken} is ${min} ${activeToken}. Please enter at least that amount.`);
       return;
     }
 
@@ -521,7 +555,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           {/* Deposit Input Area */}
           <div className="flex flex-col w-full mb-6">
-            <label className="text-[13px] font-semibold text-slate-700 dark:text-white/80 mb-2">Deposit Amount</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[13px] font-semibold text-slate-700 dark:text-white/80">Deposit Amount</label>
+              {(minDeposits[activeToken] ?? 0) > 0 && (
+                <span className="text-[11px] font-medium text-slate-400 dark:text-white/40">
+                  Min {minDeposits[activeToken]} {activeToken}
+                </span>
+              )}
+            </div>
             <div className="flex items-center justify-between w-full h-[96px] px-5 bg-white dark:bg-[#0B0F14] border border-slate-200 dark:border-white/10 rounded-[12px] transition-all">
               
               {/* Left Side: Input & USD Value */}
