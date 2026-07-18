@@ -254,7 +254,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const { data: walletClient } = useWalletClient();
   // Env override wins; committed fallback keeps the live site working without
   // relying on a NEXT_PUBLIC_VAULT_ADDRESS being set in the host (e.g. Vercel).
-  const vaultAddress = process.env.NEXT_PUBLIC_VAULT_ADDRESS || '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139';
+  // Hard-coded to the deployed testnet vault so no stale host env var can
+  // override it (a NEXT_PUBLIC_VAULT_ADDRESS override repeatedly pointed the
+  // live site at the wrong contract). Change here on redeploy.
+  const vaultAddress = '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139';
   const rpcUrl = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';
 
   // Estimated earnings for the current deposit form (principal * APY * term/365).
