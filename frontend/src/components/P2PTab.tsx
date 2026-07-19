@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { P2PCandleChart } from './P2PCandleChart';
 import { ChevronDown } from 'lucide-react';
+import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
+import { useWalletClient } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
+import { createLimitOrder, marketFill } from '../lib/p2p';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -12,9 +16,46 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
-  const [payAmount, setPayAmount] = useState<string>('');
-  const [priceAmount, setPriceAmount] = useState<string>('');
+  const [payAmount, setPayAmount] = useState<string>('1500');
+  const [priceAmount, setPriceAmount] = useState<string>('0.0815');
   const [posSize, setPosSize] = useState<number>(10);
+
+  // On-chain P2P order wiring.
+  const { isConnected } = useWallet();
+  const { data: walletClient } = useWalletClient();
+  const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
+  const payTokenSym = tradeSide === 'Long' ? 'USDC' : 'HBAR'; // Long buys HBAR with USDC; Short sells HBAR
+
+  const submitOrder = async () => {
+    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    const amt = parseFloat(String(payAmount).replace(/,/g, ''));
+    if (!amt || amt <= 0) { alert('Enter an amount.'); return; }
+    setTxState('pending');
+    try {
+      if (activeTradeMode === 'Limit') {
+        const price = parseFloat(String(priceAmount).replace(/,/g, ''));
+        if (!price || price <= 0) { alert('Enter a limit price.'); setTxState('idle'); return; }
+        await createLimitOrder(walletClient, tradeSide, amt, price);
+      } else {
+        await marketFill(walletClient, tradeSide, amt);
+      }
+      setTxState('done');
+      setTimeout(() => setTxState('idle'), 4000);
+    } catch (e) {
+      const err = e as any;
+      console.error('[P2P] order failed:', err);
+      alert('Order failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      setTxState('idle');
+    }
+  };
+
+  const orderBtnClass = (base: string) => `w-full text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm flex items-center justify-center gap-2 ${base}`;
+  const orderBtnColor = tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]';
+  const orderBtnContent = txState === 'done'
+    ? (<><CheckCircle size={16} weight="fill" /> Order placed</>)
+    : txState === 'pending'
+      ? (<><CircleNotch size={16} weight="bold" className="animate-spin" /> Confirming…</>)
+      : !isConnected ? 'Connect wallet' : tradeSide;
 
   // Match VaultTab colors
   const bgColor = theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white';
@@ -332,17 +373,17 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
-                          placeholder="0.00" 
-                          value="1,500.00"
-                          readOnly
+                          placeholder="0.00"
+                          value={payAmount}
+                          onChange={(e) => setPayAmount(e.target.value)}
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
-                             <span className="text-white text-[10px] font-bold">$</span>
+                          <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 ${payTokenSym === 'USDC' ? 'bg-[#2775ca]' : 'bg-black'}`}>
+                             <span className="text-white text-[10px] font-bold">{payTokenSym === 'USDC' ? '$' : 'H'}</span>
                           </div>
-                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
+                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                           <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
                         </div>
                       </div>
@@ -411,8 +452,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button className={`w-full text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm ${tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]'}`}>
-                      {tradeSide}
+                    <button onClick={submitOrder} disabled={txState === 'pending'} className={orderBtnClass(txState === 'done' ? 'bg-emerald-500' : orderBtnColor) + ' disabled:opacity-70'}>
+                      {orderBtnContent}
                     </button>
                   </div>
                 )}
@@ -439,16 +480,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
-                          placeholder="0.00" 
-                          value="1,500.00"
-                          readOnly
+                          placeholder="0.00"
+                          value={payAmount}
+                          onChange={(e) => setPayAmount(e.target.value)}
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
-                             <span className="text-white text-[10px] font-bold">$</span>
+                          <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 ${payTokenSym === 'USDC' ? 'bg-[#2775ca]' : 'bg-black'}`}>
+                             <span className="text-white text-[10px] font-bold">{payTokenSym === 'USDC' ? '$' : 'H'}</span>
                           </div>
-                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">USDC</span>
+                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                           <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
                         </div>
                       </div>
@@ -463,9 +504,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
-                          placeholder="0.00" 
-                          value="0.0825"
-                          readOnly
+                          placeholder="0.00"
+                          value={priceAmount}
+                          onChange={(e) => setPriceAmount(e.target.value)}
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-end gap-2 px-3 py-1.5 min-w-[60px] shrink-0">
@@ -518,8 +559,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button className={`w-full mt-auto text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm ${tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]'}`}>
-                      {tradeSide}
+                    <button onClick={submitOrder} disabled={txState === 'pending'} className={'mt-auto ' + orderBtnClass(txState === 'done' ? 'bg-emerald-500' : orderBtnColor) + ' disabled:opacity-70'}>
+                      {orderBtnContent}
                     </button>
                   </div>
                 )}
