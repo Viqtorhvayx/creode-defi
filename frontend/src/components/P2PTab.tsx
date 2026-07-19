@@ -274,18 +274,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               
               {/* Buy / Sell Toggle */}
               <div className="px-6 pt-6 pb-2">
-                <div className={`flex ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-black/5'} border p-1 rounded-full relative w-full h-[48px] items-center font-bold text-[14px]`}>
-                   <div 
+                <div className="flex bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none p-1 rounded-full relative w-full h-[48px] items-center font-bold text-[14px]">
+                   <div
                      className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Long' ? 'text-white' : textMuted + ' hover:text-white'}`}
                      onClick={() => setTradeSide('Long')}
                    >
-                     Buy
+                     Long
                    </div>
-                   <div 
+                   <div
                      className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Short' ? 'text-white' : textMuted + ' hover:text-white'}`}
                      onClick={() => setTradeSide('Short')}
                    >
-                     Sell
+                     Short
                    </div>
                    <div 
                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#00c076] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
@@ -335,7 +335,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           placeholder="0.00" 
                           value="1,500.00"
                           readOnly
-                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
@@ -411,8 +411,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
-                      Place Market Order
+                    <button className={`w-full text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm ${tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]'}`}>
+                      {tradeSide}
                     </button>
                   </div>
                 )}
@@ -442,7 +442,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           placeholder="0.00" 
                           value="1,500.00"
                           readOnly
-                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
                           <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
@@ -466,7 +466,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           placeholder="0.00" 
                           value="0.0825"
                           readOnly
-                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-end gap-2 px-3 py-1.5 min-w-[60px] shrink-0">
                           <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none pr-1">USDT</span>
@@ -518,8 +518,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full mt-auto bg-[#00c076] hover:bg-[#00ad6a] text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm">
-                      Place Limit Order
+                    <button className={`w-full mt-auto text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm ${tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]'}`}>
+                      {tradeSide}
                     </button>
                   </div>
                 )}
