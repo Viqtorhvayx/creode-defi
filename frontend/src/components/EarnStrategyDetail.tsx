@@ -66,6 +66,18 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     setAmt2(strategy.token2Amount);
   }, [strategy.pair, strategy.token1Amount, strategy.token2Amount]);
 
+  // Live USD value beneath each amount (same behaviour as the Vault input):
+  // derive each token's implied price from its default amount/USD, then
+  // multiply by whatever the user types.
+  const parseNum = (s: string) => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0;
+  const fmtUsd = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const price1 = parseNum(strategy.token1Amount) > 0 ? parseNum(strategy.token1Usd) / parseNum(strategy.token1Amount) : 0;
+  const price2 = parseNum(strategy.token2Amount) > 0 ? parseNum(strategy.token2Usd) / parseNum(strategy.token2Amount) : 0;
+  const hasAmt1 = parseNum(amt1) > 0;
+  const hasAmt2 = parseNum(amt2) > 0;
+  const usd1 = fmtUsd(parseNum(amt1) * price1);
+  const usd2 = fmtUsd(parseNum(amt2) * price2);
+
   const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 ${pillBg}`}>
       {token.logo ? (
@@ -208,11 +220,11 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                       value={amt1}
                       onChange={(e) => setAmt1(e.target.value)}
                       placeholder="0.00"
-                      className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
+                      className={`bg-transparent border-none outline-none text-[32px] font-bold tracking-tight w-full p-0 m-0 leading-none placeholder-slate-300 dark:placeholder-white/20 ${textMain}`}
                     />
                     <TokenPill token={token1} />
                   </div>
-                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token1Usd}</span>
+                  <span className={`text-[12px] mt-1 font-bold transition-colors ${hasAmt1 ? 'text-[#00A8E8]' : textMuted}`}>{usd1}</span>
                 </div>
               </div>
 
@@ -236,11 +248,11 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                       value={amt2}
                       onChange={(e) => setAmt2(e.target.value)}
                       placeholder="0.00"
-                      className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
+                      className={`bg-transparent border-none outline-none text-[32px] font-bold tracking-tight w-full p-0 m-0 leading-none placeholder-slate-300 dark:placeholder-white/20 ${textMain}`}
                     />
                     <TokenPill token={token2} />
                   </div>
-                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token2Usd}</span>
+                  <span className={`text-[12px] mt-1 font-bold transition-colors ${hasAmt2 ? 'text-[#00A8E8]' : textMuted}`}>{usd2}</span>
                 </div>
               </div>
 

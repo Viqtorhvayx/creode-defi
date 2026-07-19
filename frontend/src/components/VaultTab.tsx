@@ -579,7 +579,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   onChange={(e) => setDepositAmount(e.target.value)}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[36px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-1" 
                 />
-                <span className="text-[12px] font-bold text-slate-400 dark:text-white/40 ml-1">${fiatDisplayValue}</span>
+                <span className={`text-[12px] font-bold ml-1 transition-colors ${Number(depositAmount || 0) > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${fiatDisplayValue}</span>
               </div>
 
               {/* Right Side: Token Selector & Percentages */}
@@ -667,13 +667,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <div className="flex items-center justify-between w-[96px]">
                   <button
                     onClick={() => applyPercent('25%')}
-                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>25%</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '25%' ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40 hover:text-slate-500 dark:hover:text-white/60'}`}>25%</button>
                   <button
                     onClick={() => applyPercent('50%')}
-                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>50%</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === '50%' ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40 hover:text-slate-500 dark:hover:text-white/60'}`}>50%</button>
                   <button
                     onClick={() => applyPercent('MAX')}
-                    className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8] dark:text-[#00A8E8]' : 'text-[#00A8E8] dark:text-[#00A8E8] hover:text-[#00A8E8]/80 dark:hover:text-[#00A8E8]/80'}`}>MAX</button>
+                    className={`text-[11px] font-bold transition-colors ${selectedPercent === 'MAX' ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40 hover:text-slate-500 dark:hover:text-white/60'}`}>MAX</button>
                 </div>
               </div>
 
