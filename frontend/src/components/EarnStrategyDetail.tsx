@@ -1,24 +1,82 @@
 import React from 'react';
 import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, CaretDown, Plus } from '@phosphor-icons/react';
 
+export interface StrategyToken {
+  sym: string;
+  logo: string | null;
+  fallback: string;
+  bg: string;
+}
+
+export interface Strategy {
+  pair: string;
+  token1: StrategyToken;
+  token2: StrategyToken;
+  riskLevel: string;
+  riskBgClass: string;
+  riskTextClass: string;
+  apy: string;
+  tvl: string;
+  token1Amount: string;
+  token1Usd: string;
+  token2Amount: string;
+  token2Usd: string;
+  dailyEarnings: string;
+}
+
 interface EarnStrategyDetailProps {
   theme: 'light' | 'dark';
+  strategy: Strategy;
   onBack: () => void;
 }
 
-export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, onBack }) => {
+// Brand accent — keep in sync with the rest of the dapp.
+const BLUE = '#00A8E8';
+
+const TokenBadge: React.FC<{ token: StrategyToken; size: number; border: string }> = ({ token, size, border }) => (
+  token.logo ? (
+    <img src={token.logo} alt={token.sym} className={`rounded-full border-2 ${border}`} style={{ width: size, height: size }} />
+  ) : (
+    <div
+      className={`rounded-full flex items-center justify-center text-white font-bold border-2 ${border} ${token.bg}`}
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+    >
+      {token.fallback}
+    </div>
+  )
+);
+
+export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, strategy, onBack }) => {
   const isDark = theme === 'dark';
   const textMain = isDark ? 'text-white' : 'text-[#111827]';
   const textMuted = isDark ? 'text-white/60' : 'text-slate-500';
   const cardBg = isDark ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = isDark ? 'border-white/5' : 'border-[#EAECEF]';
-  const BLUE = '#2563EB';
+  const logoBorder = isDark ? 'border-[#0F141A]' : 'border-white';
+  const chipBorder = isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-200 hover:bg-slate-100';
+
+  const { token1, token2 } = strategy;
+  const apyNum = strategy.apy.replace('%', '');
+
+  const TokenSelect: React.FC<{ token: StrategyToken }> = ({ token }) => (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 cursor-pointer transition-colors ${chipBorder}`}>
+      {token.logo ? (
+        <img src={token.logo} alt={token.sym} className="w-[18px] h-[18px] rounded-full" />
+      ) : (
+        <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center ${token.bg}`}>
+          <span className="text-white text-[10px] font-bold">{token.fallback}</span>
+        </div>
+      )}
+      <span className="text-[13px] font-bold">{token.sym}</span>
+      <CaretDown size={12} weight="bold" className={textMuted} />
+    </div>
+  );
 
   return (
     <div className={`w-full max-w-[1100px] mx-auto animate-in fade-in duration-500 pb-20 ${textMain}`}>
       {/* Top Navigation & Title */}
       <div className="flex flex-col gap-5 mb-8">
-        <button 
+        <button
           onClick={onBack}
           className={`flex items-center gap-2 w-fit text-[14px] font-medium transition-colors ${
             isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
@@ -29,24 +87,29 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
         </button>
 
         <div className="flex items-center gap-4">
-          <h1 className="text-[32px] font-bold tracking-tight">HBAR / SAUCE Yield Optimizer</h1>
-          <div className="px-3 py-1 bg-[#e6faee] dark:bg-emerald-500/10 text-[#00c076] text-[12px] font-bold rounded-md border border-[#00c076]/20">
-            Balanced Profile
+          {/* Overlapping pair logo comes first */}
+          <div className="flex -space-x-3">
+            <div className="relative z-10"><TokenBadge token={token1} size={44} border={logoBorder} /></div>
+            <TokenBadge token={token2} size={44} border={logoBorder} />
+          </div>
+          <h1 className="text-[32px] font-bold tracking-tight">{strategy.pair}</h1>
+          <div className={`px-3 py-1 rounded-md text-[12px] font-bold ${strategy.riskBgClass} ${strategy.riskTextClass}`}>
+            {strategy.riskLevel} Profile
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-6">
-        
+
         {/* === LEFT COLUMN === */}
         <div className="flex flex-col gap-6 w-full">
-          
+
           {/* Metrics Card */}
-          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.05)]`}>
             {/* APY */}
             <div className={`flex-1 border-r ${borderColor} pr-8 flex flex-col justify-center`}>
               <div className="flex items-baseline mb-2">
-                <span className="text-[48px] font-bold leading-none" style={{ color: BLUE }}>45.2</span>
+                <span className="text-[48px] font-bold leading-none" style={{ color: BLUE }}>{apyNum}</span>
                 <span className="text-[24px] font-bold" style={{ color: BLUE }}>%</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -58,7 +121,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
             {/* TVL */}
             <div className="flex-1 pl-8 flex flex-col justify-center">
               <div className="flex items-baseline mb-2">
-                <span className="text-[48px] font-bold leading-none tracking-tight">$3.4M</span>
+                <span className="text-[48px] font-bold leading-none tracking-tight">{strategy.tvl}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className={`text-[13px] font-semibold ${textMuted}`}>Total Value Locked (TVL)</span>
@@ -68,18 +131,18 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
           </div>
 
           {/* How it Works Card */}
-          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.05)]`}>
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck size={20} style={{ color: BLUE }} weight="fill" />
               <h2 className="text-[16px] font-bold tracking-tight">How it Works</h2>
             </div>
             <p className={`text-[14px] leading-[1.6] font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-              This strategy automatically provisions concentrated liquidity into high-volume bands on SaucerSwap V2. Creode's smart contracts actively manage and dynamically re-range the price boundaries to prevent out-of-range yield pauses, maximizing your trading fee collection automatically.
+              This strategy automatically provisions concentrated liquidity for the {token1.sym} / {token2.sym} pair into high-volume bands on SaucerSwap V2. Creode's smart contracts actively manage and dynamically re-range the price boundaries to prevent out-of-range yield pauses, maximizing your trading fee collection automatically.
             </p>
           </div>
 
           {/* Protocol & Rewards Ledger Card */}
-          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.05)]`}>
             <div className="flex items-center gap-2 mb-6">
               <Database size={20} style={{ color: BLUE }} weight="fill" />
               <h2 className="text-[16px] font-bold tracking-tight">Protocol & Rewards Ledger</h2>
@@ -102,8 +165,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
               <div className="flex justify-between items-center pt-5">
                 <span className={`text-[13px] font-semibold ${textMuted}`}>Incentives Earned</span>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-[#2563EB]/10 text-[#2563EB]">HBAR Fees</span>
-                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400">SAUCE Fees</span>
+                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold" style={{ backgroundColor: 'rgba(0,168,232,0.1)', color: BLUE }}>{token1.sym} Fees</span>
+                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400">{token2.sym} Fees</span>
                   <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">+CODE Points ✦</span>
                 </div>
               </div>
@@ -121,34 +184,26 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
 
         {/* === RIGHT COLUMN: Supply Liquidity Panel === */}
         <div className="flex flex-col w-full h-full">
-          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
-            
+          <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.05)]`}>
+
             <h2 className="text-[16px] font-bold tracking-tight mb-6">Supply Liquidity</h2>
 
             <div className="relative flex flex-col mb-6">
-              
-              {/* Input 1 (HBAR) */}
+
+              {/* Input 1 (token1) */}
               <div className="flex flex-col relative z-0">
                 <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#2563EB] transition-colors`}>
+                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
                   <div className="flex items-center justify-between">
-                    <input 
-                      type="text" 
-                      value="5,000.00" 
+                    <input
+                      type="text"
+                      value={strategy.token1Amount}
                       readOnly
                       className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
                     />
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 cursor-pointer transition-colors ${
-                      isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                    }`}>
-                      <div className="w-[18px] h-[18px] rounded-full bg-black flex items-center justify-center">
-                        <span className="text-white text-[10px] font-bold">H</span>
-                      </div>
-                      <span className="text-[13px] font-bold">HBAR</span>
-                      <CaretDown size={12} weight="bold" className={textMuted} />
-                    </div>
+                    <TokenSelect token={token1} />
                   </div>
-                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>$425.00</span>
+                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token1Usd}</span>
                 </div>
               </div>
 
@@ -161,28 +216,20 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
                 </div>
               </div>
 
-              {/* Input 2 (SAUCE) */}
+              {/* Input 2 (token2) */}
               <div className="flex flex-col mt-4 relative z-0">
                 <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#2563EB] transition-colors`}>
+                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
                   <div className="flex items-center justify-between">
-                    <input 
-                      type="text" 
-                      value="12,450.00" 
+                    <input
+                      type="text"
+                      value={strategy.token2Amount}
                       readOnly
                       className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
                     />
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 cursor-pointer transition-colors ${
-                      isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                    }`}>
-                      <div className="w-[18px] h-[18px] rounded-full bg-red-500 flex items-center justify-center">
-                        <span className="text-white text-[10px] font-bold">S</span>
-                      </div>
-                      <span className="text-[13px] font-bold">SAUCE</span>
-                      <CaretDown size={12} weight="bold" className={textMuted} />
-                    </div>
+                    <TokenSelect token={token2} />
                   </div>
-                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>$425.00</span>
+                  <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token2Usd}</span>
                 </div>
               </div>
 
@@ -196,15 +243,15 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
               </div>
               <div className="flex justify-between items-center">
                 <span className={`text-[13px] font-medium ${textMuted}`}>Estimated Daily Earnings</span>
-                <span className="text-[13px] font-bold text-[#00c076]">+14.2 HBAR / +35.4 SAUCE</span>
+                <span className="text-[13px] font-bold text-[#00c076]">{strategy.dailyEarnings}</span>
               </div>
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#1E40AF] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm">
-              Confirm & Supply Liquidity
+            <button className="w-full bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm">
+              Confirm &amp; Supply Liquidity
             </button>
-            
+
           </div>
         </div>
 

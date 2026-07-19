@@ -59,112 +59,131 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     fetchLogos();
   }, []);
 
+  const emeraldRisk = {
+    riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
+    riskTextClass: 'text-emerald-600 dark:text-emerald-500',
+  };
+  const roseRisk = {
+    riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
+    riskTextClass: 'text-rose-600 dark:text-rose-500',
+  };
+
+  const hbar = { sym: 'HBAR', logo: hbarLogoUrlSmall, fallback: 'H', bg: 'bg-black' };
+  const sauce = { sym: 'SAUCE', logo: sauceLogoUrlSmall, fallback: 'S', bg: 'bg-red-500' };
+  const wbtc = { sym: 'wBTC', logo: wbtcLogoUrlSmall, fallback: 'B', bg: 'bg-[#F7931A]' };
+  const weth = { sym: 'wETH', logo: wethLogoUrlSmall, fallback: 'E', bg: 'bg-blue-600' };
+  const usdc = { sym: 'USDC', logo: usdcLogoUrlSmall, fallback: 'U', bg: 'bg-[#2775CA]' };
+  const dovu = { sym: 'DOVU', logo: null, fallback: 'D', bg: 'bg-purple-600' };
+
+  // The featured pool in the top banner is itself a selectable strategy.
+  const featuredStrategy = {
+    token1: hbar, token2: sauce, pair: 'HBAR-SAUCE', riskLevel: 'Balanced', apy: '45.2%', tvl: '$3.4M',
+    ...emeraldRisk,
+    token1Amount: '5,000.00', token1Usd: '$425.00',
+    token2Amount: '12,450.00', token2Usd: '$425.00',
+    dailyEarnings: '+14.2 HBAR / +35.4 SAUCE',
+  };
+
   const strategies = [
     {
-      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
-      token2Logo: wbtcLogoUrlSmall, token2Fallback: "B", token2Bg: "bg-[#F7931A]",
-      pair: "HBAR / wBTC", riskLevel: "Balanced", apy: "14.2%", tvl: "$8.5M",
-      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
-      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+      token1: hbar, token2: wbtc, pair: 'HBAR-wBTC', riskLevel: 'Balanced', apy: '14.2%', tvl: '$8.5M',
+      ...emeraldRisk,
+      token1Amount: '5,000.00', token1Usd: '$425.00',
+      token2Amount: '0.0071', token2Usd: '$425.00',
+      dailyEarnings: '+2.1 HBAR / +0.0000029 wBTC',
     },
     {
-      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
-      token2Logo: null, token2Fallback: "D", token2Bg: "bg-purple-600",
-      pair: "HBAR / DOVU", riskLevel: "Aggressive", apy: "62.1%", tvl: "$1.2M",
-      riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
-      riskTextClass: "text-rose-600 dark:text-rose-500"
+      token1: hbar, token2: dovu, pair: 'HBAR-DOVU', riskLevel: 'Aggressive', apy: '62.1%', tvl: '$1.2M',
+      ...roseRisk,
+      token1Amount: '5,000.00', token1Usd: '$425.00',
+      token2Amount: '48,200.00', token2Usd: '$425.00',
+      dailyEarnings: '+9.4 HBAR / +82.1 DOVU',
     },
     {
-      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
-      token2Logo: wethLogoUrlSmall, token2Fallback: "E", token2Bg: "bg-blue-600",
-      pair: "HBAR / wETH", riskLevel: "Balanced", apy: "11.4%", tvl: "$5.1M",
-      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
-      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+      token1: hbar, token2: weth, pair: 'HBAR-wETH', riskLevel: 'Balanced', apy: '11.4%', tvl: '$5.1M',
+      ...emeraldRisk,
+      token1Amount: '5,000.00', token1Usd: '$425.00',
+      token2Amount: '0.132', token2Usd: '$425.00',
+      dailyEarnings: '+1.7 HBAR / +0.000041 wETH',
     },
     {
-      token1Logo: hbarLogoUrlSmall, token1Fallback: "H", token1Bg: "bg-black",
-      token2Logo: usdcLogoUrlSmall, token2Fallback: "U", token2Bg: "bg-[#2775CA]",
-      pair: "HBAR / USDC", riskLevel: "Balanced", apy: "10.2%", tvl: "$6.8M",
-      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
-      riskTextClass: "text-emerald-600 dark:text-emerald-500"
+      token1: hbar, token2: usdc, pair: 'HBAR-USDC', riskLevel: 'Balanced', apy: '10.2%', tvl: '$6.8M',
+      ...emeraldRisk,
+      token1Amount: '5,000.00', token1Usd: '$425.00',
+      token2Amount: '425.00', token2Usd: '$425.00',
+      dailyEarnings: '+1.5 HBAR / +0.12 USDC',
     },
     {
-      token1Logo: sauceLogoUrlSmall, token1Fallback: "S", token1Bg: "bg-red-500",
-      token2Logo: usdcLogoUrlSmall, token2Fallback: "U", token2Bg: "bg-[#2775CA]",
-      pair: "SAUCE / USDC", riskLevel: "Balanced", apy: "18.5%", tvl: "$2.9M",
-      riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
-      riskTextClass: "text-emerald-600 dark:text-emerald-500"
-    }
+      token1: sauce, token2: usdc, pair: 'SAUCE-USDC', riskLevel: 'Balanced', apy: '18.5%', tvl: '$2.9M',
+      ...emeraldRisk,
+      token1Amount: '12,450.00', token1Usd: '$425.00',
+      token2Amount: '425.00', token2Usd: '$425.00',
+      dailyEarnings: '+21.5 SAUCE / +0.21 USDC',
+    },
   ];
 
+  // Overlapping token logos used by both card and row.
+  const PairLogos = ({ token1, token2, size }: any) => {
+    const border = theme === 'dark' ? 'border-[#0F141A]' : 'border-white';
+    const circle = (t: any, z: string) =>
+      t.logo ? (
+        <img src={t.logo} alt={t.sym} className={`rounded-full border-2 ${z} ${border}`} style={{ width: size, height: size }} />
+      ) : (
+        <div
+          className={`rounded-full flex items-center justify-center text-white font-bold border-2 ${z} ${border} ${t.bg}`}
+          style={{ width: size, height: size, fontSize: size * 0.34 }}
+        >
+          {t.fallback}
+        </div>
+      );
+    return (
+      <div className="flex -space-x-2">
+        {circle(token1, 'z-10')}
+        {circle(token2, '')}
+      </div>
+    );
+  };
+
   // StrategyCard Component for Grid View
-  const StrategyCard = ({
-    token1Logo,
-    token1Fallback,
-    token1Bg,
-    token2Logo,
-    token2Fallback,
-    token2Bg,
-    pair,
-    riskLevel,
-    apy,
-    tvl,
-    riskBgClass,
-    riskTextClass,
-  }: any) => {
+  const StrategyCard = ({ strategy }: any) => {
     return (
       <div className={`flex flex-col h-full p-5 rounded-[16px] border transition-all duration-200 w-full ${
-        theme === 'dark' 
-          ? 'bg-[#0F141A] border-white/5 shadow-sm' 
+        theme === 'dark'
+          ? 'bg-[#0F141A] border-white/5 shadow-sm'
           : 'bg-white border-[#EAECEF] shadow-sm'
       }`}>
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
-          <div className="flex -space-x-2">
-            {token1Logo ? (
-              <img src={token1Logo} alt="Token 1" className={`w-9 h-9 rounded-full border-2 z-10 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
-            ) : (
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs z-10 border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Bg}`}>
-                {token1Fallback}
-              </div>
-            )}
-            {token2Logo ? (
-              <img src={token2Logo} alt="Token 2" className={`w-9 h-9 rounded-full border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
-            ) : (
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Bg}`}>
-                {token2Fallback}
-              </div>
-            )}
-          </div>
-          <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${riskBgClass} ${riskTextClass}`}>
-            {riskLevel}
+          <PairLogos token1={strategy.token1} token2={strategy.token2} size={36} />
+          <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${strategy.riskBgClass} ${strategy.riskTextClass}`}>
+            {strategy.riskLevel}
           </div>
         </div>
 
         {/* Pair */}
         <div className="mb-8">
-          <h3 className="text-[17px] font-bold tracking-tight text-slate-900 dark:text-white">{pair}</h3>
+          <h3 className="text-[17px] font-bold tracking-tight text-slate-900 dark:text-white">{strategy.pair}</h3>
         </div>
 
         {/* Stats */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex flex-col">
             <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50 mb-0.5">APY</span>
-            <span className="text-[17px] font-bold text-[#00A8E8]">{apy}</span>
+            <span className="text-[17px] font-bold text-[#00A8E8]">{strategy.apy}</span>
           </div>
           <div className="flex flex-col text-right">
             <span className="text-[12px] font-semibold text-slate-500 dark:text-white/50 mb-0.5">TVL</span>
-            <span className="text-[17px] font-bold text-slate-900 dark:text-white">{tvl}</span>
+            <span className="text-[17px] font-bold text-slate-900 dark:text-white">{strategy.tvl}</span>
           </div>
         </div>
 
         {/* Action Button */}
         <div className="mt-auto">
-          <button 
-            onClick={() => setSelectedStrategy({ pair })}
+          <button
+            onClick={() => setSelectedStrategy(strategy)}
             className={`w-full py-2.5 rounded-[8px] border text-[13px] font-bold transition-colors ${
-            theme === 'dark' 
-              ? 'border-white/10 text-slate-300 hover:bg-white/5' 
+            theme === 'dark'
+              ? 'border-white/10 text-slate-300 hover:bg-white/5'
               : 'border-[#EAECEF] text-[#00A8E8] hover:bg-slate-50 hover:border-[#00A8E8]/50'
           }`}>
             View Strategy
@@ -175,71 +194,45 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   };
 
   // StrategyRow Component for List View
-  const StrategyRow = ({
-    token1Logo,
-    token1Fallback,
-    token1Bg,
-    token2Logo,
-    token2Fallback,
-    token2Bg,
-    pair,
-    riskLevel,
-    apy,
-    tvl,
-    riskBgClass,
-    riskTextClass,
-  }: any) => {
+  const StrategyRow = ({ strategy }: any) => {
     return (
       <div className={`grid grid-cols-4 md:grid-cols-[1fr_140px_100px_120px_140px] gap-4 items-center px-6 py-4 border-b transition-colors last:border-0 ${
-        theme === 'dark' 
-          ? 'border-white/5 hover:bg-white/5' 
+        theme === 'dark'
+          ? 'border-white/5 hover:bg-white/5'
           : 'border-[#EAECEF] hover:bg-slate-50'
       }`}>
         {/* Column 1: Strategy */}
         <div className="flex items-center gap-4">
-          <div className="flex -space-x-2 shrink-0">
-            {token1Logo ? (
-              <img src={token1Logo} alt="Token 1" className={`w-8 h-8 rounded-full border-2 z-10 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
-            ) : (
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs z-10 border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token1Bg}`}>
-                {token1Fallback}
-              </div>
-            )}
-            {token2Logo ? (
-              <img src={token2Logo} alt="Token 2" className={`w-8 h-8 rounded-full border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'}`} />
-            ) : (
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs border-2 ${theme === 'dark' ? 'border-[#0F141A]' : 'border-white'} ${token2Bg}`}>
-                {token2Fallback}
-              </div>
-            )}
+          <div className="shrink-0">
+            <PairLogos token1={strategy.token1} token2={strategy.token2} size={32} />
           </div>
-          <h3 className="text-[14px] font-bold text-slate-900 dark:text-white whitespace-nowrap">{pair}</h3>
+          <h3 className="text-[14px] font-bold text-slate-900 dark:text-white whitespace-nowrap">{strategy.pair}</h3>
         </div>
 
         {/* Column 2: Risk Profile */}
         <div className="hidden md:flex justify-center">
-          <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${riskBgClass} ${riskTextClass}`}>
-            {riskLevel}
+          <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${strategy.riskBgClass} ${strategy.riskTextClass}`}>
+            {strategy.riskLevel}
           </div>
         </div>
 
         {/* Column 3: TVL */}
         <div className="hidden md:flex justify-center">
-          <span className="text-[14px] font-bold text-slate-900 dark:text-white">{tvl}</span>
+          <span className="text-[14px] font-bold text-slate-900 dark:text-white">{strategy.tvl}</span>
         </div>
 
         {/* Column 4: Current APY */}
         <div className="flex justify-center md:justify-center">
-          <span className="text-[14px] font-bold text-[#00A8E8]">{apy}</span>
+          <span className="text-[14px] font-bold text-[#00A8E8]">{strategy.apy}</span>
         </div>
 
         {/* Column 5: Action */}
         <div className="flex justify-end">
-          <button 
-            onClick={() => setSelectedStrategy({ pair })}
+          <button
+            onClick={() => setSelectedStrategy(strategy)}
             className={`w-[120px] py-2 rounded-[8px] border text-[13px] font-bold transition-colors ${
-            theme === 'dark' 
-              ? 'border-white/10 text-slate-300 hover:bg-white/10' 
+            theme === 'dark'
+              ? 'border-white/10 text-slate-300 hover:bg-white/10'
               : 'border-[#EAECEF] text-slate-700 hover:bg-slate-100'
           }`}>
             View Strategy
@@ -253,7 +246,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {selectedStrategy ? (
-        <EarnStrategyDetail theme={theme} onBack={() => setSelectedStrategy(null)} />
+        <EarnStrategyDetail theme={theme} strategy={selectedStrategy} onBack={() => setSelectedStrategy(null)} />
       ) : (
         <>
           {/* Internal Tabs and View Mode Toggles */}
@@ -359,7 +352,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60 mb-1">Top Performing Ecosystem Pool</span>
-                    <h2 className="text-[26px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">HBAR / SAUCE</h2>
+                    <h2 className="text-[26px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">HBAR-SAUCE</h2>
                   </div>
                 </div>
 
@@ -389,8 +382,10 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
               <div className="text-[15px] font-bold text-slate-900 dark:text-white mb-8">
                 TVL: $3.4M
               </div>
-              <button className="w-full bg-[#00A8E8] hover:bg-[#0090C7] text-white py-3.5 rounded-[8px] text-[14px] font-bold transition-all shadow-sm flex items-center justify-center gap-2">
-                Supply HBAR/SAUCE <ArrowRight size={14} weight="bold" />
+              <button
+                onClick={() => setSelectedStrategy(featuredStrategy)}
+                className="w-full bg-[#00A8E8] hover:bg-[#0090C7] text-white py-3.5 rounded-[8px] text-[14px] font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                Supply HBAR-SAUCE <ArrowRight size={14} weight="bold" />
               </button>
             </div>
           </div>
@@ -467,14 +462,14 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
               {/* Table Body */}
               <div className="flex flex-col">
                 {strategies.map((strat, idx) => (
-                  <StrategyRow key={idx} {...strat} />
+                  <StrategyRow key={idx} strategy={strat} />
                 ))}
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               {strategies.map((strat, idx) => (
-                <StrategyCard key={idx} {...strat} />
+                <StrategyCard key={idx} strategy={strat} />
               ))}
             </div>
           )}
