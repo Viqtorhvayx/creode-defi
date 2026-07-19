@@ -56,7 +56,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const cardBg = isDark ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = isDark ? 'border-white/5' : 'border-[#EAECEF]';
   const logoBorder = isDark ? 'border-[#0F141A]' : 'border-white';
-  const pillBg = isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200';
+  // Glassmorphism pill, matching the Vault token selector.
+  const pillBg = 'bg-black/5 dark:bg-white/5 backdrop-blur-md border-black/10 dark:border-white/10 shadow-sm dark:shadow-none';
 
   const { token1, token2 } = strategy;
   const apyNum = strategy.apy.replace('%', '');
@@ -120,6 +121,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const { data: walletClient } = useWalletClient();
   const [zapState, setZapState] = useState<'idle' | 'pending' | 'done'>('idle');
 
+  // Brief cyan glow on the Back button so a click is clearly acknowledged.
+  const [backGlow, setBackGlow] = useState(false);
+  const handleBack = () => { setBackGlow(true); setTimeout(onBack, 280); };
+
   const handleZap = async () => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
     if (!meta || !metaTok) { alert('This strategy is not available on-chain yet.'); return; }
@@ -155,9 +160,11 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
       {/* Top Navigation & Title */}
       <div className="flex flex-col gap-5 mb-8">
         <button
-          onClick={onBack}
-          className={`flex items-center gap-2 w-fit text-[14px] font-medium transition-colors ${
-            isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+          onClick={handleBack}
+          className={`flex items-center gap-2 w-fit text-[14px] font-medium transition-all duration-150 ${
+            backGlow
+              ? 'text-[#00A8E8] drop-shadow-[0_0_10px_rgba(0,168,232,0.85)]'
+              : `${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} active:text-[#00A8E8]`
           }`}
         >
           <ArrowLeft size={16} weight="bold" />
@@ -283,10 +290,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                   <button
                     key={t.sym}
                     onClick={() => selectZap(i)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-[13px] font-bold transition-colors ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-[13px] font-bold transition-colors backdrop-blur-md ${
                       active
                         ? 'border-[#00A8E8] text-[#00A8E8] bg-[#00A8E8]/10'
-                        : `${borderColor} ${textMuted} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`
+                        : `border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none ${textMuted} hover:bg-black/10 dark:hover:bg-white/10`
                     }`}
                   >
                     {t.logo ? (

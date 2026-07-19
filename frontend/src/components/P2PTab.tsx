@@ -323,7 +323,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
                         />
                         
-                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
                           <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
                              <span className="text-white text-[10px] font-bold">$</span>
                           </div>
@@ -429,7 +429,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           readOnly
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[24px] font-bold w-full text-left [appearance:textfield] ${textMain} placeholder-slate-300 leading-none m-0 p-0`} 
                         />
-                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
                           <div className="w-[18px] h-[18px] bg-[#2775ca] rounded-full flex items-center justify-center shrink-0">
                              <span className="text-white text-[10px] font-bold">$</span>
                           </div>
