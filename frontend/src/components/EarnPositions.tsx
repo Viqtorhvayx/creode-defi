@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet } from '@phosphor-icons/react';
+import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet, ArrowsClockwise } from '@phosphor-icons/react';
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { fetchUserPositions, withdrawAll, UserPositionV2 } from '../lib/yieldVault';
+import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
 
 const BLUE = '#00A8E8';
 const GREEN = '#00C076';
@@ -152,12 +152,29 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
 
   useEffect(() => { load(); }, [load]);
 
+  // Live movement: re-read positions so accrued yield visibly ticks up.
+  useEffect(() => {
+    if (!isConnected) return;
+    const iv = setInterval(() => load(), 12000);
+    return () => clearInterval(iv);
+  }, [isConnected, load]);
+
+  const [compoundBusy, setCompoundBusy] = useState<number | null>(null);
+
   const onWithdraw = async (pos: UserPositionV2) => {
     if (!walletClient) return;
     setBusyKey(pos.strategyId);
     try { await withdrawAll(walletClient, pos.strategyId); await load(); }
     catch (e) { const err = e as any; alert('Withdraw failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
     finally { setBusyKey(null); }
+  };
+
+  const onCompound = async (pos: UserPositionV2) => {
+    if (!walletClient) return;
+    setCompoundBusy(pos.strategyId);
+    try { await compound(walletClient, pos.strategyId); await load(); }
+    catch (e) { const err = e as any; alert('Compound failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
+    finally { setCompoundBusy(null); }
   };
 
   const connectedLive = isConnected && live !== null;
@@ -311,9 +328,12 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
                       {/* Utilization */}
                       <div className={textMain}><Donut pct={util} track={donutTrack} /></div>
                       {/* Actions */}
-                      <div className="flex flex-col items-stretch gap-2 pl-1">
-                        <button onClick={() => onSupplyMore?.(p.name)} className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
-                        <button onClick={() => onWithdraw(p)} disabled={busy} className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors flex items-center justify-center gap-1.5 ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'} disabled:opacity-60`}>
+                      <div className="flex flex-col items-stretch gap-1.5 pl-1">
+                        <button onClick={() => onSupplyMore?.(p.name)} className="w-full h-8 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
+                        <button onClick={() => onCompound(p)} disabled={compoundBusy === p.strategyId} className="w-full h-8 rounded-[8px] text-[12px] font-bold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60" style={{ backgroundColor: 'rgba(0,168,232,0.1)', color: BLUE }}>
+                          {compoundBusy === p.strategyId ? <><CircleNotch size={13} className="animate-spin" /> …</> : <><ArrowsClockwise size={13} weight="bold" /> Compound</>}
+                        </button>
+                        <button onClick={() => onWithdraw(p)} disabled={busy} className={`w-full h-8 rounded-[8px] text-[12px] font-bold border transition-colors flex items-center justify-center gap-1.5 ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'} disabled:opacity-60`}>
                           {busy ? <><CircleNotch size={13} className="animate-spin" /> …</> : 'Withdraw'}
                         </button>
                       </div>

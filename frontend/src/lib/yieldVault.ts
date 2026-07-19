@@ -1,7 +1,7 @@
 // Client helpers for the Creode Earn / Yield Hub (Phase 2: real zap swaps).
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
-import vaultArtifact from '../contracts/CreodeYieldVaultV2.json';
-import routerArtifact from '../contracts/CreodeSwapRouter.json';
+import vaultArtifact from '../contracts/CreodeYieldVaultV3.json';
+import routerArtifact from '../contracts/CreodeTreasurySwap.json';
 import strategyMap from '../contracts/yield_strategies.json';
 
 export const YIELD_VAULT_ADDRESS: string = (vaultArtifact as any).address;
@@ -76,6 +76,42 @@ export async function withdrawAll(walletClient: any, strategyId: number): Promis
   const vault = new Contract(YIELD_VAULT_ADDRESS, YIELD_VAULT_ABI, signer);
   const tx = await vault.withdrawAll(strategyId, { gasLimit: 2_200_000 });
   return (await tx.wait()).hash;
+}
+
+/** Fold a position's accrued yield back into principal (real compound). */
+export async function compound(walletClient: any, strategyId: number): Promise<string> {
+  const signer = await getSigner(walletClient);
+  const vault = new Contract(YIELD_VAULT_ADDRESS, YIELD_VAULT_ABI, signer);
+  const tx = await vault.compoundMine(strategyId, { gasLimit: 1_900_000 });
+  return (await tx.wait()).hash;
+}
+
+const HBAR_RESERVE = 15; // funded reserve to exclude from HBAR TVL
+
+/** Protocol TVL inputs: the vault's real on-chain custody per token. */
+export async function fetchVaultTokenBalances(): Promise<Record<string, number>> {
+  const provider = new JsonRpcProvider(RPC_URL);
+  const erc20abi = ['function balanceOf(address) view returns (uint256)'];
+  const seen = new Set<string>();
+  const out: Record<string, number> = {};
+  // ERC20 strategy tokens
+  const tokens: StrategyTokenMeta[] = [];
+  for (const s of Object.values(STRATEGIES)) for (const t of [s.tokenA, s.tokenB]) {
+    if (t.address.toLowerCase() !== ZERO && !seen.has(t.address.toLowerCase())) { seen.add(t.address.toLowerCase()); tokens.push(t); }
+  }
+  await Promise.all(tokens.map(async (t) => {
+    try {
+      const c = new Contract(t.address, erc20abi, provider);
+      const bal: bigint = await c.balanceOf(YIELD_VAULT_ADDRESS);
+      out[t.sym] = Number(formatUnits(bal, t.decimals));
+    } catch { /* ignore */ }
+  }));
+  // Native HBAR custody (minus the funded reserve)
+  try {
+    const hbarBal = Number(formatUnits(await provider.getBalance(YIELD_VAULT_ADDRESS), 18));
+    out['HBAR'] = Math.max(0, hbarBal - HBAR_RESERVE);
+  } catch { /* ignore */ }
+  return out;
 }
 
 /** Real router quote: how much `tokenOut` for `amountIn` of `tokenIn`. */
