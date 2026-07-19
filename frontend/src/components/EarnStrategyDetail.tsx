@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, CaretDown, Plus } from '@phosphor-icons/react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, Plus, ArrowUpRight } from '@phosphor-icons/react';
 
 export interface StrategyToken {
   sym: string;
@@ -53,13 +53,21 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const cardBg = isDark ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = isDark ? 'border-white/5' : 'border-[#EAECEF]';
   const logoBorder = isDark ? 'border-[#0F141A]' : 'border-white';
-  const chipBorder = isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-200 hover:bg-slate-100';
+  const pillBg = isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200';
 
   const { token1, token2 } = strategy;
   const apyNum = strategy.apy.replace('%', '');
 
-  const TokenSelect: React.FC<{ token: StrategyToken }> = ({ token }) => (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 cursor-pointer transition-colors ${chipBorder}`}>
+  // Editable liquidity amounts. Reset when the selected pair changes.
+  const [amt1, setAmt1] = useState(strategy.token1Amount);
+  const [amt2, setAmt2] = useState(strategy.token2Amount);
+  useEffect(() => {
+    setAmt1(strategy.token1Amount);
+    setAmt2(strategy.token2Amount);
+  }, [strategy.pair, strategy.token1Amount, strategy.token2Amount]);
+
+  const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 ${pillBg}`}>
       {token.logo ? (
         <img src={token.logo} alt={token.sym} className="w-[18px] h-[18px] rounded-full" />
       ) : (
@@ -68,7 +76,6 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
         </div>
       )}
       <span className="text-[13px] font-bold">{token.sym}</span>
-      <CaretDown size={12} weight="bold" className={textMuted} />
     </div>
   );
 
@@ -176,7 +183,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
           <div className="flex items-center gap-2 mt-4 px-2">
             <CheckCircle size={16} style={{ color: BLUE }} weight="fill" />
             <span className={`text-[12px] font-medium ${textMuted}`}>
-              Creode automatically manages your position to optimize returns. Impermanent loss may occur. <a href="#" className="hover:underline" style={{ color: BLUE }}>Learn more <span className="inline-block relative -top-[2px] ml-0.5 text-[10px]">&#8599;</span></a>
+              Creode automatically manages your position to optimize returns. Impermanent loss may occur. <a href="#" className="inline-flex items-center gap-0.5 hover:underline align-baseline" style={{ color: BLUE }}>Learn more <ArrowUpRight size={12} weight="bold" /></a>
             </span>
           </div>
 
@@ -197,11 +204,13 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                   <div className="flex items-center justify-between">
                     <input
                       type="text"
-                      value={strategy.token1Amount}
-                      readOnly
+                      inputMode="decimal"
+                      value={amt1}
+                      onChange={(e) => setAmt1(e.target.value)}
+                      placeholder="0.00"
                       className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
                     />
-                    <TokenSelect token={token1} />
+                    <TokenPill token={token1} />
                   </div>
                   <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token1Usd}</span>
                 </div>
@@ -223,11 +232,13 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                   <div className="flex items-center justify-between">
                     <input
                       type="text"
-                      value={strategy.token2Amount}
-                      readOnly
+                      inputMode="decimal"
+                      value={amt2}
+                      onChange={(e) => setAmt2(e.target.value)}
+                      placeholder="0.00"
                       className={`bg-transparent border-none outline-none text-[32px] font-normal tracking-tight w-full p-0 m-0 ${textMain}`}
                     />
-                    <TokenSelect token={token2} />
+                    <TokenPill token={token2} />
                   </div>
                   <span className={`text-[12px] mt-1 font-medium ${textMuted}`}>{strategy.token2Usd}</span>
                 </div>

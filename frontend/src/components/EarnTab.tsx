@@ -70,10 +70,10 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
 
   const hbar = { sym: 'HBAR', logo: hbarLogoUrlSmall, fallback: 'H', bg: 'bg-black' };
   const sauce = { sym: 'SAUCE', logo: sauceLogoUrlSmall, fallback: 'S', bg: 'bg-red-500' };
-  const wbtc = { sym: 'wBTC', logo: wbtcLogoUrlSmall, fallback: 'B', bg: 'bg-[#F7931A]' };
-  const weth = { sym: 'wETH', logo: wethLogoUrlSmall, fallback: 'E', bg: 'bg-blue-600' };
+  const wbtc = { sym: 'WBTC', logo: wbtcLogoUrlSmall, fallback: 'B', bg: 'bg-[#F7931A]' };
+  const weth = { sym: 'WETH', logo: wethLogoUrlSmall, fallback: 'E', bg: 'bg-blue-600' };
   const usdc = { sym: 'USDC', logo: usdcLogoUrlSmall, fallback: 'U', bg: 'bg-[#2775CA]' };
-  const dovu = { sym: 'DOVU', logo: null, fallback: 'D', bg: 'bg-purple-600' };
+  const dovu = { sym: 'DOVU', logo: '/tokens/dovu.png', fallback: 'D', bg: 'bg-white' };
 
   // The featured pool in the top banner is itself a selectable strategy.
   const featuredStrategy = {
@@ -86,11 +86,11 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
 
   const strategies = [
     {
-      token1: hbar, token2: wbtc, pair: 'HBAR-wBTC', riskLevel: 'Balanced', apy: '14.2%', tvl: '$8.5M',
+      token1: hbar, token2: wbtc, pair: 'HBAR-WBTC', riskLevel: 'Balanced', apy: '14.2%', tvl: '$8.5M',
       ...emeraldRisk,
       token1Amount: '5,000.00', token1Usd: '$425.00',
       token2Amount: '0.0071', token2Usd: '$425.00',
-      dailyEarnings: '+2.1 HBAR / +0.0000029 wBTC',
+      dailyEarnings: '+2.1 HBAR / +0.0000029 WBTC',
     },
     {
       token1: hbar, token2: dovu, pair: 'HBAR-DOVU', riskLevel: 'Aggressive', apy: '62.1%', tvl: '$1.2M',
@@ -100,11 +100,11 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
       dailyEarnings: '+9.4 HBAR / +82.1 DOVU',
     },
     {
-      token1: hbar, token2: weth, pair: 'HBAR-wETH', riskLevel: 'Balanced', apy: '11.4%', tvl: '$5.1M',
+      token1: hbar, token2: weth, pair: 'HBAR-WETH', riskLevel: 'Balanced', apy: '11.4%', tvl: '$5.1M',
       ...emeraldRisk,
       token1Amount: '5,000.00', token1Usd: '$425.00',
       token2Amount: '0.132', token2Usd: '$425.00',
-      dailyEarnings: '+1.7 HBAR / +0.000041 wETH',
+      dailyEarnings: '+1.7 HBAR / +0.000041 WETH',
     },
     {
       token1: hbar, token2: usdc, pair: 'HBAR-USDC', riskLevel: 'Balanced', apy: '10.2%', tvl: '$6.8M',
