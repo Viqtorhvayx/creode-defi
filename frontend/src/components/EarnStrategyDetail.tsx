@@ -161,9 +161,9 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
       <div className="flex flex-col gap-5 mb-8">
         <button
           onClick={handleBack}
-          className={`flex items-center gap-2 w-fit text-[14px] font-medium transition-all duration-150 ${
+          className={`flex items-center gap-2 w-fit text-[14px] font-medium transition-colors duration-150 ${
             backGlow
-              ? 'text-[#00A8E8] drop-shadow-[0_0_10px_rgba(0,168,232,0.85)]'
+              ? 'text-[#00A8E8]'
               : `${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} active:text-[#00A8E8]`
           }`}
         >
