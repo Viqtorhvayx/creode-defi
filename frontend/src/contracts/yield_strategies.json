@@ -1,0 +1,112 @@
+{
+  "vault": "0xE6F17eFBd307b9c3C03FE65f9d30079fD4fE84fc",
+  "strategies": {
+    "HBAR-SAUCE": {
+      "id": 0,
+      "apyBps": 4520,
+      "tokens": [
+        {
+          "sym": "HBAR",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18
+        },
+        {
+          "sym": "SAUCE",
+          "address": "0x000000000000000000000000000000000092e8A9",
+          "decimals": 6
+        }
+      ]
+    },
+    "HBAR-WBTC": {
+      "id": 1,
+      "apyBps": 1420,
+      "tokens": [
+        {
+          "sym": "HBAR",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18
+        },
+        {
+          "sym": "WBTC",
+          "address": "0x000000000000000000000000000000000092e8b1",
+          "decimals": 8
+        }
+      ]
+    },
+    "HBAR-DOVU": {
+      "id": 2,
+      "apyBps": 6210,
+      "tokens": [
+        {
+          "sym": "HBAR",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18
+        }
+      ]
+    },
+    "HBAR-WETH": {
+      "id": 3,
+      "apyBps": 1140,
+      "tokens": [
+        {
+          "sym": "HBAR",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18
+        },
+        {
+          "sym": "WETH",
+          "address": "0x000000000000000000000000000000000092E8Ae",
+          "decimals": 8
+        }
+      ]
+    },
+    "HBAR-USDC": {
+      "id": 4,
+      "apyBps": 1020,
+      "tokens": [
+        {
+          "sym": "HBAR",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18
+        },
+        {
+          "sym": "USDC",
+          "address": "0x000000000000000000000000000000000092e8A7",
+          "decimals": 6
+        }
+      ]
+    },
+    "SAUCE-USDC": {
+      "id": 5,
+      "apyBps": 1850,
+      "tokens": [
+        {
+          "sym": "SAUCE",
+          "address": "0x000000000000000000000000000000000092e8A9",
+          "decimals": 6
+        },
+        {
+          "sym": "USDC",
+          "address": "0x000000000000000000000000000000000092e8A7",
+          "decimals": 6
+        }
+      ]
+    },
+    "USDC-USDT": {
+      "id": 6,
+      "apyBps": 1278,
+      "tokens": [
+        {
+          "sym": "USDC",
+          "address": "0x000000000000000000000000000000000092e8A7",
+          "decimals": 6
+        },
+        {
+          "sym": "USDT",
+          "address": "0x000000000000000000000000000000000092E8a8",
+          "decimals": 6
+        }
+      ]
+    }
+  }
+}
