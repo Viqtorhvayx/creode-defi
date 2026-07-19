@@ -274,28 +274,33 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
       ) : (
         <>
           {/* Internal Tabs and View Mode Toggles */}
-          <div className="flex w-full justify-between items-center mb-8 relative">
-        <div className={`flex rounded-full border p-1 ${theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-[#EAECEF] bg-slate-50'}`}>
+          <div className={`flex w-full justify-between items-end mb-8 relative border-b ${theme === 'dark' ? 'border-white/10' : 'border-[#EAECEF]'}`}>
+        <div className="flex items-center gap-7">
           {['Yield Hub', 'My Positions', 'Community'].map((tab) => {
             const isActive = activeTab === tab;
             return (
-              <button
+              <div
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-[#00A8E8] text-white shadow-sm'
-                    : 'text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
+                className={`pb-3 text-[14px] cursor-pointer relative transition-colors ${
+                  isActive
+                    ? 'text-[#00A8E8] font-bold'
+                    : theme === 'dark'
+                      ? 'text-white/50 font-semibold hover:text-white'
+                      : 'text-slate-500 font-semibold hover:text-slate-900'
                 }`}
               >
                 {tab}
-              </button>
+                {isActive && (
+                  <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#00A8E8] rounded-t-full shadow-[0_-2px_12px_rgba(0,168,232,0.6)] z-10" />
+                )}
+              </div>
             );
           })}
         </div>
 
         {activeTab === 'Yield Hub' && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pb-3">
             {/* Sort Dropdown */}
             <button className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-bold border transition-colors ${
               theme === 'dark' 
