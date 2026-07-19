@@ -89,23 +89,49 @@ const MiniAreaChart: React.FC<{ color: string; seed: number }> = ({ color, seed 
   return <div ref={ref} className="w-full" style={{ height: 104 }} />;
 };
 
-// Tiny sparkline for the 7D Change column.
-const Sparkline: React.FC<{ color: string; data: number[] }> = ({ color, data }) => {
-  const w = 92, h = 34, pad = 3;
-  const max = Math.max(...data), min = Math.min(...data);
-  const range = max - min || 1;
-  const line = data
-    .map((d, i) => {
-      const x = pad + (i / (data.length - 1)) * (w - pad * 2);
-      const y = pad + (1 - (d - min) / range) * (h - pad * 2);
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(' ');
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
-      <path d={line} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+// Smooth sparkline for the 7D Change column — same lightweight-charts engine
+// as the summary charts, just smaller.
+const MiniSparkline: React.FC<{ color: string; seed: number }> = ({ color, seed }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const chart = createChart(el, {
+      layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: 'transparent', attributionLogo: false },
+      grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+      rightPriceScale: { visible: false },
+      leftPriceScale: { visible: false },
+      timeScale: { visible: false, borderVisible: false },
+      crosshair: { horzLine: { visible: false, labelVisible: false }, vertLine: { visible: false, labelVisible: false } },
+      handleScroll: false,
+      handleScale: false,
+      width: el.clientWidth || 100,
+      height: 38,
+    });
+    const series = chart.addAreaSeries({
+      lineColor: color,
+      topColor: `${color}22`,
+      bottomColor: `${color}00`,
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+    });
+    const rnd = mulberry32(seed);
+    const data: { time: UTCTimestamp; value: number }[] = [];
+    let v = 100;
+    const start = Math.floor(Date.now() / 1000) - 40 * 3600;
+    for (let i = 0; i < 40; i++) {
+      v += (rnd() - 0.38) * 1.6;
+      data.push({ time: (start + i * 3600) as UTCTimestamp, value: v });
+    }
+    series.setData(data);
+    chart.timeScale().fitContent();
+    const ro = new ResizeObserver(() => chart.applyOptions({ width: el.clientWidth }));
+    ro.observe(el);
+    return () => { ro.disconnect(); chart.remove(); };
+  }, [color, seed]);
+  return <div ref={ref} className="w-full" style={{ height: 38 }} />;
 };
 
 // Utilization donut.
@@ -125,8 +151,6 @@ const Donut: React.FC<{ pct: number; track: string }> = ({ pct, track }) => {
     </div>
   );
 };
-
-const upSpark = [2, 3, 2.4, 3.6, 3.1, 4.2, 3.8, 5.0, 4.6, 5.4];
 
 export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }) => {
   const isDark = theme === 'dark';
@@ -221,7 +245,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
             </div>
 
             {/* Rows */}
-            {filtered.map((p) => (
+            {filtered.map((p, idx) => (
               <div key={p.pair} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
                 {/* Strategy */}
                 <div className="flex items-center gap-3">
@@ -247,8 +271,10 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
                 </div>
 
                 {/* 7D Change */}
-                <div className="flex flex-col items-start gap-1">
-                  <Sparkline color={p.trendUp ? GREEN : '#F43F5E'} data={upSpark} />
+                <div className="flex flex-col items-start gap-1 w-full">
+                  <div className="w-full max-w-[110px]">
+                    <MiniSparkline color={p.trendUp ? GREEN : '#F43F5E'} seed={idx * 17 + 5} />
+                  </div>
                   <span className="text-[11px] font-semibold" style={{ color: p.trendUp ? GREEN : '#F43F5E' }}>{p.change7d}</span>
                 </div>
 
