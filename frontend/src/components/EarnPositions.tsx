@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight } from '@phosphor-icons/react';
+import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 
 const BLUE = '#00A8E8';
 const GREEN = '#00C076';
@@ -35,45 +36,57 @@ interface EarnPositionsProps {
   positions: Position[];
 }
 
-// Line chart with data-point dots for the two summary cards. Measures its
-// own width so the dots stay perfectly round (no aspect-ratio stretching).
-const AreaChart: React.FC<{ color: string; data: number[] }> = ({ color, data }) => {
+// Deterministic PRNG so the synthetic series stays stable across renders.
+const mulberry32 = (a: number) => () => {
+  a |= 0; a = (a + 0x6d2b79f5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+// Smooth area chart using the same lightweight-charts engine as the Vault's
+// HBAR Market chart, so the summary charts read as professional, not jagged.
+const MiniAreaChart: React.FC<{ color: string; seed: number }> = ({ color, seed }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [w, setW] = useState(500);
-  const h = 100, pad = 10;
   useEffect(() => {
-    if (!ref.current) return;
-    const ro = new ResizeObserver((entries) => setW(entries[0].contentRect.width));
-    ro.observe(ref.current);
-    return () => ro.disconnect();
-  }, []);
-  const max = Math.max(...data), min = Math.min(...data);
-  const range = max - min || 1;
-  const pts = data.map((d, i) => {
-    const x = pad + (i / (data.length - 1)) * (w - pad * 2);
-    const y = pad + (1 - (d - min) / range) * (h - pad * 2);
-    return [x, y] as const;
-  });
-  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
-  const area = `${line} L ${pts[pts.length - 1][0].toFixed(1)} ${h} L ${pts[0][0].toFixed(1)} ${h} Z`;
-  const id = `grad-${color.replace('#', '')}`;
-  return (
-    <div ref={ref} className="w-full" style={{ height: h }}>
-      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
-        <defs>
-          <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.16" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d={area} fill={`url(#${id})`} />
-        <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-        {pts.map((p, i) => (
-          <circle key={i} cx={p[0]} cy={p[1]} r="2.6" fill={color} />
-        ))}
-      </svg>
-    </div>
-  );
+    const el = ref.current;
+    if (!el) return;
+    const chart = createChart(el, {
+      layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: 'transparent', attributionLogo: false },
+      grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+      rightPriceScale: { visible: false },
+      leftPriceScale: { visible: false },
+      timeScale: { visible: false, borderVisible: false },
+      crosshair: { horzLine: { visible: false, labelVisible: false }, vertLine: { visible: false, labelVisible: false } },
+      handleScroll: false,
+      handleScale: false,
+      width: el.clientWidth || 400,
+      height: 104,
+    });
+    const series = chart.addAreaSeries({
+      lineColor: color,
+      topColor: `${color}30`,
+      bottomColor: `${color}00`,
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+    });
+    const rnd = mulberry32(seed);
+    const data: { time: UTCTimestamp; value: number }[] = [];
+    let v = 100;
+    const start = Math.floor(Date.now() / 1000) - 90 * 86400;
+    for (let i = 0; i < 90; i++) {
+      v += (rnd() - 0.4) * 2.4; // gentle upward drift + noise
+      data.push({ time: (start + i * 86400) as UTCTimestamp, value: v });
+    }
+    series.setData(data);
+    chart.timeScale().fitContent();
+    const ro = new ResizeObserver(() => chart.applyOptions({ width: el.clientWidth }));
+    ro.observe(el);
+    return () => { ro.disconnect(); chart.remove(); };
+  }, [color, seed]);
+  return <div ref={ref} className="w-full" style={{ height: 104 }} />;
 };
 
 // Tiny sparkline for the 7D Change column.
@@ -113,8 +126,6 @@ const Donut: React.FC<{ pct: number; track: string }> = ({ pct, track }) => {
   );
 };
 
-const suppliedTrend = [42, 40, 44, 43, 47, 45, 49, 46, 44, 47, 45, 48, 46, 50, 48];
-const yieldTrend = [30, 32, 31, 34, 33, 35, 34, 37, 36, 38, 37, 39, 41, 40, 43];
 const upSpark = [2, 3, 2.4, 3.6, 3.1, 4.2, 3.8, 5.0, 4.6, 5.4];
 
 export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }) => {
@@ -142,7 +153,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
     return <div className="flex -space-x-2.5 shrink-0">{circle(p.token1, 'z-10')}{circle(p.token2, '')}</div>;
   };
 
-  const colTemplate = 'grid-cols-[minmax(190px,1.7fr)_110px_130px_130px_120px_110px_84px_150px]';
+  const colTemplate = 'grid-cols-[1.7fr_0.95fr_1.05fr_1fr_0.95fr_0.8fr_0.7fr_1.2fr]';
 
   return (
     <div className="w-full flex flex-col animate-in fade-in duration-500 pb-4">
@@ -161,7 +172,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
               +2,850.40<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
             </span>
           </div>
-          <div className="mt-2 -mx-1"><AreaChart color={BLUE} data={suppliedTrend} /></div>
+          <div className="mt-2 -mx-1"><MiniAreaChart color={BLUE} seed={7} /></div>
         </div>
 
         {/* Total Accrued Yield */}
@@ -176,7 +187,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
               +8.24%<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
             </span>
           </div>
-          <div className="mt-2 -mx-1"><AreaChart color={GREEN} data={yieldTrend} /></div>
+          <div className="mt-2 -mx-1"><MiniAreaChart color={GREEN} seed={21} /></div>
         </div>
       </div>
 
@@ -195,10 +206,10 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <div className="min-w-[900px]">
+        <div>
+          <div>
             {/* Header */}
-            <div className={`grid ${colTemplate} gap-3 items-center px-2 pb-3 border-b ${rowBorder} text-[12px] font-semibold ${textMuted}`}>
+            <div className={`grid ${colTemplate} gap-2 items-center px-2 pb-3 border-b ${rowBorder} text-[12px] font-semibold ${textMuted}`}>
               <div>Strategy</div>
               <div>Profile</div>
               <div>Supplied Value</div>
@@ -211,7 +222,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
 
             {/* Rows */}
             {filtered.map((p) => (
-              <div key={p.pair} className={`grid ${colTemplate} gap-3 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
+              <div key={p.pair} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
                 {/* Strategy */}
                 <div className="flex items-center gap-3">
                   <Logos p={p} />
@@ -251,9 +262,9 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
                 <div className={textMain}><Donut pct={p.utilization} track={donutTrack} /></div>
 
                 {/* Actions */}
-                <div className="flex flex-col items-end gap-2">
-                  <button className="w-[130px] h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
-                  <button className={`w-[130px] h-9 rounded-[8px] text-[12px] font-bold border transition-colors ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>Withdraw</button>
+                <div className="flex flex-col items-stretch gap-2 pl-1">
+                  <button className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
+                  <button className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>Withdraw</button>
                 </div>
               </div>
             ))}
