@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CommunityTab } from './CommunityTab';
 import { EarnStrategyDetail } from './EarnStrategyDetail';
+import { EarnPositions } from './EarnPositions';
 import { 
   ChartLineUp, 
   Stack, 
@@ -32,18 +33,20 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>(null);
   const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
   const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
+  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,usd-coin,saucerswap,wrapped-bitcoin,weth");
-        
+        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=hedera-hashgraph,usd-coin,tether,saucerswap,wrapped-bitcoin,weth");
+
         if (res.ok) {
           const data = await res.json();
           data.forEach((coin: any) => {
             if (coin.id === 'hedera-hashgraph' && coin.image) setHbarLogoUrlSmall(coin.image);
             else if (coin.id === 'usd-coin' && coin.image) setUsdcLogoUrlSmall(coin.image);
+            else if (coin.id === 'tether' && coin.image) setUsdtLogoUrlSmall(coin.image);
             else if (coin.id === 'saucerswap' && coin.image) setSauceLogoUrlSmall(coin.image);
             else if (coin.id === 'wrapped-bitcoin' && coin.image) setWbtcLogoUrlSmall(coin.image);
             else if (coin.id === 'weth' && coin.image) setWethLogoUrlSmall(coin.image);
@@ -67,12 +70,17 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
     riskTextClass: 'text-rose-600 dark:text-rose-500',
   };
+  const conservativeRisk = {
+    riskBgClass: 'bg-[#00A8E8]/10',
+    riskTextClass: 'text-[#00A8E8]',
+  };
 
   const hbar = { sym: 'HBAR', logo: hbarLogoUrlSmall, fallback: 'H', bg: 'bg-black' };
   const sauce = { sym: 'SAUCE', logo: sauceLogoUrlSmall, fallback: 'S', bg: 'bg-red-500' };
   const wbtc = { sym: 'WBTC', logo: wbtcLogoUrlSmall, fallback: 'B', bg: 'bg-[#F7931A]' };
   const weth = { sym: 'WETH', logo: wethLogoUrlSmall, fallback: 'E', bg: 'bg-blue-600' };
   const usdc = { sym: 'USDC', logo: usdcLogoUrlSmall, fallback: 'U', bg: 'bg-[#2775CA]' };
+  const usdt = { sym: 'USDT', logo: usdtLogoUrlSmall, fallback: 'T', bg: 'bg-[#26A17B]' };
   const dovu = { sym: 'DOVU', logo: '/tokens/dovu.png', fallback: 'D', bg: 'bg-white' };
 
   // The featured pool in the top banner is itself a selectable strategy.
@@ -119,6 +127,22 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
       token1Amount: '12,450.00', token1Usd: '$425.00',
       token2Amount: '425.00', token2Usd: '$425.00',
       dailyEarnings: '+21.5 SAUCE / +0.21 USDC',
+    },
+  ];
+
+  // The user's open zap positions (illustrative on testnet).
+  const positions = [
+    {
+      token1: hbar, token2: sauce, pair: 'HBAR-SAUCE', venue: 'HashPack DEX', riskLevel: 'Balanced', ...emeraldRisk,
+      supplied: '$12,400.00', accrued: '+$850.20', accruedPct: '+6.85%', change7d: '+4.32%', apr: '24.65%', utilization: 72, trendUp: true,
+    },
+    {
+      token1: usdc, token2: usdt, pair: 'USDC-USDT', venue: 'SaucerSwap', riskLevel: 'Conservative', ...conservativeRisk,
+      supplied: '$25,100.00', accrued: '+$1,120.00', accruedPct: '+4.46%', change7d: '+1.92%', apr: '12.78%', utilization: 48, trendUp: true,
+    },
+    {
+      token1: hbar, token2: dovu, pair: 'HBAR-DOVU', venue: 'DOVU Finance', riskLevel: 'Aggressive', ...roseRisk,
+      supplied: '$5,000.00', accrued: '+$1,270.30', accruedPct: '+25.41%', change7d: '+7.18%', apr: '38.92%', utilization: 83, trendUp: true,
     },
   ];
 
@@ -252,7 +276,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
           {/* Internal Tabs and View Mode Toggles */}
           <div className="flex w-full justify-between items-center mb-8 relative">
         <div className={`flex rounded-full border p-1 ${theme === 'dark' ? 'border-white/10 bg-[#0F141A]' : 'border-[#EAECEF] bg-slate-50'}`}>
-          {['Yield Hub', 'Community'].map((tab) => {
+          {['Yield Hub', 'My Positions', 'Community'].map((tab) => {
             const isActive = activeTab === tab;
             return (
               <button
@@ -501,10 +525,12 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
             </div>
           </div>
         </>
+      ) : activeTab === 'My Positions' ? (
+        <EarnPositions theme={theme} positions={positions} />
       ) : (
         <CommunityTab theme={theme} />
       )}
-      
+
       </>
       )}
     </div>
