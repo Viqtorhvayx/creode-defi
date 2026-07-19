@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight } from '@phosphor-icons/react';
 
 const BLUE = '#00A8E8';
@@ -35,9 +35,18 @@ interface EarnPositionsProps {
   positions: Position[];
 }
 
-// Smooth area chart for the two summary cards.
+// Line chart with data-point dots for the two summary cards. Measures its
+// own width so the dots stay perfectly round (no aspect-ratio stretching).
 const AreaChart: React.FC<{ color: string; data: number[] }> = ({ color, data }) => {
-  const w = 520, h = 96, pad = 6;
+  const ref = useRef<HTMLDivElement>(null);
+  const [w, setW] = useState(500);
+  const h = 100, pad = 10;
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver((entries) => setW(entries[0].contentRect.width));
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
   const max = Math.max(...data), min = Math.min(...data);
   const range = max - min || 1;
   const pts = data.map((d, i) => {
@@ -49,16 +58,21 @@ const AreaChart: React.FC<{ color: string; data: number[] }> = ({ color, data })
   const area = `${line} L ${pts[pts.length - 1][0].toFixed(1)} ${h} L ${pts[0][0].toFixed(1)} ${h} Z`;
   const id = `grad-${color.replace('#', '')}`;
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-[96px]">
-      <defs>
-        <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.28" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${id})`} />
-      <path d={line} fill="none" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
-    </svg>
+    <div ref={ref} className="w-full" style={{ height: h }}>
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        <defs>
+          <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.16" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill={`url(#${id})`} />
+        <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        {pts.map((p, i) => (
+          <circle key={i} cx={p[0]} cy={p[1]} r="2.6" fill={color} />
+        ))}
+      </svg>
+    </div>
   );
 };
 
@@ -83,7 +97,7 @@ const Sparkline: React.FC<{ color: string; data: number[] }> = ({ color, data })
 
 // Utilization donut.
 const Donut: React.FC<{ pct: number; track: string }> = ({ pct, track }) => {
-  const size = 44, sw = 5, r = (size - sw) / 2, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
+  const size = 48, sw = 5.5, r = (size - sw) / 2, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -137,32 +151,32 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Total Supplied Capital */}
         <div className={`${cardBg} border ${border} rounded-[16px] p-6 flex flex-col shadow-sm`}>
-          <div className="flex items-start justify-between mb-1">
-            <div className="flex items-center gap-1.5">
-              <span className={`text-[13px] font-semibold ${textMuted}`}>Total Supplied Capital</span>
-              <Info size={13} className={textMuted} />
-            </div>
-            <span className="text-[12px] font-bold px-3 py-1.5 rounded-lg border text-center leading-none" style={{ color: BLUE, borderColor: 'rgba(0,168,232,0.3)' }}>
+          <div className="flex items-center gap-1.5 mb-3">
+            <span className={`text-[13px] font-semibold ${textMuted}`}>Total Supplied Capital</span>
+            <Info size={13} className={textMuted} />
+          </div>
+          <div className="flex items-start justify-between">
+            <span className={`text-[34px] font-bold tracking-tight leading-none ${textMain}`}>$42,500.00</span>
+            <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: BLUE, borderColor: 'rgba(0,168,232,0.3)' }}>
               +2,850.40<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
             </span>
           </div>
-          <span className={`text-[34px] font-bold tracking-tight ${textMain}`}>$42,500.00</span>
-          <div className="mt-3 -mx-1"><AreaChart color={BLUE} data={suppliedTrend} /></div>
+          <div className="mt-2 -mx-1"><AreaChart color={BLUE} data={suppliedTrend} /></div>
         </div>
 
         {/* Total Accrued Yield */}
         <div className={`${cardBg} border ${border} rounded-[16px] p-6 flex flex-col shadow-sm`}>
-          <div className="flex items-start justify-between mb-1">
-            <div className="flex items-center gap-1.5">
-              <span className={`text-[13px] font-semibold ${textMuted}`}>Total Accrued Yield</span>
-              <Info size={13} className={textMuted} />
-            </div>
-            <span className="text-[12px] font-bold px-3 py-1.5 rounded-lg border text-center leading-none" style={{ color: GREEN, borderColor: 'rgba(0,192,118,0.3)' }}>
+          <div className="flex items-center gap-1.5 mb-3">
+            <span className={`text-[13px] font-semibold ${textMuted}`}>Total Accrued Yield</span>
+            <Info size={13} className={textMuted} />
+          </div>
+          <div className="flex items-start justify-between">
+            <span className="text-[34px] font-bold tracking-tight leading-none" style={{ color: GREEN }}>+$3,240.50</span>
+            <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: GREEN, borderColor: 'rgba(0,192,118,0.3)' }}>
               +8.24%<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
             </span>
           </div>
-          <span className="text-[34px] font-bold tracking-tight" style={{ color: GREEN }}>+$3,240.50</span>
-          <div className="mt-3 -mx-1"><AreaChart color={GREEN} data={yieldTrend} /></div>
+          <div className="mt-2 -mx-1"><AreaChart color={GREEN} data={yieldTrend} /></div>
         </div>
       </div>
 
