@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning, CircleNotch } from '@phosphor-icons/react';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { STRATEGIES, depositToStrategy } from '../lib/yieldVault';
+import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
 
 export interface StrategyToken {
   sym: string;
@@ -69,14 +69,13 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const price1 = parseNum(strategy.token1Amount) > 0 ? parseNum(strategy.token1Usd) / parseNum(strategy.token1Amount) : 0;
   const price2 = parseNum(strategy.token2Amount) > 0 ? parseNum(strategy.token2Usd) / parseNum(strategy.token2Amount) : 0;
 
-  // On-chain strategy metadata (id + accepted deposit tokens).
+  // On-chain strategy metadata (id + accepted tokens).
   const meta = STRATEGIES[strategy.pair];
-  const acceptedSyms = new Set((meta?.tokens || []).map((t) => t.sym));
+  const acceptedSyms = new Set(meta ? (meta.single ? [meta.tokenA.sym] : [meta.tokenA.sym, meta.tokenB.sym]) : [token1.sym, token2.sym]);
 
-  // Single-sided "zap": the user supplies ONE token; the contract swaps
-  // ~half into the other side to build a balanced LP position. Only tokens
-  // the vault actually accepts on-chain are offered.
-  const zapTokens: StrategyToken[] = (meta ? [token1, token2].filter((t) => acceptedSyms.has(t.sym)) : [token1, token2]);
+  // Single-sided "zap": the user supplies ONE token; ~half is swapped on-chain
+  // into the other side. Only tokens the vault accepts on-chain are offered.
+  const zapTokens: StrategyToken[] = [token1, token2].filter((t) => acceptedSyms.has(t.sym));
   const [zapIdx, setZapIdx] = useState(0);
   const [amt, setAmt] = useState(strategy.token1Amount);
   useEffect(() => {
@@ -84,14 +83,31 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     setAmt(strategy.token1Amount);
   }, [strategy.pair]);
 
-  const zapToken = zapTokens[Math.min(zapIdx, zapTokens.length - 1)] || token1;
+  const zapToken = zapTokens[Math.min(zapIdx, Math.max(0, zapTokens.length - 1))] || token1;
   const zapPrice = zapToken.sym === token1.sym ? price1 : price2;
   const amtNum = parseNum(amt);
   const hasAmt = amtNum > 0;
-  const totalUsd = amtNum * zapPrice;         // full value being supplied
-  const halfUsd = totalUsd / 2;               // each side of the balanced position
-  const out1 = price1 > 0 ? halfUsd / price1 : 0;
-  const out2 = price2 > 0 ? halfUsd / price2 : 0;
+  const totalUsd = amtNum * zapPrice;
+
+  const metaTok = meta ? (meta.tokenA.sym === zapToken.sym ? meta.tokenA : meta.tokenB) : undefined;
+  const otherMeta = meta ? (meta.tokenA.sym === zapToken.sym ? meta.tokenB : meta.tokenA) : undefined;
+
+  // Real router quote for the swapped half.
+  const [quotedOut, setQuotedOut] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!meta || meta.single || !metaTok || !otherMeta || !hasAmt) { setQuotedOut(0); return; }
+      const q = await quoteSwap(metaTok, otherMeta, String(amtNum / 2));
+      if (!cancelled) setQuotedOut(q);
+    })();
+    return () => { cancelled = true; };
+  }, [strategy.pair, zapToken.sym, amtNum, hasAmt]);
+
+  // Breakdown mapped onto the token1/token2 display slots.
+  const keptHalf = meta?.single ? amtNum : amtNum / 2;
+  const out1 = zapToken.sym === token1.sym ? keptHalf : quotedOut;
+  const out2 = zapToken.sym === token1.sym ? quotedOut : keptHalf;
 
   const selectZap = (i: number) => {
     setZapIdx(i);
@@ -99,12 +115,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     setAmt(sym === token2.sym ? strategy.token2Amount : strategy.token1Amount);
   };
 
-  // Wallet + on-chain deposit wiring.
+  // Wallet + on-chain zap wiring.
   const { isConnected } = useWallet();
   const { data: walletClient } = useWalletClient();
   const [zapState, setZapState] = useState<'idle' | 'pending' | 'done'>('idle');
-
-  const metaTok = meta?.tokens.find((t) => t.sym === zapToken.sym);
 
   const handleZap = async () => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
@@ -112,7 +126,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     if (!hasAmt) return;
     setZapState('pending');
     try {
-      await depositToStrategy(walletClient, meta.id, metaTok, amt.replace(/,/g, ''));
+      await zapIn(walletClient, meta.id, metaTok, amt.replace(/,/g, ''));
       setZapState('done');
       setTimeout(() => setZapState('idle'), 4000);
     } catch (e) {
@@ -309,10 +323,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                 <Lightning size={13} weight="fill" style={{ color: BLUE }} />
                 <span className={`text-[12px] font-bold ${textMain}`}>Auto-Zap breakdown</span>
                 <div className="flex-1" />
-                <span className={`text-[11px] font-medium ${textMuted}`}>~50 / 50</span>
+                <span className={`text-[11px] font-medium ${textMuted}`}>{meta?.single ? 'Single-asset' : '~50 / 50'}</span>
               </div>
               <div className="flex flex-col gap-2.5">
-                {[{ t: token1, out: out1 }, { t: token2, out: out2 }].map(({ t, out }) => (
+                {(meta?.single ? [{ t: token1, out: out1 }] : [{ t: token1, out: out1 }, { t: token2, out: out2 }]).map(({ t, out }) => (
                   <div key={t.sym} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {t.logo ? (

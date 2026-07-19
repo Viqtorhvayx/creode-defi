@@ -5,7 +5,7 @@ import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet }
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { fetchUserPositions, withdrawAll, UserPosition } from '../lib/yieldVault';
+import { fetchUserPositions, withdrawAll, UserPositionV2 } from '../lib/yieldVault';
 
 const BLUE = '#00A8E8';
 const GREEN = '#00C076';
@@ -137,9 +137,9 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
   // ── Live on-chain positions ──────────────────────────────────────────
   const { isConnected } = useWallet();
   const { data: walletClient } = useWalletClient();
-  const [live, setLive] = useState<UserPosition[] | null>(null);
+  const [live, setLive] = useState<UserPositionV2[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [busyKey, setBusyKey] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     const addr = walletClient?.account?.address;
@@ -152,23 +152,24 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
 
   useEffect(() => { load(); }, [load]);
 
-  const onWithdraw = async (pos: UserPosition) => {
+  const onWithdraw = async (pos: UserPositionV2) => {
     if (!walletClient) return;
-    const key = `${pos.strategyId}-${pos.tokenAddress}`;
-    setBusyKey(key);
-    try { await withdrawAll(walletClient, pos.strategyId, pos.tokenAddress); await load(); }
+    setBusyKey(pos.strategyId);
+    try { await withdrawAll(walletClient, pos.strategyId); await load(); }
     catch (e) { const err = e as any; alert('Withdraw failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
     finally { setBusyKey(null); }
   };
 
   const connectedLive = isConnected && live !== null;
-  const fmtNum = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: n >= 1 ? 2 : 6 });
   const fmtUsd = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const suppliedUsd = (live || []).reduce((s, p) => s + p.principal * (priceUsd[p.sym] ?? 0), 0);
-  const yieldUsd = (live || []).reduce((s, p) => s + p.pendingYield * (priceUsd[p.sym] ?? 0), 0);
+  const fmtHold = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: n >= 1 ? 2 : 6 });
+  const usdOf = (p: UserPositionV2) => p.a.amt * (priceUsd[p.a.sym] ?? 0) + (p.single ? 0 : p.b.amt * (priceUsd[p.b.sym] ?? 0));
+  const yUsdOf = (p: UserPositionV2) => p.a.yield * (priceUsd[p.a.sym] ?? 0) + (p.single ? 0 : p.b.yield * (priceUsd[p.b.sym] ?? 0));
+  const suppliedUsd = (live || []).reduce((s, p) => s + usdOf(p), 0);
+  const yieldUsd = (live || []).reduce((s, p) => s + yUsdOf(p), 0);
 
   const liveRows = (live || []).filter(
-    (p) => p.name.toLowerCase().includes(search.toLowerCase()) || p.sym.toLowerCase().includes(search.toLowerCase())
+    (p) => p.name.toLowerCase().includes(search.toLowerCase()) || p.a.sym.toLowerCase().includes(search.toLowerCase()) || p.b.sym.toLowerCase().includes(search.toLowerCase())
   );
   const previewRows = positions.filter(
     (p) => p.pair.toLowerCase().includes(search.toLowerCase()) || p.venue.toLowerCase().includes(search.toLowerCase())
@@ -273,29 +274,31 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
               ) : (
                 liveRows.map((p) => {
                   const info = pairInfo[p.name];
-                  const key = `${p.strategyId}-${p.tokenAddress}`;
                   const util = Math.max(35, Math.min(92, Math.round(p.apyPct * 3) + 35));
-                  const earnedPct = p.principal > 0 ? (p.pendingYield / p.principal) * 100 : 0;
-                  const busy = busyKey === key;
+                  const supUsd = usdOf(p);
+                  const yUsd = yUsdOf(p);
+                  const earnedPct = supUsd > 0 ? (yUsd / supUsd) * 100 : 0;
+                  const holdings = p.single ? `${fmtHold(p.a.amt)} ${p.a.sym}` : `${fmtHold(p.a.amt)} ${p.a.sym} + ${fmtHold(p.b.amt)} ${p.b.sym}`;
+                  const busy = busyKey === p.strategyId;
                   return (
-                    <div key={key} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
+                    <div key={p.strategyId} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
                       {/* Strategy */}
                       <div className="flex items-center gap-3">
                         {info ? <Logos t1={info.token1} t2={info.token2} /> : <div className="w-9 h-9 rounded-full bg-slate-500/20 shrink-0" />}
                         <div className="flex flex-col">
                           <span className={`text-[14px] font-bold ${textMain}`}>{p.name}</span>
-                          <span className={`text-[11px] font-medium ${textMuted}`}>Supplied {p.sym}</span>
+                          <span className={`text-[11px] font-medium ${textMuted}`} title={holdings}>{holdings}</span>
                         </div>
                       </div>
                       {/* Profile */}
                       <div>
                         {info && <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${info.riskBgClass} ${info.riskTextClass}`}>{info.riskLevel}</span>}
                       </div>
-                      {/* Supplied Value */}
-                      <div className={`text-[14px] font-bold ${textMain}`}>{fmtNum(p.principal)} {p.sym}</div>
-                      {/* Accrued Yield */}
+                      {/* Supplied Value (single USD) */}
+                      <div className={`text-[14px] font-bold ${textMain}`}>{fmtUsd(supUsd)}</div>
+                      {/* Accrued Yield (single USD) */}
                       <div className="flex flex-col">
-                        <span className="text-[14px] font-bold" style={{ color: GREEN }}>+{fmtNum(p.pendingYield)} {p.sym}</span>
+                        <span className="text-[14px] font-bold" style={{ color: GREEN }}>+{fmtUsd(yUsd)}</span>
                         <span className="text-[11px] font-semibold" style={{ color: GREEN }}>+{earnedPct.toFixed(4)}%</span>
                       </div>
                       {/* 7D Change (not tracked on-chain yet) */}
