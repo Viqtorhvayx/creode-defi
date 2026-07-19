@@ -8,6 +8,7 @@ interface P2PTabProps {
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
+  const [activeInterval, setActiveInterval] = useState<'15m' | '1H' | '4H' | '1D' | '1W'>('1H');
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
@@ -109,11 +110,25 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className={`flex items-center rounded-full border ${borderColor} p-1 shadow-sm`}>
-                    <div className={`px-4 py-1.5 text-xs font-bold rounded-full ${theme === 'dark' ? 'bg-white text-black shadow-md' : 'bg-black text-white shadow-md'}`}>24H</div>
-                    <div className={`px-4 py-1.5 text-xs font-bold ${textMuted} hover:${textMain} cursor-pointer transition-colors`}>7D</div>
-                    <div className={`px-4 py-1.5 text-xs font-bold ${textMuted} hover:${textMain} cursor-pointer transition-colors`}>1M</div>
-                    <div className={`px-4 py-1.5 text-xs font-bold ${textMuted} hover:${textMain} cursor-pointer transition-colors`}>1Y</div>
+                  <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-[12px] shadow-sm dark:shadow-none">
+                    {(['15m', '1H', '4H', '1D', '1W'] as const).map((tf) => {
+                      const active = activeInterval === tf;
+                      return (
+                        <button
+                          key={tf}
+                          onClick={() => setActiveInterval(tf)}
+                          className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide border border-transparent ${
+                            active
+                              ? 'bg-transparent text-[#00A8E8] shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]'
+                              : theme === 'dark'
+                                ? 'text-white/40 hover:text-white hover:bg-white/5'
+                                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                          }`}
+                        >
+                          {tf}
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className={`w-[34px] h-[34px] flex items-center justify-center rounded-full border ${borderColor} cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 shadow-sm transition-colors`}>
                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme === 'dark' ? 'white' : 'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="7" y="3" width="2" height="18"></rect><rect x="15" y="3" width="2" height="18"></rect><rect x="5" y="8" width="6" height="4" rx="1"></rect><rect x="13" y="12" width="6" height="4" rx="1"></rect></svg>
