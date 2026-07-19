@@ -190,14 +190,14 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const FilterButton = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => {
     if (theme === 'dark') {
       return (
-        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-transparent shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}>
+        <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-transparent shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}`}>
           {label}
         </button>
       );
     }
     // Light Mode Button
     return (
-      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-transparent shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
+      <button onClick={onClick} className={`text-[12px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide ${active ? 'bg-transparent text-[#00A8E8] border border-transparent shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'}`}>
         {label}
       </button>
     );
@@ -225,7 +225,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
             <span className="text-[12px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>
           </div>
         </div>
-        <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-[12px] shadow-sm dark:shadow-none">
+        <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-full shadow-sm dark:shadow-none">
           {(['1H', '1D', '1W', '1M', 'ALL'] as const).map(interval => (
             <FilterButton key={interval} label={interval} active={activeInterval === interval} onClick={() => setActiveInterval(interval)} />
           ))}

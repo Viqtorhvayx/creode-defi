@@ -110,14 +110,14 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-[12px] shadow-sm dark:shadow-none">
+                  <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-full shadow-sm dark:shadow-none">
                     {(['15m', '1H', '4H', '1D', '1W'] as const).map((tf) => {
                       const active = activeInterval === tf;
                       return (
                         <button
                           key={tf}
                           onClick={() => setActiveInterval(tf)}
-                          className={`text-[12px] font-bold transition-all duration-300 rounded-[8px] py-1.5 px-3.5 tracking-wide border border-transparent ${
+                          className={`text-[12px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide border border-transparent ${
                             active
                               ? 'bg-transparent text-[#00A8E8] shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]'
                               : theme === 'dark'
