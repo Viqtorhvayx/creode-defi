@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, Plus, ArrowUpRight } from '@phosphor-icons/react';
+import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning } from '@phosphor-icons/react';
 
 export interface StrategyToken {
   sym: string;
@@ -58,25 +58,39 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const { token1, token2 } = strategy;
   const apyNum = strategy.apy.replace('%', '');
 
-  // Editable liquidity amounts. Reset when the selected pair changes.
-  const [amt1, setAmt1] = useState(strategy.token1Amount);
-  const [amt2, setAmt2] = useState(strategy.token2Amount);
-  useEffect(() => {
-    setAmt1(strategy.token1Amount);
-    setAmt2(strategy.token2Amount);
-  }, [strategy.pair, strategy.token1Amount, strategy.token2Amount]);
-
-  // Live USD value beneath each amount (same behaviour as the Vault input):
-  // derive each token's implied price from its default amount/USD, then
-  // multiply by whatever the user types.
+  // Implied per-token USD prices, derived from the strategy's default
+  // amount/USD so the split preview and USD value stay self-consistent.
   const parseNum = (s: string) => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0;
   const fmtUsd = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTok = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: n >= 1 ? 2 : 6 });
   const price1 = parseNum(strategy.token1Amount) > 0 ? parseNum(strategy.token1Usd) / parseNum(strategy.token1Amount) : 0;
   const price2 = parseNum(strategy.token2Amount) > 0 ? parseNum(strategy.token2Usd) / parseNum(strategy.token2Amount) : 0;
-  const hasAmt1 = parseNum(amt1) > 0;
-  const hasAmt2 = parseNum(amt2) > 0;
-  const usd1 = fmtUsd(parseNum(amt1) * price1);
-  const usd2 = fmtUsd(parseNum(amt2) * price2);
+
+  // Single-sided "zap": the user supplies ONE token; the contract swaps
+  // ~half into the other side to build a balanced LP position. The zap
+  // token defaults to token1 and can be switched to token2.
+  const zapTokens: StrategyToken[] = [token1, token2];
+  const [zapIdx, setZapIdx] = useState(0);
+  const [amt, setAmt] = useState(strategy.token1Amount);
+  useEffect(() => {
+    setZapIdx(0);
+    setAmt(strategy.token1Amount);
+  }, [strategy.pair]);
+
+  const zapToken = zapTokens[zapIdx];
+  const zapPrice = zapIdx === 0 ? price1 : price2;
+  const amtNum = parseNum(amt);
+  const hasAmt = amtNum > 0;
+  const totalUsd = amtNum * zapPrice;         // full value being supplied
+  const halfUsd = totalUsd / 2;               // each side of the balanced position
+  const out1 = price1 > 0 ? halfUsd / price1 : 0;
+  const out2 = price2 > 0 ? halfUsd / price2 : 0;
+
+  const selectZap = (i: number) => {
+    setZapIdx(i);
+    // seed the input with the strategy's default amount for that side
+    setAmt(i === 0 ? strategy.token1Amount : strategy.token2Amount);
+  };
 
   const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 ${pillBg}`}>
@@ -205,57 +219,82 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
         <div className="flex flex-col w-full h-full">
           <div className={`${cardBg} border ${borderColor} rounded-[16px] p-6 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(0,168,232,0.05)]`}>
 
-            <h2 className="text-[16px] font-bold tracking-tight mb-6">Supply Liquidity</h2>
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-[16px] font-bold tracking-tight">Zap In</h2>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: 'rgba(0,168,232,0.1)', color: BLUE }}>
+                <Lightning size={11} weight="fill" /> Single-sided
+              </span>
+            </div>
+            <p className={`text-[12px] font-medium mb-5 ${textMuted}`}>
+              Supply just one token — we auto-swap ~50% to build the balanced position.
+            </p>
 
-            <div className="relative flex flex-col mb-6">
+            {/* Zap token selector */}
+            <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Supply with</span>
+            <div className="flex items-center gap-2 mb-4">
+              {zapTokens.map((t, i) => {
+                const active = zapIdx === i;
+                return (
+                  <button
+                    key={t.sym}
+                    onClick={() => selectZap(i)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[10px] border text-[13px] font-bold transition-colors ${
+                      active
+                        ? 'border-[#00A8E8] text-[#00A8E8] bg-[#00A8E8]/10'
+                        : `${borderColor} ${textMuted} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`
+                    }`}
+                  >
+                    {t.logo ? (
+                      <img src={t.logo} alt={t.sym} className="w-[18px] h-[18px] rounded-full" />
+                    ) : (
+                      <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-white text-[10px] font-bold ${t.bg}`}>{t.fallback}</span>
+                    )}
+                    {t.sym}
+                  </button>
+                );
+              })}
+            </div>
 
-              {/* Input 1 (token1) */}
-              <div className="flex flex-col relative z-0">
-                <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
-                  <div className="flex items-center justify-between">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={amt1}
-                      onChange={(e) => setAmt1(e.target.value)}
-                      placeholder="0.00"
-                      className={`bg-transparent border-none outline-none text-[32px] font-bold tracking-tight w-full p-0 m-0 leading-none placeholder-slate-300 dark:placeholder-white/20 ${textMain}`}
-                    />
-                    <TokenPill token={token1} />
+            {/* Single amount input */}
+            <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
+            <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors mb-5`}>
+              <div className="flex items-center justify-between">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={amt}
+                  onChange={(e) => setAmt(e.target.value)}
+                  placeholder="0.00"
+                  className={`bg-transparent border-none outline-none text-[32px] font-bold tracking-tight w-full p-0 m-0 leading-none placeholder-slate-300 dark:placeholder-white/20 ${textMain}`}
+                />
+                <TokenPill token={zapToken} />
+              </div>
+              <span className={`text-[12px] mt-1 font-bold transition-colors ${hasAmt ? 'text-[#00A8E8]' : textMuted}`}>{fmtUsd(totalUsd)}</span>
+            </div>
+
+            {/* Auto-Zap breakdown */}
+            <div className={`rounded-[12px] border ${borderColor} ${isDark ? 'bg-white/[0.02]' : 'bg-slate-50'} p-4 mb-6`}>
+              <div className="flex items-center gap-1.5 mb-3">
+                <Lightning size={13} weight="fill" style={{ color: BLUE }} />
+                <span className={`text-[12px] font-bold ${textMain}`}>Auto-Zap breakdown</span>
+                <div className="flex-1" />
+                <span className={`text-[11px] font-medium ${textMuted}`}>~50 / 50</span>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {[{ t: token1, out: out1 }, { t: token2, out: out2 }].map(({ t, out }) => (
+                  <div key={t.sym} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {t.logo ? (
+                        <img src={t.logo} alt={t.sym} className="w-[20px] h-[20px] rounded-full" />
+                      ) : (
+                        <span className={`w-[20px] h-[20px] rounded-full flex items-center justify-center text-white text-[10px] font-bold ${t.bg}`}>{t.fallback}</span>
+                      )}
+                      <span className={`text-[13px] font-semibold ${textMain}`}>{t.sym}</span>
+                    </div>
+                    <span className={`text-[13px] font-bold ${hasAmt ? textMain : textMuted}`}>~{fmtTok(out)}</span>
                   </div>
-                  <span className={`text-[12px] mt-1 font-bold transition-colors ${hasAmt1 ? 'text-[#00A8E8]' : textMuted}`}>{usd1}</span>
-                </div>
+                ))}
               </div>
-
-              {/* + Icon Separator */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pt-[22px]">
-                <div className={`w-[32px] h-[32px] rounded-full flex items-center justify-center shadow-sm ${
-                  isDark ? 'bg-[#1a212e] border border-white/10 text-white/50' : 'bg-white border border-[#EAECEF] text-slate-400'
-                }`}>
-                  <Plus size={16} weight="bold" />
-                </div>
-              </div>
-
-              {/* Input 2 (token2) */}
-              <div className="flex flex-col mt-4 relative z-0">
-                <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
-                  <div className="flex items-center justify-between">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={amt2}
-                      onChange={(e) => setAmt2(e.target.value)}
-                      placeholder="0.00"
-                      className={`bg-transparent border-none outline-none text-[32px] font-bold tracking-tight w-full p-0 m-0 leading-none placeholder-slate-300 dark:placeholder-white/20 ${textMain}`}
-                    />
-                    <TokenPill token={token2} />
-                  </div>
-                  <span className={`text-[12px] mt-1 font-bold transition-colors ${hasAmt2 ? 'text-[#00A8E8]' : textMuted}`}>{usd2}</span>
-                </div>
-              </div>
-
             </div>
 
             {/* Settings Row */}
@@ -271,8 +310,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm">
-              Confirm &amp; Supply Liquidity
+            <button className="w-full bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+              <Lightning size={16} weight="fill" /> Confirm &amp; Zap In
             </button>
 
           </div>
