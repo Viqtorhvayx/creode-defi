@@ -1,0 +1,65 @@
+{
+  "address": "0x87b6de843538E31fc368e13BE232320915a734ef",
+  "feeBps": 20,
+  "tokens": {
+    "HBAR": {
+      "sym": "HBAR",
+      "address": "0x0000000000000000000000000000000000000000",
+      "decimals": 18
+    },
+    "USDC": {
+      "sym": "USDC",
+      "address": "0x000000000000000000000000000000000092e8A7",
+      "decimals": 6
+    },
+    "USDT": {
+      "sym": "USDT",
+      "address": "0x000000000000000000000000000000000092E8a8",
+      "decimals": 6
+    },
+    "SAUCE": {
+      "sym": "SAUCE",
+      "address": "0x000000000000000000000000000000000092e8A9",
+      "decimals": 6
+    },
+    "PACK": {
+      "sym": "PACK",
+      "address": "0x000000000000000000000000000000000092e8aB",
+      "decimals": 6
+    },
+    "JAM": {
+      "sym": "JAM",
+      "address": "0x000000000000000000000000000000000092E8aC",
+      "decimals": 6
+    },
+    "WETH": {
+      "sym": "WETH",
+      "address": "0x000000000000000000000000000000000092E8Ae",
+      "decimals": 8
+    },
+    "WBTC": {
+      "sym": "WBTC",
+      "address": "0x000000000000000000000000000000000092e8b1",
+      "decimals": 8
+    },
+    "BONZO": {
+      "sym": "BONZO",
+      "address": "0x000000000000000000000000000000000092e8B3",
+      "decimals": 6
+    }
+  },
+  "pairs": [
+    {
+      "base": "HBAR",
+      "quote": "USDC"
+    },
+    {
+      "base": "SAUCE",
+      "quote": "USDC"
+    },
+    {
+      "base": "USDC",
+      "quote": "USDT"
+    }
+  ]
+}
