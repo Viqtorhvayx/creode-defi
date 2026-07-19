@@ -54,6 +54,12 @@ export default function Dashboard() {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
+  const setThemeTo = (t: 'light' | 'dark') => {
+    setTheme(t);
+    localStorage.setItem('creode-theme', t);
+    document.documentElement.classList.toggle('dark', t === 'dark');
+  };
+
   const matchedDarkIntensity = 'rgba(255, 255, 255, 0.6)';
   const secondaryLabelColor = theme === 'dark' ? matchedDarkIntensity : 'rgba(0, 0, 0, 0.3)';
   const primaryTextColor = theme === 'dark' ? '#FFFFFF' : '#000000';
@@ -93,7 +99,7 @@ export default function Dashboard() {
       case 'Settings':
         return (
           <div className="pt-[39px] pb-8">
-            <SettingsTab theme={theme} />
+            <SettingsTab theme={theme} onSetTheme={setThemeTo} />
           </div>
         );
       default:

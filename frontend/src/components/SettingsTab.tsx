@@ -3,12 +3,13 @@ import { Lightning, Palette, Bell, ShieldCheck, CaretDown } from '@phosphor-icon
 
 interface SettingsTabProps {
   theme: 'light' | 'dark';
+  onSetTheme?: (t: 'light' | 'dark') => void;
 }
 
-export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
+export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) => {
   const [slippage, setSlippage] = useState('0.5%');
   const [customSlippage, setCustomSlippage] = useState('');
-  const [appTheme, setAppTheme] = useState('Light');
+  const appTheme = theme === 'dark' ? 'Dark' : 'Light';
   const [hideDust, setHideDust] = useState(true);
   
   const [alerts, setAlerts] = useState({
@@ -24,18 +25,18 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
 
   return (
     <div className="w-full mx-auto flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20 max-w-[1200px]">
-      
+
       {/* Header */}
-      <div className="mb-8 flex flex-col">
-        <h1 className="text-[24px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+      <div className="mb-6 sm:mb-8 flex flex-col">
+        <h1 className="text-[20px] sm:text-[24px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
           Settings & Preferences
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full">
         
         {/* TOP LEFT: Trading & Network */}
-        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-6 flex flex-col`}>
+        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-5 sm:p-6 flex flex-col`}>
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-10 h-10 rounded-full bg-[#00A8E8]/10 flex items-center justify-center`}>
               <Lightning size={20} weight="fill" className="text-[#00A8E8]" />
@@ -45,12 +46,12 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
 
           <div className="flex flex-col mb-8">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Default Slippage Tolerance</label>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
               {['0.1%', '0.5%', '1.0%'].map(val => (
                 <button
                   key={val}
                   onClick={() => setSlippage(val)}
-                  className={`px-4 py-2 rounded-md text-[13px] font-bold transition-colors border ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-md text-[13px] font-bold transition-colors border shrink-0 ${
                     slippage === val
                       ? 'bg-[#00A8E8] text-white border-[#00A8E8]'
                       : `bg-transparent ${textMuted} ${borderColor} hover:border-[#00A8E8]/30`
@@ -59,7 +60,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
                   {val}
                 </button>
               ))}
-              <div className={`flex items-center px-3 py-2 rounded-md border ${borderColor} focus-within:border-[#00A8E8] transition-colors ml-auto flex-1 max-w-[140px]`}>
+              <div className={`flex items-center px-3 py-2 rounded-md border ${borderColor} focus-within:border-[#00A8E8] transition-colors w-full sm:w-auto sm:ml-auto sm:flex-1 sm:min-w-[130px] sm:max-w-[160px]`}>
                 <span className={`text-[13px] font-medium ${textMuted} mr-2`}>Custom:</span>
                 <input
                   type="text"
@@ -77,15 +78,15 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
 
           <div className="flex flex-col">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Hedera RPC Node</label>
-            <div className={`flex items-center justify-between w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}>
-              <span className={`text-[14px] font-bold ${textMain}`}>https://mainnet.hashio.io/api</span>
-              <CaretDown size={16} className={textMuted} weight="bold" />
+            <div className={`flex items-center justify-between gap-2 w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}>
+              <span className={`text-[14px] font-bold ${textMain} truncate min-w-0`}>https://mainnet.hashio.io/api</span>
+              <CaretDown size={16} className={`${textMuted} shrink-0`} weight="bold" />
             </div>
           </div>
         </div>
 
         {/* TOP RIGHT: Display Options */}
-        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-6 flex flex-col`}>
+        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-5 sm:p-6 flex flex-col`}>
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-10 h-10 rounded-full bg-[#00A8E8]/10 flex items-center justify-center`}>
               <Palette size={20} weight="fill" className="text-[#00A8E8]" />
@@ -97,7 +98,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>App Theme</label>
             <div className={`flex items-center w-full rounded-md border ${borderColor} p-1 overflow-hidden`}>
               <button
-                onClick={() => setAppTheme('Light')}
+                onClick={() => onSetTheme?.('light')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-[13px] font-bold transition-colors ${
                   appTheme === 'Light'
                     ? 'bg-[#00A8E8] text-white shadow-sm'
@@ -108,7 +109,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
                 Light
               </button>
               <button
-                onClick={() => setAppTheme('Dark')}
+                onClick={() => onSetTheme?.('dark')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-[13px] font-bold transition-colors ${
                   appTheme === 'Dark'
                     ? 'bg-[#00A8E8] text-white shadow-sm'
@@ -141,7 +142,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
         </div>
 
         {/* BOTTOM LEFT: Alerts & Notifications */}
-        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-6 flex flex-col`}>
+        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-5 sm:p-6 flex flex-col`}>
           <div className="flex items-center gap-3 mb-8">
             <div className={`w-10 h-10 rounded-full bg-[#00A8E8]/10 flex items-center justify-center`}>
               <Bell size={20} weight="fill" className="text-[#00A8E8]" />
@@ -183,7 +184,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
         </div>
 
         {/* BOTTOM RIGHT: Security Management */}
-        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-6 flex flex-col`}>
+        <div className={`w-full ${cardBg} border ${borderColor} rounded-[14px] shadow-sm p-5 sm:p-6 flex flex-col`}>
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-10 h-10 rounded-full bg-[#00A8E8]/10 flex items-center justify-center`}>
               <ShieldCheck size={20} weight="fill" className="text-[#00A8E8]" />
@@ -193,7 +194,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
 
           <div className="flex flex-col mb-8">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Connected Account</label>
-            <div className={`text-[15px] font-bold ${textMain} tracking-tight`}>
+            <div className={`text-[15px] font-bold ${textMain} tracking-tight break-all`}>
               0.0.123456 <span className={textMuted}>(HashPack)</span>
             </div>
           </div>
@@ -206,7 +207,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-transparent">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-8 pt-6 border-t border-transparent">
             <button className="w-full py-3 rounded-md border border-[#EA3943] text-[#EA3943] font-bold text-[14px] hover:bg-[#EA3943]/5 transition-colors text-center">
               Revoke Allowances
             </button>
