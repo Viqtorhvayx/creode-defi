@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight } from '@phosphor-icons/react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet } from '@phosphor-icons/react';
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
+import { useWalletClient } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
+import { fetchUserPositions, withdrawAll, UserPosition } from '../lib/yieldVault';
 
 const BLUE = '#00A8E8';
 const GREEN = '#00C076';
@@ -31,9 +34,21 @@ export interface Position {
   trendUp: boolean;
 }
 
+export interface PairInfo {
+  token1: PositionToken;
+  token2: PositionToken;
+  venue: string;
+  riskLevel: string;
+  riskBgClass: string;
+  riskTextClass: string;
+}
+
 interface EarnPositionsProps {
   theme: 'light' | 'dark';
-  positions: Position[];
+  positions: Position[]; // preview rows shown before the wallet is connected
+  pairInfo?: Record<string, PairInfo>; // metadata for live pairs (logos, venue, risk)
+  onSupplyMore?: (pair: string) => void;
+  priceUsd?: Record<string, number>; // sym -> USD price for summary totals
 }
 
 // Deterministic PRNG so the synthetic series stays stable across renders.
@@ -107,7 +122,7 @@ const Donut: React.FC<{ pct: number; track: string }> = ({ pct, track }) => {
   );
 };
 
-export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }) => {
+export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, pairInfo = {}, onSupplyMore, priceUsd = {} }) => {
   const isDark = theme === 'dark';
   const textMain = isDark ? 'text-white' : 'text-[#111827]';
   const textMuted = isDark ? 'text-white/50' : 'text-slate-500';
@@ -118,18 +133,55 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
   const logoBorder = isDark ? 'border-[#0F141A]' : 'border-white';
 
   const [search, setSearch] = useState('');
-  const filtered = positions.filter(
+
+  // ── Live on-chain positions ──────────────────────────────────────────
+  const { isConnected } = useWallet();
+  const { data: walletClient } = useWalletClient();
+  const [live, setLive] = useState<UserPosition[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const addr = walletClient?.account?.address;
+    if (!isConnected || !addr) { setLive(null); return; }
+    setLoading(true);
+    try { setLive(await fetchUserPositions(addr)); }
+    catch (e) { console.error('[Positions] load failed', e); setLive([]); }
+    finally { setLoading(false); }
+  }, [isConnected, walletClient]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const onWithdraw = async (pos: UserPosition) => {
+    if (!walletClient) return;
+    const key = `${pos.strategyId}-${pos.tokenAddress}`;
+    setBusyKey(key);
+    try { await withdrawAll(walletClient, pos.strategyId, pos.tokenAddress); await load(); }
+    catch (e) { const err = e as any; alert('Withdraw failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
+    finally { setBusyKey(null); }
+  };
+
+  const connectedLive = isConnected && live !== null;
+  const fmtNum = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: n >= 1 ? 2 : 6 });
+  const fmtUsd = (n: number) => '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const suppliedUsd = (live || []).reduce((s, p) => s + p.principal * (priceUsd[p.sym] ?? 0), 0);
+  const yieldUsd = (live || []).reduce((s, p) => s + p.pendingYield * (priceUsd[p.sym] ?? 0), 0);
+
+  const liveRows = (live || []).filter(
+    (p) => p.name.toLowerCase().includes(search.toLowerCase()) || p.sym.toLowerCase().includes(search.toLowerCase())
+  );
+  const previewRows = positions.filter(
     (p) => p.pair.toLowerCase().includes(search.toLowerCase()) || p.venue.toLowerCase().includes(search.toLowerCase())
   );
 
-  const Logos: React.FC<{ p: Position }> = ({ p }) => {
+  const Logos: React.FC<{ t1: PositionToken; t2?: PositionToken }> = ({ t1, t2 }) => {
     const circle = (t: PositionToken, z: string) =>
       t.logo ? (
         <img src={t.logo} alt={t.sym} className={`w-9 h-9 rounded-full border-2 ${z} ${logoBorder}`} />
       ) : (
         <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[13px] border-2 ${z} ${logoBorder} ${t.bg}`}>{t.fallback}</div>
       );
-    return <div className="flex -space-x-2.5 shrink-0">{circle(p.token1, 'z-10')}{circle(p.token2, '')}</div>;
+    return <div className="flex -space-x-2.5 shrink-0">{circle(t1, 'z-10')}{t2 && circle(t2, '')}</div>;
   };
 
   const colTemplate = 'grid-cols-[1.7fr_0.95fr_1.05fr_1fr_0.95fr_0.8fr_0.7fr_1.2fr]';
@@ -146,10 +198,14 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
             <Info size={13} className={textMuted} />
           </div>
           <div className="flex items-start justify-between">
-            <span className={`text-[34px] font-bold tracking-tight leading-none ${textMain}`}>$42,500.00</span>
-            <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: BLUE, borderColor: 'rgba(0,168,232,0.3)' }}>
-              +2,850.40<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
-            </span>
+            <span className={`text-[34px] font-bold tracking-tight leading-none ${textMain}`}>{connectedLive ? fmtUsd(suppliedUsd) : '$42,500.00'}</span>
+            {connectedLive ? (
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg" style={{ color: BLUE, backgroundColor: 'rgba(0,168,232,0.1)' }}>LIVE</span>
+            ) : (
+              <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: BLUE, borderColor: 'rgba(0,168,232,0.3)' }}>
+                +2,850.40<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
+              </span>
+            )}
           </div>
           <div className="mt-2 -mx-1"><MiniAreaChart color={BLUE} seed={7} /></div>
         </div>
@@ -161,10 +217,14 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
             <Info size={13} className={textMuted} />
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-[34px] font-bold tracking-tight leading-none" style={{ color: GREEN }}>+$3,240.50</span>
-            <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: GREEN, borderColor: 'rgba(0,192,118,0.3)' }}>
-              +8.24%<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
-            </span>
+            <span className="text-[34px] font-bold tracking-tight leading-none" style={{ color: GREEN }}>{connectedLive ? '+' + fmtUsd(yieldUsd) : '+$3,240.50'}</span>
+            {connectedLive ? (
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg" style={{ color: GREEN, backgroundColor: 'rgba(0,192,118,0.1)' }}>LIVE</span>
+            ) : (
+              <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: GREEN, borderColor: 'rgba(0,192,118,0.3)' }}>
+                +8.24%<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
+              </span>
+            )}
           </div>
           <div className="mt-2 -mx-1"><MiniAreaChart color={GREEN} seed={21} /></div>
         </div>
@@ -200,55 +260,110 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions }
             </div>
 
             {/* Rows */}
-            {filtered.map((p) => (
-              <div key={p.pair} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
-                {/* Strategy */}
-                <div className="flex items-center gap-3">
-                  <Logos p={p} />
-                  <div className="flex flex-col">
-                    <span className={`text-[14px] font-bold ${textMain}`}>{p.pair}</span>
-                    <span className={`text-[11px] font-medium ${textMuted}`}>{p.venue}</span>
+            {connectedLive ? (
+              loading && liveRows.length === 0 ? (
+                <div className={`flex items-center justify-center gap-2 py-14 text-[13px] font-medium ${textMuted}`}>
+                  <CircleNotch size={16} className="animate-spin" /> Loading your positions…
+                </div>
+              ) : liveRows.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-14 gap-1.5 text-center">
+                  <span className={`text-[14px] font-bold ${textMain}`}>No active positions yet</span>
+                  <span className={`text-[12px] ${textMuted}`}>Zap into a strategy from the Yield Hub to start earning.</span>
+                </div>
+              ) : (
+                liveRows.map((p) => {
+                  const info = pairInfo[p.name];
+                  const key = `${p.strategyId}-${p.tokenAddress}`;
+                  const util = Math.max(35, Math.min(92, Math.round(p.apyPct * 3) + 35));
+                  const earnedPct = p.principal > 0 ? (p.pendingYield / p.principal) * 100 : 0;
+                  const busy = busyKey === key;
+                  return (
+                    <div key={key} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
+                      {/* Strategy */}
+                      <div className="flex items-center gap-3">
+                        {info ? <Logos t1={info.token1} t2={info.token2} /> : <div className="w-9 h-9 rounded-full bg-slate-500/20 shrink-0" />}
+                        <div className="flex flex-col">
+                          <span className={`text-[14px] font-bold ${textMain}`}>{p.name}</span>
+                          <span className={`text-[11px] font-medium ${textMuted}`}>Supplied {p.sym}</span>
+                        </div>
+                      </div>
+                      {/* Profile */}
+                      <div>
+                        {info && <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${info.riskBgClass} ${info.riskTextClass}`}>{info.riskLevel}</span>}
+                      </div>
+                      {/* Supplied Value */}
+                      <div className={`text-[14px] font-bold ${textMain}`}>{fmtNum(p.principal)} {p.sym}</div>
+                      {/* Accrued Yield */}
+                      <div className="flex flex-col">
+                        <span className="text-[14px] font-bold" style={{ color: GREEN }}>+{fmtNum(p.pendingYield)} {p.sym}</span>
+                        <span className="text-[11px] font-semibold" style={{ color: GREEN }}>+{earnedPct.toFixed(4)}%</span>
+                      </div>
+                      {/* 7D Change (not tracked on-chain yet) */}
+                      <div className="flex items-center"><span className={`text-[13px] font-semibold ${textMuted}`}>—</span></div>
+                      {/* APR */}
+                      <div className="flex flex-col">
+                        <span className={`text-[14px] font-bold ${textMain}`}>{p.apyPct}%</span>
+                        <span className={`text-[11px] font-medium ${textMuted}`}>Net APY</span>
+                      </div>
+                      {/* Utilization */}
+                      <div className={textMain}><Donut pct={util} track={donutTrack} /></div>
+                      {/* Actions */}
+                      <div className="flex flex-col items-stretch gap-2 pl-1">
+                        <button onClick={() => onSupplyMore?.(p.name)} className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
+                        <button onClick={() => onWithdraw(p)} disabled={busy} className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors flex items-center justify-center gap-1.5 ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'} disabled:opacity-60`}>
+                          {busy ? <><CircleNotch size={13} className="animate-spin" /> …</> : 'Withdraw'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )
+            ) : (
+              <>
+                {!isConnected && (
+                  <div className={`flex items-center gap-2 px-2 py-3 text-[12px] font-medium ${textMuted}`}>
+                    <Wallet size={14} /> Preview — connect your wallet to see your live positions.
                   </div>
-                </div>
-
-                {/* Profile */}
-                <div>
-                  <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${p.riskBgClass} ${p.riskTextClass}`}>{p.riskLevel}</span>
-                </div>
-
-                {/* Supplied Value (total only) */}
-                <div className={`text-[14px] font-bold ${textMain}`}>{p.supplied}</div>
-
-                {/* Accrued Yield */}
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-bold" style={{ color: GREEN }}>{p.accrued}</span>
-                  <span className="text-[11px] font-semibold" style={{ color: GREEN }}>{p.accruedPct}</span>
-                </div>
-
-                {/* 7D Change */}
-                <div className="flex items-center">
-                  <span className="text-[14px] font-bold" style={{ color: p.trendUp ? GREEN : '#F43F5E' }}>{p.change7d}</span>
-                </div>
-
-                {/* APR */}
-                <div className="flex flex-col">
-                  <span className={`text-[14px] font-bold ${textMain}`}>{p.apr}</span>
-                  <span className={`text-[11px] font-medium ${textMuted}`}>Net APY</span>
-                </div>
-
-                {/* Utilization */}
-                <div className={textMain}><Donut pct={p.utilization} track={donutTrack} /></div>
-
-                {/* Actions */}
-                <div className="flex flex-col items-stretch gap-2 pl-1">
-                  <button className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
-                  <button className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>Withdraw</button>
-                </div>
-              </div>
-            ))}
-
-            {filtered.length === 0 && (
-              <div className={`text-center py-12 text-[13px] font-medium ${textMuted}`}>No positions match “{search}”.</div>
+                )}
+                {previewRows.map((p) => (
+                  <div key={p.pair} className={`grid ${colTemplate} gap-2 items-center px-2 py-5 border-b last:border-0 ${rowBorder}`}>
+                    {/* Strategy */}
+                    <div className="flex items-center gap-3">
+                      <Logos t1={p.token1} t2={p.token2} />
+                      <div className="flex flex-col">
+                        <span className={`text-[14px] font-bold ${textMain}`}>{p.pair}</span>
+                        <span className={`text-[11px] font-medium ${textMuted}`}>{p.venue}</span>
+                      </div>
+                    </div>
+                    {/* Profile */}
+                    <div><span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${p.riskBgClass} ${p.riskTextClass}`}>{p.riskLevel}</span></div>
+                    {/* Supplied Value */}
+                    <div className={`text-[14px] font-bold ${textMain}`}>{p.supplied}</div>
+                    {/* Accrued Yield */}
+                    <div className="flex flex-col">
+                      <span className="text-[14px] font-bold" style={{ color: GREEN }}>{p.accrued}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: GREEN }}>{p.accruedPct}</span>
+                    </div>
+                    {/* 7D Change */}
+                    <div className="flex items-center"><span className="text-[14px] font-bold" style={{ color: p.trendUp ? GREEN : '#F43F5E' }}>{p.change7d}</span></div>
+                    {/* APR */}
+                    <div className="flex flex-col">
+                      <span className={`text-[14px] font-bold ${textMain}`}>{p.apr}</span>
+                      <span className={`text-[11px] font-medium ${textMuted}`}>Net APY</span>
+                    </div>
+                    {/* Utilization */}
+                    <div className={textMain}><Donut pct={p.utilization} track={donutTrack} /></div>
+                    {/* Actions */}
+                    <div className="flex flex-col items-stretch gap-2 pl-1">
+                      <button onClick={() => onSupplyMore?.(p.pair)} className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
+                      <button className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>Withdraw</button>
+                    </div>
+                  </div>
+                ))}
+                {previewRows.length === 0 && (
+                  <div className={`text-center py-12 text-[13px] font-medium ${textMuted}`}>No positions match “{search}”.</div>
+                )}
+              </>
             )}
           </div>
         </div>

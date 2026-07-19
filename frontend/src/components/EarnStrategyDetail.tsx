@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning } from '@phosphor-icons/react';
+import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning, CircleNotch } from '@phosphor-icons/react';
+import { useWalletClient } from 'wagmi';
+import { useWallet } from '../context/WalletContext';
+import { STRATEGIES, depositToStrategy } from '../lib/yieldVault';
 
 export interface StrategyToken {
   sym: string;
@@ -66,10 +69,14 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const price1 = parseNum(strategy.token1Amount) > 0 ? parseNum(strategy.token1Usd) / parseNum(strategy.token1Amount) : 0;
   const price2 = parseNum(strategy.token2Amount) > 0 ? parseNum(strategy.token2Usd) / parseNum(strategy.token2Amount) : 0;
 
+  // On-chain strategy metadata (id + accepted deposit tokens).
+  const meta = STRATEGIES[strategy.pair];
+  const acceptedSyms = new Set((meta?.tokens || []).map((t) => t.sym));
+
   // Single-sided "zap": the user supplies ONE token; the contract swaps
-  // ~half into the other side to build a balanced LP position. The zap
-  // token defaults to token1 and can be switched to token2.
-  const zapTokens: StrategyToken[] = [token1, token2];
+  // ~half into the other side to build a balanced LP position. Only tokens
+  // the vault actually accepts on-chain are offered.
+  const zapTokens: StrategyToken[] = (meta ? [token1, token2].filter((t) => acceptedSyms.has(t.sym)) : [token1, token2]);
   const [zapIdx, setZapIdx] = useState(0);
   const [amt, setAmt] = useState(strategy.token1Amount);
   useEffect(() => {
@@ -77,8 +84,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     setAmt(strategy.token1Amount);
   }, [strategy.pair]);
 
-  const zapToken = zapTokens[zapIdx];
-  const zapPrice = zapIdx === 0 ? price1 : price2;
+  const zapToken = zapTokens[Math.min(zapIdx, zapTokens.length - 1)] || token1;
+  const zapPrice = zapToken.sym === token1.sym ? price1 : price2;
   const amtNum = parseNum(amt);
   const hasAmt = amtNum > 0;
   const totalUsd = amtNum * zapPrice;         // full value being supplied
@@ -88,8 +95,32 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
 
   const selectZap = (i: number) => {
     setZapIdx(i);
-    // seed the input with the strategy's default amount for that side
-    setAmt(i === 0 ? strategy.token1Amount : strategy.token2Amount);
+    const sym = zapTokens[i]?.sym;
+    setAmt(sym === token2.sym ? strategy.token2Amount : strategy.token1Amount);
+  };
+
+  // Wallet + on-chain deposit wiring.
+  const { isConnected } = useWallet();
+  const { data: walletClient } = useWalletClient();
+  const [zapState, setZapState] = useState<'idle' | 'pending' | 'done'>('idle');
+
+  const metaTok = meta?.tokens.find((t) => t.sym === zapToken.sym);
+
+  const handleZap = async () => {
+    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    if (!meta || !metaTok) { alert('This strategy is not available on-chain yet.'); return; }
+    if (!hasAmt) return;
+    setZapState('pending');
+    try {
+      await depositToStrategy(walletClient, meta.id, metaTok, amt.replace(/,/g, ''));
+      setZapState('done');
+      setTimeout(() => setZapState('idle'), 4000);
+    } catch (e) {
+      const err = e as any;
+      console.error('[Zap] failed:', err);
+      alert('Zap failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      setZapState('idle');
+    }
   };
 
   const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
@@ -310,8 +341,28 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm flex items-center justify-center gap-2">
-              <Lightning size={16} weight="fill" /> Confirm &amp; Zap In
+            <button
+              onClick={handleZap}
+              disabled={zapState === 'pending' || !hasAmt || !isConnected}
+              className={`w-full py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm flex items-center justify-center gap-2 ${
+                zapState === 'done'
+                  ? 'bg-emerald-500 text-white'
+                  : (!isConnected || !hasAmt)
+                    ? `${isDark ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
+                    : zapState === 'pending'
+                      ? 'bg-[#00A8E8]/80 text-white cursor-wait'
+                      : 'bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white'
+              }`}
+            >
+              {zapState === 'done' ? (
+                <><CheckCircle size={16} weight="fill" /> Zapped in!</>
+              ) : zapState === 'pending' ? (
+                <><CircleNotch size={16} weight="bold" className="animate-spin" /> Confirming…</>
+              ) : !isConnected ? (
+                'Connect wallet to zap in'
+              ) : (
+                <><Lightning size={16} weight="fill" /> Confirm &amp; Zap In</>
+              )}
             </button>
 
           </div>
