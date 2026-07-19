@@ -12,7 +12,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
   const textMuted = isDark ? 'text-white/60' : 'text-slate-500';
   const cardBg = isDark ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = isDark ? 'border-white/5' : 'border-[#EAECEF]';
-  const highlightBlue = '#00A8E8';
+  const BLUE = '#2563EB';
 
   return (
     <div className={`w-full max-w-[1100px] mx-auto animate-in fade-in duration-500 pb-20 ${textMain}`}>
@@ -46,8 +46,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
             {/* APY */}
             <div className={`flex-1 border-r ${borderColor} pr-8 flex flex-col justify-center`}>
               <div className="flex items-baseline mb-2">
-                <span className={`text-[48px] font-bold leading-none ${highlightBlue}`}>45.2</span>
-                <span className={`text-[24px] font-bold ${highlightBlue}`}>%</span>
+                <span className="text-[48px] font-bold leading-none" style={{ color: BLUE }}>45.2</span>
+                <span className="text-[24px] font-bold" style={{ color: BLUE }}>%</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className={`text-[13px] font-semibold ${textMuted}`}>Current Net APY</span>
@@ -70,7 +70,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
           {/* How it Works Card */}
           <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             <div className="flex items-center gap-2 mb-4">
-              <ShieldCheck size={20} className={highlightBlue} weight="fill" />
+              <ShieldCheck size={20} style={{ color: BLUE }} weight="fill" />
               <h2 className="text-[16px] font-bold tracking-tight">How it Works</h2>
             </div>
             <p className={`text-[14px] leading-[1.6] font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
@@ -81,7 +81,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
           {/* Protocol & Rewards Ledger Card */}
           <div className={`${cardBg} border ${borderColor} rounded-[16px] p-8 flex flex-col shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             <div className="flex items-center gap-2 mb-6">
-              <Database size={20} className={highlightBlue} weight="fill" />
+              <Database size={20} style={{ color: BLUE }} weight="fill" />
               <h2 className="text-[16px] font-bold tracking-tight">Protocol & Rewards Ledger</h2>
             </div>
 
@@ -102,7 +102,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
               <div className="flex justify-between items-center pt-5">
                 <span className={`text-[13px] font-semibold ${textMuted}`}>Incentives Earned</span>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-[#00A8E8]/10 text-[#00A8E8]">HBAR Fees</span>
+                  <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-[#2563EB]/10 text-[#2563EB]">HBAR Fees</span>
                   <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400">SAUCE Fees</span>
                   <span className="px-3 py-1 rounded-[6px] text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">+CODE Points ✦</span>
                 </div>
@@ -111,9 +111,9 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
           </div>
 
           <div className="flex items-center gap-2 mt-4 px-2">
-            <CheckCircle size={16} className={highlightBlue} weight="fill" />
+            <CheckCircle size={16} style={{ color: BLUE }} weight="fill" />
             <span className={`text-[12px] font-medium ${textMuted}`}>
-              Creode automatically manages your position to optimize returns. Impermanent loss may occur. <a href="#" className={`text-[${highlightBlue}] hover:underline`}>Learn more <span className="inline-block relative -top-[2px] ml-0.5 text-[10px]">&#8599;</span></a>
+              Creode automatically manages your position to optimize returns. Impermanent loss may occur. <a href="#" className="hover:underline" style={{ color: BLUE }}>Learn more <span className="inline-block relative -top-[2px] ml-0.5 text-[10px]">&#8599;</span></a>
             </span>
           </div>
 
@@ -130,7 +130,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
               {/* Input 1 (HBAR) */}
               <div className="flex flex-col relative z-0">
                 <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
+                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#2563EB] transition-colors`}>
                   <div className="flex items-center justify-between">
                     <input 
                       type="text" 
@@ -164,7 +164,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
               {/* Input 2 (SAUCE) */}
               <div className="flex flex-col mt-4 relative z-0">
                 <span className={`text-[12px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Amount</span>
-                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#00A8E8] transition-colors`}>
+                <div className={`w-full ${isDark ? 'bg-[#0b0e14]' : 'bg-white'} border ${isDark ? 'border-white/10' : 'border-[#EAECEF]'} rounded-[12px] p-4 flex flex-col focus-within:border-[#2563EB] transition-colors`}>
                   <div className="flex items-center justify-between">
                     <input 
                       type="text" 
@@ -201,7 +201,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, o
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-[#007ba8] hover:bg-[#0090C7] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm">
+            <button className="w-full bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#1E40AF] text-white py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm">
               Confirm & Supply Liquidity
             </button>
             
