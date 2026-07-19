@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { P2PCandleChart } from './P2PCandleChart';
 import { ChevronDown } from 'lucide-react';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
-import { useWalletClient } from 'wagmi';
+import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { createLimitOrder, marketFill } from '../lib/p2p';
+import { createLimitOrder, marketFill, fetchOpenOrders, fillOrderById, cancelOrder, type OpenOrder } from '../lib/p2p';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -23,8 +23,66 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   // On-chain P2P order wiring.
   const { isConnected } = useWallet();
   const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
   const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
   const payTokenSym = tradeSide === 'Long' ? 'USDC' : 'HBAR'; // Long buys HBAR with USDC; Short sells HBAR
+
+  // Live "Open Peer Orders" book straight from the CreodeP2P contract.
+  const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const myAddr = (address || '').toLowerCase();
+
+  const loadOrders = useCallback(async () => {
+    try {
+      const list = await fetchOpenOrders();
+      setOpenOrders(list.filter((o) => o.side !== 'Other'));
+    } catch (e) {
+      console.error('[P2P] failed to load open orders:', e);
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadOrders();
+    const t = setInterval(loadOrders, 10_000);
+    return () => clearInterval(t);
+  }, [loadOrders]);
+
+  // Take (fill) another maker's resting order — pay its full remaining buy side.
+  const takeOrder = async (o: OpenOrder) => {
+    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    setBusyId(o.id);
+    try {
+      await fillOrderById(walletClient, o, o.buyRemaining);
+      await loadOrders();
+    } catch (e) {
+      const err = e as any;
+      console.error('[P2P] fill failed:', err);
+      alert('Fill failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // Cancel the connected user's own resting order (refunds escrow).
+  const cancelMyOrder = async (o: OpenOrder) => {
+    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    setBusyId(o.id);
+    try {
+      await cancelOrder(walletClient, o.id);
+      await loadOrders();
+    } catch (e) {
+      const err = e as any;
+      console.error('[P2P] cancel failed:', err);
+      alert('Cancel failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const fmtNum = (n: number, max = 4) => n.toLocaleString(undefined, { maximumFractionDigits: max });
 
   const submitOrder = async () => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
@@ -40,6 +98,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
         await marketFill(walletClient, tradeSide, amt);
       }
       setTxState('done');
+      loadOrders();
       setTimeout(() => setTxState('idle'), 4000);
     } catch (e) {
       const err = e as any;
@@ -264,44 +323,77 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className={textMuted}>
-                      <th className="font-normal py-3 px-4">User</th>
-                      <th className="font-normal py-3 px-4 text-right">Price (USD)</th>
+                      <th className="font-normal py-3 px-4">Maker</th>
+                      <th className="font-normal py-3 px-4">Side</th>
+                      <th className="font-normal py-3 px-4 text-right">Price (USDC)</th>
                       <th className="font-normal py-3 px-4 text-right">Available</th>
-                      <th className="font-normal py-3 px-4">Payment</th>
-                      <th className="font-normal py-3 px-4"></th>
+                      <th className="font-normal py-3 px-4">You Pay</th>
+                      <th className="font-normal py-3 px-4 text-right"></th>
                     </tr>
                   </thead>
                   <tbody className={`divide-y ${theme === 'dark' ? 'divide-white/5' : 'divide-slate-100'}`}>
-                    {[
-                      { initial: 'A', name: 'AlphaTrader', bg: 'bg-[#3b82f6]', stats: '98% | 312 trades', p: '70,552.25', a: '0.8452 BTC', pay: 'USDC', action: 'Buy' },
-                      { initial: 'B', name: 'BlockWave', bg: 'bg-[#8b5cf6]', stats: '95% | 156 trades', p: '70,550.99', a: '1.2310 BTC', pay: 'USDT', action: 'Buy' },
-                      { initial: 'C', name: 'CryptoKnight', bg: 'bg-[#10b981]', stats: '97% | 278 trades', p: '70,548.88', a: '0.5321 BTC', pay: 'USDC', action: 'Buy' },
-                    ].map((row, i) => (
-                      <tr key={i} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-7 h-7 rounded-full ${row.bg} flex items-center justify-center text-white font-bold shrink-0`}>
-                              {row.initial}
-                            </div>
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-1 font-bold tracking-tight">
-                                {row.name}
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="#3b82f6" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                              </div>
-                              <span className={`text-[10px] ${textMuted}`}>{row.stats}</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-right font-bold tracking-tight">${row.p}</td>
-                        <td className="py-3 px-4 text-right font-bold tracking-tight">{row.a}</td>
-                        <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{row.pay}</td>
-                        <td className="py-3 px-4 text-right">
-                          <button className={`text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border ${row.action === 'Buy' ? 'border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10' : 'border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10'} transition-colors`}>
-                            {row.action}
-                          </button>
+                    {ordersLoading && openOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className={`py-10 text-center ${textMuted}`}>
+                          <CircleNotch size={18} weight="bold" className="animate-spin inline-block mr-2 align-[-3px]" />
+                          Loading open orders…
                         </td>
                       </tr>
-                    ))}
+                    )}
+                    {!ordersLoading && openOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className={`py-10 text-center ${textMuted}`}>
+                          No open peer orders yet. Place a limit order to get started.
+                        </td>
+                      </tr>
+                    )}
+                    {openOrders.map((o) => {
+                      const mine = myAddr && o.maker.toLowerCase() === myAddr;
+                      const initial = o.maker.slice(2, 3).toUpperCase();
+                      // Base amount available to fill = sell side if maker is Short (sells BASE), else buy side.
+                      const baseAvail = o.side === 'Short' ? o.sellRemaining : o.buyRemaining;
+                      const baseSym = o.side === 'Short' ? o.sellSym : o.buySym;
+                      return (
+                        <tr key={o.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-7 h-7 rounded-full ${mine ? 'bg-[#00A8E8]' : 'bg-[#8b5cf6]'} flex items-center justify-center text-white font-bold shrink-0`}>
+                                {initial}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-bold tracking-tight">{mine ? 'You' : `${o.maker.slice(0, 6)}…${o.maker.slice(-4)}`}</span>
+                                <span className={`text-[10px] ${textMuted}`}>Order #{o.id}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{o.side}</td>
+                          <td className="py-3 px-4 text-right font-bold tracking-tight">${fmtNum(o.price)}</td>
+                          <td className="py-3 px-4 text-right font-bold tracking-tight">{fmtNum(baseAvail)} {baseSym}</td>
+                          <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
+                          <td className="py-3 px-4 text-right">
+                            {mine ? (
+                              <button
+                                onClick={() => cancelMyOrder(o)}
+                                disabled={busyId === o.id}
+                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                              >
+                                {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
+                                Cancel
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => takeOrder(o)}
+                                disabled={busyId === o.id}
+                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                              >
+                                {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
+                                Fill
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}
