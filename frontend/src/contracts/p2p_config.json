@@ -46,6 +46,11 @@
       "sym": "BONZO",
       "address": "0x000000000000000000000000000000000092e8B3",
       "decimals": 6
+    },
+    "DOVU": {
+      "sym": "DOVU",
+      "address": "0x00000000000000000000000000000000009343F4",
+      "decimals": 6
     }
   },
   "pairs": [
@@ -60,6 +65,10 @@
     {
       "base": "USDC",
       "quote": "USDT"
+    },
+    {
+      "base": "DOVU",
+      "quote": "USDC"
     }
   ]
 }

@@ -14,9 +14,15 @@ export const TOKENS: Record<string, TokenMeta> = (cfg as any).tokens;
 const dec = (t: TokenMeta) => (t.address.toLowerCase() === ZERO ? 8 : t.decimals);
 const isHbar = (a: string) => a.toLowerCase() === ZERO;
 
-// The pair the P2P UI trades. Long = buy base with quote; Short = sell base.
-export const BASE = TOKENS.HBAR;
-export const QUOTE = TOKENS.USDC;
+// Resolve a UI pair id ("HBAR-USDC") into its base/quote HTS token metadata.
+// Long = buy base with quote; Short = sell base for quote.
+export function pairTokens(pairId: string): { BASE: TokenMeta; QUOTE: TokenMeta } {
+  const [b, q] = pairId.split('-');
+  const BASE = TOKENS[b];
+  const QUOTE = TOKENS[q];
+  if (!BASE || !QUOTE) throw new Error(`Unknown pair ${pairId}`);
+  return { BASE, QUOTE };
+}
 
 const ERC20_ABI = [
   'function approve(address,uint256) returns (bool)',
@@ -48,22 +54,20 @@ async function ensureAllowance(signer: any, token: TokenMeta, amount: bigint) {
  * Post a limit order. `pay` is in the token you pay (Long -> quote/USDC,
  * Short -> base/HBAR); `price` is quote per base (USDC per HBAR).
  */
-export async function createLimitOrder(walletClient: any, side: 'Long' | 'Short', pay: number, price: number): Promise<string> {
+export async function createLimitOrder(walletClient: any, pairId: string, side: 'Long' | 'Short', pay: number, price: number): Promise<string> {
+  const { BASE, QUOTE } = pairTokens(pairId);
   const signer = await getSigner(walletClient);
   const p2p = new Contract(P2P_ADDRESS, P2P_ABI, signer);
-  if (side === 'Long') {
-    // pay QUOTE, want BASE at `price`
-    const sellRaw = toRaw(QUOTE, pay);
-    const baseWanted = pay / price;
-    const buyRaw = toRaw(BASE, baseWanted);
-    await ensureAllowance(signer, QUOTE, sellRaw);
-    const tx = await p2p.createLimitOrder(QUOTE.address, sellRaw, BASE.address, buyRaw, 0, { gasLimit: 1_400_000 });
-    return (await tx.wait()).hash;
-  }
-  // Short: pay BASE, want QUOTE
-  const sellRaw = toRaw(BASE, pay);
-  const buyRaw = toRaw(QUOTE, pay * price);
-  const tx = await p2p.createLimitOrder(BASE.address, sellRaw, QUOTE.address, buyRaw, 0, { value: parseEther(String(pay)), gasLimit: 1_400_000 });
+  // Long sells QUOTE to buy BASE; Short sells BASE to buy QUOTE. The escrowed
+  // (sell) token may be native HBAR (msg.value) or an HTS/ERC20 (approve).
+  const sellTok = side === 'Long' ? QUOTE : BASE;
+  const buyTok = side === 'Long' ? BASE : QUOTE;
+  const sellRaw = toRaw(sellTok, pay);
+  const buyRaw = side === 'Long' ? toRaw(BASE, pay / price) : toRaw(QUOTE, pay * price);
+  const opts: any = { gasLimit: 1_400_000 };
+  if (isHbar(sellTok.address)) opts.value = parseEther(String(pay));
+  else await ensureAllowance(signer, sellTok, sellRaw);
+  const tx = await p2p.createLimitOrder(sellTok.address, sellRaw, buyTok.address, buyRaw, 0, opts);
   return (await tx.wait()).hash;
 }
 
@@ -78,7 +82,8 @@ export interface OpenOrder {
 
 const symOf = (addr: string) => Object.values(TOKENS).find((t) => t.address.toLowerCase() === addr.toLowerCase())?.sym || '?';
 
-export async function fetchOpenOrders(): Promise<OpenOrder[]> {
+export async function fetchOpenOrders(pairId: string): Promise<OpenOrder[]> {
+  const { BASE, QUOTE } = pairTokens(pairId);
   const provider = new JsonRpcProvider(RPC_URL);
   const p2p = new Contract(P2P_ADDRESS, P2P_ABI, provider);
   const [ids, list] = await p2p.getOpenOrders(0);
@@ -90,7 +95,7 @@ export async function fetchOpenOrders(): Promise<OpenOrder[]> {
     if (!st || !bt) continue;
     const sellRem = Number(formatUnits(o.sellRemaining, dec(st)));
     const buyRem = Number(formatUnits(o.buyRemaining, dec(bt)));
-    // Only surface orders on the BASE/QUOTE pair.
+    // Only surface orders on the selected BASE/QUOTE pair.
     let side: OpenOrder['side'] = 'Other';
     let price = 0;
     if (st.sym === BASE.sym && bt.sym === QUOTE.sym) { side = 'Short'; price = buyRem / sellRem; }        // maker sells base for quote
@@ -112,10 +117,10 @@ export async function fetchUserOrderIds(user: string): Promise<number[]> {
 }
 
 /** Market order: fill the best resting order for the chosen side, paying `pay`. */
-export async function marketFill(walletClient: any, side: 'Long' | 'Short', pay: number): Promise<string> {
+export async function marketFill(walletClient: any, pairId: string, side: 'Long' | 'Short', pay: number): Promise<string> {
   const signer = await getSigner(walletClient);
   const me = (await signer.getAddress()).toLowerCase();
-  const orders = await fetchOpenOrders();
+  const orders = await fetchOpenOrders(pairId);
   // Long buys base -> needs a maker SELLING base (an on-book "Short"). Short sells base -> needs a maker BUYING base (on-book "Long").
   const want = side === 'Long' ? 'Short' : 'Long';
   const candidates = orders
@@ -124,18 +129,7 @@ export async function marketFill(walletClient: any, side: 'Long' | 'Short', pay:
   if (candidates.length === 0) throw new Error('No matching open orders to fill. Post a limit order or try later.');
 
   const best = candidates[0];
-  const p2p = new Contract(P2P_ADDRESS, P2P_ABI, signer);
-  // Long pays QUOTE (best.buyToken == QUOTE); Short pays BASE (best.buyToken == BASE).
-  const payToken = side === 'Long' ? QUOTE : BASE;
-  const payHuman = Math.min(pay, best.buyRemaining);
-  const buyPayRaw = toRaw(payToken, payHuman);
-  if (side === 'Long') {
-    await ensureAllowance(signer, QUOTE, buyPayRaw);
-    const tx = await p2p.fillOrder(best.id, buyPayRaw, 0, { gasLimit: 1_700_000 });
-    return (await tx.wait()).hash;
-  }
-  const tx = await p2p.fillOrder(best.id, buyPayRaw, 0, { value: parseEther(String(payHuman)), gasLimit: 1_700_000 });
-  return (await tx.wait()).hash;
+  return fillOrderById(walletClient, best, pay);
 }
 
 export async function fillOrderById(walletClient: any, order: OpenOrder, pay: number): Promise<string> {
@@ -151,6 +145,16 @@ export async function fillOrderById(walletClient: any, order: OpenOrder, pay: nu
   await ensureAllowance(signer, payToken, raw);
   const tx = await p2p.fillOrder(order.id, raw, 0, { gasLimit: 1_700_000 });
   return (await tx.wait()).hash;
+}
+
+/** Wallet balance (human units) of a token by symbol — HBAR is native. */
+export async function fetchBalance(user: string, sym: string): Promise<number> {
+  const t = TOKENS[sym];
+  if (!t) return 0;
+  const provider = new JsonRpcProvider(RPC_URL);
+  if (isHbar(t.address)) return Number(formatUnits(await provider.getBalance(user), 18));
+  const erc20 = new Contract(t.address, ['function balanceOf(address) view returns (uint256)'], provider);
+  return Number(formatUnits(await erc20.balanceOf(user), dec(t)));
 }
 
 export async function cancelOrder(walletClient: any, id: number): Promise<string> {

@@ -48,6 +48,12 @@
       "tokenId": "0.0.9627827",
       "decimals": 6,
       "name": "Bonzo Finance"
+    },
+    "DOVU": {
+      "address": "0x00000000000000000000000000000000009343F4",
+      "tokenId": "0.0.9651188",
+      "decimals": 6,
+      "name": "Dovu"
     }
   }
 }

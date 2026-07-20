@@ -18,6 +18,7 @@ const FAUCET_TOKENS: { sym: string; address: string; decimals: number }[] = [
   { sym: 'WETH',  address: '0x000000000000000000000000000000000092E8Ae', decimals: 8 },
   { sym: 'WBTC',  address: '0x000000000000000000000000000000000092e8b1', decimals: 8 },
   { sym: 'BONZO', address: '0x000000000000000000000000000000000092e8B3', decimals: 6 },
+  { sym: 'DOVU',  address: '0x00000000000000000000000000000000009343F4', decimals: 6 },
 ];
 
 // Use the committed address directly so a stale host env var can't override it.

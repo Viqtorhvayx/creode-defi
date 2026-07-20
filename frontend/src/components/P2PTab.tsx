@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { P2PCandleChart } from './P2PCandleChart';
+import { P2PCandleChart, type MarketStats } from './P2PCandleChart';
+import { MarketSelector } from './MarketSelector';
 import { ChevronDown } from 'lucide-react';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
 import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { createLimitOrder, marketFill, fetchOpenOrders, fillOrderById, cancelOrder, type OpenOrder } from '../lib/p2p';
+import { createLimitOrder, marketFill, fetchOpenOrders, fillOrderById, cancelOrder, fetchBalance, type OpenOrder } from '../lib/p2p';
+import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -12,7 +14,8 @@ interface P2PTabProps {
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
-  const [activeInterval, setActiveInterval] = useState<'15m' | '1H' | '4H' | '1D' | '1W'>('1H');
+  const [activeInterval, setActiveInterval] = useState<Timeframe>('1H');
+  const [selectedPairId, setSelectedPairId] = useState<string>('HBAR-USDC');
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
@@ -25,7 +28,35 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
-  const payTokenSym = tradeSide === 'Long' ? 'USDC' : 'HBAR'; // Long buys HBAR with USDC; Short sells HBAR
+
+  // Selected market + real price data.
+  const pair = getPair(selectedPairId);
+  const [pairStats, setPairStats] = useState<Record<string, PairStat>>({});
+  const [mkt, setMkt] = useState<MarketStats | null>(null); // live price/high/low/change from the chart feed
+  const stat = pairStats[selectedPairId];
+  // Long pays the quote token to buy base; Short pays (sells) the base token.
+  const payTokenSym = tradeSide === 'Long' ? pair.quote : pair.base;
+  const payTokenIcon = tradeSide === 'Long' ? pair.quoteIcon : pair.baseIcon;
+  const recvSym = tradeSide === 'Long' ? pair.base : pair.quote;
+
+  // Real 24h volume/change for every market (drives the selector badges).
+  useEffect(() => {
+    let alive = true;
+    const load = () => fetchPairStats().then((s) => { if (alive) setPairStats(s); }).catch(() => {});
+    load();
+    const t = setInterval(load, 30_000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+
+  // Real balance of the token the user pays with.
+  const [payBalance, setPayBalance] = useState<number | null>(null);
+  useEffect(() => {
+    setPayBalance(null);
+    if (!isConnected || !address) return;
+    let alive = true;
+    fetchBalance(address, payTokenSym).then((b) => { if (alive) setPayBalance(b); }).catch(() => {});
+    return () => { alive = false; };
+  }, [isConnected, address, payTokenSym]);
 
   // Live "Open Peer Orders" book straight from the CreodeP2P contract.
   const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
@@ -35,16 +66,17 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   const loadOrders = useCallback(async () => {
     try {
-      const list = await fetchOpenOrders();
+      const list = await fetchOpenOrders(selectedPairId);
       setOpenOrders(list.filter((o) => o.side !== 'Other'));
     } catch (e) {
       console.error('[P2P] failed to load open orders:', e);
     } finally {
       setOrdersLoading(false);
     }
-  }, []);
+  }, [selectedPairId]);
 
   useEffect(() => {
+    setOrdersLoading(true);
     loadOrders();
     const t = setInterval(loadOrders, 10_000);
     return () => clearInterval(t);
@@ -93,9 +125,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
       if (activeTradeMode === 'Limit') {
         const price = parseFloat(String(priceAmount).replace(/,/g, ''));
         if (!price || price <= 0) { alert('Enter a limit price.'); setTxState('idle'); return; }
-        await createLimitOrder(walletClient, tradeSide, amt, price);
+        await createLimitOrder(walletClient, selectedPairId, tradeSide, amt, price);
       } else {
-        await marketFill(walletClient, tradeSide, amt);
+        await marketFill(walletClient, selectedPairId, tradeSide, amt);
       }
       setTxState('done');
       loadOrders();
@@ -126,42 +158,55 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const greenColor = '#00c076';
   const redColor = '#ff5353';
 
+  // Real header numbers from the live feed (chart candles + market stats).
+  const priceStr = mkt ? formatPrice(mkt.price) : '—';
+  const chgVal = mkt?.change24h ?? stat?.change24h ?? 0;
+  const chgStr = `${chgVal >= 0 ? '+' : ''}${chgVal.toFixed(2)}%`;
+  const chgColor = chgVal >= 0 ? greenColor : redColor;
+  const volStr = formatVolume(stat?.volume24h ?? 0);
+  const highStr = mkt ? formatPrice(mkt.high24h) : '—';
+  const lowStr = mkt ? formatPrice(mkt.low24h) : '—';
+
+  // Estimated fill for the trade panel, from real inputs.
+  const payNum = parseFloat(String(payAmount).replace(/,/g, '')) || 0;
+  const priceNum = activeTradeMode === 'Limit'
+    ? (parseFloat(String(priceAmount).replace(/,/g, '')) || 0)
+    : (mkt?.price || 0);
+  const recvEst = priceNum > 0 ? (tradeSide === 'Long' ? payNum / priceNum : payNum * priceNum) : 0;
+
+  // The connected user's own open orders on this pair (for the Orders tab).
+  const myOrders = openOrders.filter((o) => myAddr && o.maker.toLowerCase() === myAddr);
+
   return (
     <div className={`w-full flex flex-col gap-4 ${textMain}`}>
       
       {/* TOP TRADING BAR */}
       <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] p-4 flex items-center justify-between shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#f7931a] flex items-center justify-center text-white font-bold">₿</div>
-            <div className="flex items-center gap-1 cursor-pointer">
-              <span className="text-xl font-bold tracking-tight">BTC-USD</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-          </div>
+          <MarketSelector pairId={selectedPairId} onSelect={setSelectedPairId} stats={pairStats} theme={theme} />
 
           <div className={`h-8 w-[1px] ${theme === 'dark' ? 'bg-white/10' : 'bg-slate-200'}`}></div>
 
           <div className="flex gap-8">
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Mark Price</span>
-              <span className="text-lg font-bold tracking-tight">$70,552.2546</span>
+              <span className="text-lg font-bold tracking-tight tabular-nums">{priceStr} <span className={`text-xs font-semibold ${textMuted}`}>{pair.quote}</span></span>
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Change</span>
-              <span className="text-sm font-bold tracking-tight" style={{ color: greenColor }}>+19.28%</span>
+              <span className="text-sm font-bold tracking-tight tabular-nums" style={{ color: chgColor }}>{chgStr}</span>
             </div>
             <div className="flex flex-col">
               <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Vol</span>
-              <span className="text-sm font-bold tracking-tight">$391.41</span>
+              <span className="text-sm font-bold tracking-tight tabular-nums">{volStr}</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Open Interest <span className={textMuted}>(</span><span style={{ color: greenColor }}>68%</span><span className={textMuted}>/</span><span style={{ color: redColor }}>32%</span><span className={textMuted}>)</span></span>
-              <span className="text-sm font-bold tracking-tight">$173.56 M / $260.59 M</span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h High</span>
+              <span className="text-sm font-bold tracking-tight tabular-nums">{highStr}</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>Funding/1h</span>
-              <span className="text-sm font-bold tracking-tight" style={{ color: greenColor }}>~0.0024% <span style={{ color: redColor }}>-0.0253%</span></span>
+              <span className={`text-[11px] font-semibold ${textMuted} mb-1`}>24h Low</span>
+              <span className="text-sm font-bold tracking-tight tabular-nums">{lowStr}</span>
             </div>
           </div>
         </div>
@@ -199,13 +244,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               {/* Toolbar */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1 cursor-pointer group">
-                    <span className="text-xl font-bold tracking-tight group-hover:text-[#00A8E8] transition-colors">HBAR / USDC</span>
-                    <ChevronDown className={`w-5 h-5 ${textMuted} group-hover:text-[#00A8E8] transition-colors`} />
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-bold tracking-tight">{pair.base} / {pair.quote}</span>
                   </div>
                   <div className="flex items-baseline gap-3 mt-1">
-                    <span className="text-3xl font-bold tracking-tight">0.08149</span>
-                    <span className="text-sm font-bold" style={{ color: greenColor }}>+2.48%</span>
+                    <span className="text-3xl font-bold tracking-tight tabular-nums">{priceStr}</span>
+                    <span className="text-sm font-bold tabular-nums" style={{ color: chgColor }}>{chgStr}</span>
                   </div>
                 </div>
 
@@ -238,26 +282,26 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               
               {/* Chart Graphic Area */}
               <div className="flex-1 w-full relative overflow-hidden flex flex-col mb-8">
-                <P2PCandleChart theme={theme} />
+                <P2PCandleChart theme={theme} pairId={selectedPairId} interval={activeInterval} onStats={setMkt} />
               </div>
 
               {/* Footer Stats Row */}
               <div className="grid grid-cols-4 gap-4 mt-auto">
                 <div className="flex flex-col">
                   <span className={`text-[12px] font-semibold ${textMuted} mb-1`}>24H High</span>
-                  <span className="text-[15px] font-bold tracking-tight">0.08290</span>
+                  <span className="text-[15px] font-bold tracking-tight tabular-nums">{highStr}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className={`text-[12px] font-semibold ${textMuted} mb-1`}>24H Low</span>
-                  <span className="text-[15px] font-bold tracking-tight">0.07821</span>
+                  <span className="text-[15px] font-bold tracking-tight tabular-nums">{lowStr}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className={`text-[12px] font-semibold ${textMuted} mb-1`}>24H Volume</span>
-                  <span className="text-[15px] font-bold tracking-tight">12.45M USDC</span>
+                  <span className="text-[15px] font-bold tracking-tight tabular-nums">{volStr}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className={`text-[12px] font-semibold ${textMuted} mb-1`}>24H Change</span>
-                  <span className="text-[15px] font-bold tracking-tight" style={{ color: greenColor }}>+2.48%</span>
+                  <span className="text-[15px] font-bold tracking-tight tabular-nums" style={{ color: chgColor }}>{chgStr}</span>
                 </div>
               </div>
             </div>
@@ -297,24 +341,29 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </tr>
                   </thead>
                   <tbody className={`divide-y ${theme === 'dark' ? 'divide-white/5' : 'divide-slate-100'}`}>
-                    <tr className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
-                      <td className="py-3 px-4 font-bold tracking-tight">BTC-USD</td>
-                      <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
-                      <td className="py-3 px-4 text-[#00c076] font-bold tracking-tight">Buy</td>
-                      <td className="py-3 px-4 font-bold tracking-tight">0.2541 BTC</td>
-                      <td className="py-3 px-4 font-bold tracking-tight">$69,500.00</td>
-                      <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
-                      <td className={`py-3 px-4 font-bold tracking-tight flex justify-between items-center ${textMuted}`}>May 20, 16:02</td>
-                    </tr>
-                    <tr className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
-                      <td className="py-3 px-4 font-bold tracking-tight">ETH-USD</td>
-                      <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
-                      <td className="py-3 px-4 text-[#ff5353] font-bold tracking-tight">Sell</td>
-                      <td className="py-3 px-4 font-bold tracking-tight">2.0000 ETH</td>
-                      <td className="py-3 px-4 font-bold tracking-tight">$3,400.00</td>
-                      <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#f59e0b] font-bold tracking-tight">Partially Filled</span></td>
-                      <td className={`py-3 px-4 font-bold tracking-tight flex justify-between items-center ${textMuted}`}>May 20, 15:48</td>
-                    </tr>
+                    {myOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className={`py-10 text-center ${textMuted}`}>
+                          {isConnected ? `No open ${pair.id} orders. Place a limit order to get started.` : 'Connect your wallet to see your orders.'}
+                        </td>
+                      </tr>
+                    )}
+                    {myOrders.map((o) => (
+                      <tr key={o.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
+                        <td className="py-3 px-4 font-bold tracking-tight">{pair.id}</td>
+                        <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
+                        <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{o.side}</td>
+                        <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.side === 'Short' ? o.sellRemaining : o.buyRemaining)} {pair.base}</td>
+                        <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.price)} {pair.quote}</td>
+                        <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
+                        <td className="py-3 px-4 font-bold tracking-tight">
+                          <button onClick={() => cancelMyOrder(o)} disabled={busyId === o.id} className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1">
+                            {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
+                            Cancel
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               )}
@@ -472,20 +521,21 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         />
                         
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 ${payTokenSym === 'USDC' ? 'bg-[#2775ca]' : 'bg-black'}`}>
-                             <span className="text-white text-[10px] font-bold">{payTokenSym === 'USDC' ? '$' : 'H'}</span>
+                          <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: payTokenIcon.bg, color: payTokenIcon.fg }}>
+                             <span className="text-[10px] font-bold">{payTokenIcon.label}</span>
                           </div>
                           <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
-                          <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
                         </div>
                       </div>
-                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ $1,500.00 USD</div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
                     </div>
 
                     {/* Balance */}
                     <div className="flex justify-between items-center mb-6 px-1">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold">5,420 USDC</span></span>
-                      <span className="text-[12px] font-bold tracking-tight">$123.75</span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(payBalance)} {payTokenSym}</span></span>
+                      {payBalance !== null && payBalance > 0 && (
+                        <button onClick={() => setPayAmount(String(payBalance))} className="text-[12px] font-bold tracking-tight text-[#00A8E8] hover:underline">Max</button>
+                      )}
                     </div>
 
                     {/* Slider */}
@@ -528,11 +578,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1 mt-auto">
                       <div className="flex justify-between">
                         <span className={textMuted}>You will receive (Est.)</span>
-                        <span className="text-[#00c076] font-bold">1,841.48 USDT</span>
+                        <span className="text-[#00c076] font-bold tabular-nums">{formatPrice(recvEst)} {recvSym}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className={textMuted}>Estimated Price</span>
-                        <span className={`${textMain}`}>0.08149 USDT</span>
+                        <span className={`${textMain} tabular-nums`}>{priceStr} {pair.quote}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1">
@@ -578,14 +628,13 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 ${payTokenSym === 'USDC' ? 'bg-[#2775ca]' : 'bg-black'}`}>
-                             <span className="text-white text-[10px] font-bold">{payTokenSym === 'USDC' ? '$' : 'H'}</span>
+                          <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: payTokenIcon.bg, color: payTokenIcon.fg }}>
+                             <span className="text-[10px] font-bold">{payTokenIcon.label}</span>
                           </div>
                           <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
-                          <ChevronDown className={`w-[14px] h-[14px] ${textMuted} ml-0.5`} />
                         </div>
                       </div>
-                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ $1,500.00 USD</div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
                     </div>
 
                     {/* Price Input */}
@@ -602,16 +651,18 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-end gap-2 px-3 py-1.5 min-w-[60px] shrink-0">
-                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none pr-1">USDT</span>
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none pr-1">{pair.quote}</span>
                         </div>
                       </div>
-                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>Mark: $0.0814</div>
+                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>Mark: {priceStr} {pair.quote}</div>
                     </div>
 
                     {/* Balance & Total */}
                     <div className="flex justify-between items-center mb-6 px-1">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold">5,420 USDC</span></span>
-                      <span className="text-[12px] font-bold tracking-tight">$123.75</span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Available: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(payBalance)} {payTokenSym}</span></span>
+                      {payBalance !== null && payBalance > 0 && (
+                        <button onClick={() => setPayAmount(String(payBalance))} className="text-[12px] font-bold tracking-tight text-[#00A8E8] hover:underline">Max</button>
+                      )}
                     </div>
 
                     {/* Slider */}
