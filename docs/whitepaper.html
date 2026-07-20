@@ -1,0 +1,398 @@
+<title>Creode Protocol — Whitepaper</title>
+<style>
+  :root {
+    --bg: #FBFCFD; --bg-soft: #F1F5F8; --card: #FFFFFF; --line: #E3E9EE;
+    --ink: #0B1620; --ink-soft: #46586A; --ink-faint: #7A8A99;
+    --accent: #0090C7; --accent-ink: #007CAB;
+    --green: #0E9E6E; --red: #DC3B48; --amber: #B8791B;
+    --mono-bg: #EEF3F7;
+    --shadow: 0 1px 2px rgba(11,22,32,.04), 0 8px 30px rgba(11,22,32,.05);
+    --measure: 68ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0A0E14; --bg-soft: #0F141B; --card: #10161F; --line: #1E2733;
+      --ink: #EAF1F7; --ink-soft: #9DB0C0; --ink-faint: #63768A;
+      --accent: #33B8EE; --accent-ink: #57C6F2;
+      --green: #10B981; --red: #EF4444; --amber: #E0A23C;
+      --mono-bg: #0C1219;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 40px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #FBFCFD; --bg-soft: #F1F5F8; --card: #FFFFFF; --line: #E3E9EE;
+    --ink: #0B1620; --ink-soft: #46586A; --ink-faint: #7A8A99;
+    --accent: #0090C7; --accent-ink: #007CAB;
+    --green: #0E9E6E; --red: #DC3B48; --amber: #B8791B; --mono-bg: #EEF3F7;
+    --shadow: 0 1px 2px rgba(11,22,32,.04), 0 8px 30px rgba(11,22,32,.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0A0E14; --bg-soft: #0F141B; --card: #10161F; --line: #1E2733;
+    --ink: #EAF1F7; --ink-soft: #9DB0C0; --ink-faint: #63768A;
+    --accent: #33B8EE; --accent-ink: #57C6F2;
+    --green: #10B981; --red: #EF4444; --amber: #E0A23C; --mono-bg: #0C1219;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 40px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.003em;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 88% -10%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 55%),
+      radial-gradient(90% 70% at -5% 0%, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 50%);
+  }
+  .hero-inner { padding: 74px 0 58px; }
+  .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 40px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(150deg, var(--accent), var(--accent-ink));
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 17px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 6px 18px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .brand-name { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .eyebrow {
+    font-size: 12.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--accent-ink); margin-bottom: 18px;
+  }
+  h1 {
+    font-size: clamp(38px, 6vw, 62px); line-height: 1.03; letter-spacing: -0.032em;
+    font-weight: 800; margin: 0 0 22px; text-wrap: balance; max-width: 16ch;
+  }
+  .lede { font-size: clamp(18px, 2.3vw, 21px); color: var(--ink-soft); max-width: 60ch; margin: 0; text-wrap: pretty; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .chip {
+    font-size: 12.5px; font-weight: 650; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .chip.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .chip.green.dot::before { background: var(--green); }
+  .chip.red.dot::before { background: var(--red); }
+
+  /* ── Layout with sticky index ─────────────────────── */
+  .body-grid { display: grid; grid-template-columns: 1fr; gap: 0; padding: 56px 0 40px; }
+  @media (min-width: 940px) {
+    .body-grid { grid-template-columns: 210px minmax(0, var(--measure)); gap: 64px; justify-content: center; }
+  }
+  nav.index { display: none; }
+  @media (min-width: 940px) {
+    nav.index { display: block; position: sticky; top: 28px; align-self: start; height: max-content; }
+  }
+  .index-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px; padding-left: 12px; }
+  .index a {
+    display: flex; gap: 10px; align-items: baseline; text-decoration: none; color: var(--ink-soft);
+    font-size: 14px; padding: 6px 12px; border-left: 2px solid transparent; border-radius: 0 6px 6px 0;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .index a:hover { color: var(--ink); background: var(--bg-soft); }
+  .index a .n { font-size: 11.5px; color: var(--ink-faint); font-weight: 600; min-width: 15px; }
+
+  main { min-width: 0; }
+  section { scroll-margin-top: 24px; padding-bottom: 8px; }
+  section + section { margin-top: 52px; padding-top: 48px; border-top: 1px solid var(--line); }
+  .sec-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px; }
+  h2 { font-size: clamp(25px, 3.4vw, 31px); letter-spacing: -0.025em; font-weight: 780; margin: 0 0 14px; line-height: 1.12; text-wrap: balance; }
+  h3 { font-size: 18px; letter-spacing: -0.012em; font-weight: 700; margin: 30px 0 8px; }
+  p { margin: 0 0 15px; color: var(--ink-soft); }
+  p strong, li strong { color: var(--ink); font-weight: 650; }
+  a.link { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+  a.link:hover { border-bottom-color: var(--accent); }
+  ul, ol { margin: 0 0 15px; padding-left: 22px; color: var(--ink-soft); }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--ink-faint); }
+
+  code.k { font-family: ui-monospace, Menlo, monospace; font-size: 0.86em; background: var(--mono-bg); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
+
+  .lead-abstract {
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 16px;
+    padding: 26px 28px; margin-bottom: 4px;
+  }
+  .lead-abstract p:last-child { margin-bottom: 0; }
+  .lead-abstract .abx { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+
+  /* Feature grid (overview) */
+  .fgrid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 20px 0 4px; }
+  @media (min-width: 560px) { .fgrid { grid-template-columns: 1fr 1fr; } }
+  .fcard { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; box-shadow: var(--shadow); }
+  .fcard h4 { margin: 0 0 5px; font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+  .fcard .tag { width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+  .fcard p { margin: 0; font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* Steps */
+  ol.steps { list-style: none; padding: 0; counter-reset: s; margin: 18px 0; }
+  ol.steps > li { counter-increment: s; position: relative; padding: 4px 0 16px 46px; margin: 0; }
+  ol.steps > li::before {
+    content: counter(s); position: absolute; left: 0; top: 0;
+    width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+    font-size: 14px; font-weight: 700; color: var(--accent-ink);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+  ol.steps > li:not(:last-child)::after {
+    content: ""; position: absolute; left: 14px; top: 34px; bottom: 4px; width: 1px;
+    background: var(--line);
+  }
+  ol.steps b { color: var(--ink); font-weight: 650; }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; margin: 18px 0; box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  thead th { text-align: left; font-weight: 650; color: var(--ink-faint); background: var(--bg-soft); padding: 11px 16px; white-space: nowrap; font-size: 12.5px; letter-spacing: 0.02em; text-transform: uppercase; }
+  tbody td { padding: 11px 16px; border-top: 1px solid var(--line); color: var(--ink-soft); }
+  tbody td:first-child { color: var(--ink); font-weight: 600; }
+  td .num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .addr { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  .addr a { color: var(--accent-ink); text-decoration: none; }
+  .addr a:hover { text-decoration: underline; }
+
+  /* Callout */
+  .note { border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-size: 14.5px; border: 1px solid; display: flex; gap: 12px; }
+  .note .ic { font-weight: 800; font-size: 15px; line-height: 1.5; }
+  .note.info { background: color-mix(in srgb, var(--accent) 8%, transparent); border-color: color-mix(in srgb, var(--accent) 26%, transparent); color: var(--accent-ink); }
+  .note.warn { background: color-mix(in srgb, var(--red) 8%, transparent); border-color: color-mix(in srgb, var(--red) 26%, transparent); color: var(--red); }
+  .note.road { background: color-mix(in srgb, var(--amber) 10%, transparent); border-color: color-mix(in srgb, var(--amber) 30%, transparent); color: var(--amber); }
+  .note b { color: inherit; }
+
+  /* Param row */
+  .params { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+  @media (min-width: 560px) { .params { grid-template-columns: repeat(3, 1fr); } }
+  .param { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .param .v { font-size: 21px; font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .param .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  footer { border-top: 1px solid var(--line); background: var(--bg-soft); }
+  .foot-inner { padding: 40px 0 56px; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: end; }
+  .foot-inner p { font-size: 13px; color: var(--ink-faint); margin: 0; max-width: 58ch; }
+
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 20;
+    width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink-soft); cursor: pointer; font-size: 16px;
+    display: grid; place-items: center; box-shadow: var(--shadow);
+  }
+  .theme-toggle:hover { color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+
+<button class="theme-toggle" id="tt" aria-label="Toggle light or dark theme">◐</button>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <span class="brand-name">Creode</span>
+    </div>
+    <div class="eyebrow">Protocol Whitepaper · v1.0</div>
+    <h1>A non-custodial DeFi protocol on Hedera.</h1>
+    <p class="lede">Creode brings time-locked savings, single-asset yield, a peer-to-peer order book, and on-chain governance together in one app — settled trustlessly on Hedera, secured at the network layer by the Hedera Token Service.</p>
+    <div class="meta-row">
+      <span class="chip dot">Hedera Testnet · chain 296</span>
+      <span class="chip green dot">Non-custodial</span>
+      <span class="chip red dot">Testnet · no real funds</span>
+      <span class="chip">Updated July 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap body-grid">
+  <nav class="index" aria-label="Contents">
+    <p class="index-title">Contents</p>
+    <a href="#overview"><span class="n">01</span> Overview</a>
+    <a href="#vault"><span class="n">02</span> Vault</a>
+    <a href="#earn"><span class="n">03</span> Earn &amp; HIP-1215</a>
+    <a href="#p2p"><span class="n">04</span> P2P Trading</a>
+    <a href="#governance"><span class="n">05</span> Governance</a>
+    <a href="#points"><span class="n">06</span> CODE Points</a>
+    <a href="#security"><span class="n">07</span> Security &amp; HTS</a>
+    <a href="#contracts"><span class="n">08</span> Contracts</a>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <div class="lead-abstract">
+        <div class="abx">Abstract</div>
+        <p>Creode is a decentralized finance protocol built on <strong>Hedera</strong>. It bundles four products — a time-locked <strong>Vault</strong>, a single-asset <strong>Yield Hub</strong>, a peer-to-peer <strong>order-book exchange</strong>, and <strong>CODE-weighted governance</strong> — behind one non-custodial interface. The app never holds user keys or funds; every deposit, trade, and vote is an on-chain transaction the user signs from their own wallet. Assets are Hedera Token Service (HTS) tokens, so token rules are enforced by network consensus rather than application code alone.</p>
+      </div>
+
+      <div class="sec-eyebrow">01 — Overview</div>
+      <h2>One protocol, four on-chain products</h2>
+      <p>Each product is backed by its own audited-primitive smart contract deployed to Hedera Testnet. They share a treasury, a rewards system (CODE points), and a governance layer, but each settles independently on-chain.</p>
+
+      <div class="fgrid">
+        <div class="fcard"><h4><span class="tag"></span>Vault</h4><p>Time-locked savings paying a fixed APY by asset tier over 7 / 30 / 60-day or custom terms.</p></div>
+        <div class="fcard"><h4><span class="tag"></span>Earn — Yield Hub</h4><p>Deposit one token; the protocol auto-zaps it into a balanced dual-token yield position that compounds.</p></div>
+        <div class="fcard"><h4><span class="tag"></span>P2P Trading</h4><p>An on-chain order book with escrowed limit orders — no house, no pool. Charts use live market data.</p></div>
+        <div class="fcard"><h4><span class="tag"></span>Community Governance</h4><p>Hold CODE to open proposals and cast weighted votes; every tally is finalized on-chain.</p></div>
+      </div>
+
+      <div class="note warn"><span class="ic">!</span><div>This deployment runs on <b>Hedera Testnet</b>. All tokens are test tokens with no monetary value, and the contracts are unaudited. Never send mainnet funds to these addresses.</div></div>
+    </section>
+
+    <section id="vault">
+      <div class="sec-eyebrow">02 — Vault</div>
+      <h2>Time-locked savings with fixed, tiered yield</h2>
+      <p>Deposit native HBAR or any supported HTS token and lock it for a fixed term to earn a fixed APY. Yield accrues linearly and is paid from the protocol treasury. At or after maturity you withdraw your <strong>full principal plus accrued yield</strong>; custom terms interpolate between the tier rates.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Asset tier</th><th class="num">7-day</th><th class="num">30-day</th><th class="num">60-day</th></tr></thead>
+          <tbody>
+            <tr><td>Blue-chip <span style="color:var(--ink-faint)">· HBAR, WETH, WBTC</span></td><td class="num">3.50%</td><td class="num">5.50%</td><td class="num">8.00%</td></tr>
+            <tr><td>Stablecoins <span style="color:var(--ink-faint)">· USDC, USDT</span></td><td class="num">4.00%</td><td class="num">6.50%</td><td class="num">9.00%</td></tr>
+            <tr><td>Ecosystem <span style="color:var(--ink-faint)">· SAUCE, DOVU, PACK, JAM, BONZO</span></td><td class="num">8.00%</td><td class="num">14.00%</td><td class="num">22.00%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note warn"><span class="ic">!</span><div><b>Early withdrawal</b> incurs a time-decay penalty of up to <b>2% on principal</b> — largest right after deposit, shrinking to zero at maturity. Accrued yield is always paid in full.</div></div>
+    </section>
+
+    <section id="earn">
+      <div class="sec-eyebrow">03 — Earn · Yield Hub</div>
+      <h2>Single-asset yield, auto-zapped and compounding</h2>
+      <p>The Yield Hub runs balanced <strong>dual-token liquidity positions</strong> without requiring you to hold both tokens. Supply one asset and the protocol builds the position for you:</p>
+
+      <ol class="steps">
+        <li><b>You deposit one token</b> — for example HBAR.</li>
+        <li><b>The SwapRouter</b>, a constant-product AMM, swaps ~50% into the pair token to form a balanced ~50/50 position.</li>
+        <li><b>The position is deposited</b> into the CreodeYieldVault, which accrues yield. Live APY and TVL are derived from real on-chain custody and prices.</li>
+      </ol>
+
+      <p>You can <strong>Compound</strong> accrued rewards back into your position, <strong>Supply More</strong>, or <strong>Withdraw</strong> the full position on demand.</p>
+
+      <h3>Auto-compounding via Hedera HIP-1215</h3>
+      <p>Today compounding is a one-click action — the <strong>Compound</strong> button harvests rewards and re-zaps them through the same router path, fully on-chain and live now. What makes it <strong>hands-off</strong> is <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a>, generalized scheduled contract calls: a contract can schedule its own future calls directly from the EVM through the Hedera Schedule Service — native on-chain "cron" with no off-chain keeper.</p>
+      <ul>
+        <li>The vault schedules its next <code class="k">compound()</code> at a future timestamp; the network executes it automatically when that second arrives.</li>
+        <li>Each run re-schedules the next, so positions compound continuously and trustlessly.</li>
+        <li>Schedules are sized against <code class="k">hasScheduleCapacity(expiry, gasLimit)</code>, and every scheduled second must be strictly in the future — closing off infinite-loop abuse.</li>
+      </ul>
+      <div class="note road"><span class="ic">◷</span><div>Native HIP-1215 auto-compounding is on the <b>roadmap</b> and is itself up for a community vote. Until it ships, the manual Compound button delivers identical economics — you just trigger the harvest yourself.</div></div>
+    </section>
+
+    <section id="p2p">
+      <div class="sec-eyebrow">04 — P2P Trading</div>
+      <h2>A trustless, on-chain order book</h2>
+      <p>P2P is a peer-to-peer spot exchange with <strong>no house and no pool</strong>. Every trade matches one user's order against another's, settled by the <strong>CreodeP2P</strong> escrow contract.</p>
+      <ul>
+        <li><strong>Limit order</strong> — you post a price; your sell side is escrowed in the contract until it fills, is cancelled, or expires. Makers can always cancel to reclaim escrow.</li>
+        <li><strong>Market order</strong> — fills the best-priced resting order immediately, with partial fills supported.</li>
+        <li><strong>Long</strong> buys the base token with the quote; <strong>Short</strong> sells the base for the quote.</li>
+        <li>On each fill the taker pays the maker directly and the escrow is released minus a <strong>0.20% protocol fee</strong>.</li>
+      </ul>
+      <p>Because every order carries a fixed price, there is no AMM-style slippage — a 0.5% floor only guards each fill against dust rounding. Tradable pairs include <code class="k">HBAR-USDC</code>, <code class="k">WBTC-USDC</code>, <code class="k">WETH-USDC</code>, <code class="k">SAUCE-USDC</code>, <code class="k">DOVU-USDC</code>, and <code class="k">HBAR-SAUCE</code>.</p>
+      <div class="note info"><span class="ic">≈</span><div>Charts use <b>real market data</b> — Pyth Network for majors, SaucerSwap / GeckoTerminal for Hedera small-caps. Prices are live, not simulated.</div></div>
+    </section>
+
+    <section id="governance">
+      <div class="sec-eyebrow">05 — Community Governance</div>
+      <h2>CODE-weighted decisions, settled on-chain</h2>
+      <p>Creode is steered by its holders. The <strong>CreodeGovernance</strong> contract stores every proposal, every vote, and the final tally — nothing lives on a private server. Governance decides yield emissions, new vault and market assets, parameters, and upgrade direction.</p>
+
+      <div class="params">
+        <div class="param"><div class="v">1,000</div><div class="l">CODE to propose</div></div>
+        <div class="param"><div class="v">50,000</div><div class="l">CODE quorum</div></div>
+        <div class="param"><div class="v">3 days</div><div class="l">Voting window</div></div>
+      </div>
+
+      <p><strong>CODE</strong> is the governance token: voting weight is your live CODE balance at the moment you propose or vote — <strong>1 CODE = 1 vote</strong>. On mainnet CODE is earned through real protocol usage; on testnet a one-time <strong>Claim CODE to vote</strong> lets anyone try the full flow.</p>
+
+      <ol class="steps">
+        <li><b>Propose</b> — any holder of ≥ 1,000 CODE submits a title and description on-chain, opening a 3-day vote.</li>
+        <li><b>Vote</b> — CODE holders cast a single Yes or No, weighted by balance. One vote per address per proposal, enforced in-contract.</li>
+        <li><b>Finalize</b> — after the window closes, anyone can finalize. It passes only if total votes clear quorum <b>and</b> Yes exceeds No; otherwise it is rejected.</li>
+        <li><b>Enact</b> — passed proposals are signalling decisions; the role-gated admin then enacts the approved direction on-chain.</li>
+      </ol>
+    </section>
+
+    <section id="points">
+      <div class="sec-eyebrow">06 — CODE Points</div>
+      <h2>Rewards for real usage</h2>
+      <p>CODE points reward genuine protocol activity. Every <strong>successful</strong> transaction that moves value through Vault, Earn, or P2P earns CODE, weighted by the USD value moved:</p>
+      <ul>
+        <li>A minimum of <strong>5 CODE</strong> per protocol action.</li>
+        <li>Roughly <strong>1 CODE per $10</strong> moved — a $1,000 action earns ~100, a $5,000 action ~500.</li>
+        <li>Faucet claims, approvals, and plain transfers earn nothing.</li>
+      </ul>
+      <p>Totals and per-transaction rewards are computed from real on-chain history and shown in the Activity tab.</p>
+    </section>
+
+    <section id="security">
+      <div class="sec-eyebrow">07 — Security</div>
+      <h2>Secured by Hedera HTS, hardened by proven primitives</h2>
+      <p>Creode's assets are <strong>Hedera Token Service (HTS)</strong> tokens, not plain ERC-20s bolted onto an EVM. HTS enforces token rules at the <strong>network layer</strong>, below and independent of any application contract:</p>
+      <ul>
+        <li><strong>Native token controls</strong> — supply, freeze, wipe, pause, and KYC keys are honored by consensus nodes themselves, so token rules can't be bypassed by a buggy or malicious contract.</li>
+        <li><strong>Explicit association</strong> — an account must associate a token before receiving it, blocking unsolicited-token and dusting attacks by default.</li>
+        <li><strong>Deterministic finality</strong> — Hedera's aBFT hashgraph consensus gives fast, final settlement with no re-org risk; a confirmed transaction cannot be rolled back.</li>
+        <li>Every HTS token also exposes the standard <strong>ERC-20</strong> interface at its EVM address, so contracts interact normally while the network keeps enforcing token-level guarantees.</li>
+      </ul>
+      <p>On top of that, the contracts use battle-tested building blocks: OpenZeppelin <strong>Ownable / AccessControl</strong>, <strong>ReentrancyGuard</strong>, <strong>Pausable</strong>, and <strong>SafeERC20</strong>; non-custodial escrow in P2P; tamper-proof, one-vote-per-address governance; and role-gated, hard-capped admin functions.</p>
+      <div class="note warn"><span class="ic">!</span><div>These contracts are <b>testnet, unaudited</b> software with no third-party audit and no real value at risk. Do not deploy to mainnet or use with real funds until professionally audited.</div></div>
+    </section>
+
+    <section id="contracts">
+      <div class="sec-eyebrow">08 — Contracts</div>
+      <h2>Deployed contracts &amp; addresses</h2>
+      <p>Network: <strong>Hedera Testnet</strong> · chain <code class="k">296</code> (<code class="k">0x128</code>) · JSON-RPC <code class="k">https://testnet.hashio.io/api</code>. All source and deployments are verifiable on HashScan.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Contract</th><th>Address</th></tr></thead>
+          <tbody id="ctable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot-inner">
+    <p><strong style="color:var(--ink)">Creode Protocol</strong> — Whitepaper v1.0. A non-custodial DeFi protocol on Hedera. Testnet deployment; all figures reflect the live contracts as of July 2026.</p>
+    <p>Not financial advice. Unaudited testnet software — no real value at risk.</p>
+  </div>
+</footer>
+
+<script>
+  // Theme toggle: stamp data-theme so it overrides the media query both ways.
+  (function () {
+    var root = document.documentElement, btn = document.getElementById('tt');
+    btn.addEventListener('click', function () {
+      var isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      var cur = root.getAttribute('data-theme') || (isDark ? 'dark' : 'light');
+      root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+    });
+  })();
+
+  // Contract table — real deployed addresses, linked to HashScan.
+  (function () {
+    var C = [
+      ['CreodeVault — time-locked savings', '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139'],
+      ['CreodeYieldVaultV3 — Earn / auto-zap', '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3'],
+      ['CreodeSwapRouter — constant-product AMM', '0x34624a10E293039c18724FFCb4e0431dA45DaED3'],
+      ['CreodeTreasurySwap', '0x2a873ED611D755e8B73E29a4839E34136e70eC53'],
+      ['CreodeP2P — order-book escrow', '0x87b6de843538E31fc368e13BE232320915a734ef'],
+      ['CreodeGovernance — proposals & voting', '0xe2f8e91fDCb1a6Ed20E7298A5D5619B4203C9Bd5'],
+      ['CODE — governance token', '0x8bb07F6C0b071b9981Ed9ba5D7635055c705BE82'],
+      ['CreodeFaucet — test tokens', '0x2449135C532f78ed43C9c4a99307aAA987D39A41']
+    ];
+    var tb = document.getElementById('ctable');
+    tb.innerHTML = C.map(function (r) {
+      var short = r[1].slice(0, 12) + '…' + r[1].slice(-8);
+      return '<tr><td>' + r[0] + '</td><td class="addr"><a href="https://hashscan.io/testnet/contract/' + r[1] + '" target="_blank" rel="noopener">' + short + '</a></td></tr>';
+    }).join('');
+  })();
+</script>
