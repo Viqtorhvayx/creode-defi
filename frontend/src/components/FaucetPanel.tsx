@@ -7,6 +7,7 @@ import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
 import { TokenLogo } from './TokenLogo';
+import { CTA_BLUE, CTA_GREEN_SOLID } from '../lib/ui';
 
 // HTS tokens dripped by the faucet (~$500 worth of each, daily). HBAR is native
 // — get it from the official Hedera faucet (faucet.hedera.com), not here.
@@ -155,16 +156,16 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
       <button
         onClick={handleClaim}
         disabled={isClaiming || onCooldown || !isConnected}
-        className={`w-full h-9 rounded-lg text-[12px] font-bold flex items-center justify-center gap-2 transition-all ${
+        className={`w-full h-9 text-[12px] flex items-center justify-center gap-2 ${
           justClaimed
-            ? 'bg-emerald-500 text-white'
+            ? CTA_GREEN_SOLID
             : onCooldown
-              ? `${theme === 'dark' ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
+              ? `font-bold rounded-[12px] ${theme === 'dark' ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
               : isClaiming
-                ? 'bg-[#00A8E8]/80 text-white cursor-wait'
+                ? 'font-bold rounded-[12px] bg-[#00A8E8] text-white cursor-wait'
                 : !isConnected
-                  ? `${theme === 'dark' ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
-                  : 'bg-[#00A8E8] hover:bg-[#0090C7] text-white'
+                  ? `font-bold rounded-[12px] ${theme === 'dark' ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
+                  : CTA_BLUE
         }`}
       >
         {justClaimed ? (

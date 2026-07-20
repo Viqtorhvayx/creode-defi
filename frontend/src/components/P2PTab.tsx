@@ -8,6 +8,8 @@ import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
+import { CTA_GREEN, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
+import { CaretDown as CaretDownIcon } from '@phosphor-icons/react';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -161,8 +163,11 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     }
   };
 
-  const orderBtnClass = (base: string) => `w-full text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm flex items-center justify-center gap-2 ${base}`;
-  const orderBtnColor = tradeSide === 'Long' ? 'bg-[#10B981] hover:bg-[#059669]' : 'bg-[#EF4444] hover:bg-[#DC2626]';
+  // Ghost→solid CTA: tinted at rest, solid on hover/press; solid green when done.
+  const orderBtnColor = txState === 'done'
+    ? CTA_GREEN_SOLID
+    : tradeSide === 'Long' ? CTA_GREEN : CTA_RED;
+  const orderBtnCls = `${orderBtnColor} w-full py-3.5 text-[14px] shadow-sm flex items-center justify-center gap-2`;
   const orderBtnContent = txState === 'done'
     ? (<><CheckCircle size={16} weight="fill" /> Order placed</>)
     : txState === 'pending'
@@ -570,9 +575,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         
-                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <TokenLogo sym={payTokenSym} size={18} />
-                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
+                        <div className={TOKEN_PILL}>
+                          <TokenLogo sym={payTokenSym} size={24} />
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
+                          <CaretDownIcon size={13} weight="bold" className="text-slate-500 dark:text-white/50" />
                         </div>
                       </div>
                       <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
@@ -642,7 +648,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button onClick={submitOrder} disabled={txState === 'pending'} className={orderBtnClass(txState === 'done' ? 'bg-emerald-500' : orderBtnColor) + ' disabled:opacity-70'}>
+                    <button onClick={submitOrder} disabled={txState === 'pending'} className={orderBtnCls}>
                       {orderBtnContent}
                     </button>
                   </div>
@@ -675,9 +681,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           onChange={(e) => setPayAmount(e.target.value)}
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
-                        <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <TokenLogo sym={payTokenSym} size={18} />
-                          <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
+                        <div className={TOKEN_PILL}>
+                          <TokenLogo sym={payTokenSym} size={24} />
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
+                          <CaretDownIcon size={13} weight="bold" className="text-slate-500 dark:text-white/50" />
                         </div>
                       </div>
                       <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
@@ -748,7 +755,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* CTA Button */}
-                    <button onClick={submitOrder} disabled={txState === 'pending'} className={'mt-auto ' + orderBtnClass(txState === 'done' ? 'bg-emerald-500' : orderBtnColor) + ' disabled:opacity-70'}>
+                    <button onClick={submitOrder} disabled={txState === 'pending'} className={'mt-auto ' + orderBtnCls}>
                       {orderBtnContent}
                     </button>
                   </div>

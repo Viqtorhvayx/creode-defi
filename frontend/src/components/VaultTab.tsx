@@ -10,6 +10,7 @@ import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { TokenLogo } from './TokenLogo';
+import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
 import { ChevronDown, X, Info } from 'lucide-react';
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
@@ -587,11 +588,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   {/* Token Selector Trigger */}
                   <div 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between gap-1 px-3 py-1.5 w-[96px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-md cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                    className={TOKEN_PILL}
                   >
-                    <TokenLogo sym={activeToken} size={16} />
-                    <span className="text-[12px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
-                    <ChevronDown className={`w-3 h-3 text-slate-500 dark:text-white/60 ml-0.5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+                    <TokenLogo sym={activeToken} size={22} />
+                    <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-500 dark:text-white/60 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
                   </div>
 
                   {/* Token Dropdown Menu */}
@@ -717,16 +718,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <button 
               onClick={handleDeposit}
               disabled={isProcessing || isSuccess}
-              className={`w-full h-12 rounded-[8px] text-[15px] font-bold flex items-center justify-center transition-all duration-100 ease-in active:scale-[0.98] tracking-wide shadow-sm relative ${
-                isSuccess 
-                  ? 'bg-emerald-500 text-white pointer-events-none' 
-                  : isProcessing 
-                    ? 'bg-[#00A8E8]/80 text-white cursor-not-allowed' 
-                    : 'bg-[#00A8E8] hover:bg-[#0090C7] hover:brightness-105 hover:shadow-md text-white'
+              className={`w-full h-12 text-[15px] flex items-center justify-center active:scale-[0.98] tracking-wide shadow-sm relative ${
+                isSuccess
+                  ? `${CTA_GREEN_SOLID} pointer-events-none`
+                  : isProcessing
+                    ? 'font-bold rounded-[12px] bg-[#00A8E8] text-white cursor-not-allowed'
+                    : CTA_BLUE
               }`}
             >
               {isSuccess && (
-                <div className="absolute inset-0 rounded-[8px] bg-emerald-500 animate-ping-once pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-[12px] bg-[#10B981] animate-ping-once pointer-events-none"></div>
               )}
               
               {isProcessing ? (
@@ -1008,7 +1009,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 setDisplayLockDays(val);
                 setIsCustomModalOpen(false);
               }}
-              className="w-full py-3.5 bg-[#00A8E8] hover:bg-[#0092C8] text-white text-[15px] font-bold rounded-[8px] transition-colors shadow-sm"
+              className={`${CTA_BLUE} w-full py-3.5 text-[15px] shadow-sm`}
             >
               Set
             </button>

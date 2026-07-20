@@ -5,6 +5,7 @@ import { CommunityTab } from './CommunityTab';
 import { EarnStrategyDetail } from './EarnStrategyDetail';
 import { EarnPositions } from './EarnPositions';
 import { fetchVaultTokenBalances } from '../lib/yieldVault';
+import { CTA_BLUE } from '../lib/ui';
 import { 
   ChartLineUp, 
   Stack, 
@@ -490,7 +491,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
               </div>
               <button
                 onClick={() => setSelectedStrategy(featuredStrategy)}
-                className="w-full bg-[#00A8E8] hover:bg-[#0090C7] text-white py-3.5 rounded-[8px] text-[14px] font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                className={`${CTA_BLUE} w-full py-3.5 text-[14px] shadow-sm flex items-center justify-center gap-2`}>
                 Supply HBAR-SAUCE <ArrowRight size={14} weight="bold" />
               </button>
             </div>

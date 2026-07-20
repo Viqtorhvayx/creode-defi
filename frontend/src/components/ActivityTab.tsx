@@ -18,6 +18,7 @@ import {
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { CTA_BLUE } from '../lib/ui';
 
 interface ActivityTabProps {
   theme: 'light' | 'dark';
@@ -298,8 +299,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-bold text-white transition-opacity hover:opacity-90"
-                          style={{ background: PRIMARY }}
+                          className={`${CTA_BLUE} shrink-0 flex items-center gap-2 px-4 py-2.5 text-[13px]`}
                         >
                           View on HashScan <ArrowSquareOut size={16} weight="bold" />
                         </a>

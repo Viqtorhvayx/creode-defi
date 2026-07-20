@@ -4,6 +4,7 @@ import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
 import { TokenLogo } from './TokenLogo';
+import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
 
 export interface StrategyToken {
   sym: string;
@@ -135,8 +136,8 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   };
 
   const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 ${pillBg}`}>
-      <TokenLogo sym={token.sym} size={18} />
+    <div className={TOKEN_PILL}>
+      <TokenLogo sym={token.sym} size={22} />
       <span className="text-[13px] font-bold">{token.sym}</span>
     </div>
   );
@@ -343,14 +344,14 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
             <button
               onClick={handleZap}
               disabled={zapState === 'pending' || !hasAmt || !isConnected}
-              className={`w-full py-4 rounded-[12px] text-[15px] font-bold transition-all shadow-sm flex items-center justify-center gap-2 ${
+              className={`w-full py-4 text-[15px] shadow-sm flex items-center justify-center gap-2 ${
                 zapState === 'done'
-                  ? 'bg-emerald-500 text-white'
+                  ? CTA_GREEN_SOLID
                   : (!isConnected || !hasAmt)
-                    ? `${isDark ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
+                    ? `font-bold rounded-[12px] ${isDark ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
                     : zapState === 'pending'
-                      ? 'bg-[#00A8E8]/80 text-white cursor-wait'
-                      : 'bg-gradient-to-r from-[#00A8E8] to-[#0090C7] hover:from-[#0090C7] hover:to-[#007ba8] text-white'
+                      ? 'font-bold rounded-[12px] bg-[#00A8E8] text-white cursor-wait'
+                      : CTA_BLUE
               }`}
             >
               {zapState === 'done' ? (
