@@ -206,8 +206,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   return (
     <div className={`w-full flex flex-col gap-4 ${textMain}`}>
       
-      {/* TOP TRADING BAR */}
-      <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] p-4 flex items-center justify-between shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
+      {/* TOP TRADING BAR — glassmorphism to match the Vault dropdown */}
+      <div className="w-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <MarketSelector pairId={selectedPairId} onSelect={setSelectedPairId} stats={pairStats} theme={theme} />
 
