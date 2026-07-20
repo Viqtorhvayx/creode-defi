@@ -275,13 +275,13 @@
       <p>You can <strong>Compound</strong> accrued rewards back into your position, <strong>Supply More</strong>, or <strong>Withdraw</strong> the full position on demand.</p>
 
       <h3>Auto-compounding via Hedera HIP-1215</h3>
-      <p>Today compounding is a one-click action — the <strong>Compound</strong> button harvests rewards and re-zaps them through the same router path, fully on-chain and live now. What makes it <strong>hands-off</strong> is <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a>, generalized scheduled contract calls: a contract can schedule its own future calls directly from the EVM through the Hedera Schedule Service — native on-chain "cron" with no off-chain keeper.</p>
+      <p>Compound by hand with the <strong>Compound</strong> button, or flip <strong>Auto: On</strong> and let the protocol do it — fully on-chain, using <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a> generalized scheduled contract calls. A contract can schedule its own future calls through the Hedera Schedule Service — native on-chain "cron" with no off-chain keeper.</p>
       <ul>
-        <li>The vault schedules its next <code class="k">compound()</code> at a future timestamp; the network executes it automatically when that second arrives.</li>
-        <li>Each run re-schedules the next, so positions compound continuously and trustlessly.</li>
-        <li>Schedules are sized against <code class="k">hasScheduleCapacity(expiry, gasLimit)</code>, and every scheduled second must be strictly in the future — closing off infinite-loop abuse.</li>
+        <li>You enroll a position with one cheap transaction — no scheduling cost to you.</li>
+        <li>The <strong>CreodeCompoundScheduler</strong> runs a self-perpetuating tick: each scheduled tick compounds every enrolled position <strong>and schedules the next tick itself</strong>, so the loop continues with no keeper.</li>
+        <li>Scheduling cost is paid once by the protocol and amortized across all users, and every scheduled second must be strictly in the future — closing off infinite-loop abuse.</li>
       </ul>
-      <div class="note road"><span class="ic">◷</span><div>Native HIP-1215 auto-compounding is on the <b>roadmap</b> and is itself up for a community vote. Until it ships, the manual Compound button delivers identical economics — you just trigger the harvest yourself.</div></div>
+      <div class="note info"><span class="ic">✓</span><div><b>Live on Hedera testnet</b> and verified end-to-end — scheduled ticks execute and re-arm themselves autonomously on-chain.</div></div>
     </section>
 
     <section id="p2p">
@@ -382,6 +382,7 @@
     var C = [
       ['CreodeVault — time-locked savings', '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139'],
       ['CreodeYieldVaultV3 — Earn / auto-zap', '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3'],
+      ['CreodeCompoundScheduler — HIP-1215 auto-compound', '0x2b8dB6baD3bC8Db02547dd9B4854a583CE625602'],
       ['CreodeSwapRouter — constant-product AMM', '0x34624a10E293039c18724FFCb4e0431dA45DaED3'],
       ['CreodeTreasurySwap', '0x2a873ED611D755e8B73E29a4839E34136e70eC53'],
       ['CreodeP2P — order-book escrow', '0x87b6de843538E31fc368e13BE232320915a734ef'],

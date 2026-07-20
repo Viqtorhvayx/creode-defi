@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet, ArrowsClockwise } from '@phosphor-icons/react';
+import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet, ArrowsClockwise, Lightning } from '@phosphor-icons/react';
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
+import { isAutoEnrolled, enrollAuto, unenrollAuto } from '../lib/scheduler';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE } from '../lib/ui';
 
@@ -143,11 +144,23 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
   const [loading, setLoading] = useState(false);
   const [busyKey, setBusyKey] = useState<number | null>(null);
 
+  // Which positions are enrolled in HIP-1215 auto-compounding.
+  const [autoSet, setAutoSet] = useState<Set<number>>(new Set());
+  const [autoBusy, setAutoBusy] = useState<number | null>(null);
+
   const load = useCallback(async () => {
     const addr = walletClient?.account?.address;
     if (!isConnected || !addr) { setLive(null); return; }
     setLoading(true);
-    try { setLive(await fetchUserPositions(addr)); }
+    try {
+      const pos = await fetchUserPositions(addr);
+      setLive(pos);
+      // Refresh auto-compound enrollment for each position.
+      const flags = await Promise.all(pos.map((p) => isAutoEnrolled(addr, p.strategyId).catch(() => false)));
+      const s = new Set<number>();
+      pos.forEach((p, i) => { if (flags[i]) s.add(p.strategyId); });
+      setAutoSet(s);
+    }
     catch (e) { console.error('[Positions] load failed', e); setLive([]); }
     finally { setLoading(false); }
   }, [isConnected, walletClient]);
@@ -177,6 +190,20 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
     try { await compound(walletClient, pos.strategyId); await load(); }
     catch (e) { const err = e as any; alert('Compound failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
     finally { setCompoundBusy(null); }
+  };
+
+  // Toggle HIP-1215 auto-compounding for a position (enroll / unenroll).
+  const onToggleAuto = async (pos: UserPositionV2) => {
+    if (!walletClient) return;
+    const on = autoSet.has(pos.strategyId);
+    setAutoBusy(pos.strategyId);
+    try {
+      if (on) await unenrollAuto(walletClient, pos.strategyId);
+      else await enrollAuto(walletClient, pos.strategyId);
+      await load();
+    }
+    catch (e) { const err = e as any; alert('Auto-compound update failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
+    finally { setAutoBusy(null); }
   };
 
   const connectedLive = isConnected && live !== null;
@@ -332,6 +359,21 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
                         <button onClick={() => onCompound(p)} disabled={compoundBusy === p.strategyId} className={`${CTA_BLUE} w-full h-8 text-[12px] flex items-center justify-center gap-1.5`}>
                           {compoundBusy === p.strategyId ? <><CircleNotch size={13} className="animate-spin" /> …</> : <><ArrowsClockwise size={13} weight="bold" /> Compound</>}
                         </button>
+                        {(() => {
+                          const on = autoSet.has(p.strategyId);
+                          const busyA = autoBusy === p.strategyId;
+                          return (
+                            <button
+                              onClick={() => onToggleAuto(p)}
+                              disabled={busyA}
+                              title={on ? 'Auto-compounding on — the protocol compounds this position on-chain via HIP-1215. Click to turn off.' : 'Turn on hands-off auto-compounding (HIP-1215 scheduled on-chain).'}
+                              className={`w-full h-8 text-[12px] font-bold rounded-[12px] transition-colors flex items-center justify-center gap-1.5 ${on ? 'bg-[#10B981]/15 text-[#10B981] hover:bg-[#10B981]/25' : 'bg-black/[0.06] dark:bg-white/10 text-slate-500 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/[0.14]'}`}
+                            >
+                              {busyA ? <CircleNotch size={13} className="animate-spin" /> : <Lightning size={13} weight={on ? 'fill' : 'bold'} />}
+                              {on ? 'Auto: On' : 'Auto: Off'}
+                            </button>
+                          );
+                        })()}
                         <button onClick={() => onWithdraw(p)} disabled={busy} className={`${CTA_BLUE} w-full h-8 text-[12px] flex items-center justify-center gap-1.5`}>
                           {busy ? <><CircleNotch size={13} className="animate-spin" /> …</> : 'Withdraw'}
                         </button>

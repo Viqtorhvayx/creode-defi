@@ -8,6 +8,7 @@ import {
 } from '@phosphor-icons/react';
 import codeArtifact from '../contracts/CodeToken.json';
 import govArtifact from '../contracts/CreodeGovernance.json';
+import schedArtifact from '../contracts/CreodeCompoundScheduler.json';
 
 const PRIMARY = '#00A8E8';
 const GREEN = '#10B981';
@@ -17,6 +18,7 @@ const HASHSCAN = (addr: string) => `https://hashscan.io/testnet/contract/${addr}
 const CONTRACTS: { name: string; addr: string }[] = [
   { name: 'CreodeVault (time-locked savings)', addr: '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139' },
   { name: 'CreodeYieldVaultV3 (Earn / auto-zap)', addr: '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3' },
+  { name: 'CreodeCompoundScheduler (HIP-1215 auto-compound)', addr: (schedArtifact as any).address },
   { name: 'CreodeSwapRouter (constant-product AMM)', addr: '0x34624a10E293039c18724FFCb4e0431dA45DaED3' },
   { name: 'CreodeTreasurySwap', addr: '0x2a873ED611D755e8B73E29a4839E34136e70eC53' },
   { name: 'CreodeP2P (order-book escrow)', addr: '0x87b6de843538E31fc368e13BE232320915a734ef' },
@@ -86,7 +88,7 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           <P><B>Creode</B> is a DeFi protocol on Hedera bundling savings, yield, trading, and governance behind one non-custodial app. Everything settles on-chain — the app never holds your keys or funds.</P>
           <ul className="list-disc pl-5 space-y-1.5 mb-3">
             <Li><B>Vault</B> — time-locked savings that pay a fixed APY by asset tier.</Li>
-            <Li><B>Earn (Yield Hub)</B> — one-token "auto-zap" into balanced dual-token yield positions, with compounding (native auto-compounding via Hedera HIP-1215 on the roadmap).</Li>
+            <Li><B>Earn (Yield Hub)</B> — one-token "auto-zap" into balanced dual-token yield positions, with manual or hands-off <B>auto-compounding</B> (native, keeperless, via Hedera HIP-1215).</Li>
             <Li><B>P2P Trading</B> — an on-chain order-book spot exchange with escrowed limit orders.</Li>
             <Li><B>Community Governance</B> — CODE-weighted, on-chain proposals and voting that steer the protocol.</Li>
           </ul>
@@ -160,15 +162,16 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           <P>You can <B>Compound</B> accrued rewards back into your position at any time, <B>Supply More</B>, or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
 
           <h3 className={`text-[16px] font-bold ${textMain} mt-6 mb-2 flex items-center gap-2`}><ArrowsClockwise size={18} weight="bold" style={{ color: PRIMARY }} /> Auto-compounding (via Hedera HIP-1215)</h3>
-          <P>Today, compounding is a <B>one-click action</B>: the <B>Compound</B> button harvests your accrued rewards and re-zaps them into the position through the same SwapRouter path. It works fully on-chain and is live now.</P>
-          <P>What makes it <B>hands-off</B> is <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A> — <B>generalized scheduled contract calls</B>. HIP-1215 lets a smart contract schedule its <B>own future calls</B> directly from the EVM through the Hedera Schedule Service, i.e. native on-chain "cron" with no off-chain keeper or bot:</P>
+          <div className="flex flex-wrap gap-2 mb-3"><Pill color={GREEN}>Live on-chain</Pill><Pill>Keeperless</Pill></div>
+          <P>You can compound by hand any time with the <B>Compound</B> button — but you can also flip <B>Auto: On</B> on any position and let the protocol do it for you, fully on-chain, using <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A> — <B>generalized scheduled contract calls</B>. HIP-1215 lets a contract schedule its <B>own future calls</B> through the Hedera Schedule Service, i.e. native on-chain "cron" with no off-chain keeper or bot.</P>
           <ul className="list-disc pl-5 space-y-1.5 mb-3">
-            <Li>The yield vault schedules its next <Code>compound()</Code> at a future timestamp; when that second arrives, the network executes it automatically.</Li>
-            <Li>Each run re-schedules the next, so positions compound continuously and trustlessly.</Li>
-            <Li>The vault sizes each schedule against <Code>hasScheduleCapacity(expiry, gasLimit)</Code> so it only books slots it can pay for, and the Schedule Service requires each scheduled second to be strictly in the future — closing off infinite-loop abuse.</Li>
+            <Li><B>You enroll</B> a position with one cheap transaction (<Code>Auto: On</Code>) — no scheduling cost to you.</Li>
+            <Li>The <B>CreodeCompoundScheduler</B> runs a self-perpetuating tick: each scheduled tick compounds every enrolled position <B>and schedules the next tick itself</B>, so the loop continues with no keeper.</Li>
+            <Li>Scheduling cost is paid <B>once by the protocol</B> and amortized across all users, instead of each user paying to schedule their own calls.</Li>
+            <Li>The Schedule Service requires each scheduled second to be strictly in the future, closing off infinite-loop abuse.</Li>
           </ul>
-          <Callout icon={<Warning size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
-            Native HIP-1215 auto-compounding is on the <B>roadmap</B> and is itself up for a community vote (see <B>Governance</B>). Until it ships, use the manual <B>Compound</B> button — the economics are identical, you just trigger the harvest yourself.
+          <Callout icon={<Sparkle size={18} weight="fill" style={{ color: GREEN }} className="shrink-0 mt-0.5" />} color={GREEN}>
+            This is <B>live on Hedera testnet</B> and verified end-to-end — scheduled ticks execute and re-arm themselves autonomously on-chain. Toggle <B>Auto: On</B> next to any position in the Earn tab.
           </Callout>
         </>
       ),
