@@ -9,11 +9,12 @@ import {
   X,
   CircleNotch,
   Wallet,
-  ArrowDownLeft,
-  ArrowUpRight,
   ArrowsClockwise,
   Receipt,
   CaretDown,
+  Sparkle,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
@@ -27,6 +28,7 @@ interface Tx {
   type: string;
   detail: string;
   amount: { value: number; display: string; sym: string } | null;
+  reward: number;
   fee: number;
   timestamp: number;
   status: 'success' | 'failed';
@@ -44,10 +46,6 @@ const isProtocol = (type: string) => /p2p|vault|swap|faucet|router|contract/i.te
 const fmtTime = (secs: number): string =>
   new Date(secs * 1000).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-type Dir = 'in' | 'out' | 'failed' | 'neutral';
-const dirOf = (t: Tx): Dir =>
-  t.status === 'failed' ? 'failed' : !t.amount ? 'neutral' : t.amount.value >= 0 ? 'in' : 'out';
-
 export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
   const dark = theme === 'dark';
   const textMain = dark ? 'text-white' : 'text-slate-900';
@@ -55,6 +53,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
   const borderColor = dark ? 'border-white/5' : 'border-[#EAECEF]';
   const cardBg = dark ? 'bg-[#0F141A]' : 'bg-white';
   const rowHover = dark ? 'hover:bg-white/[0.03]' : 'hover:bg-slate-50';
+  const neutralChip = dark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)';
 
   const { isConnected } = useWallet();
   const { address } = useAccount();
@@ -111,22 +110,9 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
   const filtered = q
     ? txs.filter((t) => t.txId.toLowerCase().includes(q) || t.type.toLowerCase().includes(q) || t.detail.toLowerCase().includes(q) || (t.amount?.sym.toLowerCase().includes(q)))
     : txs;
+  const totalCode = txs.reduce((s, t) => s + (t.reward || 0), 0);
 
-  // Leading direction icon — communicates profit (green) vs loss/failed (red) at a glance.
-  const DirIcon: React.FC<{ dir: Dir }> = ({ dir }) => {
-    const map = {
-      in: { bg: `${GREEN}1A`, color: GREEN, Icon: ArrowDownLeft },
-      out: { bg: `${RED}1A`, color: RED, Icon: ArrowUpRight },
-      failed: { bg: `${RED}1A`, color: RED, Icon: X },
-      neutral: { bg: `${PRIMARY}1A`, color: PRIMARY, Icon: Receipt },
-    }[dir];
-    const Ic = map.Icon;
-    return (
-      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: map.bg }}>
-        <Ic size={17} weight="bold" style={{ color: map.color }} />
-      </div>
-    );
-  };
+  const cols = 'grid-cols-1 md:grid-cols-[1.2fr_1fr_1.3fr_1.1fr_0.9fr_1.1fr]';
 
   return (
     <div className={`w-full max-w-[1200px] mx-auto flex flex-col gap-6 ${textMain} px-4 font-['Inter']`}>
@@ -142,7 +128,6 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
             <span className={`text-[13px] font-medium ${textMuted} mt-1.5 inline-block`}>Your on-chain transactions, straight from Hedera.</span>
           )}
         </div>
-
         <div className="flex items-center gap-3">
           {isConnected && (
             <div className={`relative flex items-center ${cardBg} border ${borderColor} rounded-lg px-3 py-2.5 w-[220px] sm:w-[260px] focus-within:border-[#00A8E8]/50 transition-colors`}>
@@ -170,16 +155,35 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
         </div>
       </div>
 
+      {/* CODE points banner (real, from Vault / Earn / P2P activity) */}
+      {isConnected && (
+        <div
+          className="w-full rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border"
+          style={{ background: `${PRIMARY}0F`, borderColor: `${PRIMARY}33` }}
+        >
+          <div className="flex items-center gap-3">
+            <Sparkle weight="fill" size={20} style={{ color: PRIMARY }} className="shrink-0" />
+            <span className="text-[13px] font-medium" style={{ color: PRIMARY }}>
+              Earn CODE points for Vault, Earn & P2P activity — the more value you move, the more you earn (min 5 per action).
+            </span>
+          </div>
+          <div className={`text-[14px] font-medium shrink-0 ${textMain}`}>
+            CODE Earned: <span className="font-bold text-[16px]" style={{ color: PRIMARY }}>{totalCode.toLocaleString()}</span>
+          </div>
+        </div>
+      )}
+
       {/* Main Card */}
       <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] shadow-sm overflow-hidden mb-8`}>
         {/* Column header */}
         {isConnected && filtered.length > 0 && (
-          <div className={`hidden md:grid grid-cols-[2.4fr_1.1fr_1.2fr_1fr_28px] gap-4 px-5 py-3.5 border-b ${borderColor} text-[12px] font-semibold uppercase tracking-wide ${textMuted}`}>
-            <div>Transaction</div>
-            <div>Date</div>
+          <div className={`hidden md:grid ${cols} gap-4 px-6 py-3.5 border-b ${borderColor} text-[12px] font-semibold uppercase tracking-wide ${textMuted}`}>
+            <div>Date / Time</div>
+            <div>Type</div>
+            <div>Asset / Strategy</div>
             <div className="text-right">Amount</div>
+            <div className="text-right">Reward</div>
             <div className="text-right">Status</div>
-            <div />
           </div>
         )}
 
@@ -207,56 +211,60 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
           <div className="flex flex-col">
             {filtered.map((t) => {
               const open = expanded === t.txId;
-              const dir = dirOf(t);
-              const amtColor = !t.amount ? textMuted : t.amount.value >= 0 ? GREEN : RED;
+              const inflow = !!t.amount && t.amount.value >= 0;
+              const amtColor = !t.amount ? textMuted : inflow ? GREEN : RED;
+              const Arrow = inflow ? ArrowDownLeft : ArrowUpRight;
               const protocol = isProtocol(t.type);
               return (
                 <div key={t.txId} className={`border-b ${borderColor} last:border-b-0`}>
                   <div
-                    className={`grid grid-cols-[1fr_auto] md:grid-cols-[2.4fr_1.1fr_1.2fr_1fr_28px] gap-3 md:gap-4 px-5 py-3.5 items-center ${rowHover} transition-colors text-[14px] cursor-pointer`}
+                    className={`grid ${cols} gap-2 md:gap-4 px-6 py-4 items-center ${rowHover} transition-colors text-[14px] cursor-pointer`}
                     onClick={() => setExpanded(open ? null : t.txId)}
                   >
-                    {/* Transaction: icon + type + detail */}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <DirIcon dir={dir} />
-                      <div className="flex flex-col min-w-0">
-                        <span
-                          className="text-[13px] font-bold w-fit px-2 py-0.5 rounded-md leading-tight"
-                          style={protocol
-                            ? { background: `${PRIMARY}18`, color: PRIMARY }
-                            : { background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)', color: dark ? 'rgba(255,255,255,0.75)' : '#475569' }}
-                        >
-                          {t.type}
-                        </span>
-                        <span className={`text-[12px] font-medium ${textMuted} truncate mt-1`}>{t.detail}</span>
-                      </div>
+                    {/* Date / Time */}
+                    <div className={`${textMuted} text-[13px] order-1`}>{fmtTime(t.timestamp)}</div>
+
+                    {/* Type */}
+                    <div className="order-2">
+                      <span
+                        className="inline-flex text-[12px] font-bold px-2.5 py-1 rounded-md leading-tight"
+                        style={protocol ? { background: `${PRIMARY}18`, color: PRIMARY } : { background: neutralChip, color: dark ? 'rgba(255,255,255,0.75)' : '#475569' }}
+                      >
+                        {t.type}
+                      </span>
                     </div>
 
-                    {/* Date (desktop) */}
-                    <div className={`hidden md:block ${textMuted} text-[13px]`}>{fmtTime(t.timestamp)}</div>
+                    {/* Asset / Strategy */}
+                    <div className="order-3 font-medium truncate">{t.detail}</div>
 
                     {/* Amount */}
-                    <div className="text-right font-bold tabular-nums text-[14px]" style={{ color: amtColor }}>
-                      {t.amount ? <>{t.amount.display} <span className="font-semibold">{t.amount.sym}</span></> : <span className={textMuted}>—</span>}
+                    <div className="order-4 md:justify-end font-bold tabular-nums flex items-center gap-1" style={{ color: amtColor }}>
+                      {t.amount ? (
+                        <>
+                          <Arrow size={13} weight="bold" className="shrink-0" />
+                          <span>{t.amount.display} <span className="font-semibold">{t.amount.sym}</span></span>
+                        </>
+                      ) : <span className={textMuted}>—</span>}
+                    </div>
+
+                    {/* Reward */}
+                    <div className="order-5 md:text-right font-bold tabular-nums">
+                      {t.reward > 0 ? <span style={{ color: PRIMARY }}>+{t.reward} CODE</span> : <span className={textMuted}>—</span>}
                     </div>
 
                     {/* Status */}
-                    <div className="hidden md:flex justify-end">
+                    <div className="order-6 flex items-center justify-between md:justify-end gap-2">
                       {t.status === 'success' ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-bold" style={{ background: `${GREEN}1A`, color: GREEN }}>Success <Check size={12} weight="bold" /></span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-bold" style={{ background: `${RED}1A`, color: RED }}>Failed <X size={12} weight="bold" /></span>
                       )}
-                    </div>
-
-                    {/* Chevron */}
-                    <div className="hidden md:flex justify-end">
-                      <CaretDown size={15} className={`${textMuted} transition-transform ${open ? 'rotate-180' : ''}`} />
+                      <CaretDown size={15} className={`hidden md:block ${textMuted} transition-transform ${open ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
 
                   {open && (
-                    <div className={`mx-3 md:mx-5 mb-4 p-4 rounded-xl border ${borderColor} ${dark ? 'bg-[#0b0e14]' : 'bg-[#F8FAFC]'}`}>
+                    <div className={`mx-3 md:mx-6 mb-4 p-4 rounded-xl border ${borderColor} ${dark ? 'bg-[#0b0e14]' : 'bg-[#F8FAFC]'}`}>
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex flex-col gap-2.5 text-[13px] min-w-0">
                           <div className="flex items-center gap-4 flex-wrap">
@@ -272,10 +280,12 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
                             <span className={`${textMuted} shrink-0 w-[100px]`}>Network Fee</span>
                             <span className="font-medium tabular-nums">{t.fee > 0 ? `${t.fee.toFixed(6)} HBAR` : '—'}</span>
                           </div>
-                          <div className="flex items-center gap-4 md:hidden">
-                            <span className={`${textMuted} shrink-0 w-[100px]`}>Date</span>
-                            <span className="font-medium">{fmtTime(t.timestamp)}</span>
-                          </div>
+                          {t.reward > 0 && (
+                            <div className="flex items-center gap-4">
+                              <span className={`${textMuted} shrink-0 w-[100px]`}>CODE Earned</span>
+                              <span className="font-bold" style={{ color: PRIMARY }}>+{t.reward} CODE</span>
+                            </div>
+                          )}
                           {t.result !== 'SUCCESS' && (
                             <div className="flex items-center gap-4">
                               <span className={`${textMuted} shrink-0 w-[100px]`}>Result</span>

@@ -31,6 +31,19 @@ const TYPE_LABEL: Record<string, string> = {
   CRYPTOCREATEACCOUNT: 'Create Account',
 };
 
+// Contracts whose usage earns CODE points (Vault, Earn, P2P). Faucet excluded.
+const PROTOCOL_IDS = new Set(Object.keys(KNOWN).filter((id) => KNOWN[id] !== 'Test Faucet'));
+
+// Reference USD prices for CODE-point valuation (approximate is fine for a
+// gamification metric — keeps the route fast and deterministic).
+const PRICE_USD: Record<string, number> = {
+  HBAR: 0.065, USDC: 1, USDT: 1, SAUCE: 0.013, DOVU: 0.0013,
+  WBTC: 64000, WETH: 3000, PACK: 0.0001, JAM: 0.002, BONZO: 0.0005,
+};
+
+// CODE points for a protocol action: min 5, then ~1 CODE per $10 of value moved.
+const codeFor = (usd: number) => Math.max(5, Math.round(usd / 10));
+
 // token_id (0.0.x) -> { sym, decimals } from the deployed token set.
 const TOKENS = (cfg as any).tokens as Record<string, { sym: string; address: string; decimals: number }>;
 const tokenById: Record<string, { sym: string; decimals: number }> = {};
@@ -91,14 +104,30 @@ export async function GET(request: Request, { params }: { params: Promise<{ addr
 
       const detail = known || (amount ? amount.sym : name === 'CRYPTOTRANSFER' ? 'HBAR' : '—');
       const ts: string = t.consensus_timestamp;
+      const success = t.result === 'SUCCESS';
+
+      // CODE points: awarded when a successful tx moves value through a Creode
+      // protocol contract (Vault / Earn / P2P). Weighted by USD value moved, so
+      // a $1,000 action earns far more than a $10 one; minimum 5 per action. The
+      // gas-only parent contract-call record (tiny HBAR) is filtered by the $0.10
+      // floor, so a token order is counted once via its value-bearing record.
+      const parties = new Set<string>();
+      if (entity) parties.add(entity);
+      for (const tr of t.transfers || []) parties.add(tr.account);
+      for (const tt of t.token_transfers || []) parties.add(tt.account);
+      const touchesProtocol = [...parties].some((a) => PROTOCOL_IDS.has(a));
+      const usd = amount ? Math.abs(amount.value) * (PRICE_USD[amount.sym] ?? 0) : 0;
+      const reward = success && touchesProtocol && usd >= 0.1 ? codeFor(usd) : 0;
+
       return {
         txId: t.transaction_id,
         type,
         detail,
         amount: amount ? { value: amount.value, display: `${amount.value >= 0 ? '+' : ''}${fmt(amount.value)}`, sym: amount.sym } : null,
+        reward,
         fee: (Number(t.charged_tx_fee) || 0) / 1e8,
         timestamp: Math.floor(Number(ts)),
-        status: t.result === 'SUCCESS' ? 'success' : 'failed',
+        status: success ? 'success' : 'failed',
         result: t.result,
         hashscanUrl: `https://hashscan.io/${NETWORK}/transaction/${ts}`,
       };
