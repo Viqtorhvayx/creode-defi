@@ -335,7 +335,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
               </div>
               <div className="flex justify-between items-center">
                 <span className={`text-[13px] font-medium ${textMuted}`}>Estimated Daily Earnings</span>
-                <span className="text-[13px] font-bold text-[#00c076]">{strategy.dailyEarnings}</span>
+                <span className="text-[13px] font-bold text-[#10B981]">{strategy.dailyEarnings}</span>
               </div>
             </div>
 

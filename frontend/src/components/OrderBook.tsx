@@ -47,7 +47,7 @@ export const OrderBook: React.FC<Props> = ({ orders, pair, theme, lastPrice, onP
   const spreadPct = bestAsk && bestBid ? (spread / bestAsk) * 100 : 0;
 
   const Row: React.FC<{ l: Level; kind: 'ask' | 'bid' }> = ({ l, kind }) => {
-    const color = kind === 'ask' ? '#ff5353' : '#00c076';
+    const color = kind === 'ask' ? '#EF4444' : '#10B981';
     const bar = `${(l.total / maxTotal) * 100}%`;
     return (
       <button
@@ -55,7 +55,7 @@ export const OrderBook: React.FC<Props> = ({ orders, pair, theme, lastPrice, onP
         className="relative w-full grid grid-cols-3 items-center px-4 h-[26px] text-[12px] font-semibold tabular-nums hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
         title="Click to use this price"
       >
-        <div className="absolute right-0 top-0 bottom-0 pointer-events-none" style={{ width: bar, background: kind === 'ask' ? 'rgba(255,83,83,0.10)' : 'rgba(0,192,118,0.10)' }} />
+        <div className="absolute right-0 top-0 bottom-0 pointer-events-none" style={{ width: bar, background: kind === 'ask' ? 'rgba(239,68,68,0.10)' : 'rgba(16,185,129,0.10)' }} />
         <span className="text-left z-10" style={{ color }}>{formatPrice(l.price)}</span>
         <span className={`text-right z-10 ${textMain}`}>{l.size.toLocaleString(undefined, { maximumFractionDigits: 4 })}</span>
         <span className={`text-right z-10 ${textMuted}`}>{l.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
@@ -87,7 +87,7 @@ export const OrderBook: React.FC<Props> = ({ orders, pair, theme, lastPrice, onP
 
           {/* Spread / last price */}
           <div className={`flex items-center justify-between px-4 py-2 my-1 border-y ${dark ? 'border-white/5' : 'border-slate-100'}`}>
-            <span className="text-[16px] font-bold tabular-nums" style={{ color: lastPrice && bestBid && lastPrice >= bestBid ? '#00c076' : '#ff5353' }}>
+            <span className="text-[16px] font-bold tabular-nums" style={{ color: lastPrice && bestBid && lastPrice >= bestBid ? '#10B981' : '#EF4444' }}>
               {lastPrice ? formatPrice(lastPrice) : '—'}
             </span>
             <span className={`text-[11px] font-semibold ${textMuted}`}>

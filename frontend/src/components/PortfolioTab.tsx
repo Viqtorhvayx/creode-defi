@@ -33,7 +33,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
           <span className={`text-[13px] font-medium ${textMuted} mb-1`}>Total Net Worth</span>
           <div className="flex items-center gap-4">
             <span className={`text-[36px] font-bold tracking-tight ${textMain}`}>$45,250.00</span>
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-bold ${theme === 'dark' ? 'bg-[#16C784]/10 text-[#16C784]' : 'bg-[#dcfce7] text-[#16C784]'}`}>
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-bold ${theme === 'dark' ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-[#dcfce7] text-[#10B981]'}`}>
               +$1,240.50 (2.8%) Today
             </span>
           </div>
@@ -185,7 +185,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
                 </div>
               </div>
               <div className="text-[14px] font-bold text-right w-24">$15,200.00</div>
-              <div className="text-[13px] font-bold text-[#16C784] text-right w-16 flex justify-end items-center gap-1">
+              <div className="text-[13px] font-bold text-[#10B981] text-right w-16 flex justify-end items-center gap-1">
                 +5.4% <ArrowUpRight size={12} weight="bold" />
               </div>
             </div>
@@ -200,7 +200,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
                 </div>
               </div>
               <div className="text-[14px] font-bold text-right w-24">$12,000.00</div>
-              <div className="text-[13px] font-bold text-[#16C784] text-right w-16 flex justify-end items-center gap-1">
+              <div className="text-[13px] font-bold text-[#10B981] text-right w-16 flex justify-end items-center gap-1">
                 +0.0% <Minus size={12} weight="bold" />
               </div>
             </div>
@@ -238,7 +238,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             </div>
             <div className="font-medium">HBAR/USDC Farm</div>
             <div className="font-bold">$10,500.00</div>
-            <div className="text-[#16C784] font-bold">+$340.00</div>
+            <div className="text-[#10B981] font-bold">+$340.00</div>
             <div className="flex justify-end">
               <button className="px-4 py-1.5 rounded-[8px] border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
                 Manage
@@ -255,7 +255,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             </div>
             <div className="font-medium">90-Day USDC</div>
             <div className="font-bold">$12,000.00</div>
-            <div className="text-[#16C784] font-bold">+$120.00</div>
+            <div className="text-[#10B981] font-bold">+$120.00</div>
             <div className="flex justify-end">
               <button className="px-4 py-1.5 rounded-[8px] border border-[#00A8E8] text-[#00A8E8] font-bold hover:bg-[#00A8E8]/5 transition-colors">
                 Manage

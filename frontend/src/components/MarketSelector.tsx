@@ -92,7 +92,7 @@ export const MarketSelector: React.FC<Props> = ({ pairId, onSelect, stats, theme
                     <span className={`text-[15px] font-bold tracking-tight ${textMain}`}>{p.id}</span>
                     <span className={`text-[12px] font-semibold ${textMuted}`}>{formatVolume(vol)}</span>
                   </div>
-                  <span className={`text-[12px] font-bold tabular-nums ${chg >= 0 ? 'text-[#00c076]' : 'text-[#ff5353]'}`}>
+                  <span className={`text-[12px] font-bold tabular-nums ${chg >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                     {chg >= 0 ? '+' : ''}{chg.toFixed(2)}%
                   </span>
                 </button>

@@ -113,7 +113,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
 
   const emeraldRisk = {
     riskBgClass: theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50',
-    riskTextClass: 'text-emerald-600 dark:text-emerald-500',
+    riskTextClass: 'text-emerald-500 dark:text-emerald-500',
   };
   const roseRisk = {
     riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
@@ -511,7 +511,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md flex items-center gap-1 mb-0.5">
+                  <span className="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md flex items-center gap-1 mb-0.5">
                     ↑ 12.6%
                   </span>
                   <span className="text-[10px] font-medium text-slate-400">vs last 7 days</span>
@@ -535,7 +535,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md flex items-center gap-1 mb-0.5">
+                  <span className="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md flex items-center gap-1 mb-0.5">
                     ↑ 2
                   </span>
                   <span className="text-[10px] font-medium text-slate-400">vs last 7 days</span>

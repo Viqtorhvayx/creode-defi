@@ -693,7 +693,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
           {/* Warning Text */}
           <div className="flex items-start gap-2 mb-6 bg-red-50 dark:bg-red-500/10 p-3 rounded-[12px] border border-red-100 dark:border-red-500/20">
             <Warning size={16} weight="regular" className="text-red-500 mt-[1px] shrink-0 animate-pulse-once" />
-            <span className="text-[12px] font-medium text-red-600 dark:text-red-400 leading-snug">Early withdrawal incurs a time-decay penalty of up to 2% on principal. Accrued yield is still paid out in full.</span>
+            <span className="text-[12px] font-medium text-red-500 dark:text-red-500 leading-snug">Early withdrawal incurs a time-decay penalty of up to 2% on principal. Accrued yield is still paid out in full.</span>
           </div>
 
           {/* Summary Row */}

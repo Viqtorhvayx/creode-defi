@@ -37,8 +37,8 @@ interface Tx {
 }
 
 // Semantic palette: green = inflow/profit, red = outflow/failed, primary = brand.
-const GREEN = '#16C784';
-const RED = '#EA3943';
+const GREEN = '#10B981';
+const RED = '#EF4444';
 const PRIMARY = '#00A8E8';
 
 const isProtocol = (type: string) => /p2p|vault|swap|faucet|router|contract/i.test(type);

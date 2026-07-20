@@ -53,8 +53,8 @@ export const P2PCandleChart: React.FC<P2PCandleChartProps> = ({ theme, pairId, i
     });
     chartRef.current = chart;
     seriesRef.current = chart.addCandlestickSeries({
-      upColor: '#00c076', downColor: '#ff5353', borderVisible: false,
-      wickUpColor: '#00c076', wickDownColor: '#ff5353',
+      upColor: '#10B981', downColor: '#EF4444', borderVisible: false,
+      wickUpColor: '#10B981', wickDownColor: '#EF4444',
     });
 
     const handleResize = () => {

@@ -208,7 +208,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-8 pt-6 border-t border-transparent">
-            <button className="w-full py-3 rounded-md border border-[#EA3943] text-[#EA3943] font-bold text-[14px] hover:bg-[#EA3943]/5 transition-colors text-center">
+            <button className="w-full py-3 rounded-md border border-[#EF4444] text-[#EF4444] font-bold text-[14px] hover:bg-[#EF4444]/5 transition-colors text-center">
               Revoke Allowances
             </button>
             <button className={`w-full py-3 rounded-md ${theme === 'dark' ? 'bg-white/10 hover:bg-white/15' : 'bg-slate-100 hover:bg-slate-200'} ${textMain} font-bold text-[14px] transition-colors text-center`}>

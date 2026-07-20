@@ -162,7 +162,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   };
 
   const orderBtnClass = (base: string) => `w-full text-white font-bold py-3.5 rounded-[8px] transition-colors text-[14px] shadow-sm flex items-center justify-center gap-2 ${base}`;
-  const orderBtnColor = tradeSide === 'Long' ? 'bg-[#00c076] hover:bg-[#00ad6a]' : 'bg-[#ff5353] hover:bg-[#e04848]';
+  const orderBtnColor = tradeSide === 'Long' ? 'bg-[#10B981] hover:bg-[#059669]' : 'bg-[#EF4444] hover:bg-[#DC2626]';
   const orderBtnContent = txState === 'done'
     ? (<><CheckCircle size={16} weight="fill" /> Order placed</>)
     : txState === 'pending'
@@ -176,8 +176,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   
   const textMuted = theme === 'dark' ? 'text-white/60' : 'text-slate-500';
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
-  const greenColor = '#00c076';
-  const redColor = '#ff5353';
+  const greenColor = '#10B981';
+  const redColor = '#EF4444';
 
   // Real header numbers from the live feed (chart candles + market stats).
   const priceStr = mkt ? formatPrice(mkt.price) : '—';
@@ -373,12 +373,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                       <tr key={o.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
                         <td className="py-3 px-4 font-bold tracking-tight">{pair.id}</td>
                         <td className={`py-3 px-4 font-bold tracking-tight ${textMuted}`}>Limit</td>
-                        <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{o.side}</td>
+                        <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.side === 'Short' ? o.sellRemaining : o.buyRemaining)} {pair.base}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.price)} {pair.quote}</td>
                         <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
                         <td className="py-3 px-4 font-bold tracking-tight">
-                          <button onClick={() => cancelMyOrder(o)} disabled={busyId === o.id} className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1">
+                          <button onClick={() => cancelMyOrder(o)} disabled={busyId === o.id} className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1">
                             {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
                             Cancel
                           </button>
@@ -408,8 +408,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     )}
                     {trades.map((t, i) => (
                       <tr key={`${t.id}-${i}`} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                        <td className={`py-3 px-4 font-bold tracking-tight ${t.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{t.side === 'Short' ? 'Sell' : 'Buy'}</td>
-                        <td className={`py-3 px-4 text-right font-bold tracking-tight tabular-nums ${t.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{formatPrice(t.price)}</td>
+                        <td className={`py-3 px-4 font-bold tracking-tight ${t.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{t.side === 'Short' ? 'Sell' : 'Buy'}</td>
+                        <td className={`py-3 px-4 text-right font-bold tracking-tight tabular-nums ${t.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{formatPrice(t.price)}</td>
                         <td className="py-3 px-4 text-right font-bold tracking-tight tabular-nums">{formatPrice(t.amount)}</td>
                         <td className={`py-3 px-4 text-right font-semibold tabular-nums ${textMuted}`}>{t.time ? new Date(t.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</td>
                       </tr>
@@ -465,7 +465,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                               </div>
                             </div>
                           </td>
-                          <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{o.side}</td>
+                          <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">${fmtNum(o.price)}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">{fmtNum(baseAvail)} {baseSym}</td>
                           <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
@@ -474,7 +474,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                               <button
                                 onClick={() => cancelMyOrder(o)}
                                 disabled={busyId === o.id}
-                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#ff5353] text-[#ff5353] hover:bg-[#ff5353]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                               >
                                 {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
                                 Cancel
@@ -520,7 +520,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                      Short
                    </div>
                    <div 
-                     className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#00c076] left-1' : 'bg-[#ff5353] left-[calc(50%+2px)]'}`}
+                     className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-all duration-300 ${tradeSide === 'Long' ? 'bg-[#10B981] left-1' : 'bg-[#EF4444] left-[calc(50%+2px)]'}`}
                    ></div>
                 </div>
               </div>
@@ -547,8 +547,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 {activeTradeMode === 'Market' && (
                   <div className="flex flex-col flex-1 h-full">
                     {/* Info Box */}
-                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#10B981]/10 p-3 rounded-[8px] mb-5 border border-[#10B981]/20">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                       <div className="flex flex-col">
                         <span className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight mb-0.5">Market Order</span>
                         <span className="text-[11px] font-medium text-slate-600 dark:text-white/70 leading-tight">Your order will be executed instantly at the best available price.</span>
@@ -560,7 +560,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* Amount Input */}
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00c076] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#10B981] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
@@ -626,7 +626,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex flex-col gap-3 text-[12px] font-semibold pb-4 px-1 mt-auto">
                       <div className="flex justify-between">
                         <span className={textMuted}>You will receive (Est.)</span>
-                        <span className="text-[#00c076] font-bold tabular-nums">{formatPrice(recvEst)} {recvSym}</span>
+                        <span className="text-[#10B981] font-bold tabular-nums">{formatPrice(recvEst)} {recvSym}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className={textMuted}>Estimated Price</span>
@@ -652,8 +652,8 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 {activeTradeMode === 'Limit' && (
                   <div className="flex flex-col flex-1 h-full">
                     {/* Limit Alert Box */}
-                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#00c076]/10 p-3 rounded-[8px] mb-5 border border-[#00c076]/20">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c076" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+                    <div className="flex items-start gap-3 bg-[#e6faee] dark:bg-[#10B981]/10 p-3 rounded-[8px] mb-5 border border-[#10B981]/20">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
                         <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline>
                       </svg>
                       <div className="flex flex-col">
@@ -666,7 +666,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex justify-between items-end mb-2">
                       <span className={`text-[12px] font-semibold ${textMuted}`}>Amount (You pay)</span>
                     </div>
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00c076] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#10B981] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
@@ -687,7 +687,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex justify-between items-end mb-2 mt-1">
                       <span className={`text-[12px] font-semibold ${textMuted}`}>Price (Limit)</span>
                     </div>
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-5 focus-within:border-[#00c076] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-5 focus-within:border-[#10B981] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 

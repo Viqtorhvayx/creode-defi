@@ -9,7 +9,7 @@ import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../li
 import { TokenLogo } from './TokenLogo';
 
 const BLUE = '#00A8E8';
-const GREEN = '#00C076';
+const GREEN = '#10B981';
 
 interface PositionToken {
   sym: string;
@@ -235,9 +235,9 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
           <div className="flex items-start justify-between">
             <span className="text-[34px] font-bold tracking-tight leading-none" style={{ color: GREEN }}>{connectedLive ? '+' + fmtUsd(yieldUsd) : '+$3,240.50'}</span>
             {connectedLive ? (
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg" style={{ color: GREEN, backgroundColor: 'rgba(0,192,118,0.1)' }}>LIVE</span>
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg" style={{ color: GREEN, backgroundColor: 'rgba(16,185,129,0.1)' }}>LIVE</span>
             ) : (
-              <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: GREEN, borderColor: 'rgba(0,192,118,0.3)' }}>
+              <span className="text-[13px] font-bold px-3 py-1.5 rounded-lg border text-center leading-tight" style={{ color: GREEN, borderColor: 'rgba(16,185,129,0.3)' }}>
                 +8.24%<br /><span className="text-[10px] font-semibold opacity-70">(7D)</span>
               </span>
             )}

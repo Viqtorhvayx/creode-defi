@@ -202,7 +202,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
                 <span className="text-[13px] font-semibold text-slate-700 dark:text-white/80 pr-4 leading-tight">
                   Reduce HBAR early unstake penalty
                 </span>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-md shrink-0">
+                <span className="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-md shrink-0">
                   Passed
                 </span>
               </div>
@@ -212,7 +212,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
                 <span className="text-[13px] font-semibold text-slate-700 dark:text-white/80 pr-4 leading-tight">
                   Integrate Hedera Liquid Staking
                 </span>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-md shrink-0">
+                <span className="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-md shrink-0">
                   Passed
                 </span>
               </div>

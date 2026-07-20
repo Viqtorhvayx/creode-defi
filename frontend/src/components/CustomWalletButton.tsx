@@ -100,7 +100,7 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
             onClick={handleDisconnect}
             className={`w-full h-9 rounded-lg text-[12px] font-bold transition-colors border ${
               theme === 'dark'
-                ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+                ? 'border-red-500/30 text-red-500 hover:bg-red-500/10'
                 : 'border-red-200 text-red-500 hover:bg-red-50'
             }`}
           >
