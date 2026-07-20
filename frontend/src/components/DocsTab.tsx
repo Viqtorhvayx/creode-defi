@@ -13,7 +13,7 @@ const HASHSCAN = (addr: string) => `https://hashscan.io/testnet/contract/${addr}
 
 const CONTRACTS: { name: string; addr: string }[] = [
   { name: 'CreodeVault (time-locked savings)', addr: '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139' },
-  { name: 'CreodeYieldVaultV3 (Earn / auto-zap)', addr: '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3' },
+  { name: 'CreodeYieldVaultV2 (Earn / auto-zap)', addr: '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3' },
   { name: 'CreodeSwapRouter (constant-product AMM)', addr: '0x34624a10E293039c18724FFCb4e0431dA45DaED3' },
   { name: 'CreodeTreasurySwap', addr: '0x2a873ED611D755e8B73E29a4839E34136e70eC53' },
   { name: 'CreodeP2P (order-book escrow)', addr: '0x87b6de843538E31fc368e13BE232320915a734ef' },
@@ -148,7 +148,7 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           <ol className="list-decimal pl-5 space-y-1.5 mb-4">
             <Li>You deposit one token (e.g. HBAR).</Li>
             <Li>The <B>SwapRouter</B> (a constant-product AMM) swaps ~50% into the pair token to build a ~50/50 position.</Li>
-            <Li>The balanced position is deposited into <B>CreodeYieldVaultV3</B>, which accrues yield.</Li>
+            <Li>The balanced position is deposited into <B>CreodeYieldVaultV2</B>, which accrues yield.</Li>
           </ol>
           <P>You can <B>Compound</B> accrued rewards back into your position at any time, <B>Supply More</B>, or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
         </>
