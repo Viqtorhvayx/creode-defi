@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import { Wallet } from '@phosphor-icons/react';
 import { useWallet } from '../context/WalletContext';
 import { FaucetPanel } from './FaucetPanel';
+import { CTA_BLUE } from '../lib/ui';
 
 export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
-  const { isConnected, balance, balanceSymbol, connect, disconnect } = useWallet();
+  const { isConnected, address, accountId, balance, balanceSymbol, connect, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -44,32 +46,25 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
 
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-white/50' : 'text-slate-500';
-  const cardBg = theme === 'dark' ? 'bg-[#0F141A]' : 'bg-white';
   const borderColor = theme === 'dark' ? 'border-white/10' : 'border-[#EAECEF]';
+
+  // Hedera Native ID (0.0.x); fall back to a truncated EVM address while it resolves.
+  const walletLabel = accountId || (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'Connected');
 
   return (
     <div className="relative" ref={ref}>
-      {/* Trigger (toggles dropdown) */}
+      {/* Trigger (toggles dropdown) — CTA_BLUE: tinted at rest, solid on hover. */}
       <div
         role="button"
         tabIndex={0}
         onClick={() => setIsOpen((o) => !o)}
-        className="transition-all duration-300 flex items-center justify-center cursor-pointer select-none active:scale-95 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none rounded-[8px] px-4 py-1.5 hover:bg-black/10 dark:hover:bg-white/10"
+        className={`${CTA_BLUE} flex items-center gap-2 px-4 py-2 cursor-pointer select-none active:scale-95`}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#00A8E8] flex items-center justify-center text-white font-bold text-[14px]">C</div>
-          <div className="flex flex-col text-left">
-            <span className={`text-[13px] font-bold leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-              {displayBalance.replace(' HBAR', '')}
-            </span>
-            <span className={`text-[11px] font-medium leading-tight ${theme === 'dark' ? 'text-white/50' : 'text-slate-500'}`}>
-              Testnet
-            </span>
-          </div>
-          <svg className={`w-4 h-4 ml-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ${theme === 'dark' ? 'text-white/40' : 'text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        <Wallet size={17} weight="bold" />
+        <span className="text-[13px] font-bold leading-none tabular-nums">{walletLabel}</span>
+        <svg className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
 
       {/* Dropdown */}
@@ -78,7 +73,7 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
           isOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'
         }`}
       >
-        <div className={`${cardBg} border ${borderColor} rounded-[14px] shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] p-4`}>
+        <div className="border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl p-4">
           {/* Account summary */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex flex-col">

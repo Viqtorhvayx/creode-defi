@@ -10,7 +10,7 @@ import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { TokenLogo } from './TokenLogo';
-import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
+import { CTA_BLUE, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
 import { ChevronDown, X, Info } from 'lucide-react';
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
@@ -849,7 +849,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           <button
                             onClick={() => handleExit(row)}
                             disabled={busy}
-                            className={`w-[120px] h-[34px] text-[12px] font-medium rounded-[6px] transition-colors flex items-center justify-center mx-auto disabled:opacity-60 ${row.matured ? "text-[#10B981] border border-[#10B981] hover:bg-emerald-50 dark:hover:bg-[#10B981]/10" : "text-red-500 border border-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"}`}
+                            className={`${CTA_RED} w-[120px] h-[34px] text-[12px] flex items-center justify-center mx-auto`}
                           >
                             {busy ? <CircleNotch size={14} className="animate-spin" /> : (row.matured ? "Withdraw" : "Unlock")}
                           </button>
