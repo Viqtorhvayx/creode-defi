@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Wallet } from '@phosphor-icons/react';
 import { useWallet } from '../context/WalletContext';
 import { FaucetPanel } from './FaucetPanel';
@@ -10,11 +11,36 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
   const { isConnected, address, accountId, balance, balanceSymbol, connect, disconnect } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  // Panel is portalled to <body> so its backdrop-blur isn't killed by the
+  // header's own backdrop-blur ancestor; track the trigger's viewport rect.
+  const [coords, setCoords] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
 
-  // Close the dropdown on outside click.
+  const reposition = () => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setCoords({ top: r.bottom + 8, right: window.innerWidth - r.right });
+  };
+
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    reposition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+    return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
+    };
+  }, [isOpen]);
+
+  // Close the dropdown on outside click (trigger + portalled panel).
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setIsOpen(false);
+      const t = e.target as Node;
+      if (ref.current && ref.current.contains(t)) return;
+      if (panelRef.current && panelRef.current.contains(t)) return;
+      setIsOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -67,13 +93,16 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
         </svg>
       </div>
 
-      {/* Dropdown */}
-      <div
-        className={`absolute right-0 mt-2 w-[300px] z-50 origin-top-right transition-all duration-200 ${
-          isOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl p-4">
+      {/* Dropdown — portalled to <body> so its backdrop-blur samples the real
+          page behind it, not the header's own blurred layer. */}
+      {typeof document !== 'undefined' && createPortal(
+        <div
+          ref={panelRef}
+          style={{ position: 'fixed', top: coords.top, right: coords.right, zIndex: 60 }}
+          className={`w-[300px] origin-top-right transition-all duration-200 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-lg dark:shadow-none backdrop-blur-xl rounded-xl p-4 ${
+            isOpen ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'
+          }`}
+        >
           {/* Account summary */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex flex-col">
@@ -101,8 +130,9 @@ export default function CustomWalletButton({ theme = 'light' }: { theme?: 'light
           >
             Disconnect
           </button>
-        </div>
-      </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

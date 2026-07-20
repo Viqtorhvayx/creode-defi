@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { PAIRS, getPair, formatVolume, type MarketPair, type PairStat } from '../lib/market';
 import { TokenLogo } from './TokenLogo';
@@ -28,10 +29,36 @@ export const MarketSelector: React.FC<Props> = ({ pairId, onSelect, stats, theme
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const pair = getPair(pairId);
 
+  // Panel is portalled to <body> so its backdrop-blur samples the real page,
+  // not the top trading bar's own blurred layer; track the trigger rect.
+  const [coords, setCoords] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
+  const reposition = () => {
+    const el = rootRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setCoords({ left: r.left, top: r.bottom + 10 });
+  };
+  useLayoutEffect(() => {
+    if (!open) return;
+    reposition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+    return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
+    };
+  }, [open]);
+
   useEffect(() => {
-    const onDoc = (e: MouseEvent) => { if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false); };
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (rootRef.current && rootRef.current.contains(t)) return;
+      if (panelRef.current && panelRef.current.contains(t)) return;
+      setOpen(false);
+    };
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
@@ -56,9 +83,13 @@ export const MarketSelector: React.FC<Props> = ({ pairId, onSelect, stats, theme
         <ChevronDown className={`w-4 h-4 ${textMuted} group-hover:text-[#00A8E8] transition-colors ${open ? 'rotate-180' : ''} transition-transform`} />
       </button>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute left-0 top-[calc(100%+10px)] z-50 w-[340px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl overflow-hidden">
+      {/* Dropdown — portalled to <body> so backdrop-blur works. */}
+      {open && typeof document !== 'undefined' && createPortal(
+        <div
+          ref={panelRef}
+          style={{ position: 'fixed', left: coords.left, top: coords.top, zIndex: 60 }}
+          className="w-[340px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-lg dark:shadow-none backdrop-blur-xl rounded-xl overflow-hidden"
+        >
           <div className={`p-3 border-b ${border}`}>
             <div className={`flex items-center gap-2 px-3 py-2 rounded-[10px] border ${border} ${dark ? 'bg-black/20' : 'bg-slate-50'}`}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={textMuted}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
@@ -98,7 +129,8 @@ export const MarketSelector: React.FC<Props> = ({ pairId, onSelect, stats, theme
               );
             })}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

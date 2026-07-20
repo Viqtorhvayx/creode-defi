@@ -7,14 +7,17 @@
 
 const CTA_BASE = 'font-bold rounded-[12px] transition-colors disabled:opacity-60';
 
+// Tinted at rest, a touch stronger on hover, and solid ONLY while actively
+// pressed (:active) — so the solid fill is momentary click feedback that
+// reverts to the tinted look as soon as the press is released.
 export const CTA_BLUE =
-  `${CTA_BASE} bg-[#00A8E8]/15 text-[#00A8E8] hover:bg-[#00A8E8] hover:text-white active:bg-[#00A8E8] active:text-white`;
+  `${CTA_BASE} bg-[#00A8E8]/15 text-[#00A8E8] hover:bg-[#00A8E8]/25 active:bg-[#00A8E8] active:text-white`;
 
 export const CTA_GREEN =
-  `${CTA_BASE} bg-[#10B981]/15 text-[#10B981] hover:bg-[#10B981] hover:text-white active:bg-[#10B981] active:text-white`;
+  `${CTA_BASE} bg-[#10B981]/15 text-[#10B981] hover:bg-[#10B981]/25 active:bg-[#10B981] active:text-white`;
 
 export const CTA_RED =
-  `${CTA_BASE} bg-[#EF4444]/15 text-[#EF4444] hover:bg-[#EF4444] hover:text-white active:bg-[#EF4444] active:text-white`;
+  `${CTA_BASE} bg-[#EF4444]/15 text-[#EF4444] hover:bg-[#EF4444]/25 active:bg-[#EF4444] active:text-white`;
 
 // Solid variants for in-progress / confirmed feedback states.
 export const CTA_BLUE_SOLID = `${CTA_BASE} bg-[#00A8E8] text-white`;
