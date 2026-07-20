@@ -6,6 +6,7 @@ import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
+import { TokenLogo } from './TokenLogo';
 
 const BLUE = '#00A8E8';
 const GREEN = '#00C076';
@@ -193,12 +194,9 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
   );
 
   const Logos: React.FC<{ t1: PositionToken; t2?: PositionToken }> = ({ t1, t2 }) => {
-    const circle = (t: PositionToken, z: string) =>
-      t.logo ? (
-        <img src={t.logo} alt={t.sym} className={`w-9 h-9 rounded-full border-2 ${z} ${logoBorder}`} />
-      ) : (
-        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[13px] border-2 ${z} ${logoBorder} ${t.bg}`}>{t.fallback}</div>
-      );
+    const circle = (t: PositionToken, z: string) => (
+      <TokenLogo sym={t.sym} size={36} className={`border-2 ${z} ${logoBorder}`} />
+    );
     return <div className="flex -space-x-2.5 shrink-0">{circle(t1, 'z-10')}{t2 && circle(t2, '')}</div>;
   };
 

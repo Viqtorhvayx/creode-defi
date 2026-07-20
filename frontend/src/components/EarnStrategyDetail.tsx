@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Ligh
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
+import { TokenLogo } from './TokenLogo';
 
 export interface StrategyToken {
   sym: string;
@@ -37,16 +38,7 @@ interface EarnStrategyDetailProps {
 const BLUE = '#00A8E8';
 
 const TokenBadge: React.FC<{ token: StrategyToken; size: number; border: string }> = ({ token, size, border }) => (
-  token.logo ? (
-    <img src={token.logo} alt={token.sym} className={`rounded-full border-2 ${border}`} style={{ width: size, height: size }} />
-  ) : (
-    <div
-      className={`rounded-full flex items-center justify-center text-white font-bold border-2 ${border} ${token.bg}`}
-      style={{ width: size, height: size, fontSize: size * 0.4 }}
-    >
-      {token.fallback}
-    </div>
-  )
+  <TokenLogo sym={token.sym} size={size} className={`border-2 ${border}`} />
 );
 
 export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, strategy, onBack }) => {
@@ -144,13 +136,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
 
   const TokenPill: React.FC<{ token: StrategyToken }> = ({ token }) => (
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shrink-0 ${pillBg}`}>
-      {token.logo ? (
-        <img src={token.logo} alt={token.sym} className="w-[18px] h-[18px] rounded-full" />
-      ) : (
-        <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center ${token.bg}`}>
-          <span className="text-white text-[10px] font-bold">{token.fallback}</span>
-        </div>
-      )}
+      <TokenLogo sym={token.sym} size={18} />
       <span className="text-[13px] font-bold">{token.sym}</span>
     </div>
   );
@@ -296,11 +282,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                         : `border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none ${textMuted} hover:bg-black/10 dark:hover:bg-white/10`
                     }`}
                   >
-                    {t.logo ? (
-                      <img src={t.logo} alt={t.sym} className="w-[18px] h-[18px] rounded-full" />
-                    ) : (
-                      <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-white text-[10px] font-bold ${t.bg}`}>{t.fallback}</span>
-                    )}
+                    <TokenLogo sym={t.sym} size={18} />
                     {t.sym}
                   </button>
                 );
@@ -336,11 +318,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
                 {(meta?.single ? [{ t: token1, out: out1 }] : [{ t: token1, out: out1 }, { t: token2, out: out2 }]).map(({ t, out }) => (
                   <div key={t.sym} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {t.logo ? (
-                        <img src={t.logo} alt={t.sym} className="w-[20px] h-[20px] rounded-full" />
-                      ) : (
-                        <span className={`w-[20px] h-[20px] rounded-full flex items-center justify-center text-white text-[10px] font-bold ${t.bg}`}>{t.fallback}</span>
-                      )}
+                      <TokenLogo sym={t.sym} size={20} />
                       <span className={`text-[13px] font-semibold ${textMain}`}>{t.sym}</span>
                     </div>
                     <span className={`text-[13px] font-bold ${hasAmt ? textMain : textMuted}`}>~{fmtTok(out)}</span>

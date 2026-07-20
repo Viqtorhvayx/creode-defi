@@ -4,6 +4,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
+import { TokenLogo } from './TokenLogo';
 
 interface PriceChartProps {
   theme?: 'light' | 'dark';
@@ -209,17 +210,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       {/* Header section exactly as reference */}
       <div className="flex justify-between items-start w-full mb-8">
         <div className="flex items-center gap-4">
-          {hbarLogoUrl ? (
-            <img 
-              src={hbarLogoUrl} 
-              alt="HBAR Logo" 
-              className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none object-cover" 
-            />
-          ) : (
-            <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center bg-white dark:bg-white/5 shadow-sm dark:shadow-none">
-              <span className="text-[20px] font-bold text-slate-900 dark:text-white/90">H</span>
-            </div>
-          )}
+          <TokenLogo sym="HBAR" size={48} className="border border-slate-200 dark:border-white/5" />
           <div className="flex flex-col">
             <h3 className="text-[16px] font-bold tracking-tight mb-0.5 text-slate-900 dark:text-white">HBAR Market</h3>
             <span className="text-[12px] font-bold text-slate-500 dark:text-white/50 uppercase tracking-widest">HBAR / USD</span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { P2PCandleChart, type MarketStats } from './P2PCandleChart';
 import { MarketSelector } from './MarketSelector';
+import { TokenLogo } from './TokenLogo';
 import { OrderBook } from './OrderBook';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
 import { useWalletClient, useAccount } from 'wagmi';
@@ -36,7 +37,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const stat = pairStats[selectedPairId];
   // Long pays the quote token to buy base; Short pays (sells) the base token.
   const payTokenSym = tradeSide === 'Long' ? pair.quote : pair.base;
-  const payTokenIcon = tradeSide === 'Long' ? pair.quoteIcon : pair.baseIcon;
   const recvSym = tradeSide === 'Long' ? pair.base : pair.quote;
 
   // Real 24h volume/change for every market (drives the selector badges).
@@ -571,9 +571,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         />
                         
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: payTokenIcon.bg, color: payTokenIcon.fg }}>
-                             <span className="text-[10px] font-bold">{payTokenIcon.label}</span>
-                          </div>
+                          <TokenLogo sym={payTokenSym} size={18} />
                           <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                         </div>
                       </div>
@@ -678,9 +676,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-w-[90px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-sm dark:shadow-none cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0">
-                          <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0" style={{ background: payTokenIcon.bg, color: payTokenIcon.fg }}>
-                             <span className="text-[10px] font-bold">{payTokenIcon.label}</span>
-                          </div>
+                          <TokenLogo sym={payTokenSym} size={18} />
                           <span className="text-[13px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                         </div>
                       </div>

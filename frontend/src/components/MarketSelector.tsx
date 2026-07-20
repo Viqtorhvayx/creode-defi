@@ -3,21 +3,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { PAIRS, getPair, formatVolume, type MarketPair, type PairStat } from '../lib/market';
+import { TokenLogo } from './TokenLogo';
 
-// Overlapping token-pair icons, like the LambdaPlex market list.
+// Overlapping token-pair logos, like the LambdaPlex market list.
 const PairIcons: React.FC<{ pair: MarketPair; size?: number }> = ({ pair, size = 26 }) => (
   <div className="flex items-center shrink-0" style={{ width: size * 1.6 }}>
-    <div
-      className="rounded-full flex items-center justify-center font-bold border-2 z-10"
-      style={{ width: size, height: size, background: pair.baseIcon.bg, color: pair.baseIcon.fg, borderColor: 'var(--sel-ring)', fontSize: size * 0.5 }}
-    >
-      {pair.baseIcon.label}
+    <div className="rounded-full z-10 ring-2" style={{ ['--tw-ring-color' as any]: 'var(--sel-ring)' }}>
+      <TokenLogo sym={pair.base} size={size} />
     </div>
-    <div
-      className="rounded-full flex items-center justify-center font-bold border-2 -ml-2"
-      style={{ width: size, height: size, background: pair.quoteIcon.bg, color: pair.quoteIcon.fg, borderColor: 'var(--sel-ring)', fontSize: size * 0.5 }}
-    >
-      {pair.quoteIcon.label}
+    <div className="rounded-full -ml-2 ring-2" style={{ ['--tw-ring-color' as any]: 'var(--sel-ring)' }}>
+      <TokenLogo sym={pair.quote} size={size} />
     </div>
   </div>
 );

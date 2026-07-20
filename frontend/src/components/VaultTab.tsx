@@ -9,6 +9,7 @@ import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
+import { TokenLogo } from './TokenLogo';
 import { ChevronDown, X, Info } from 'lucide-react';
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
@@ -137,15 +138,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [minDeposits, setMinDeposits] = useState<Record<string, number>>({});
 
 
-  const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
-  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
-  const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>(null);
-  const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>(null);
-  const [packLogoUrlSmall, setPackLogoUrlSmall] = useState<string | null>(null);
-  const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
-  const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
-  const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>(null);
-  const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>(null);
+  // Default to bundled real logos (public/tokens/*.png) so token icons always render.
+  const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>('/tokens/hbar.png');
+  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>('/tokens/usdt.png');
+  const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>('/tokens/usdc.png');
+  const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>('/tokens/sauce.png');
+  const [packLogoUrlSmall, setPackLogoUrlSmall] = useState<string | null>('/tokens/pack.png');
+  const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>('/tokens/wbtc.png');
+  const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>('/tokens/weth.png');
+  const [bonzoLogoUrlSmall, setBonzoLogoUrlSmall] = useState<string | null>('/tokens/bonzo.png');
+  const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>('/tokens/jam.png');
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance, isConnected } = useWallet();
@@ -548,11 +550,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
             <div className="flex flex-col items-start px-3 py-1.5 w-fit rounded-[12px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none mt-[-6px] lg:mt-[-12px]">
               <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-none mb-1">Secured by</span>
               <div className="flex items-center gap-1.5">
-                {hbarLogoUrlSmall ? (
-                  <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none bg-slate-900 dark:bg-white" />
-                ) : (
-                  <div className="w-4 h-4 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[8px] font-black shrink-0 shadow-sm dark:shadow-none">H</div>
-                )}
+                <TokenLogo sym="HBAR" size={16} />
                 <span className="text-[12px] font-semibold text-gray-900 dark:text-white leading-none">Hedera</span>
               </div>
             </div>
@@ -591,27 +589,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center justify-between gap-1 px-3 py-1.5 w-[96px] rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-md cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                   >
-                    {activeToken === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
-                      <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'USDT' && !isLogosLoading && usdtLogoUrlSmall ? (
-                      <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'USDC' && !isLogosLoading && usdcLogoUrlSmall ? (
-                      <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'SAUCE' && !isLogosLoading && sauceLogoUrlSmall ? (
-                      <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'PACK' && !isLogosLoading && packLogoUrlSmall ? (
-                      <img src={packLogoUrlSmall} alt="PACK Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'WBTC' && !isLogosLoading && wbtcLogoUrlSmall ? (
-                      <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'WETH' && !isLogosLoading && wethLogoUrlSmall ? (
-                      <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
-                      <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : activeToken === 'JAM' && !isLogosLoading && jamLogoUrlSmall ? (
-                      <img src={jamLogoUrlSmall} alt="JAM Logo" className="w-4 h-4 rounded-full object-cover shrink-0 shadow-sm dark:shadow-none" />
-                    ) : (
-                      <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[10px] font-black shrink-0">{activeToken.charAt(0)}</span>
-                    )}
+                    <TokenLogo sym={activeToken} size={16} />
                     <span className="text-[12px] font-bold text-gray-900 dark:text-white leading-none">{activeToken}</span>
                     <ChevronDown className={`w-3 h-3 text-slate-500 dark:text-white/60 ml-0.5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
                   </div>
@@ -628,27 +606,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                           className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-200 group outline-none focus:outline-none focus:ring-0 ${activeToken === token ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-slate-50 dark:hover:bg-[#00A8E8]/5'}`}
                         >
                           <div className="flex items-center gap-3">
-                            {token === 'HBAR' && !isLogosLoading && hbarLogoUrlSmall ? (
-                              <img src={hbarLogoUrlSmall} alt="HBAR Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'USDT' && !isLogosLoading && usdtLogoUrlSmall ? (
-                              <img src={usdtLogoUrlSmall} alt="USDT Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'USDC' && !isLogosLoading && usdcLogoUrlSmall ? (
-                              <img src={usdcLogoUrlSmall} alt="USDC Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'SAUCE' && !isLogosLoading && sauceLogoUrlSmall ? (
-                              <img src={sauceLogoUrlSmall} alt="SAUCE Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'PACK' && !isLogosLoading && packLogoUrlSmall ? (
-                              <img src={packLogoUrlSmall} alt="PACK Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'WBTC' && !isLogosLoading && wbtcLogoUrlSmall ? (
-                              <img src={wbtcLogoUrlSmall} alt="WBTC Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'WETH' && !isLogosLoading && wethLogoUrlSmall ? (
-                              <img src={wethLogoUrlSmall} alt="WETH Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'BONZO' && !isLogosLoading && bonzoLogoUrlSmall ? (
-                              <img src={bonzoLogoUrlSmall} alt="BONZO Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : token === 'JAM' && !isLogosLoading && jamLogoUrlSmall ? (
-                              <img src={jamLogoUrlSmall} alt="JAM Logo" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                            ) : (
-                              <span className="w-6 h-6 rounded-full bg-slate-100 dark:bg-[#1F2937] text-slate-900 dark:text-white flex items-center justify-center text-[12px] font-black shrink-0">{token.charAt(0)}</span>
-                            )}
+                            <TokenLogo sym={token} size={24} />
                             <span className={`text-[13px] font-bold ${activeToken === token ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white group-hover:text-[#00A8E8] dark:group-hover:text-[#00A8E8]'}`}>{token}</span>
                           </div>
                           

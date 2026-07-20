@@ -6,6 +6,7 @@ import { BrowserProvider, JsonRpcProvider, Contract, formatUnits } from 'ethers'
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
+import { TokenLogo } from './TokenLogo';
 
 // HTS tokens dripped by the faucet (~$500 worth of each, daily). HBAR is native
 // — get it from the official Hedera faucet (faucet.hedera.com), not here.
@@ -142,8 +143,9 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
         {FAUCET_TOKENS.map((t) => (
           <div
             key={t.sym}
-            className={`flex flex-col items-center justify-center py-1.5 rounded-lg border ${borderColor} ${theme === 'dark' ? 'bg-white/[0.02]' : 'bg-slate-50'}`}
+            className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-lg border ${borderColor} ${theme === 'dark' ? 'bg-white/[0.02]' : 'bg-slate-50'}`}
           >
+            <TokenLogo sym={t.sym} size={16} />
             <span className="text-[10px] font-bold text-[#00A8E8] leading-tight">{drips[t.sym] ?? '…'}</span>
             <span className={`text-[9px] font-semibold ${textMuted}`}>{t.sym}</span>
           </div>

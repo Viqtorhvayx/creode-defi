@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TokenLogo } from './TokenLogo';
 import { ArrowUpRight, Minus, ArrowRight } from '@phosphor-icons/react';
 
 interface PortfolioTabProps {
@@ -177,11 +178,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             {/* Row 1 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 12H9M15 12V7H17V17H15V12ZM9 12V7H7V17H9V12Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
+                <TokenLogo sym="HBAR" size={40} />
                 <div className="flex flex-col">
                   <span className={`text-[14px] font-bold ${textMain} leading-tight`}>HBAR</span>
                   <span className={`text-[12px] font-medium ${textMuted}`}>Hedera</span>
@@ -196,9 +193,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ theme }) => {
             {/* Row 2 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#2775CA] flex items-center justify-center text-white shrink-0">
-                  <span className="font-bold text-[18px] leading-none">$</span>
-                </div>
+                <TokenLogo sym="USDC" size={40} />
                 <div className="flex flex-col">
                   <span className={`text-[14px] font-bold ${textMain} leading-tight`}>USDC</span>
                   <span className={`text-[12px] font-medium ${textMuted}`}>USD Coin</span>

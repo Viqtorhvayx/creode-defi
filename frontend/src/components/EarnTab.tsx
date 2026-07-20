@@ -29,12 +29,14 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   const [selectedStrategy, setSelectedStrategy] = useState<any | null>(null);
   
   // State for token logos
-  const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>(null);
-  const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>(null);
-  const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>(null);
-  const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>(null);
-  const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>(null);
-  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>(null);
+  // Default to bundled real logos (public/tokens/*.png); a runtime fetch may
+  // swap in an equivalent CDN URL, but these guarantee logos with no network.
+  const [hbarLogoUrlSmall, setHbarLogoUrlSmall] = useState<string | null>('/tokens/hbar.png');
+  const [usdcLogoUrlSmall, setUsdcLogoUrlSmall] = useState<string | null>('/tokens/usdc.png');
+  const [sauceLogoUrlSmall, setSauceLogoUrlSmall] = useState<string | null>('/tokens/sauce.png');
+  const [wbtcLogoUrlSmall, setWbtcLogoUrlSmall] = useState<string | null>('/tokens/wbtc.png');
+  const [wethLogoUrlSmall, setWethLogoUrlSmall] = useState<string | null>('/tokens/weth.png');
+  const [usdtLogoUrlSmall, setUsdtLogoUrlSmall] = useState<string | null>('/tokens/usdt.png');
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
   const [priceUsd, setPriceUsd] = useState<Record<string, number>>({});
 
