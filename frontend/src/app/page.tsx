@@ -16,6 +16,7 @@ import { EarnTab } from '../components/EarnTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
 import { SettingsTab } from '../components/SettingsTab';
+import { DocsTab } from '../components/DocsTab';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -102,6 +103,12 @@ export default function Dashboard() {
             <SettingsTab theme={theme} onSetTheme={setThemeTo} />
           </div>
         );
+      case 'Docs':
+        return <div className="pt-[39px] pb-8"><DocsTab theme={theme} focus="overview" /></div>;
+      case 'Audits':
+        return <div className="pt-[39px] pb-8"><DocsTab theme={theme} focus="security" /></div>;
+      case 'Support':
+        return <div className="pt-[39px] pb-8"><DocsTab theme={theme} focus="support" /></div>;
       default:
         return null;
     }
