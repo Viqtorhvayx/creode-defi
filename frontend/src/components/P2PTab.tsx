@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { P2PCandleChart, type MarketStats } from './P2PCandleChart';
 import { MarketSelector } from './MarketSelector';
-import { ChevronDown } from 'lucide-react';
+import { OrderBook } from './OrderBook';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
 import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
-import { createLimitOrder, marketFill, fetchOpenOrders, fillOrderById, cancelOrder, fetchBalance, type OpenOrder } from '../lib/p2p';
+import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
 
 interface P2PTabProps {
@@ -13,11 +13,11 @@ interface P2PTabProps {
 }
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
-  const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit' | 'Trigger'>('Market');
+  const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit'>('Market');
   const [activeInterval, setActiveInterval] = useState<Timeframe>('1H');
   const [selectedPairId, setSelectedPairId] = useState<string>('HBAR-USDC');
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
-  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Positions' | 'Assets' | 'Open Peer Orders'>('Orders');
+  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('1500');
   const [priceAmount, setPriceAmount] = useState<string>('0.0815');
@@ -66,7 +66,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   const loadOrders = useCallback(async () => {
     try {
-      const list = await fetchOpenOrders(selectedPairId);
+      const list = await fetchBook(selectedPairId);
       setOpenOrders(list.filter((o) => o.side !== 'Other'));
     } catch (e) {
       console.error('[P2P] failed to load open orders:', e);
@@ -81,6 +81,27 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     const t = setInterval(loadOrders, 10_000);
     return () => clearInterval(t);
   }, [loadOrders]);
+
+  // Recent on-chain fills (Trades tape).
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [tradesLoading, setTradesLoading] = useState(true);
+  useEffect(() => {
+    let alive = true;
+    setTradesLoading(true);
+    const load = () => fetchTrades(selectedPairId)
+      .then((t) => { if (alive) setTrades(t); })
+      .catch(() => {})
+      .finally(() => { if (alive) setTradesLoading(false); });
+    load();
+    const t = setInterval(load, 15_000);
+    return () => { alive = false; clearInterval(t); };
+  }, [selectedPairId]);
+
+  // Clicking an order-book row pre-fills the limit price.
+  const usePrice = (price: number) => {
+    setPriceAmount(String(price));
+    setActiveTradeMode('Limit');
+  };
 
   // Take (fill) another maker's resting order — pay its full remaining buy side.
   const takeOrder = async (o: OpenOrder) => {
@@ -210,9 +231,6 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             </div>
           </div>
         </div>
-        <div>
-           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cursor-pointer hover:stroke-white transition-colors"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        </div>
       </div>
 
       {/* MAIN LAYOUT */}
@@ -253,36 +271,39 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-full shadow-sm dark:shadow-none">
-                    {(['15m', '1H', '4H', '1D', '1W'] as const).map((tf) => {
-                      const active = activeInterval === tf;
-                      return (
-                        <button
-                          key={tf}
-                          onClick={() => setActiveInterval(tf)}
-                          className={`text-[12px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide border border-transparent ${
-                            active
-                              ? 'bg-transparent text-[#00A8E8] shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]'
-                              : theme === 'dark'
-                                ? 'text-white/40 hover:text-white hover:bg-white/5'
-                                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-                          }`}
-                        >
-                          {tf}
-                        </button>
-                      );
-                    })}
+                {activeChartTab === 'Market Overview' && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1 items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1 rounded-full shadow-sm dark:shadow-none">
+                      {(['15m', '1H', '4H', '1D', '1W'] as const).map((tf) => {
+                        const active = activeInterval === tf;
+                        return (
+                          <button
+                            key={tf}
+                            onClick={() => setActiveInterval(tf)}
+                            className={`text-[12px] font-bold transition-all duration-300 rounded-full py-1.5 px-3.5 tracking-wide border border-transparent ${
+                              active
+                                ? 'bg-transparent text-[#00A8E8] shadow-[inset_0_0_20px_rgba(0,168,232,0.35)]'
+                                : theme === 'dark'
+                                  ? 'text-white/40 hover:text-white hover:bg-white/5'
+                                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            {tf}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className={`w-[34px] h-[34px] flex items-center justify-center rounded-full border ${borderColor} cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 shadow-sm transition-colors`}>
-                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme === 'dark' ? 'white' : 'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="7" y="3" width="2" height="18"></rect><rect x="15" y="3" width="2" height="18"></rect><rect x="5" y="8" width="6" height="4" rx="1"></rect><rect x="13" y="12" width="6" height="4" rx="1"></rect></svg>
-                  </div>
-                </div>
+                )}
               </div>
-              
-              {/* Chart Graphic Area */}
+
+              {/* Chart / Order Book Area */}
               <div className="flex-1 w-full relative overflow-hidden flex flex-col mb-8">
-                <P2PCandleChart theme={theme} pairId={selectedPairId} interval={activeInterval} onStats={setMkt} />
+                {activeChartTab === 'Market Overview' ? (
+                  <P2PCandleChart theme={theme} pairId={selectedPairId} interval={activeInterval} onStats={setMkt} />
+                ) : (
+                  <OrderBook orders={openOrders} pair={pair} theme={theme} lastPrice={mkt?.price ?? stat?.price ?? 0} onPickPrice={usePrice} />
+                )}
               </div>
 
               {/* Footer Stats Row */}
@@ -311,7 +332,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col min-h-[300px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             {/* Tabs */}
             <div className={`flex items-center px-3 pt-4 border-b ${borderColor}`}>
-              {['Orders', 'Positions', 'Assets', 'Open Peer Orders'].map((tab) => (
+              {['Orders', 'Trades', 'Open Peer Orders'].map((tab) => (
                 <div 
                   key={tab}
                   className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
@@ -362,6 +383,35 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                             Cancel
                           </button>
                         </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
+              {activeOrderTab === 'Trades' && (
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className={textMuted}>
+                      <th className="font-normal py-3 px-4">Side</th>
+                      <th className="font-normal py-3 px-4 text-right">Price ({pair.quote})</th>
+                      <th className="font-normal py-3 px-4 text-right">Amount ({pair.base})</th>
+                      <th className="font-normal py-3 px-4 text-right">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`divide-y ${theme === 'dark' ? 'divide-white/5' : 'divide-slate-100'}`}>
+                    {tradesLoading && trades.length === 0 && (
+                      <tr><td colSpan={4} className={`py-10 text-center ${textMuted}`}><CircleNotch size={18} weight="bold" className="animate-spin inline-block mr-2 align-[-3px]" />Loading recent trades…</td></tr>
+                    )}
+                    {!tradesLoading && trades.length === 0 && (
+                      <tr><td colSpan={4} className={`py-10 text-center ${textMuted}`}>No trades on this market yet.</td></tr>
+                    )}
+                    {trades.map((t, i) => (
+                      <tr key={`${t.id}-${i}`} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <td className={`py-3 px-4 font-bold tracking-tight ${t.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{t.side === 'Short' ? 'Sell' : 'Buy'}</td>
+                        <td className={`py-3 px-4 text-right font-bold tracking-tight tabular-nums ${t.side === 'Short' ? 'text-[#ff5353]' : 'text-[#00c076]'}`}>{formatPrice(t.price)}</td>
+                        <td className="py-3 px-4 text-right font-bold tracking-tight tabular-nums">{formatPrice(t.amount)}</td>
+                        <td className={`py-3 px-4 text-right font-semibold tabular-nums ${textMuted}`}>{t.time ? new Date(t.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -546,7 +596,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           min="0"
                           max="100"
                           value={posSize}
-                          onChange={(e) => setPosSize(Number(e.target.value))}
+                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (payBalance) setPayAmount(String(Number((payBalance * p / 100).toFixed(6)))); }}
                           className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
                         />
                         {/* Markers */}
@@ -673,7 +723,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           min="0"
                           max="100"
                           value={posSize}
-                          onChange={(e) => setPosSize(Number(e.target.value))}
+                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (payBalance) setPayAmount(String(Number((payBalance * p / 100).toFixed(6)))); }}
                           className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
                         />
                         {/* Markers */}
@@ -725,7 +775,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
             {/* Content */}
             <div className="p-6 flex items-center justify-between">
               <span className={`text-[13px] font-medium ${textMuted} leading-relaxed max-w-[220px]`}>
-                Low fees, deep liquidity, and best execution.
+                Non-custodial peer-to-peer escrow. Every trade settles on-chain on Hedera — no house, no custody.
               </span>
               <div className="w-12 h-12 bg-gradient-to-br from-[#00A8E8] to-[#007ba8] rounded-[12px] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,168,232,0.4)]">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>

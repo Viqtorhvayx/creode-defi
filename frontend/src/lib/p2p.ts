@@ -110,6 +110,20 @@ export async function fetchOpenOrders(pairId: string): Promise<OpenOrder[]> {
   return out;
 }
 
+// Client-side wrappers that read through the /api/p2p server route (avoids each
+// user's browser hitting the Hedera RPC directly). Used by the P2P UI.
+export async function fetchBook(pairId: string): Promise<OpenOrder[]> {
+  const res = await fetch(`/api/p2p?type=book&pair=${encodeURIComponent(pairId)}`);
+  if (!res.ok) throw new Error(`book ${res.status}`);
+  return (await res.json()).orders as OpenOrder[];
+}
+
+export async function fetchTrades(pairId: string): Promise<Trade[]> {
+  const res = await fetch(`/api/p2p?type=trades&pair=${encodeURIComponent(pairId)}`);
+  if (!res.ok) throw new Error(`trades ${res.status}`);
+  return (await res.json()).trades as Trade[];
+}
+
 export async function fetchUserOrderIds(user: string): Promise<number[]> {
   const provider = new JsonRpcProvider(RPC_URL);
   const p2p = new Contract(P2P_ADDRESS, P2P_ABI, provider);
@@ -117,7 +131,7 @@ export async function fetchUserOrderIds(user: string): Promise<number[]> {
 }
 
 /** Market order: fill the best resting order for the chosen side, paying `pay`. */
-export async function marketFill(walletClient: any, pairId: string, side: 'Long' | 'Short', pay: number): Promise<string> {
+export async function marketFill(walletClient: any, pairId: string, side: 'Long' | 'Short', pay: number, slippageBps = 50): Promise<string> {
   const signer = await getSigner(walletClient);
   const me = (await signer.getAddress()).toLowerCase();
   const orders = await fetchOpenOrders(pairId);
@@ -129,22 +143,78 @@ export async function marketFill(walletClient: any, pairId: string, side: 'Long'
   if (candidates.length === 0) throw new Error('No matching open orders to fill. Post a limit order or try later.');
 
   const best = candidates[0];
-  return fillOrderById(walletClient, best, pay);
+  return fillOrderById(walletClient, best, pay, slippageBps);
 }
 
-export async function fillOrderById(walletClient: any, order: OpenOrder, pay: number): Promise<string> {
+// Protocol taker fee (bps) — from the deployed config, used to size minReceive.
+const FEE_BPS: number = (cfg as any).feeBps ?? 20;
+
+export async function fillOrderById(walletClient: any, order: OpenOrder, pay: number, slippageBps = 50): Promise<string> {
   const signer = await getSigner(walletClient);
   const p2p = new Contract(P2P_ADDRESS, P2P_ABI, signer);
   const payToken = Object.values(TOKENS).find((t) => t.address.toLowerCase() === order.buyToken.toLowerCase())!;
+  const sellToken = Object.values(TOKENS).find((t) => t.address.toLowerCase() === order.sellToken.toLowerCase())!;
   const payHuman = Math.min(pay, order.buyRemaining);
   const raw = toRaw(payToken, payHuman);
+
+  // Minimum sell-token to receive. The order price is fixed, so this equals the
+  // exact expected fill minus the fee, with a slippage cushion floored to token
+  // precision — a real on-chain floor that never false-reverts a good fill.
+  const sellD = dec(sellToken);
+  const expectedSell = order.buyRemaining > 0 ? payHuman * (order.sellRemaining / order.buyRemaining) : 0;
+  const afterFee = expectedSell * (1 - FEE_BPS / 10000);
+  const minHuman = Math.floor(Math.max(0, afterFee) * (1 - slippageBps / 10000) * 10 ** sellD) / 10 ** sellD;
+  const minReceive = toRaw(sellToken, minHuman);
+
   if (isHbar(order.buyToken)) {
-    const tx = await p2p.fillOrder(order.id, raw, 0, { value: parseEther(String(payHuman)), gasLimit: 1_700_000 });
+    const tx = await p2p.fillOrder(order.id, raw, minReceive, { value: parseEther(String(payHuman)), gasLimit: 1_700_000 });
     return (await tx.wait()).hash;
   }
   await ensureAllowance(signer, payToken, raw);
-  const tx = await p2p.fillOrder(order.id, raw, 0, { gasLimit: 1_700_000 });
+  const tx = await p2p.fillOrder(order.id, raw, minReceive, { gasLimit: 1_700_000 });
   return (await tx.wait()).hash;
+}
+
+export interface Trade { id: number; price: number; amount: number; side: 'Long' | 'Short'; time: number }
+
+/** Recent on-chain fills for a pair, newest-first, from OrderFilled events. */
+export async function fetchRecentTrades(pairId: string, limit = 15): Promise<Trade[]> {
+  const { BASE, QUOTE } = pairTokens(pairId);
+  const provider = new JsonRpcProvider(RPC_URL);
+  const p2p = new Contract(P2P_ADDRESS, P2P_ABI, provider);
+  let logs: any[] = [];
+  try {
+    const latest = await provider.getBlockNumber();
+    logs = await p2p.queryFilter(p2p.filters.OrderFilled(), Math.max(0, latest - 4900), latest);
+  } catch { return []; }
+
+  const orderCache = new Map<number, any>();
+  const out: Trade[] = [];
+  for (let i = logs.length - 1; i >= 0 && out.length < limit; i--) {
+    const lg = logs[i];
+    const id = Number(lg.args.id);
+    let o = orderCache.get(id);
+    if (!o) { try { o = await p2p.getOrder(id); orderCache.set(id, o); } catch { continue; } }
+    const st = Object.values(TOKENS).find((t) => t.address.toLowerCase() === o.sellToken.toLowerCase());
+    const bt = Object.values(TOKENS).find((t) => t.address.toLowerCase() === o.buyToken.toLowerCase());
+    if (!st || !bt) continue;
+
+    const buyPaid = Number(formatUnits(lg.args.buyPaid, dec(bt)));
+    const sellRecv = Number(formatUnits(lg.args.sellReceived, dec(st)));
+    let price = 0, amount = 0, side: 'Long' | 'Short';
+    if (st.sym === BASE.sym && bt.sym === QUOTE.sym) {
+      // maker sold BASE for QUOTE -> taker bought base
+      price = sellRecv > 0 ? buyPaid / sellRecv : 0; amount = sellRecv; side = 'Long';
+    } else if (st.sym === QUOTE.sym && bt.sym === BASE.sym) {
+      // maker sold QUOTE for BASE -> taker sold base
+      price = buyPaid > 0 ? sellRecv / buyPaid : 0; amount = buyPaid; side = 'Short';
+    } else { continue; }
+
+    let time = 0;
+    try { time = (await provider.getBlock(lg.blockNumber))?.timestamp ?? 0; } catch {}
+    out.push({ id, price, amount, side, time });
+  }
+  return out;
 }
 
 /** Wallet balance (human units) of a token by symbol — HBAR is native. */
