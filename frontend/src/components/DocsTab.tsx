@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BookOpen, Rocket, LockKey, ChartLineUp, ArrowsLeftRight, Sparkle,
   FileCode, ShieldCheck, Lifebuoy, MagnifyingGlass, ArrowSquareOut, Warning,
+  UsersThree, ArrowsClockwise,
 } from '@phosphor-icons/react';
+import codeArtifact from '../contracts/CodeToken.json';
+import govArtifact from '../contracts/CreodeGovernance.json';
 
 const PRIMARY = '#00A8E8';
 const GREEN = '#10B981';
@@ -17,6 +20,8 @@ const CONTRACTS: { name: string; addr: string }[] = [
   { name: 'CreodeSwapRouter (constant-product AMM)', addr: '0x34624a10E293039c18724FFCb4e0431dA45DaED3' },
   { name: 'CreodeTreasurySwap', addr: '0x2a873ED611D755e8B73E29a4839E34136e70eC53' },
   { name: 'CreodeP2P (order-book escrow)', addr: '0x87b6de843538E31fc368e13BE232320915a734ef' },
+  { name: 'CreodeGovernance (proposals & voting)', addr: (govArtifact as any).address },
+  { name: 'CODE (governance token)', addr: (codeArtifact as any).address },
   { name: 'CreodeFaucet (test tokens)', addr: '0x2449135C532f78ed43C9c4a99307aAA987D39A41' },
 ];
 
@@ -78,12 +83,14 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
             <Pill color={GREEN}>Non-custodial</Pill>
             <Pill color={RED}>Testnet · no real funds</Pill>
           </div>
-          <P><B>Creode</B> is a DeFi protocol on Hedera bundling three products behind one non-custodial app. Everything settles on-chain — the app never holds your keys or funds.</P>
+          <P><B>Creode</B> is a DeFi protocol on Hedera bundling savings, yield, trading, and governance behind one non-custodial app. Everything settles on-chain — the app never holds your keys or funds.</P>
           <ul className="list-disc pl-5 space-y-1.5 mb-3">
             <Li><B>Vault</B> — time-locked savings that pay a fixed APY by asset tier.</Li>
-            <Li><B>Earn (Yield Hub)</B> — one-token "auto-zap" into balanced dual-token yield positions.</Li>
+            <Li><B>Earn (Yield Hub)</B> — one-token "auto-zap" into balanced dual-token yield positions, with compounding (native auto-compounding via Hedera HIP-1215 on the roadmap).</Li>
             <Li><B>P2P Trading</B> — an on-chain order-book spot exchange with escrowed limit orders.</Li>
+            <Li><B>Community Governance</B> — CODE-weighted, on-chain proposals and voting that steer the protocol.</Li>
           </ul>
+          <P>Assets are <B>Hedera Token Service (HTS)</B> tokens — secured at the network layer, not just by application code (see <B>Audits &amp; Security</B>).</P>
           <Callout icon={<Warning size={18} weight="fill" style={{ color: RED }} className="shrink-0 mt-0.5" />} color={RED}>
             This deployment runs on <B>Hedera Testnet</B>. All tokens are test tokens with no monetary value — never send mainnet funds to these contracts.
           </Callout>
@@ -151,6 +158,18 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
             <Li>The balanced position is deposited into <B>CreodeYieldVaultV3</B>, which accrues yield.</Li>
           </ol>
           <P>You can <B>Compound</B> accrued rewards back into your position at any time, <B>Supply More</B>, or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
+
+          <h3 className={`text-[16px] font-bold ${textMain} mt-6 mb-2 flex items-center gap-2`}><ArrowsClockwise size={18} weight="bold" style={{ color: PRIMARY }} /> Auto-compounding (via Hedera HIP-1215)</h3>
+          <P>Today, compounding is a <B>one-click action</B>: the <B>Compound</B> button harvests your accrued rewards and re-zaps them into the position through the same SwapRouter path. It works fully on-chain and is live now.</P>
+          <P>What makes it <B>hands-off</B> is <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A> — <B>generalized scheduled contract calls</B>. HIP-1215 lets a smart contract schedule its <B>own future calls</B> directly from the EVM through the Hedera Schedule Service, i.e. native on-chain "cron" with no off-chain keeper or bot:</P>
+          <ul className="list-disc pl-5 space-y-1.5 mb-3">
+            <Li>The yield vault schedules its next <Code>compound()</Code> at a future timestamp; when that second arrives, the network executes it automatically.</Li>
+            <Li>Each run re-schedules the next, so positions compound continuously and trustlessly.</Li>
+            <Li>The vault sizes each schedule against <Code>hasScheduleCapacity(expiry, gasLimit)</Code> so it only books slots it can pay for, and the Schedule Service requires each scheduled second to be strictly in the future — closing off infinite-loop abuse.</Li>
+          </ul>
+          <Callout icon={<Warning size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
+            Native HIP-1215 auto-compounding is on the <B>roadmap</B> and is itself up for a community vote (see <B>Governance</B>). Until it ships, use the manual <B>Compound</B> button — the economics are identical, you just trigger the harvest yourself.
+          </Callout>
         </>
       ),
     },
@@ -169,6 +188,33 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           <P>Because each order has a <B>fixed price</B>, there is no AMM-style slippage — a 0.5% floor simply guards each fill against dust rounding. Tradeable pairs: <Code>HBAR-USDC</Code>, <Code>USDT-USDC</Code>, <Code>WBTC-USDC</Code>, <Code>WETH-USDC</Code>, <Code>SAUCE-USDC</Code>, <Code>DOVU-USDC</Code>, <Code>HBAR-SAUCE</Code>.</P>
           <Callout icon={<ChartLineUp size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
             Charts use real market data — <B>Pyth Network</B> for majors and <B>SaucerSwap / GeckoTerminal</B> for Hedera small-caps. Prices are live, not simulated.
+          </Callout>
+        </>
+      ),
+    },
+    {
+      id: 'governance', title: 'Community Governance', icon: UsersThree, keywords: 'governance dao vote proposal code voting power quorum community',
+      body: (
+        <>
+          <H>Community Governance</H>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Pill color={GREEN}>Live on-chain</Pill>
+            <Pill>CODE-weighted</Pill>
+          </div>
+          <P>Creode is steered by its holders. Governance is a real on-chain system — the <B>CreodeGovernance</B> contract stores every proposal, every vote, and the final tally; nothing lives on a private server. It decides <B>yield emissions</B>, <B>new vault &amp; market assets</B>, <B>parameters</B> (fees, penalties, quorum) and <B>upgrade direction</B>.</P>
+
+          <h3 className={`text-[16px] font-bold ${textMain} mt-2 mb-2`}>Voting power = CODE</h3>
+          <P><B>CODE</B> is the governance token. Your voting weight is your live CODE balance, read straight from the token at the moment you propose or vote — <B>1 CODE = 1 vote</B>. On mainnet CODE is earned through real protocol usage (the same activity that mints CODE points); on this <B>testnet</B> you can mint a one-time allocation with <B>Claim CODE to vote</B> in the Community tab, so anyone can try the full flow.</P>
+
+          <h3 className={`text-[16px] font-bold ${textMain} mt-4 mb-2`}>Proposal lifecycle</h3>
+          <ol className="list-decimal pl-5 space-y-1.5 mb-3">
+            <Li><B>Propose</B> — any address holding ≥ <B>1,000 CODE</B> submits a title + description on-chain, opening a <B>3-day</B> voting window.</Li>
+            <Li><B>Vote</B> — CODE holders cast a single <B>Yes</B> or <B>No</B>, weighted by their balance. One vote per address per proposal, enforced in-contract.</Li>
+            <Li><B>Finalize</B> — after the window closes, anyone can finalize. It <B>Passes</B> only if total votes clear the <B>quorum</B> (currently 50,000 CODE) <B>and</B> Yes &gt; No; otherwise it is <B>Rejected</B>.</Li>
+            <Li><B>Enact</B> — passed proposals are signalling decisions; the protocol's role-gated admin then enacts the approved direction on-chain.</Li>
+          </ol>
+          <Callout icon={<UsersThree size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
+            Track live proposals, cast votes, and submit your own in the <B>Community</B> tab. Thresholds and quorum are read live from the contract, so the docs never drift from what's on-chain.
           </Callout>
         </>
       ),
@@ -220,11 +266,20 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           <Callout icon={<Warning size={18} weight="fill" style={{ color: RED }} className="shrink-0 mt-0.5" />} color={RED}>
             These contracts are <B>testnet, unaudited</B> software. There is no third-party audit and no real value at risk. Do not deploy this code to mainnet or use it with real funds until it has been professionally audited.
           </Callout>
-          <P>That said, the contracts are built on battle-tested primitives:</P>
+          <h3 className={`text-[16px] font-bold ${textMain} mt-2 mb-2`}>Secured by Hedera HTS</h3>
+          <P>Creode's assets are <B>Hedera Token Service (HTS)</B> tokens, not plain ERC-20s bolted onto an EVM. HTS enforces token rules at the <B>network layer</B> — below and independent of any application contract:</P>
           <ul className="list-disc pl-5 space-y-1.5 mb-3">
-            <Li>OpenZeppelin <B>AccessControl</B>, <B>ReentrancyGuard</B>, <B>Pausable</B>, and <B>SafeERC20</B>.</Li>
+            <Li><B>Native token controls</B> — supply, freeze, wipe, pause, and KYC keys are honored by consensus nodes themselves, so a token's rules can't be bypassed by a buggy or malicious contract.</Li>
+            <Li><B>Explicit association</B> — an account must associate a token before it can receive it, which blocks unsolicited-token and dusting attacks by default.</Li>
+            <Li><B>Deterministic finality</B> — Hedera's aBFT hashgraph consensus gives fast, final settlement with no re-org risk, so a confirmed Vault, Earn, or P2P transaction cannot be rolled back.</Li>
+            <Li>Every HTS token also exposes the standard <B>ERC-20</B> interface at its EVM address, so contracts interact with it normally while the network keeps enforcing the token-level guarantees.</Li>
+          </ul>
+          <P>On top of that network-level security, the contracts use battle-tested primitives:</P>
+          <ul className="list-disc pl-5 space-y-1.5 mb-3">
+            <Li>OpenZeppelin <B>AccessControl</B>/<B>Ownable</B>, <B>ReentrancyGuard</B>, <B>Pausable</B>, and <B>SafeERC20</B>.</Li>
             <Li><B>Non-custodial escrow</B> — the P2P contract only holds a maker's funds until their own order fills or is cancelled; makers can always cancel to reclaim escrow.</Li>
-            <Li>Admin functions (pause, fee, treasury) are role-gated; the protocol fee is hard-capped in-contract.</Li>
+            <Li><B>Tamper-proof governance</B> — proposals, votes, and tallies are stored and counted entirely in the CreodeGovernance contract; one vote per address is enforced on-chain.</Li>
+            <Li>Admin functions (pause, fee, treasury, quorum) are role-gated; the protocol fee is hard-capped in-contract.</Li>
           </ul>
           <P>All source and deployments are verifiable on <A href="https://hashscan.io/testnet">HashScan</A>.</P>
         </>
@@ -281,7 +336,7 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
     <div className={`w-full max-w-[1200px] mx-auto px-4 ${textMain}`}>
       <div className="mb-6">
         <h1 className="text-[24px] font-bold tracking-tight leading-none">Documentation</h1>
-        <span className={`text-[13px] font-medium ${textMuted} mt-1.5 inline-block`}>How Creode works — Vault, Earn, P2P, and the contracts behind them.</span>
+        <span className={`text-[13px] font-medium ${textMuted} mt-1.5 inline-block`}>How Creode works — Vault, Earn, P2P, Governance, and the contracts behind them.</span>
       </div>
 
       <div className="flex gap-6 items-start">

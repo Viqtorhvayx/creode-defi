@@ -6,11 +6,12 @@ import { Logo } from './Logo';
 import { 
   LockKey, 
   TrendUp, 
-  ArrowsDownUp, 
-  SquaresFour, 
-  ChartLineUp, 
-  Users, 
-  Gear, 
+  ArrowsDownUp,
+  SquaresFour,
+  ChartLineUp,
+  Users,
+  UsersThree,
+  Gear,
   SignOut,
   ChartPie,
   FileText,
@@ -36,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   const secondaryMenu = [
     { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
     { id: 'Portfolio', icon: ChartPie, label: 'Portfolio' },
+    { id: 'Community', icon: UsersThree, label: 'Community' },
     { id: 'Settings', icon: Gear, label: 'Settings' },
   ];
 
