@@ -343,11 +343,11 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
             {/* Submit Button */}
             <button
               onClick={handleZap}
-              disabled={zapState === 'pending' || !hasAmt || !isConnected}
+              disabled={zapState === 'pending' || (isConnected && !hasAmt)}
               className={`w-full py-4 text-[15px] shadow-sm flex items-center justify-center gap-2 ${
                 zapState === 'done'
                   ? CTA_GREEN_SOLID
-                  : (!isConnected || !hasAmt)
+                  : (isConnected && !hasAmt)
                     ? `font-bold rounded-[12px] ${isDark ? 'bg-white/5 text-white/40' : 'bg-slate-100 text-slate-400'} cursor-not-allowed`
                     : zapState === 'pending'
                       ? 'font-bold rounded-[12px] bg-[#00A8E8] text-white cursor-wait'

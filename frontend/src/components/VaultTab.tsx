@@ -10,7 +10,7 @@ import { useWallet } from '../context/WalletContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { TokenLogo } from './TokenLogo';
-import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
+import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
 import { ChevronDown, X, Info } from 'lucide-react';
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { useWalletClient } from 'wagmi';
@@ -647,7 +647,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                 <button
                   key={days}
                   onClick={() => setDisplayLockDays(days)}
-                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-150 ease-out border hover:shadow-md active:shadow-inner active:duration-100 ${displayLockDays === days ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
+                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(displayLockDays === days)}`}
                 >
                   {days} Days
                 </button>
@@ -658,7 +658,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                     setTempCustomDays(![7, 30, 60].includes(displayLockDays) ? displayLockDays.toString() : '');
                     setIsCustomModalOpen(true);
                   }}
-                  className={`flex-1 py-2.5 rounded-[8px] text-[13px] font-bold transition-all duration-150 ease-out border hover:shadow-md active:shadow-inner active:duration-100 ${![7, 30, 60].includes(displayLockDays) ? 'bg-[#00A8E8] border-[#00A8E8] text-white shadow-sm' : 'bg-white dark:bg-[#0B0F14] border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80 hover:border-[#00A8E8]/50 hover:text-[#00A8E8]'}`}
+                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(![7, 30, 60].includes(displayLockDays))}`}
                 >
                   Custom
                 </button>

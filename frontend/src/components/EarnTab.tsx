@@ -283,11 +283,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
         <div className="mt-auto">
           <button
             onClick={() => setSelectedStrategy(strategy)}
-            className={`w-full py-2.5 rounded-[8px] border text-[13px] font-bold transition-colors ${
-            theme === 'dark'
-              ? 'border-white/10 text-slate-300 hover:bg-white/5'
-              : 'border-[#EAECEF] text-[#00A8E8] hover:bg-slate-50 hover:border-[#00A8E8]/50'
-          }`}>
+            className={`${CTA_BLUE} w-full py-2.5 text-[13px]`}>
             View Strategy
           </button>
         </div>
@@ -332,11 +328,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
         <div className="flex justify-end">
           <button
             onClick={() => setSelectedStrategy(strategy)}
-            className={`w-[120px] py-2 rounded-[8px] border text-[13px] font-bold transition-colors ${
-            theme === 'dark'
-              ? 'border-white/10 text-slate-300 hover:bg-white/10'
-              : 'border-[#EAECEF] text-slate-700 hover:bg-slate-100'
-          }`}>
+            className={`${CTA_BLUE} w-[120px] py-2 text-[13px]`}>
             View Strategy
           </button>
         </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { CTA_BLUE } from '../lib/ui';
 
 interface CommunityTabProps {
   theme: 'light' | 'dark';
@@ -51,7 +52,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
             <span className="text-[40px] font-bold text-[#00A8E8] leading-none tracking-tight">14,500</span>
             <span className="text-[20px] font-bold text-[#00A8E8]">CODE</span>
           </div>
-          <button className="bg-[#00A8E8] hover:bg-[#0090C7] text-white px-6 py-2.5 rounded-[8px] text-[14px] font-bold transition-all shadow-sm">
+          <button className={`${CTA_BLUE} px-6 py-2.5 text-[14px] shadow-sm`}>
             Submit New Proposal
           </button>
         </div>
@@ -99,7 +100,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
             
             {/* Action */}
             <div className="flex justify-end pt-2">
-              <button className="bg-[#00A8E8] hover:bg-[#0090C7] text-white px-6 py-2.5 rounded-[8px] text-[13px] font-bold transition-colors shadow-sm">
+              <button className={`${CTA_BLUE} px-6 py-2.5 text-[13px] shadow-sm`}>
                 Cast Vote
               </button>
             </div>
@@ -140,7 +141,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
             
             {/* Action */}
             <div className="flex justify-end pt-2">
-              <button className="bg-[#00A8E8] hover:bg-[#0090C7] text-white px-6 py-2.5 rounded-[8px] text-[13px] font-bold transition-colors shadow-sm">
+              <button className={`${CTA_BLUE} px-6 py-2.5 text-[13px] shadow-sm`}>
                 Cast Vote
               </button>
             </div>
@@ -184,7 +185,7 @@ export function CommunityTab({ theme }: CommunityTabProps) {
                 />
               </div>
 
-              <button className="w-full bg-[#00A8E8] hover:bg-[#0090C7] text-white py-3 mt-2 rounded-[8px] text-[14px] font-bold transition-colors shadow-sm">
+              <button className={`${CTA_BLUE} w-full py-3 mt-2 text-[14px] shadow-sm`}>
                 Submit Proposal
               </button>
             </div>

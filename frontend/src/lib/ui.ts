@@ -20,6 +20,13 @@ export const CTA_RED =
 export const CTA_BLUE_SOLID = `${CTA_BASE} bg-[#00A8E8] text-white`;
 export const CTA_GREEN_SOLID = `${CTA_BASE} bg-[#10B981] text-white`;
 
+// Segmented control (e.g. lock-period): solid brand fill when active, tinted
+// ghost when inactive — same language as the CTAs.
+export const seg = (active: boolean) =>
+  `rounded-[12px] font-bold transition-colors ${active
+    ? 'bg-[#00A8E8] text-white'
+    : 'bg-[#00A8E8]/15 text-[#00A8E8] hover:bg-[#00A8E8]/25'}`;
+
 // Uniswap-style token pill: solid rounded-full chip, logo hugging the left.
 export const TOKEN_PILL =
   'flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-black/[0.06] dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[0.14] transition-colors shrink-0 cursor-pointer';

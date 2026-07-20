@@ -7,6 +7,7 @@ import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
 import { TokenLogo } from './TokenLogo';
+import { CTA_BLUE } from '../lib/ui';
 
 const BLUE = '#00A8E8';
 const GREEN = '#10B981';
@@ -327,11 +328,11 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
                       <div className={textMain}><Donut pct={util} track={donutTrack} /></div>
                       {/* Actions */}
                       <div className="flex flex-col items-stretch gap-1.5 pl-1">
-                        <button onClick={() => onSupplyMore?.(p.name)} className="w-full h-8 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
-                        <button onClick={() => onCompound(p)} disabled={compoundBusy === p.strategyId} className="w-full h-8 rounded-[8px] text-[12px] font-bold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60" style={{ backgroundColor: 'rgba(0,168,232,0.1)', color: BLUE }}>
+                        <button onClick={() => onSupplyMore?.(p.name)} className={`${CTA_BLUE} w-full h-8 text-[12px]`}>Supply More</button>
+                        <button onClick={() => onCompound(p)} disabled={compoundBusy === p.strategyId} className={`${CTA_BLUE} w-full h-8 text-[12px] flex items-center justify-center gap-1.5`}>
                           {compoundBusy === p.strategyId ? <><CircleNotch size={13} className="animate-spin" /> …</> : <><ArrowsClockwise size={13} weight="bold" /> Compound</>}
                         </button>
-                        <button onClick={() => onWithdraw(p)} disabled={busy} className={`w-full h-8 rounded-[8px] text-[12px] font-bold border transition-colors flex items-center justify-center gap-1.5 ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'} disabled:opacity-60`}>
+                        <button onClick={() => onWithdraw(p)} disabled={busy} className={`${CTA_BLUE} w-full h-8 text-[12px] flex items-center justify-center gap-1.5`}>
                           {busy ? <><CircleNotch size={13} className="animate-spin" /> …</> : 'Withdraw'}
                         </button>
                       </div>
@@ -376,8 +377,8 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
                     <div className={textMain}><Donut pct={p.utilization} track={donutTrack} /></div>
                     {/* Actions */}
                     <div className="flex flex-col items-stretch gap-2 pl-1">
-                      <button onClick={() => onSupplyMore?.(p.pair)} className="w-full h-9 rounded-[8px] text-[12px] font-bold text-white transition-colors" style={{ backgroundColor: BLUE }}>Supply More</button>
-                      <button className={`w-full h-9 rounded-[8px] text-[12px] font-bold border transition-colors ${border} ${textMain} ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>Withdraw</button>
+                      <button onClick={() => onSupplyMore?.(p.pair)} className={`${CTA_BLUE} w-full h-9 text-[12px]`}>Supply More</button>
+                      <button className={`${CTA_BLUE} w-full h-9 text-[12px]`}>Withdraw</button>
                     </div>
                   </div>
                 ))}
