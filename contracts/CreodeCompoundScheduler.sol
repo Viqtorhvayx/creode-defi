@@ -49,6 +49,9 @@ contract CreodeCompoundScheduler is Ownable, ReentrancyGuard {
     uint256 public cursor;                    // round-robin position pointer
     uint256 public tickCount;                 // total ticks executed
     uint64 public scheduledUntil;             // timestamp the batch reaches
+    uint64 public interval;                   // seconds between auto ticks
+    bool public autoOn;                       // self-perpetuating loop enabled
+    int64 public lastRescheduleCode;          // HSS code from the last self-reschedule
 
     struct Sub { address user; uint256 strategyId; bool active; }
     Sub[] public subs;
@@ -106,6 +109,20 @@ contract CreodeCompoundScheduler is Ownable, ReentrancyGuard {
         }
         cursor = i;
         emit Ticked(tickCount, processed);
+
+        // Self-perpetuate: schedule the next tick (a single scheduleCall, within
+        // the one-per-transaction limit). Best-effort so a scheduling hiccup
+        // never blocks the compounding that already happened.
+        if (autoOn && interval > 0) {
+            uint64 next = uint64(block.timestamp) + interval;
+            bytes memory cd = abi.encodeWithSelector(this.tick.selector, uint256(next));
+            try IHederaScheduleService(HSS).scheduleCall(address(this), next, tickGasLimit, 0, cd) returns (int64 code, address) {
+                lastRescheduleCode = code;
+                if (code == SUCCESS) scheduledUntil = next;
+            } catch {
+                lastRescheduleCode = -1;
+            }
+        }
     }
 
     // ── Treasury: schedule the on-chain ticks ────────────────────────────────
@@ -126,6 +143,23 @@ contract CreodeCompoundScheduler is Ownable, ReentrancyGuard {
         until = t;
         emit TicksScheduled(count, t);
     }
+
+    /// @notice Start the self-perpetuating loop: sets the interval and schedules
+    ///         the first tick. Each tick then schedules the next on its own.
+    function startAuto(uint64 _interval) external onlyOwner returns (int64 code, address sched) {
+        require(_interval >= 60, "interval too short");
+        interval = _interval;
+        autoOn = true;
+        uint64 t = uint64(block.timestamp) + _interval;
+        bytes memory cd = abi.encodeWithSelector(this.tick.selector, uint256(t));
+        (code, sched) = IHederaScheduleService(HSS).scheduleCall(address(this), t, tickGasLimit, 0, cd);
+        require(code == SUCCESS, "schedule failed");
+        scheduledUntil = t;
+        emit TicksScheduled(1, t);
+    }
+
+    /// @notice Stop the loop. Any already-scheduled tick still fires but won't re-arm.
+    function stopAuto() external onlyOwner { autoOn = false; }
 
     function hasCapacity(uint256 delaySeconds) external returns (bool) {
         return IHederaScheduleService(HSS).hasScheduleCapacity(block.timestamp + delaySeconds, tickGasLimit);
