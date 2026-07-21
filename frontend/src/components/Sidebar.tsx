@@ -7,7 +7,6 @@ import {
   LockKey, 
   TrendUp, 
   ArrowsDownUp,
-  SquaresFour,
   ChartLineUp,
   Users,
   UsersThree,
@@ -28,7 +27,6 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab }) => {
   const primaryMenu = [
-    { id: 'Dashboard', icon: SquaresFour, label: 'Dashboard' },
     { id: 'Vault', icon: LockKey, label: 'Vault' },
     { id: 'Earn', icon: TrendUp, label: 'Earn' },
     { id: 'P2P', icon: Users, label: 'P2P' },
