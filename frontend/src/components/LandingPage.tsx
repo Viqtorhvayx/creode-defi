@@ -52,11 +52,22 @@ const CountUp: React.FC<{ to: number; suffix?: string; dur?: number }> = ({ to, 
   return <span ref={ref} className="tabular-nums">{val}{suffix}</span>;
 };
 
+// Dim -> accent -> white color sweep, driven by a word's own reveal progress
+// (0 to 1). Continuously recomputed on scroll, so each word visibly lights up
+// blue as the scroll position passes over it, then settles to solid white.
+const DIM: [number, number, number] = [110, 122, 138];
+const ACCENT: [number, number, number] = [0, 168, 232];
+const WHITE: [number, number, number] = [255, 255, 255];
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const mixRgb = (c1: [number, number, number], c2: [number, number, number], t: number) =>
+  `rgb(${Math.round(lerp(c1[0], c2[0], t))}, ${Math.round(lerp(c1[1], c2[1], t))}, ${Math.round(lerp(c1[2], c2[2], t))})`;
+const sweepColor = (wp: number) => (wp <= 0.5 ? mixRgb(DIM, ACCENT, wp / 0.5) : mixRgb(ACCENT, WHITE, (wp - 0.5) / 0.5));
+
 /* Word-by-word reveal driven directly by scroll position (not a fixed-time
-   animation) — each word's opacity/offset is a function of how far the
-   heading has scrolled through its reveal window, so the words visibly
-   assemble as the user scrolls past it, matching the reference motion. */
-const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string; accent?: string }> = ({ text, as = 'h2', className = '', accent }) => {
+   animation) — each word's opacity, lift and color are all a function of how
+   far the heading has scrolled through its reveal window, so the words
+   visibly assemble and light up blue as the user scrolls past them. */
+const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string }> = ({ text, as = 'h2', className = '' }) => {
   const ref = useRef<HTMLHeadingElement>(null);
   const [progress, setProgress] = useState(0);
   const words = text.split(' ');
@@ -72,8 +83,8 @@ const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string
       raf = requestAnimationFrame(() => {
         const rect = el.getBoundingClientRect();
         const vh = window.innerHeight;
-        const start = vh * 0.9;   // progress 0: heading top just below the fold
-        const end = vh * 0.4;     // progress 1: heading has scrolled to ~40% viewport height
+        const start = vh * 0.92;  // progress 0: heading top just below the fold
+        const end = vh * 0.38;    // progress 1: heading has scrolled to ~38% viewport height
         const p = (start - rect.top) / (start - end);
         setProgress(Math.max(0, Math.min(1, p)));
       });
@@ -89,12 +100,11 @@ const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string
     <Tag ref={ref} className={`lp-scrollwords ${className}`}>
       {words.map((w, i) => {
         const wStart = i / words.length;
-        const wEnd = Math.min(1, wStart + (1 / words.length) * 1.5);
+        const wEnd = Math.min(1, wStart + (1 / words.length) * 1.6);
         const wp = Math.max(0, Math.min(1, (progress - wStart) / (wEnd - wStart)));
-        const isAccent = accent && w.replace(/[.,]/g, '') === accent;
         return (
-          <span key={i} className={`lp-sword ${isAccent ? 'lp-accent' : ''}`} style={{ opacity: wp, transform: `translateY(${(1 - wp) * 16}px)` }}>
-            {w}{i < words.length - 1 ? ' ' : ''}
+          <span key={i} className="lp-sword" style={{ opacity: 0.25 + wp * 0.75, transform: `translateY(${(1 - wp) * 16}px)`, color: sweepColor(wp) }}>
+            {w}
           </span>
         );
       })}
@@ -123,6 +133,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
     <div className="lp-root min-h-screen w-full overflow-x-hidden text-white antialiased">
       <style>{lpCss}</style>
 
+      {/* Ambient aurora + grid */}
+      <div className="lp-bg" aria-hidden>
+        <div className="lp-blob lp-blob-a" />
+        <div className="lp-blob lp-blob-b" />
+        <div className="lp-blob lp-blob-c" />
+        <div className="lp-grid" />
+      </div>
+
       {/* Nav */}
       <nav className="relative z-20 mx-auto flex max-w-[1180px] items-center justify-between px-8 py-7">
         <button onClick={onLaunch} className="scale-90 origin-left"><Logo theme="dark" /></button>
@@ -133,43 +151,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
       </nav>
 
       {/* Hero */}
-      <header className="lp-hero relative z-10 mx-auto flex min-h-[86vh] max-w-[1180px] flex-col justify-center px-8 pb-20">
-        <div className="lp-eyebrow" style={{ animationDelay: '80ms' }}>
-          <span className="lp-dot" /> Non-custodial DeFi protocol · Hedera
-        </div>
+      <header className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1180px] flex-col justify-center px-8 pb-20">
+        <ScrollWords as="h1" text="Your money. Your rules. Onchain." className="lp-h1" />
 
-        <ScrollWords as="h1" text="Save. Earn. Trade. Govern." className="lp-h1 mt-7" accent="Govern." />
-
-        <p className="lp-sub" style={{ animationDelay: '400ms' }}>
-          Save, earn, trade and govern in one place. Every action is a plain on-chain transaction
-          you sign yourself, secured at the network layer by HTS.
+        <p className="lp-sub" style={{ animationDelay: '260ms' }}>
+          One non-custodial app for saving, earning, trading and governing on Hedera.
+          Every action is a transaction you sign yourself, secured at the network layer by HTS.
         </p>
 
-        <div className="lp-actions" style={{ animationDelay: '520ms' }}>
+        <div className="lp-actions" style={{ animationDelay: '420ms' }}>
           <button onClick={onLaunch} className="lp-cta lp-cta-lg">Launch App</button>
         </div>
 
-        {/* Thin meta row — text only */}
-        <div className="lp-meta" style={{ animationDelay: '680ms' }}>
-          <div><span className="lp-metanum"><CountUp to={4} /></span><span className="lp-metalabel">Products</span></div>
-          <span className="lp-metasep" />
-          <div><span className="lp-metanum"><CountUp to={9} /></span><span className="lp-metalabel">Verified contracts</span></div>
-          <span className="lp-metasep" />
-          <div><span className="lp-metanum"><CountUp to={7} /></span><span className="lp-metalabel">Trading pairs</span></div>
-          <span className="lp-metasep" />
-          <div><span className="lp-metanum"><CountUp to={100} suffix="%" /></span><span className="lp-metalabel">On-chain</span></div>
+        {/* Stat cards */}
+        <div className="lp-stats" style={{ animationDelay: '560ms' }}>
+          {[
+            { v: <CountUp to={4} />, l: 'Products' },
+            { v: <CountUp to={9} />, l: 'Verified contracts' },
+            { v: <CountUp to={7} />, l: 'Trading pairs' },
+            { v: <><CountUp to={100} />%</>, l: 'On-chain' },
+          ].map((s, i) => (
+            <div key={i} className="lp-statcard">
+              <div className="lp-statnum">{s.v}</div>
+              <div className="lp-statlabel">{s.l}</div>
+            </div>
+          ))}
         </div>
       </header>
 
       {/* Sections — the only icons on the page */}
       <section id="sections" className="relative z-10 mx-auto max-w-[1180px] px-8 py-24">
         <ScrollWords as="h2" text="Four ways to move on-chain." className="lp-h2 max-w-[16ch]" />
-        <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] sm:grid-cols-2">
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2">
           {SECTIONS.map((s, i) => {
             const Icon = s.icon;
             return (
               <Reveal key={s.name} delay={i * 80}>
-                <button onClick={() => go(s.tab)} className="lp-section group">
+                <button onClick={() => go(s.tab)} className="lp-card group h-full">
                   <div className="lp-section-ico"><Icon size={20} weight="regular" /></div>
                   <h3 className="mt-6 text-[22px] font-bold tracking-tight">{s.name}</h3>
                   <p className="mt-2.5 text-[14px] leading-relaxed text-white/50">{s.desc}</p>
@@ -186,7 +204,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
         <Reveal>
           <div className="lp-feature">
             <span className="lp-tag">Keeperless · HIP-1215</span>
-            <h2 className="lp-h2 mt-4 !text-left">Auto-compounding that runs itself.</h2>
+            <ScrollWords as="h2" text="Auto-compounding that runs itself." className="lp-h2 mt-4" />
             <p className="mt-4 max-w-[64ch] text-[15px] leading-relaxed text-white/55">
               Turn on auto-compound and Creode compounds your position on-chain, with no bots and no keepers.
               Powered by Hedera HIP-1215 scheduled contract calls: each tick compounds every enrolled
@@ -256,21 +274,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
   );
 };
 
-/* Scoped landing CSS. Editorial type + scroll-scrubbed word reveal; keeps
+/* Scoped landing CSS. Combines the richer, livelier background/cards of the
+   first pass with the scroll-scrubbed word reveal from the second; keeps
    Creode's dark + cyan identity and the app's own font (Inter, font-bold). */
 const lpCss = `
 .lp-root { position: relative; background: #07090d; font-family: inherit; }
-.lp-root::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(70% 55% at 50% -8%, rgba(0,168,232,0.14), transparent 60%); }
-.lp-root::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
-  background-image: linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
-  background-size: 54px 54px;
-  mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 25%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 25%, transparent 78%); }
+.lp-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.lp-blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: 0.5; }
+.lp-blob-a { width: 620px; height: 620px; top: -180px; left: 50%; margin-left: -520px; background: radial-gradient(circle, rgba(0,168,232,0.5), transparent 62%); animation: lpDriftA 22s ease-in-out infinite; }
+.lp-blob-b { width: 560px; height: 560px; top: -60px; right: -120px; background: radial-gradient(circle, rgba(0,114,255,0.38), transparent 62%); animation: lpDriftB 26s ease-in-out infinite; }
+.lp-blob-c { width: 520px; height: 520px; top: 420px; left: -140px; background: radial-gradient(circle, rgba(88,101,242,0.26), transparent 62%); animation: lpDriftC 30s ease-in-out infinite; }
+.lp-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 20%, transparent 75%); }
+@keyframes lpDriftA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,50px) scale(1.08); } }
+@keyframes lpDriftB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-70px,40px) scale(1.1); } }
+@keyframes lpDriftC { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(50px,-40px) scale(1.06); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-eyebrow, .lp-sub, .lp-actions, .lp-meta, .lp-sword { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .lp-sub, .lp-actions, .lp-stats, .lp-sword { animation: none !important; opacity: 1 !important; transform: none !important; }
   .lp-reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
+  .lp-blob { animation: none !important; }
 }
 
 /* Shared CTA — solid blue, well-rounded, matching the wallet Connect button. */
@@ -282,24 +304,19 @@ const lpCss = `
 .lp-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.26); }
 
 /* Hero */
-.lp-eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(10px); animation: lpFade .7s cubic-bezier(0.22,1,0.36,1) forwards; }
-.lp-dot { width: 7px; height: 7px; border-radius: 50%; background: #00A8E8; box-shadow: 0 0 0 0 rgba(0,168,232,0.5); animation: lpPulse 2.4s ease-out infinite; }
-@keyframes lpPulse { 0% { box-shadow: 0 0 0 0 rgba(0,168,232,0.5); } 70%,100% { box-shadow: 0 0 0 8px rgba(0,168,232,0); } }
-
-.lp-h1.lp-scrollwords { font-size: clamp(44px, 8.6vw, 104px); font-weight: 700; line-height: 1.02; letter-spacing: -0.04em; }
+.lp-h1.lp-scrollwords { font-size: clamp(42px, 8vw, 96px); font-weight: 700; line-height: 1.05; letter-spacing: -0.04em; }
 .lp-h2.lp-scrollwords { font-size: clamp(28px, 4.4vw, 46px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; }
 .lp-scrollwords { display: block; }
-.lp-sword { display: inline-block; will-change: opacity, transform; transition: opacity .05s linear, transform .05s linear; }
-.lp-sword.lp-accent { background: linear-gradient(100deg, #00A8E8, #0072FF 60%, #58a6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lp-sword { display: inline-block; margin-right: 0.26em; will-change: opacity, transform, color; transition: opacity .05s linear, transform .05s linear, color .05s linear; }
 
-.lp-sub { max-width: 54ch; margin-top: 26px; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.6; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
+.lp-sub { max-width: 54ch; margin-top: 28px; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.6; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
 .lp-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
 
-.lp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 64px; opacity: 0; transform: translateY(14px); animation: lpFade .9s cubic-bezier(0.22,1,0.36,1) forwards; }
-.lp-meta > div { display: flex; flex-direction: column; gap: 2px; }
-.lp-metanum { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
-.lp-metalabel { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.4); }
-.lp-metasep { width: 1px; height: 30px; background: rgba(255,255,255,0.1); }
+.lp-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 56px; max-width: 640px; opacity: 0; transform: translateY(14px); animation: lpFade .9s cubic-bezier(0.22,1,0.36,1) forwards; }
+@media (min-width: 640px) { .lp-stats { grid-template-columns: repeat(4, 1fr); } }
+.lp-statcard { border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; background: rgba(255,255,255,0.03); backdrop-filter: blur(14px); padding: 16px; }
+.lp-statnum { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: #00A8E8; }
+.lp-statlabel { margin-top: 2px; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.45); }
 
 @keyframes lpFade { to { opacity: 1; transform: translateY(0); } }
 
@@ -307,12 +324,12 @@ const lpCss = `
 .lp-reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(0.22,1,0.36,1), transform .7s cubic-bezier(0.22,1,0.36,1); }
 .lp-reveal.lp-in { opacity: 1; transform: translateY(0); }
 
-/* Sections grid */
-.lp-section { display: block; width: 100%; text-align: left; background: #0b0e13; padding: 34px; transition: background .25s; cursor: pointer; }
-.lp-section:hover { background: #0e131a; }
+/* Section / product cards — bordered, glowing on hover (brought back from v1) */
+.lp-card { display: block; width: 100%; text-align: left; border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.025); border-radius: 20px; padding: 30px; backdrop-filter: blur(14px); transition: transform .25s, border-color .25s, box-shadow .25s, background .25s; cursor: pointer; }
+.lp-card:hover { transform: translateY(-4px); border-color: rgba(0,168,232,0.4); background: rgba(0,168,232,0.04); box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,168,232,0.25); }
 .lp-section-ico { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 11px; color: #00A8E8; background: rgba(0,168,232,0.1); border: 1px solid rgba(0,168,232,0.22); }
 .lp-section-open { display: inline-block; margin-top: 20px; font-size: 13px; font-weight: 700; color: #00A8E8; opacity: 0; transform: translateX(-4px); transition: opacity .25s, transform .25s; }
-.lp-section:hover .lp-section-open { opacity: 1; transform: translateX(0); }
+.lp-card:hover .lp-section-open { opacity: 1; transform: translateX(0); }
 
 /* Feature */
 .lp-feature { position: relative; border: 1px solid rgba(255,255,255,0.09); border-radius: 22px; padding: 44px; background: linear-gradient(120deg, rgba(0,168,232,0.09), transparent 55%); }
