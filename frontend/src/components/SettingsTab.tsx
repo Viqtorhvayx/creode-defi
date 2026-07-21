@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Lightning, Palette, Bell, ShieldCheck, CaretDown } from '@phosphor-icons/react';
+import { useWallet } from '../context/WalletContext';
+import { useCurrency, CURRENCIES } from '../context/CurrencyContext';
 
 interface SettingsTabProps {
   theme: 'light' | 'dark';
@@ -11,12 +13,33 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
   const [customSlippage, setCustomSlippage] = useState('');
   const appTheme = theme === 'dark' ? 'Dark' : 'Light';
   const [hideDust, setHideDust] = useState(true);
-  
+
   const [alerts, setAlerts] = useState({
     yieldDrop: false,
     p2pMatches: true,
     vaultMaturity: true
   });
+
+  const { isConnected, address, accountId, disconnect } = useWallet();
+  const { currency, setCurrencyCode } = useCurrency();
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+  const currencyRef = useRef<HTMLDivElement>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (currencyRef.current && !currencyRef.current.contains(e.target as Node)) setCurrencyOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
+
+  const handleDisconnect = async () => {
+    if (!isConnected || disconnecting) return;
+    setDisconnecting(true);
+    try { await disconnect(); } catch (err) { console.error('Disconnect failed:', err); }
+    finally { setDisconnecting(false); }
+  };
 
   const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
   const textMuted = theme === 'dark' ? 'text-white/60' : 'text-slate-500';
@@ -78,9 +101,8 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
 
           <div className="flex flex-col">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Hedera RPC Node</label>
-            <div className={`flex items-center justify-between gap-2 w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}>
-              <span className={`text-[14px] font-bold ${textMain} truncate min-w-0`}>https://mainnet.hashio.io/api</span>
-              <CaretDown size={16} className={`${textMuted} shrink-0`} weight="bold" />
+            <div className={`flex items-center justify-between gap-2 w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent`}>
+              <span className={`text-[14px] font-bold ${textMain} truncate min-w-0`}>https://testnet.hashio.io/api</span>
             </div>
           </div>
         </div>
@@ -122,12 +144,31 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
             </div>
           </div>
 
-          <div className="flex flex-col mb-8">
+          <div className="flex flex-col mb-8 relative" ref={currencyRef}>
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Base Fiat Currency</label>
-            <div className={`flex items-center justify-between w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}>
-              <span className={`text-[14px] font-bold ${textMain}`}>USD ($)</span>
-              <CaretDown size={16} className={textMuted} weight="bold" />
-            </div>
+            <button
+              type="button"
+              onClick={() => setCurrencyOpen((o) => !o)}
+              className={`flex items-center justify-between w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}
+            >
+              <span className={`text-[14px] font-bold ${textMain}`}>{currency.code} ({currency.symbol})</span>
+              <CaretDown size={16} className={`${textMuted} transition-transform ${currencyOpen ? 'rotate-180' : ''}`} weight="bold" />
+            </button>
+            {currencyOpen && (
+              <div className={`absolute top-full left-0 right-0 mt-1.5 z-20 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 shadow-sm dark:shadow-none backdrop-blur-xl rounded-xl p-1.5 max-h-[240px] overflow-y-auto`}>
+                {CURRENCIES.map((c) => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => { setCurrencyCode(c.code); setCurrencyOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-colors ${c.code === currency.code ? 'bg-[#00A8E8]/10 dark:bg-[#00A8E8]/20' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
+                  >
+                    <span className={`text-[13px] font-bold ${c.code === currency.code ? 'text-[#00A8E8]' : textMain}`}>{c.code} ({c.symbol})</span>
+                    <span className={`text-[11px] font-medium ${textMuted}`}>{c.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between w-full mt-auto pb-1">
@@ -195,15 +236,16 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
           <div className="flex flex-col mb-8">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Connected Account</label>
             <div className={`text-[15px] font-bold ${textMain} tracking-tight break-all`}>
-              0.0.123456 <span className={textMuted}>(HashPack)</span>
+              {isConnected
+                ? (accountId || (address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'Connected'))
+                : <span className={textMuted}>Not connected</span>}
             </div>
           </div>
 
           <div className="flex flex-col mb-auto">
             <label className={`text-[13px] font-medium ${textMuted} mb-3`}>Active Network</label>
-            <div className={`flex items-center justify-between w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent cursor-pointer hover:border-[#00A8E8]/30 transition-colors`}>
-              <span className={`text-[14px] font-bold ${textMain}`}>Hedera Mainnet</span>
-              <CaretDown size={16} className={textMuted} weight="bold" />
+            <div className={`flex items-center justify-between w-full px-4 py-3 border ${borderColor} rounded-md bg-transparent`}>
+              <span className={`text-[14px] font-bold ${textMain}`}>Hedera Testnet</span>
             </div>
           </div>
 
@@ -211,8 +253,12 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ theme, onSetTheme }) =
             <button className="w-full py-3 rounded-md border border-[#EF4444] text-[#EF4444] font-bold text-[14px] hover:bg-[#EF4444]/5 transition-colors text-center">
               Revoke Allowances
             </button>
-            <button className={`w-full py-3 rounded-md ${theme === 'dark' ? 'bg-white/10 hover:bg-white/15' : 'bg-slate-100 hover:bg-slate-200'} ${textMain} font-bold text-[14px] transition-colors text-center`}>
-              Disconnect Wallet
+            <button
+              onClick={handleDisconnect}
+              disabled={!isConnected || disconnecting}
+              className={`w-full py-3 rounded-md ${theme === 'dark' ? 'bg-white/10 hover:bg-white/15' : 'bg-slate-100 hover:bg-slate-200'} ${textMain} font-bold text-[14px] transition-colors text-center disabled:opacity-50`}
+            >
+              {disconnecting ? 'Disconnecting…' : 'Disconnect Wallet'}
             </button>
           </div>
         </div>

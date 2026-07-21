@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { LockKey, TrendUp, ArrowsLeftRight, UsersThree } from '@phosphor-icons/react';
+import { LockKey, TrendUp, ArrowsLeftRight, UsersThree, BookOpen, XLogo, DiscordLogo } from '@phosphor-icons/react';
 import { Logo } from './Logo';
 
 const BLUE = '#00A8E8';
@@ -12,7 +12,8 @@ interface LandingPageProps {
   onNavigate?: (tab: string) => void;
 }
 
-/* Reveal-on-scroll wrapper — adds `.lp-in` when the element enters the viewport. */
+/* Reveal-on-scroll wrapper (threshold-triggered, plays once). Used for cards
+   and supporting paragraphs — not headings, which use ScrollWords below. */
 const Reveal: React.FC<{ children: React.ReactNode; delay?: number; className?: string }> = ({ children, delay = 0, className = '' }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
@@ -51,16 +52,66 @@ const CountUp: React.FC<{ to: number; suffix?: string; dur?: number }> = ({ to, 
   return <span ref={ref} className="tabular-nums">{val}{suffix}</span>;
 };
 
+/* Word-by-word reveal driven directly by scroll position (not a fixed-time
+   animation) — each word's opacity/offset is a function of how far the
+   heading has scrolled through its reveal window, so the words visibly
+   assemble as the user scrolls past it, matching the reference motion. */
+const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string; accent?: string }> = ({ text, as = 'h2', className = '', accent }) => {
+  const ref = useRef<HTMLHeadingElement>(null);
+  const [progress, setProgress] = useState(0);
+  const words = text.split(' ');
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { setProgress(1); return; }
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const start = vh * 0.9;   // progress 0: heading top just below the fold
+        const end = vh * 0.4;     // progress 1: heading has scrolled to ~40% viewport height
+        const p = (start - rect.top) / (start - end);
+        setProgress(Math.max(0, Math.min(1, p)));
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
+  }, []);
+
+  const Tag = as as any;
+  return (
+    <Tag ref={ref} className={`lp-scrollwords ${className}`}>
+      {words.map((w, i) => {
+        const wStart = i / words.length;
+        const wEnd = Math.min(1, wStart + (1 / words.length) * 1.5);
+        const wp = Math.max(0, Math.min(1, (progress - wStart) / (wEnd - wStart)));
+        const isAccent = accent && w.replace(/[.,]/g, '') === accent;
+        return (
+          <span key={i} className={`lp-sword ${isAccent ? 'lp-accent' : ''}`} style={{ opacity: wp, transform: `translateY(${(1 - wp) * 16}px)` }}>
+            {w}{i < words.length - 1 ? ' ' : ''}
+          </span>
+        );
+      })}
+    </Tag>
+  );
+};
+
 // The four sections — the only place icons are used.
 const SECTIONS = [
-  { icon: LockKey, name: 'Vault', tab: 'Vault', desc: 'Time-locked savings that pay a fixed APY by asset tier — up to 22% on ecosystem tokens over 7 / 30 / 60-day locks.' },
+  { icon: LockKey, name: 'Vault', tab: 'Vault', desc: 'Time-locked savings that pay a fixed APY by asset tier, up to 28% on ecosystem tokens over 7 / 30 / 60-day locks.' },
   { icon: TrendUp, name: 'Earn', tab: 'Earn', desc: 'Supply one token and the protocol auto-zaps it into a balanced yield position, with hands-off auto-compounding via Hedera HIP-1215.' },
   { icon: ArrowsLeftRight, name: 'Trade', tab: 'P2P', desc: 'A trustless peer-to-peer order book with escrowed limit orders and live market data. No house, no pool.' },
-  { icon: UsersThree, name: 'Community', tab: 'Earn', desc: 'Hold CODE to open proposals and cast weighted votes on emissions, new assets, and upgrades — every tally settles on-chain.' },
+  { icon: UsersThree, name: 'Community', tab: 'Earn', desc: 'Hold CODE to open proposals and cast weighted votes on emissions, new assets and upgrades. Every tally settles on-chain.' },
 ];
 
 const SECURITY = [
-  { t: 'Native HTS controls', d: 'Token rules are enforced by network consensus — not just application code.' },
+  { t: 'Native HTS controls', d: 'Token rules are enforced by network consensus, not only application code.' },
   { t: 'Explicit association', d: 'Accounts opt in to tokens, blocking dusting and unsolicited-token attacks by default.' },
   { t: 'aBFT finality', d: "Hedera's hashgraph consensus gives fast, final settlement with no re-org risk." },
   { t: 'Verified on HashScan', d: 'Every Creode contract is source-verified and publicly auditable.' },
@@ -72,38 +123,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
     <div className="lp-root min-h-screen w-full overflow-x-hidden text-white antialiased">
       <style>{lpCss}</style>
 
-      {/* Nav — text only */}
+      {/* Nav */}
       <nav className="relative z-20 mx-auto flex max-w-[1180px] items-center justify-between px-8 py-7">
         <button onClick={onLaunch} className="scale-90 origin-left"><Logo theme="dark" /></button>
-        <div className="flex items-center gap-9">
+        <div className="flex items-center gap-4">
           <button onClick={onDocs} className="hidden text-[13.5px] font-semibold tracking-wide text-white/55 transition-colors hover:text-white sm:block">Docs</button>
-          <button onClick={onLaunch} className="lp-navcta">Launch App</button>
+          <button onClick={onLaunch} className="lp-cta">Launch App</button>
         </div>
       </nav>
 
-      {/* Hero — oversized editorial type with a curtain-up mask reveal */}
+      {/* Hero */}
       <header className="lp-hero relative z-10 mx-auto flex min-h-[86vh] max-w-[1180px] flex-col justify-center px-8 pb-20">
         <div className="lp-eyebrow" style={{ animationDelay: '80ms' }}>
           <span className="lp-dot" /> Non-custodial DeFi protocol · Hedera
         </div>
 
-        <h1 className="lp-h1 mt-7">
-          <span className="lp-line"><span style={{ animationDelay: '160ms' }}>Everything DeFi,</span></span>
-          <span className="lp-line"><span style={{ animationDelay: '300ms' }}>settled on <em className="lp-accent">Hedera.</em></span></span>
-        </h1>
+        <ScrollWords as="h1" text="Save. Earn. Trade. Govern." className="lp-h1 mt-7" accent="Govern." />
 
-        <p className="lp-sub" style={{ animationDelay: '620ms' }}>
-          Save, earn, trade, and govern in one place — every action a plain on-chain transaction
+        <p className="lp-sub" style={{ animationDelay: '400ms' }}>
+          Save, earn, trade and govern in one place. Every action is a plain on-chain transaction
           you sign yourself, secured at the network layer by HTS.
         </p>
 
-        <div className="lp-actions" style={{ animationDelay: '740ms' }}>
-          <button onClick={onLaunch} className="lp-btn-primary">Launch App</button>
-          <button onClick={onDocs} className="lp-btn-ghost">Read the Docs</button>
+        <div className="lp-actions" style={{ animationDelay: '520ms' }}>
+          <button onClick={onLaunch} className="lp-cta lp-cta-lg">Launch App</button>
         </div>
 
         {/* Thin meta row — text only */}
-        <div className="lp-meta" style={{ animationDelay: '900ms' }}>
+        <div className="lp-meta" style={{ animationDelay: '680ms' }}>
           <div><span className="lp-metanum"><CountUp to={4} /></span><span className="lp-metalabel">Products</span></div>
           <span className="lp-metasep" />
           <div><span className="lp-metanum"><CountUp to={9} /></span><span className="lp-metalabel">Verified contracts</span></div>
@@ -116,10 +163,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
 
       {/* Sections — the only icons on the page */}
       <section id="sections" className="relative z-10 mx-auto max-w-[1180px] px-8 py-24">
-        <Reveal>
-          <span className="lp-kicker">The protocol</span>
-          <h2 className="lp-h2 mt-4 max-w-[16ch]">Four ways to move on-chain.</h2>
-        </Reveal>
+        <ScrollWords as="h2" text="Four ways to move on-chain." className="lp-h2 max-w-[16ch]" />
         <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] sm:grid-cols-2">
           {SECTIONS.map((s, i) => {
             const Icon = s.icon;
@@ -142,9 +186,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
         <Reveal>
           <div className="lp-feature">
             <span className="lp-tag">Keeperless · HIP-1215</span>
-            <h2 className="lp-h2 mt-4">Auto-compounding that runs itself.</h2>
+            <h2 className="lp-h2 mt-4 !text-left">Auto-compounding that runs itself.</h2>
             <p className="mt-4 max-w-[64ch] text-[15px] leading-relaxed text-white/55">
-              Turn on auto-compound and Creode compounds your position on-chain — no bots, no keepers.
+              Turn on auto-compound and Creode compounds your position on-chain, with no bots and no keepers.
               Powered by Hedera HIP-1215 scheduled contract calls: each tick compounds every enrolled
               position and schedules the next one itself.
             </p>
@@ -154,10 +198,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
 
       {/* Security — no icons */}
       <section id="security" className="relative z-10 mx-auto max-w-[1180px] px-8 py-24">
-        <Reveal>
-          <span className="lp-kicker">Security</span>
-          <h2 className="lp-h2 mt-4 max-w-[18ch]">Secured by Hedera HTS.</h2>
-          <p className="mt-4 max-w-[54ch] text-[15px] leading-relaxed text-white/55">Token rules enforced at the network layer, not just in application code.</p>
+        <ScrollWords as="h2" text="Secured by Hedera HTS." className="lp-h2 max-w-[18ch]" />
+        <Reveal className="mt-4">
+          <p className="max-w-[54ch] text-[15px] leading-relaxed text-white/55">Token rules enforced at the network layer, not just in application code.</p>
         </Reveal>
         <div className="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {SECURITY.map((s, i) => (
@@ -175,31 +218,37 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
       {/* Final CTA — no icons */}
       <section className="relative z-10 mx-auto max-w-[1180px] px-8 pb-28">
         <Reveal>
-          <div className="lp-final">
-            <h2 className="lp-h2 text-center">Start earning on Creode.</h2>
+          <div className="lp-final text-center">
+            <ScrollWords as="h2" text="Start earning on Creode." className="lp-h2 !text-center mx-auto" />
             <p className="mx-auto mt-4 max-w-[48ch] text-center text-[15px] leading-relaxed text-white/55">
-              Connect a wallet on Hedera Testnet, claim test tokens from the faucet, and try every product — with no real funds at risk.
+              Connect a wallet on Hedera Testnet, claim test tokens from the faucet and try every product, with no real funds at risk.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <button onClick={onLaunch} className="lp-btn-primary">Launch App</button>
-              <button onClick={onDocs} className="lp-btn-ghost">Read the Docs</button>
+              <button onClick={onDocs} className="lp-ghost">Read the Docs</button>
             </div>
           </div>
         </Reveal>
       </section>
 
-      {/* Footer — text only */}
+      {/* Footer */}
       <footer className="relative z-10 border-t border-white/5">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-6 px-8 py-10 sm:flex-row sm:items-center">
-          <div className="flex flex-col gap-2">
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-8 px-8 py-12 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-3 max-w-[360px]">
             <div className="scale-90 origin-left"><Logo theme="dark" /></div>
-            <p className="text-[12px] text-white/35">Non-custodial DeFi on Hedera · Testnet · No real funds at risk.</p>
+            <p className="text-[12.5px] leading-relaxed text-white/35">Non-custodial DeFi on Hedera. Testnet deployment, no real funds at risk.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-7 text-[13px] font-semibold text-white/45">
-            <button onClick={onDocs} className="transition-colors hover:text-white">Docs</button>
-            <a href="https://hashscan.io/testnet" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">HashScan</a>
-            <a href="https://docs.hedera.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">Hedera</a>
-            <span className="text-[#10B981]">Contracts verified</span>
+
+          <div className="flex flex-col gap-4 sm:items-end">
+            <div className="flex items-center gap-3">
+              <button onClick={onDocs} title="Docs" className="lp-social"><BookOpen size={17} weight="bold" /></button>
+              <span title="X: coming soon" className="lp-social lp-social-soon"><XLogo size={17} weight="bold" /></span>
+              <span title="Discord: coming soon" className="lp-social lp-social-soon"><DiscordLogo size={17} weight="bold" /></span>
+            </div>
+            <div className="flex flex-wrap items-center justify-end gap-6 text-[12.5px] font-semibold text-white/45">
+              <a href="https://hashscan.io/testnet" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">HashScan</a>
+              <a href="https://docs.hedera.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white">Hedera</a>
+              <span className="text-[#10B981]">Contracts verified</span>
+            </div>
           </div>
         </div>
       </footer>
@@ -207,9 +256,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
   );
 };
 
-/* Scoped landing CSS. Editorial type + curtain-up reveal; keeps Creode's dark + cyan. */
+/* Scoped landing CSS. Editorial type + scroll-scrubbed word reveal; keeps
+   Creode's dark + cyan identity and the app's own font (Inter, font-bold). */
 const lpCss = `
-.lp-root { position: relative; background: #07090d; }
+.lp-root { position: relative; background: #07090d; font-family: inherit; }
 .lp-root::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(70% 55% at 50% -8%, rgba(0,168,232,0.14), transparent 60%); }
 .lp-root::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
@@ -219,35 +269,35 @@ const lpCss = `
   -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 25%, transparent 78%); }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-eyebrow, .lp-sub, .lp-actions, .lp-meta, .lp-line > span { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .lp-eyebrow, .lp-sub, .lp-actions, .lp-meta, .lp-sword { animation: none !important; opacity: 1 !important; transform: none !important; }
   .lp-reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
 }
 
-/* Nav */
-.lp-navcta { background: #00A8E8; color: #04121a; font-weight: 800; font-size: 13.5px; padding: 9px 18px; border-radius: 10px; transition: transform .18s, box-shadow .25s; box-shadow: 0 6px 20px rgba(0,168,232,0.28); }
-.lp-navcta:hover { transform: translateY(-1px); box-shadow: 0 9px 26px rgba(0,168,232,0.42); }
+/* Shared CTA — solid blue, well-rounded, matching the wallet Connect button. */
+.lp-cta { background: #00A8E8; color: #ffffff; font-weight: 700; font-size: 13.5px; padding: 10px 18px; border-radius: 12px; transition: background .2s, transform .18s, box-shadow .25s; box-shadow: 0 4px 14px rgba(0,168,232,0.25); }
+.lp-cta:hover { background: #0090C7; box-shadow: 0 6px 20px rgba(0,168,232,0.4); }
+.lp-cta:active { transform: scale(0.97); }
+.lp-cta-lg { font-size: 15px; padding: 14px 28px; border-radius: 12px; }
+.lp-ghost { border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 24px; border-radius: 12px; transition: background .2s, border-color .2s; }
+.lp-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.26); }
 
 /* Hero */
 .lp-eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(10px); animation: lpFade .7s cubic-bezier(0.22,1,0.36,1) forwards; }
 .lp-dot { width: 7px; height: 7px; border-radius: 50%; background: #00A8E8; box-shadow: 0 0 0 0 rgba(0,168,232,0.5); animation: lpPulse 2.4s ease-out infinite; }
 @keyframes lpPulse { 0% { box-shadow: 0 0 0 0 rgba(0,168,232,0.5); } 70%,100% { box-shadow: 0 0 0 8px rgba(0,168,232,0); } }
 
-.lp-h1 { font-size: clamp(46px, 9.2vw, 116px); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em; }
-.lp-line { display: block; overflow: hidden; padding-bottom: 0.04em; }
-.lp-line > span { display: block; transform: translateY(108%); animation: lpRise 1s cubic-bezier(0.16,1,0.3,1) forwards; }
-@keyframes lpRise { to { transform: translateY(0); } }
-.lp-accent { font-style: normal; background: linear-gradient(100deg, #00A8E8, #0072FF 60%, #58a6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lp-h1.lp-scrollwords { font-size: clamp(44px, 8.6vw, 104px); font-weight: 700; line-height: 1.02; letter-spacing: -0.04em; }
+.lp-h2.lp-scrollwords { font-size: clamp(28px, 4.4vw, 46px); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; }
+.lp-scrollwords { display: block; }
+.lp-sword { display: inline-block; will-change: opacity, transform; transition: opacity .05s linear, transform .05s linear; }
+.lp-sword.lp-accent { background: linear-gradient(100deg, #00A8E8, #0072FF 60%, #58a6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-.lp-sub { max-width: 54ch; margin-top: 30px; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.6; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
+.lp-sub { max-width: 54ch; margin-top: 26px; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.6; color: rgba(255,255,255,0.55); opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
 .lp-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; opacity: 0; transform: translateY(14px); animation: lpFade .8s cubic-bezier(0.22,1,0.36,1) forwards; }
-.lp-btn-primary { background: #00A8E8; color: #04121a; font-weight: 800; font-size: 15px; padding: 14px 26px; border-radius: 13px; box-shadow: 0 10px 34px rgba(0,168,232,0.32); transition: transform .18s, box-shadow .25s; }
-.lp-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(0,168,232,0.48); }
-.lp-btn-ghost { border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03); color: #fff; font-weight: 700; font-size: 15px; padding: 14px 24px; border-radius: 13px; transition: background .2s, border-color .2s; }
-.lp-btn-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.26); }
 
 .lp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 64px; opacity: 0; transform: translateY(14px); animation: lpFade .9s cubic-bezier(0.22,1,0.36,1) forwards; }
 .lp-meta > div { display: flex; flex-direction: column; gap: 2px; }
-.lp-metanum { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+.lp-metanum { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
 .lp-metalabel { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.4); }
 .lp-metasep { width: 1px; height: 30px; background: rgba(255,255,255,0.1); }
 
@@ -257,10 +307,6 @@ const lpCss = `
 .lp-reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(0.22,1,0.36,1), transform .7s cubic-bezier(0.22,1,0.36,1); }
 .lp-reveal.lp-in { opacity: 1; transform: translateY(0); }
 
-/* Headings */
-.lp-kicker { font-size: 12.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #00A8E8; }
-.lp-h2 { font-size: clamp(28px, 4.4vw, 46px); font-weight: 800; line-height: 1.05; letter-spacing: -0.035em; }
-
 /* Sections grid */
 .lp-section { display: block; width: 100%; text-align: left; background: #0b0e13; padding: 34px; transition: background .25s; cursor: pointer; }
 .lp-section:hover { background: #0e131a; }
@@ -269,7 +315,7 @@ const lpCss = `
 .lp-section:hover .lp-section-open { opacity: 1; transform: translateX(0); }
 
 /* Feature */
-.lp-feature { border: 1px solid rgba(255,255,255,0.09); border-radius: 22px; padding: 44px; background: linear-gradient(120deg, rgba(0,168,232,0.09), transparent 55%); }
+.lp-feature { position: relative; border: 1px solid rgba(255,255,255,0.09); border-radius: 22px; padding: 44px; background: linear-gradient(120deg, rgba(0,168,232,0.09), transparent 55%); }
 .lp-tag { display: inline-block; border: 1px solid rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); color: #10B981; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
 
 /* Security */
@@ -278,4 +324,10 @@ const lpCss = `
 
 /* Final */
 .lp-final { border: 1px solid rgba(255,255,255,0.09); border-radius: 26px; padding: 60px 32px; background: radial-gradient(120% 150% at 50% 0%, rgba(0,168,232,0.12), transparent 58%), rgba(255,255,255,0.015); }
+
+/* Footer socials */
+.lp-social { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.65); transition: background .2s, color .2s, border-color .2s; cursor: pointer; }
+.lp-social:hover { background: rgba(0,168,232,0.1); border-color: rgba(0,168,232,0.3); color: #00A8E8; }
+.lp-social-soon { opacity: 0.4; cursor: default; }
+.lp-social-soon:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.65); }
 `;

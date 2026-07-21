@@ -7,7 +7,8 @@ import { TOKEN_MAPPINGS, SaucerSwapToken } from '../utils/tokenMapping';
 import { createPortal } from 'react-dom';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
-import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
+import { useCurrency } from '../context/CurrencyContext';
+import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
@@ -83,12 +84,18 @@ interface VaultTabProps {
 }
 
 
+// Fallback USD price table (used when the SaucerSwap API is unreachable/unauthorized).
+const MOCK_TOKEN_PRICES_USD: Record<string, number> = {
+  HBAR: 0.05, USDC: 1.00, USDT: 1.00, SAUCE: 0.03, DOVU: 0.001,
+  PACK: 0.0001, WETH: 3000.00, WBTC: 60000.00, JAM: 0.002, BONZO: 0.0005,
+};
+
 const getBaseRates = (token: string) => {
   const t = token.toUpperCase();
-  if (['USDT', 'USDC'].includes(t)) return { d7: 4.0, d30: 6.5, d60: 9.0 };
-  if (['SAUCE', 'PACK', 'BONZO', 'JAM'].includes(t)) return { d7: 8.0, d30: 14.0, d60: 22.0 };
+  if (['USDT', 'USDC'].includes(t)) return { d7: 6.5, d30: 10.0, d60: 16.0 };
+  if (['SAUCE', 'PACK', 'BONZO', 'JAM'].includes(t)) return { d7: 10.0, d30: 18.0, d60: 28.0 };
   // Default to Blue-Chip
-  return { d7: 3.5, d30: 5.5, d60: 8.0 };
+  return { d7: 5.0, d30: 8.0, d60: 13.0 };
 };
 
 const calculateAPY = (token: string, days: number): string => {
@@ -152,11 +159,15 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
   const { balance, isConnected } = useWallet();
+  const { format: formatCurrency } = useCurrency();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'JAM'];
   const [activeToken, setActiveToken] = useState('HBAR');
   const [tokenPriceUsd, setTokenPriceUsd] = useState<number>(0);
+  // USD price for every supported token (for the real Total Portfolio figure),
+  // seeded with the fallback table so the total is never zero on first paint.
+  const [priceMap, setPriceMap] = useState<Record<string, number>>(MOCK_TOKEN_PRICES_USD);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -207,7 +218,43 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     return () => clearInterval(interval);
   }, [activeToken]);
 
+  // USD price for every token (not just the one selected in the deposit form),
+  // so the Total Portfolio card below can value deposits across all tokens.
+  useEffect(() => {
+    let alive = true;
+    const fetchAllPrices = async () => {
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_SAUCERSWAP_API_KEY || '';
+        const headers: Record<string, string> = apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {};
+        const res = await fetch('https://api.saucerswap.finance/tokens', { headers });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!Array.isArray(data) || !alive) return;
+        const next = { ...MOCK_TOKEN_PRICES_USD };
+        for (const sym of Object.keys(MOCK_TOKEN_PRICES_USD)) {
+          const tokenId = TOKEN_MAPPINGS[sym];
+          const tokenData = data.find((t: SaucerSwapToken) => (tokenId && t.id === tokenId) || t.symbol === sym);
+          if (tokenData?.priceUsd) next[sym] = Number(tokenData.priceUsd);
+        }
+        setPriceMap(next);
+      } catch (err) {
+        console.error('Failed to fetch token price map', err);
+      }
+    };
+    fetchAllPrices();
+    const interval = setInterval(fetchAllPrices, 30000);
+    return () => { alive = false; clearInterval(interval); };
+  }, []);
+
   const fiatDisplayValue = (Number(depositAmount || 0) * tokenPriceUsd).toFixed(2);
+
+  // Real Total Portfolio: sum of every live deposit's principal + accrued
+  // yield, valued in USD via the price map above. Updates whenever `vaults`
+  // is refetched (i.e. after any deposit / withdraw / compound transaction).
+  const totalPortfolioUsd = vaults.reduce(
+    (sum, v) => sum + (Number(v.amount) + Number(v.accruedYield)) * (priceMap[v.symbol] ?? 0),
+    0
+  );
 
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [tempCustomDays, setTempCustomDays] = useState<string>('');
@@ -578,7 +625,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   onChange={(e) => setDepositAmount(e.target.value)}
                   className="bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[36px] font-bold w-full text-left [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0 mb-1" 
                 />
-                <span className={`text-[12px] font-bold ml-1 transition-colors ${Number(depositAmount || 0) > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${fiatDisplayValue}</span>
+                <span className={`text-[12px] font-bold ml-1 transition-colors ${Number(depositAmount || 0) > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>{formatCurrency(Number(fiatDisplayValue))}</span>
               </div>
 
               {/* Right Side: Token Selector & Percentages */}
@@ -941,14 +988,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
             <div className="flex flex-col h-full z-10">
               <span className="text-[14px] font-medium text-slate-500 dark:text-white/60 mb-0.5">Total Portfolio</span>
-              <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">$18,642.75</span>
-              
+              <span className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-sm tabular-nums">
+                {formatCurrency(totalPortfolioUsd)}
+              </span>
+
               <div className="mt-auto pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-start w-full">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <CaretUp size={14} weight="fill" className="text-emerald-500 dark:text-[#00E88A]" />
-                  <span className="text-[15px] font-bold text-emerald-500 dark:text-[#00E88A]">3.24%</span>
-                </div>
-                <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">24h Change</span>
+                <span className="text-[13px] font-medium text-slate-500 dark:text-white/50">
+                  {isConnected ? `Across ${vaults.length} active vault${vaults.length === 1 ? '' : 's'}` : 'Connect a wallet to see your vaults'}
+                </span>
               </div>
             </div>
           </div>

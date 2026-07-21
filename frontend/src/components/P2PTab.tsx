@@ -9,11 +9,15 @@ import { useWallet } from '../context/WalletContext';
 import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
 import { CTA_GREEN, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
-import { CaretDown as CaretDownIcon } from '@phosphor-icons/react';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
 }
+
+// Fallback USD price per base symbol, used only for the one pair whose quote
+// isn't a USD stable (HBAR-SAUCE); every other pair quotes USDC/USDT (~$1),
+// so priceNum is already ~USD per base there.
+const FALLBACK_USD: Record<string, number> = { HBAR: 0.05, SAUCE: 0.03 };
 
 export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeTradeMode, setActiveTradeMode] = useState<'Market' | 'Limit'>('Market');
@@ -215,6 +219,13 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const maxBase = tradeSide === 'Long'
     ? (priceNum > 0 && payBalance ? payBalance / priceNum : 0)
     : (payBalance ?? 0);
+
+  // USD value of the traded (base) amount, for the "$0.00" line under the
+  // amount input (matching the Vault deposit box). Every pair but HBAR-SAUCE
+  // quotes a USD stable, so priceNum is already ~USD per base in those cases.
+  const quoteIsUsdStable = pair.quote === 'USDC' || pair.quote === 'USDT';
+  const baseUsdPrice = quoteIsUsdStable ? priceNum : (FALLBACK_USD[tradeSym] ?? 0);
+  const baseUsdValue = baseNum * baseUsdPrice;
 
   // The connected user's own open orders on this pair (for the Orders tab).
   const myOrders = openOrders.filter((o) => myAddr && o.maker.toLowerCase() === myAddr);
@@ -527,7 +538,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               
               {/* Buy / Sell Toggle */}
               <div className="px-6 pt-6 pb-2">
-                <div className="flex bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none p-1 rounded-full relative w-full h-[48px] items-center font-bold text-[14px]">
+                <div className="flex bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-sm dark:shadow-none p-1 rounded-full relative w-full h-[48px] items-center font-bold text-[14px]">
                    <div
                      className={`flex-1 text-center z-10 cursor-pointer h-full flex items-center justify-center transition-colors ${tradeSide === 'Long' ? 'text-white' : textMuted + ' hover:text-white'}`}
                      onClick={() => setTradeSide('Long')}
@@ -581,7 +592,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     {/* Amount Input */}
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#10B981] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
@@ -594,18 +605,14 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <div className={TOKEN_PILL}>
                           <TokenLogo sym={tradeSym} size={24} />
                           <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{tradeSym}</span>
-                          <CaretDownIcon size={13} weight="bold" className="text-slate-500 dark:text-white/50" />
                         </div>
                       </div>
-                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
+                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${baseNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${baseUsdValue.toFixed(2)}</span>
                     </div>
 
                     {/* Balance */}
-                    <div className="flex justify-between items-center mb-6 px-1">
+                    <div className="flex justify-between items-center mb-6 px-1 -mt-1.5">
                       <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxBase)} {tradeSym}</span></span>
-                      {payBalance !== null && maxBase > 0 && (
-                        <button onClick={() => setPayAmount(String(Number(maxBase.toFixed(6))))} className="text-[12px] font-bold tracking-tight text-[#00A8E8] hover:underline">Max</button>
-                      )}
                     </div>
 
                     {/* Slider */}
@@ -688,7 +695,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     <div className="flex justify-between items-end mb-2">
                       <span className={`text-[12px] font-semibold ${textMuted}`}>Amount ({tradeSym})</span>
                     </div>
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#10B981] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
                         <input 
                           type="text" 
@@ -700,38 +707,31 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <div className={TOKEN_PILL}>
                           <TokenLogo sym={tradeSym} size={24} />
                           <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{tradeSym}</span>
-                          <CaretDownIcon size={13} weight="bold" className="text-slate-500 dark:text-white/50" />
                         </div>
                       </div>
-                      <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>≈ {formatPrice(recvEst)} {recvSym} received</div>
+                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${baseNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${baseUsdValue.toFixed(2)}</span>
+                    </div>
+
+                    {/* Balance */}
+                    <div className="flex justify-between items-center mb-5 px-1 -mt-1.5">
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxBase)} {tradeSym}</span></span>
                     </div>
 
                     {/* Price Input */}
-                    <div className="flex justify-between items-end mb-2 mt-1">
+                    <div className="flex justify-between items-end mb-2">
                       <span className={`text-[12px] font-semibold ${textMuted}`}>Price (Limit)</span>
                     </div>
-                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-5 focus-within:border-[#10B981] transition-colors group`}>
+                    <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-5 focus-within:border-[#00A8E8] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           placeholder="0.00"
                           value={priceAmount}
                           onChange={(e) => setPriceAmount(e.target.value)}
-                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
+                          className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`}
                         />
-                        <div className="flex items-center justify-end gap-2 px-3 py-1.5 min-w-[60px] shrink-0">
-                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none pr-1">{pair.quote}</span>
-                        </div>
                       </div>
                       <div className={`text-[11px] font-semibold ${textMuted} mt-1.5 px-0.5`}>Mark: {priceStr} {pair.quote}</div>
-                    </div>
-
-                    {/* Balance & Total */}
-                    <div className="flex justify-between items-center mb-6 px-1">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxBase)} {tradeSym}</span></span>
-                      {payBalance !== null && maxBase > 0 && (
-                        <button onClick={() => setPayAmount(String(Number(maxBase.toFixed(6))))} className="text-[12px] font-bold tracking-tight text-[#00A8E8] hover:underline">Max</button>
-                      )}
                     </div>
 
                     {/* Slider */}

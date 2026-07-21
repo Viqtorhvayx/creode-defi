@@ -14,7 +14,6 @@ import {
   Drop,
   CaretLeft,
   CaretRight,
-  ArrowRight,
   CaretDown,
   GridFour,
   List
@@ -484,7 +483,7 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
               <button
                 onClick={() => setSelectedStrategy(featuredStrategy)}
                 className={`${CTA_BLUE} w-full py-3.5 text-[14px] shadow-sm flex items-center justify-center gap-2`}>
-                Supply HBAR-SAUCE <ArrowRight size={14} weight="bold" />
+                Supply HBAR-SAUCE
               </button>
             </div>
           </div>

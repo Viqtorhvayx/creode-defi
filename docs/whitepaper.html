@@ -1,4 +1,4 @@
-<title>Creode Protocol — Whitepaper</title>
+<title>Creode Protocol: Whitepaper</title>
 <style>
   :root {
     --bg: #FBFCFD; --bg-soft: #F1F5F8; --card: #FFFFFF; --line: #E3E9EE;
@@ -198,7 +198,7 @@
     </div>
     <div class="eyebrow">Protocol Whitepaper · v1.0</div>
     <h1>A non-custodial DeFi protocol on Hedera.</h1>
-    <p class="lede">Creode brings time-locked savings, single-asset yield, a peer-to-peer order book, and on-chain governance together in one app — settled trustlessly on Hedera, secured at the network layer by the Hedera Token Service.</p>
+    <p class="lede">Creode brings time-locked savings, single-asset yield, a peer-to-peer order book and on-chain governance together in one app, settled trustlessly on Hedera and secured at the network layer by the Hedera Token Service.</p>
     <div class="meta-row">
       <span class="chip dot">Hedera Testnet · chain 296</span>
       <span class="chip green dot">Non-custodial</span>
@@ -225,25 +225,25 @@
     <section id="overview">
       <div class="lead-abstract">
         <div class="abx">Abstract</div>
-        <p>Creode is a decentralized finance protocol built on <strong>Hedera</strong>. It bundles four products — a time-locked <strong>Vault</strong>, a single-asset <strong>Yield Hub</strong>, a peer-to-peer <strong>order-book exchange</strong>, and <strong>CODE-weighted governance</strong> — behind one non-custodial interface. The app never holds user keys or funds; every deposit, trade, and vote is an on-chain transaction the user signs from their own wallet. Assets are Hedera Token Service (HTS) tokens, so token rules are enforced by network consensus rather than application code alone.</p>
+        <p>Creode is a decentralized finance protocol built on <strong>Hedera</strong>. It bundles four products behind one non-custodial interface: a time-locked <strong>Vault</strong>, a single-asset <strong>Yield Hub</strong>, a peer-to-peer <strong>order-book exchange</strong> and <strong>CODE-weighted governance</strong>. The app never holds user keys or funds; every deposit, trade and vote is an on-chain transaction the user signs from their own wallet. Assets are Hedera Token Service (HTS) tokens, so token rules are enforced by network consensus rather than application code alone.</p>
       </div>
 
-      <div class="sec-eyebrow">01 — Overview</div>
+      <div class="sec-eyebrow">01. Overview</div>
       <h2>One protocol, four on-chain products</h2>
-      <p>Each product is backed by its own audited-primitive smart contract deployed to Hedera Testnet. They share a treasury, a rewards system (CODE points), and a governance layer, but each settles independently on-chain.</p>
+      <p>Each product is backed by its own audited-primitive smart contract deployed to Hedera Testnet. They share a treasury, a rewards system (CODE points) and a governance layer, but each settles independently on-chain.</p>
 
       <div class="fgrid">
         <div class="fcard"><h4><span class="tag"></span>Vault</h4><p>Time-locked savings paying a fixed APY by asset tier over 7 / 30 / 60-day or custom terms.</p></div>
-        <div class="fcard"><h4><span class="tag"></span>Earn — Yield Hub</h4><p>Deposit one token; the protocol auto-zaps it into a balanced dual-token yield position that compounds.</p></div>
-        <div class="fcard"><h4><span class="tag"></span>P2P Trading</h4><p>An on-chain order book with escrowed limit orders — no house, no pool. Charts use live market data.</p></div>
+        <div class="fcard"><h4><span class="tag"></span>Earn: Yield Hub</h4><p>Deposit one token; the protocol auto-zaps it into a balanced dual-token yield position that compounds.</p></div>
+        <div class="fcard"><h4><span class="tag"></span>P2P Trading</h4><p>An on-chain order book with escrowed limit orders: no house, no pool. Charts use live market data.</p></div>
         <div class="fcard"><h4><span class="tag"></span>Community Governance</h4><p>Hold CODE to open proposals and cast weighted votes; every tally is finalized on-chain.</p></div>
       </div>
 
-      <div class="note warn"><span class="ic">!</span><div>This deployment runs on <b>Hedera Testnet</b>. All tokens are test tokens with no monetary value, and the contracts are unaudited. Never send mainnet funds to these addresses.</div></div>
+      <div class="note warn"><span class="ic">!</span><div>This deployment runs on <b>Hedera Testnet</b>. All tokens are test tokens with no monetary value and the contracts are unaudited. Never send mainnet funds to these addresses.</div></div>
     </section>
 
     <section id="vault">
-      <div class="sec-eyebrow">02 — Vault</div>
+      <div class="sec-eyebrow">02. Vault</div>
       <h2>Time-locked savings with fixed, tiered yield</h2>
       <p>Deposit native HBAR or any supported HTS token and lock it for a fixed term to earn a fixed APY. Yield accrues linearly and is paid from the protocol treasury. At or after maturity you withdraw your <strong>full principal plus accrued yield</strong>; custom terms interpolate between the tier rates.</p>
 
@@ -251,57 +251,57 @@
         <table>
           <thead><tr><th>Asset tier</th><th class="num">7-day</th><th class="num">30-day</th><th class="num">60-day</th></tr></thead>
           <tbody>
-            <tr><td>Blue-chip <span style="color:var(--ink-faint)">· HBAR, WETH, WBTC</span></td><td class="num">3.50%</td><td class="num">5.50%</td><td class="num">8.00%</td></tr>
-            <tr><td>Stablecoins <span style="color:var(--ink-faint)">· USDC, USDT</span></td><td class="num">4.00%</td><td class="num">6.50%</td><td class="num">9.00%</td></tr>
-            <tr><td>Ecosystem <span style="color:var(--ink-faint)">· SAUCE, DOVU, PACK, JAM, BONZO</span></td><td class="num">8.00%</td><td class="num">14.00%</td><td class="num">22.00%</td></tr>
+            <tr><td>Blue-chip <span style="color:var(--ink-faint)">· HBAR, WETH, WBTC</span></td><td class="num">5.00%</td><td class="num">8.00%</td><td class="num">13.00%</td></tr>
+            <tr><td>Stablecoins <span style="color:var(--ink-faint)">· USDC, USDT</span></td><td class="num">6.50%</td><td class="num">10.00%</td><td class="num">16.00%</td></tr>
+            <tr><td>Ecosystem <span style="color:var(--ink-faint)">· SAUCE, DOVU, PACK, JAM, BONZO</span></td><td class="num">10.00%</td><td class="num">18.00%</td><td class="num">28.00%</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="note warn"><span class="ic">!</span><div><b>Early withdrawal</b> incurs a time-decay penalty of up to <b>2% on principal</b> — largest right after deposit, shrinking to zero at maturity. Accrued yield is always paid in full.</div></div>
+      <div class="note warn"><span class="ic">!</span><div><b>Early withdrawal</b> incurs a time-decay penalty of up to <b>2% on principal</b>, largest right after deposit and shrinking to zero at maturity. Accrued yield is always paid in full.</div></div>
     </section>
 
     <section id="earn">
-      <div class="sec-eyebrow">03 — Earn · Yield Hub</div>
+      <div class="sec-eyebrow">03. Earn · Yield Hub</div>
       <h2>Single-asset yield, auto-zapped and compounding</h2>
       <p>The Yield Hub runs balanced <strong>dual-token liquidity positions</strong> without requiring you to hold both tokens. Supply one asset and the protocol builds the position for you:</p>
 
       <ol class="steps">
-        <li><b>You deposit one token</b> — for example HBAR.</li>
+        <li><b>You deposit one token</b>, for example HBAR.</li>
         <li><b>The SwapRouter</b>, a constant-product AMM, swaps ~50% into the pair token to form a balanced ~50/50 position.</li>
         <li><b>The position is deposited</b> into the CreodeYieldVault, which accrues yield. Live APY and TVL are derived from real on-chain custody and prices.</li>
       </ol>
 
-      <p>You can <strong>Compound</strong> accrued rewards back into your position, <strong>Supply More</strong>, or <strong>Withdraw</strong> the full position on demand.</p>
+      <p>You can <strong>Compound</strong> accrued rewards back into your position, <strong>Supply More</strong> or <strong>Withdraw</strong> the full position on demand.</p>
 
       <h3>Auto-compounding via Hedera HIP-1215</h3>
-      <p>Compound by hand with the <strong>Compound</strong> button, or flip <strong>Auto: On</strong> and let the protocol do it — fully on-chain, using <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a> generalized scheduled contract calls. A contract can schedule its own future calls through the Hedera Schedule Service — native on-chain "cron" with no off-chain keeper.</p>
+      <p>Compound by hand with the <strong>Compound</strong> button, or flip <strong>Auto: On</strong> and let the protocol do it fully on-chain, using <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a> generalized scheduled contract calls. A contract can schedule its own future calls through the Hedera Schedule Service, meaning native on-chain "cron" with no off-chain keeper.</p>
       <ul>
-        <li>You enroll a position with one cheap transaction — no scheduling cost to you.</li>
+        <li>You enroll a position with one cheap transaction, with no scheduling cost to you.</li>
         <li>The <strong>CreodeCompoundScheduler</strong> runs a self-perpetuating tick: each scheduled tick compounds every enrolled position <strong>and schedules the next tick itself</strong>, so the loop continues with no keeper.</li>
-        <li>Scheduling cost is paid once by the protocol and amortized across all users, and every scheduled second must be strictly in the future — closing off infinite-loop abuse.</li>
+        <li>Scheduling cost is paid once by the protocol and amortized across all users. Every scheduled second must be strictly in the future, closing off infinite-loop abuse.</li>
       </ul>
-      <div class="note info"><span class="ic">✓</span><div><b>Live on Hedera testnet</b> and verified end-to-end — scheduled ticks execute and re-arm themselves autonomously on-chain.</div></div>
+      <div class="note info"><span class="ic">✓</span><div><b>Live on Hedera testnet</b> and verified end-to-end. Scheduled ticks execute and re-arm themselves autonomously on-chain.</div></div>
     </section>
 
     <section id="p2p">
-      <div class="sec-eyebrow">04 — P2P Trading</div>
+      <div class="sec-eyebrow">04. P2P Trading</div>
       <h2>A trustless, on-chain order book</h2>
       <p>P2P is a peer-to-peer spot exchange with <strong>no house and no pool</strong>. Every trade matches one user's order against another's, settled by the <strong>CreodeP2P</strong> escrow contract.</p>
       <ul>
-        <li><strong>Limit order</strong> — you post a price; your sell side is escrowed in the contract until it fills, is cancelled, or expires. Makers can always cancel to reclaim escrow.</li>
-        <li><strong>Market order</strong> — fills the best-priced resting order immediately, with partial fills supported.</li>
+        <li><strong>Limit order:</strong> you post a price; your sell side is escrowed in the contract until it fills, is cancelled or expires. Makers can always cancel to reclaim escrow.</li>
+        <li><strong>Market order:</strong> fills the best-priced resting order immediately, with partial fills supported.</li>
         <li><strong>Long</strong> buys the base token with the quote; <strong>Short</strong> sells the base for the quote.</li>
         <li>On each fill the taker pays the maker directly and the escrow is released minus a <strong>0.20% protocol fee</strong>.</li>
       </ul>
-      <p>Because every order carries a fixed price, there is no AMM-style slippage — a 0.5% floor only guards each fill against dust rounding. Tradable pairs include <code class="k">HBAR-USDC</code>, <code class="k">WBTC-USDC</code>, <code class="k">WETH-USDC</code>, <code class="k">SAUCE-USDC</code>, <code class="k">DOVU-USDC</code>, and <code class="k">HBAR-SAUCE</code>.</p>
-      <div class="note info"><span class="ic">≈</span><div>Charts use <b>real market data</b> — Pyth Network for majors, SaucerSwap / GeckoTerminal for Hedera small-caps. Prices are live, not simulated.</div></div>
+      <p>Because every order carries a fixed price, there is no AMM-style slippage. A 0.5% floor only guards each fill against dust rounding. Tradable pairs include <code class="k">HBAR-USDC</code>, <code class="k">WBTC-USDC</code>, <code class="k">WETH-USDC</code>, <code class="k">SAUCE-USDC</code>, <code class="k">DOVU-USDC</code> and <code class="k">HBAR-SAUCE</code>.</p>
+      <div class="note info"><span class="ic">≈</span><div>Charts use <b>real market data</b>: Pyth Network for majors, SaucerSwap / GeckoTerminal for Hedera small-caps. Prices are live, not simulated.</div></div>
     </section>
 
     <section id="governance">
-      <div class="sec-eyebrow">05 — Community Governance</div>
+      <div class="sec-eyebrow">05. Community Governance</div>
       <h2>CODE-weighted decisions, settled on-chain</h2>
-      <p>Creode is steered by its holders. The <strong>CreodeGovernance</strong> contract stores every proposal, every vote, and the final tally — nothing lives on a private server. Governance decides yield emissions, new vault and market assets, parameters, and upgrade direction.</p>
+      <p>Creode is steered by its holders. The <strong>CreodeGovernance</strong> contract stores every proposal, every vote and the final tally; nothing lives on a private server. Governance decides yield emissions, new vault and market assets, parameters and upgrade direction.</p>
 
       <div class="params">
         <div class="param"><div class="v">1,000</div><div class="l">CODE to propose</div></div>
@@ -309,44 +309,44 @@
         <div class="param"><div class="v">3 days</div><div class="l">Voting window</div></div>
       </div>
 
-      <p><strong>CODE</strong> is the governance token: voting weight is your live CODE balance at the moment you propose or vote — <strong>1 CODE = 1 vote</strong>. On mainnet CODE is earned through real protocol usage; on testnet a one-time <strong>Claim CODE to vote</strong> lets anyone try the full flow.</p>
+      <p><strong>CODE</strong> is the governance token: voting weight is your live CODE balance at the moment you propose or vote, at a ratio of <strong>1 CODE = 1 vote</strong>. On mainnet CODE is earned through real protocol usage; on testnet a one-time <strong>Claim CODE to vote</strong> lets anyone try the full flow.</p>
 
       <ol class="steps">
-        <li><b>Propose</b> — any holder of ≥ 1,000 CODE submits a title and description on-chain, opening a 3-day vote.</li>
-        <li><b>Vote</b> — CODE holders cast a single Yes or No, weighted by balance. One vote per address per proposal, enforced in-contract.</li>
-        <li><b>Finalize</b> — after the window closes, anyone can finalize. It passes only if total votes clear quorum <b>and</b> Yes exceeds No; otherwise it is rejected.</li>
-        <li><b>Enact</b> — passed proposals are signalling decisions; the role-gated admin then enacts the approved direction on-chain.</li>
+        <li><b>Propose:</b> any holder of ≥ 1,000 CODE submits a title and description on-chain, opening a 3-day vote.</li>
+        <li><b>Vote:</b> CODE holders cast a single Yes or No, weighted by balance. One vote per address per proposal, enforced in-contract.</li>
+        <li><b>Finalize:</b> after the window closes, anyone can finalize. It passes only if total votes clear quorum <b>and</b> Yes exceeds No; otherwise it is rejected.</li>
+        <li><b>Enact:</b> passed proposals are signalling decisions; the role-gated admin then enacts the approved direction on-chain.</li>
       </ol>
     </section>
 
     <section id="points">
-      <div class="sec-eyebrow">06 — CODE Points</div>
+      <div class="sec-eyebrow">06. CODE Points</div>
       <h2>Rewards for real usage</h2>
-      <p>CODE points reward genuine protocol activity. Every <strong>successful</strong> transaction that moves value through Vault, Earn, or P2P earns CODE, weighted by the USD value moved:</p>
+      <p>CODE points reward genuine protocol activity. Every <strong>successful</strong> transaction that moves value through Vault, Earn or P2P earns CODE, weighted by the USD value moved:</p>
       <ul>
         <li>A minimum of <strong>5 CODE</strong> per protocol action.</li>
-        <li>Roughly <strong>1 CODE per $10</strong> moved — a $1,000 action earns ~100, a $5,000 action ~500.</li>
-        <li>Faucet claims, approvals, and plain transfers earn nothing.</li>
+        <li>Roughly <strong>1 CODE per $10</strong> moved: a $1,000 action earns ~100 and a $5,000 action ~500.</li>
+        <li>Faucet claims, approvals and plain transfers earn nothing.</li>
       </ul>
       <p>Totals and per-transaction rewards are computed from real on-chain history and shown in the Activity tab.</p>
     </section>
 
     <section id="security">
-      <div class="sec-eyebrow">07 — Security</div>
+      <div class="sec-eyebrow">07. Security</div>
       <h2>Secured by Hedera HTS, hardened by proven primitives</h2>
       <p>Creode's assets are <strong>Hedera Token Service (HTS)</strong> tokens, not plain ERC-20s bolted onto an EVM. HTS enforces token rules at the <strong>network layer</strong>, below and independent of any application contract:</p>
       <ul>
-        <li><strong>Native token controls</strong> — supply, freeze, wipe, pause, and KYC keys are honored by consensus nodes themselves, so token rules can't be bypassed by a buggy or malicious contract.</li>
-        <li><strong>Explicit association</strong> — an account must associate a token before receiving it, blocking unsolicited-token and dusting attacks by default.</li>
-        <li><strong>Deterministic finality</strong> — Hedera's aBFT hashgraph consensus gives fast, final settlement with no re-org risk; a confirmed transaction cannot be rolled back.</li>
+        <li><strong>Native token controls:</strong> supply, freeze, wipe, pause and KYC keys are honored by consensus nodes themselves, so token rules can't be bypassed by a buggy or malicious contract.</li>
+        <li><strong>Explicit association:</strong> an account must associate a token before receiving it, blocking unsolicited-token and dusting attacks by default.</li>
+        <li><strong>Deterministic finality:</strong> Hedera's aBFT hashgraph consensus gives fast, final settlement with no re-org risk; a confirmed transaction cannot be rolled back.</li>
         <li>Every HTS token also exposes the standard <strong>ERC-20</strong> interface at its EVM address, so contracts interact normally while the network keeps enforcing token-level guarantees.</li>
       </ul>
-      <p>On top of that, the contracts use battle-tested building blocks: OpenZeppelin <strong>Ownable / AccessControl</strong>, <strong>ReentrancyGuard</strong>, <strong>Pausable</strong>, and <strong>SafeERC20</strong>; non-custodial escrow in P2P; tamper-proof, one-vote-per-address governance; and role-gated, hard-capped admin functions.</p>
+      <p>On top of that, the contracts use battle-tested building blocks: OpenZeppelin <strong>Ownable / AccessControl</strong>, <strong>ReentrancyGuard</strong>, <strong>Pausable</strong> and <strong>SafeERC20</strong>; non-custodial escrow in P2P; tamper-proof, one-vote-per-address governance; and role-gated, hard-capped admin functions.</p>
       <div class="note warn"><span class="ic">!</span><div>These contracts are <b>testnet, unaudited</b> software with no third-party audit and no real value at risk. Do not deploy to mainnet or use with real funds until professionally audited.</div></div>
     </section>
 
     <section id="contracts">
-      <div class="sec-eyebrow">08 — Contracts</div>
+      <div class="sec-eyebrow">08. Contracts</div>
       <h2>Deployed contracts &amp; addresses</h2>
       <p>Network: <strong>Hedera Testnet</strong> · chain <code class="k">296</code> (<code class="k">0x128</code>) · JSON-RPC <code class="k">https://testnet.hashio.io/api</code>. All source and deployments are verifiable on HashScan.</p>
       <div class="tbl-wrap">
@@ -361,8 +361,8 @@
 
 <footer>
   <div class="wrap foot-inner">
-    <p><strong style="color:var(--ink)">Creode Protocol</strong> — Whitepaper v1.0. A non-custodial DeFi protocol on Hedera. Testnet deployment; all figures reflect the live contracts as of July 2026.</p>
-    <p>Not financial advice. Unaudited testnet software — no real value at risk.</p>
+    <p><strong style="color:var(--ink)">Creode Protocol</strong>: Whitepaper v1.0. A non-custodial DeFi protocol on Hedera. Testnet deployment; all figures reflect the live contracts as of July 2026.</p>
+    <p>Not financial advice. Unaudited testnet software with no real value at risk.</p>
   </div>
 </footer>
 
@@ -380,15 +380,15 @@
   // Contract table — real deployed addresses, linked to HashScan.
   (function () {
     var C = [
-      ['CreodeVault — time-locked savings', '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139'],
-      ['CreodeYieldVaultV3 — Earn / auto-zap', '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3'],
-      ['CreodeCompoundScheduler — HIP-1215 auto-compound', '0x2b8dB6baD3bC8Db02547dd9B4854a583CE625602'],
-      ['CreodeSwapRouter — constant-product AMM', '0x34624a10E293039c18724FFCb4e0431dA45DaED3'],
+      ['CreodeVault: time-locked savings', '0x2fFd3ae1600465DaDa7BD69356d4352c42eCE139'],
+      ['CreodeYieldVaultV3: Earn / auto-zap', '0x634173A0B23bf9Bf36dD1545Ed3D95af3F0eDeF3'],
+      ['CreodeCompoundScheduler: HIP-1215 auto-compound', '0x2b8dB6baD3bC8Db02547dd9B4854a583CE625602'],
+      ['CreodeSwapRouter: constant-product AMM', '0x34624a10E293039c18724FFCb4e0431dA45DaED3'],
       ['CreodeTreasurySwap', '0x2a873ED611D755e8B73E29a4839E34136e70eC53'],
-      ['CreodeP2P — order-book escrow', '0x87b6de843538E31fc368e13BE232320915a734ef'],
-      ['CreodeGovernance — proposals & voting', '0xe2f8e91fDCb1a6Ed20E7298A5D5619B4203C9Bd5'],
-      ['CODE — governance token', '0x8bb07F6C0b071b9981Ed9ba5D7635055c705BE82'],
-      ['CreodeFaucet — test tokens', '0x2449135C532f78ed43C9c4a99307aAA987D39A41']
+      ['CreodeP2P: order-book escrow', '0x87b6de843538E31fc368e13BE232320915a734ef'],
+      ['CreodeGovernance: proposals & voting', '0xe2f8e91fDCb1a6Ed20E7298A5D5619B4203C9Bd5'],
+      ['CODE: governance token', '0x8bb07F6C0b071b9981Ed9ba5D7635055c705BE82'],
+      ['CreodeFaucet: test tokens', '0x2449135C532f78ed43C9c4a99307aAA987D39A41']
     ];
     var tb = document.getElementById('ctable');
     tb.innerHTML = C.map(function (r) {
