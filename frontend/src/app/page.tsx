@@ -121,6 +121,7 @@ export default function Dashboard() {
       <LandingPage
         onLaunch={() => setActiveMainTab('Vault')}
         onDocs={() => setActiveMainTab('Docs')}
+        onNavigate={(tab) => setActiveMainTab(tab)}
       />
     );
   }
