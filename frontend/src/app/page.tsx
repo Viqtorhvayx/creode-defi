@@ -18,6 +18,7 @@ import { PortfolioTab } from '../components/PortfolioTab';
 import { CommunityTab } from '../components/CommunityTab';
 import { SettingsTab } from '../components/SettingsTab';
 import { DocsTab } from '../components/DocsTab';
+import { LandingPage } from '../components/LandingPage';
 import { Logo } from '../components/Logo';
 
 import { Footer } from '@/components/Footer';
@@ -25,7 +26,7 @@ import { Footer } from '@/components/Footer';
 export default function Dashboard() {
   const { balance } = useWallet();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [activeMainTab, setActiveMainTab] = useState("Vault");
+  const [activeMainTab, setActiveMainTab] = useState("Home");
   
   const userXP = 45; 
   const userPoints = 1250;
@@ -121,9 +122,19 @@ export default function Dashboard() {
     }
   };
 
+  // Landing page — full-bleed marketing entry, no dashboard chrome.
+  if (activeMainTab === 'Home') {
+    return (
+      <LandingPage
+        onLaunch={() => setActiveMainTab('Vault')}
+        onDocs={() => setActiveMainTab('Docs')}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background transition-colors duration-500">
-      
+
       {/* Top Header (Full Width) */}
       <header className="w-full flex items-center border-b border-black/5 dark:border-white/5 z-50 bg-background/80 backdrop-blur-md relative">
         {/* Left: Logo (aligned with Sidebar) */}
