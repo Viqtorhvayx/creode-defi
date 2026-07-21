@@ -18,6 +18,7 @@ import {
   Lifebuoy
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
+import { useWallet } from '../context/WalletContext';
 
 interface SidebarProps {
   theme: 'light' | 'dark';
@@ -26,6 +27,14 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab }) => {
+  const { isConnected, disconnect } = useWallet();
+
+  // Log out: disconnect the wallet (if any) and return to the landing page.
+  const handleLogout = async () => {
+    try { if (isConnected) await disconnect(); } catch { /* ignore */ }
+    setActiveTab('Home');
+  };
+
   const primaryMenu = [
     { id: 'Vault', icon: LockKey, label: 'Vault' },
     { id: 'Earn', icon: TrendUp, label: 'Earn' },
@@ -117,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
           );
         })}
 
-        <button className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-3 w-full rounded-lg transition-all duration-300 font-bold text-[13px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
           <SignOut size={18} />
           <span>Log out</span>
         </button>

@@ -139,9 +139,9 @@ export default function Dashboard() {
       <header className="w-full flex items-center border-b border-black/5 dark:border-white/5 z-50 bg-background/80 backdrop-blur-md relative">
         {/* Left: Logo (aligned with Sidebar) */}
         <div className="w-[140px] flex items-center shrink-0 px-2 pt-6 pb-6">
-          <div 
+          <div
             className="cursor-pointer scale-[0.85] origin-left"
-            onClick={() => setActiveMainTab('Vault')}
+            onClick={() => setActiveMainTab('Home')}
           >
             <Logo theme={theme} />
           </div>
