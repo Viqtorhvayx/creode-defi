@@ -9,7 +9,6 @@ import {
   ArrowsDownUp,
   ChartLineUp,
   Users,
-  UsersThree,
   Gear,
   SignOut,
   ChartPie,
@@ -44,7 +43,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
   const secondaryMenu = [
     { id: 'Activity', icon: ChartLineUp, label: 'Activity' },
     { id: 'Portfolio', icon: ChartPie, label: 'Portfolio' },
-    { id: 'Community', icon: UsersThree, label: 'Community' },
     { id: 'Settings', icon: Gear, label: 'Settings' },
   ];
 
