@@ -16,6 +16,9 @@ const KNOWN: Record<string, string> = {
   '0.0.9644961': 'Yield Vault',
   '0.0.9644956': 'Treasury Swap',
   '0.0.9644233': 'Swap Router',
+  '0.0.9659535': 'Governance',
+  '0.0.9659533': 'CODE Token',
+  '0.0.9662113': 'Auto-Compound',
 };
 
 const TYPE_LABEL: Record<string, string> = {
