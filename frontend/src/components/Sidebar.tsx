@@ -17,6 +17,7 @@ import {
   Lifebuoy
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
+import { CustomEarnIcon } from './CustomEarnIcon';
 import { useWallet } from '../context/WalletContext';
 
 interface SidebarProps {
@@ -71,6 +72,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             >
               {item.id === 'Vault' ? (
                 <CustomVaultIcon className="w-[18px] h-[18px] shrink-0" />
+              ) : item.id === 'Earn' ? (
+                <CustomEarnIcon className="w-[18px] h-[18px] shrink-0" />
               ) : (
                 <Icon size={18} weight={isActive ? "fill" : "regular"} />
               )}
