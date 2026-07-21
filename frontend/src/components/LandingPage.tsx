@@ -152,7 +152,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
 
       {/* Hero */}
       <header className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1180px] flex-col justify-center px-8 pb-20">
-        <ScrollWords as="h1" text="One protocol. Total control. Zero custody." className="lp-h1" />
+        <ScrollWords as="h1" text="The Growth Engine for On-Chain Finance." className="lp-h1" />
 
         <p className="lp-sub" style={{ animationDelay: '260ms' }}>
           One non-custodial app for saving, earning, trading and governing on Hedera.
