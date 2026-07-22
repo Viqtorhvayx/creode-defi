@@ -23,6 +23,7 @@ import { CustomActivityIcon } from './CustomActivityIcon';
 import { CustomPortfolioIcon } from './CustomPortfolioIcon';
 import { CustomSettingsIcon } from './CustomSettingsIcon';
 import { CustomAuditsIcon } from './CustomAuditsIcon';
+import { CustomSupportIcon } from './CustomSupportIcon';
 import { useWallet } from '../context/WalletContext';
 
 interface SidebarProps {
@@ -138,6 +139,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             >
               {item.id === 'Audits' ? (
                 <CustomAuditsIcon className="w-[18px] h-[18px] shrink-0" />
+              ) : item.id === 'Support' ? (
+                <CustomSupportIcon className="w-[18px] h-[18px] shrink-0" />
               ) : (
                 <Icon size={18} weight={isActive ? "fill" : "regular"} />
               )}
