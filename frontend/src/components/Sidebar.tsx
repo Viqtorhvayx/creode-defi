@@ -22,6 +22,7 @@ import { CustomP2PIcon } from './CustomP2PIcon';
 import { CustomActivityIcon } from './CustomActivityIcon';
 import { CustomPortfolioIcon } from './CustomPortfolioIcon';
 import { CustomSettingsIcon } from './CustomSettingsIcon';
+import { CustomAuditsIcon } from './CustomAuditsIcon';
 import { useWallet } from '../context/WalletContext';
 
 interface SidebarProps {
@@ -135,7 +136,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
-              <Icon size={18} weight={isActive ? "fill" : "regular"} />
+              {item.id === 'Audits' ? (
+                <CustomAuditsIcon className="w-[18px] h-[18px] shrink-0" />
+              ) : (
+                <Icon size={18} weight={isActive ? "fill" : "regular"} />
+              )}
               <span>{item.label}</span>
             </button>
           );
