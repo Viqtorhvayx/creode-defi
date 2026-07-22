@@ -6,6 +6,8 @@ import Link from 'next/link';
 interface LogoProps {
   theme?: 'light' | 'dark';
   showText?: boolean;
+  /** Grey rendering (mark + wordmark) for quiet placements like the footer. */
+  muted?: boolean;
 }
 
 /**
@@ -14,14 +16,18 @@ interface LogoProps {
  * @dev Modernized inline SVG logo for Creode Protocol.
  * Features a geometric gear-and-motion 'C' mark and updated Title Case typography.
  */
-export const Logo: React.FC<LogoProps> = ({ theme, showText = true }) => {
+export const Logo: React.FC<LogoProps> = ({ theme, showText = true, muted = false }) => {
   const brandBlue = "#00A8E8";
+  const mutedGrey = "#8B949E"; // readable on both light and dark surfaces
+  const color = muted ? mutedGrey : brandBlue;
 
   return (
     <div className="flex items-center gap-0 select-none group transition-transform duration-300 active:scale-95">
-      {/* Geometric gear-and-motion 'C' mark */}
-      <div className="relative h-9 w-9">
-        <svg viewBox="0 0 736 736" fill={brandBlue} xmlns="http://www.w3.org/2000/svg" className="h-full w-full drop-shadow-[0_0_8px_rgba(0,168,232,0.4)]">
+      {/* Geometric gear-and-motion 'C' mark. The source canvas is 736x736 with
+          large empty margins, so the viewBox is cropped to the glyph's actual
+          bounds — otherwise the mark renders at half its intended size. */}
+      <div className="relative h-9 w-11">
+        <svg viewBox="183 218 370 302" fill={color} xmlns="http://www.w3.org/2000/svg" className={`h-full w-full ${muted ? '' : 'drop-shadow-[0_0_8px_rgba(0,168,232,0.4)]'}`}>
           <path d="
 M378.098328,479.249207
 	C372.590454,481.315460 367.443237,483.239075 362.059418,484.427917
@@ -106,8 +112,8 @@ z" />
       {/* Modern Brand Typography */}
       {showText && (
         <span
-          className="text-xl font-bold tracking-wide transition-colors duration-300 -ml-1.5"
-          style={{ color: brandBlue }}
+          className="text-xl font-bold tracking-wide transition-colors duration-300 -ml-1"
+          style={{ color }}
         >
           reode
         </span>
