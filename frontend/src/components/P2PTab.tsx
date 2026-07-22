@@ -6,6 +6,7 @@ import { OrderBook } from './OrderBook';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
 import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
 import { CTA_GREEN, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
@@ -31,7 +32,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [posSize, setPosSize] = useState<number>(10);
 
   // On-chain P2P order wiring.
-  const { isConnected } = useWallet();
+  const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
@@ -123,9 +124,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] fill failed:', err);
-      alert('Fill failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      alert('Fill failed: ' + friendlyTxError(err));
     } finally {
       setBusyId(null);
+      closeModal();
     }
   };
 
@@ -139,9 +141,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] cancel failed:', err);
-      alert('Cancel failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      alert('Cancel failed: ' + friendlyTxError(err));
     } finally {
       setBusyId(null);
+      closeModal();
     }
   };
 
@@ -172,8 +175,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] order failed:', err);
-      alert('Order failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      alert('Order failed: ' + friendlyTxError(err));
       setTxState('idle');
+    } finally {
+      closeModal();
     }
   };
 

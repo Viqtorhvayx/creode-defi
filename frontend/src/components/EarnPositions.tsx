@@ -5,6 +5,7 @@ import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet, 
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
 import { isAutoEnrolled, enrollAuto, unenrollAuto } from '../lib/scheduler';
 import { TokenLogo } from './TokenLogo';
@@ -138,7 +139,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
   const [search, setSearch] = useState('');
 
   // ── Live on-chain positions ──────────────────────────────────────────
-  const { isConnected } = useWallet();
+  const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
   const [live, setLive] = useState<UserPositionV2[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -180,16 +181,16 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
     if (!walletClient) return;
     setBusyKey(pos.strategyId);
     try { await withdrawAll(walletClient, pos.strategyId); await load(); }
-    catch (e) { const err = e as any; alert('Withdraw failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
-    finally { setBusyKey(null); }
+    catch (e) { const err = e as any; alert('Withdraw failed: ' + friendlyTxError(err)); }
+    finally { setBusyKey(null); closeModal(); }
   };
 
   const onCompound = async (pos: UserPositionV2) => {
     if (!walletClient) return;
     setCompoundBusy(pos.strategyId);
     try { await compound(walletClient, pos.strategyId); await load(); }
-    catch (e) { const err = e as any; alert('Compound failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
-    finally { setCompoundBusy(null); }
+    catch (e) { const err = e as any; alert('Compound failed: ' + friendlyTxError(err)); }
+    finally { setCompoundBusy(null); closeModal(); }
   };
 
   // Toggle HIP-1215 auto-compounding for a position (enroll / unenroll).
@@ -202,8 +203,8 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
       else await enrollAuto(walletClient, pos.strategyId);
       await load();
     }
-    catch (e) { const err = e as any; alert('Auto-compound update failed: ' + (err?.reason || err?.shortMessage || err?.message || 'error')); }
-    finally { setAutoBusy(null); }
+    catch (e) { const err = e as any; alert('Auto-compound update failed: ' + friendlyTxError(err)); }
+    finally { setAutoBusy(null); closeModal(); }
   };
 
   const connectedLive = isConnected && live !== null;

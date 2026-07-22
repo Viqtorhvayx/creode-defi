@@ -22,6 +22,8 @@ interface WalletContextType {
   balanceSymbol: string;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
+  /** Dismiss any open AppKit wallet sheet (e.g. after a tx is approved). */
+  closeModal: () => void;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -34,7 +36,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   // useAccount provides Wagmi-level data as a secondary source.
   const { address: wagmiAddress, isConnected: wagmiConnected } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
-  const { open } = useAppKit();
+  const { open, close } = useAppKit();
 
   // Combine both: if EITHER reports connected, we are connected.
   const isConnected = appKitConnected || wagmiConnected;
@@ -117,6 +119,12 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  // The AppKit sheet ("Approve in wallet…") can linger after the wallet has
+  // already signed; tx flows call this once they settle so it never sticks.
+  const closeModal = () => {
+    try { close(); } catch { /* modal not open — nothing to do */ }
+  };
+
   const disconnect = async () => {
     try {
       await wagmiDisconnect();
@@ -141,6 +149,7 @@ export const WalletProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       balanceSymbol,
       connect,
       disconnect,
+      closeModal,
     }}>
       {children}
     </WalletContext.Provider>

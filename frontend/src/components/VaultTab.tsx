@@ -7,6 +7,7 @@ import { TOKEN_MAPPINGS, SaucerSwapToken } from '../utils/tokenMapping';
 import { createPortal } from 'react-dom';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import { useCurrency } from '../context/CurrencyContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
@@ -159,7 +160,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>('/tokens/jam.png');
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
-  const { balance, isConnected } = useWallet();
+  const { balance, isConnected, closeModal } = useWallet();
   const { format: formatCurrency } = useCurrency();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -499,6 +500,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         const tokenContract = new Contract(tokenEvm, ERC20_ABI, signer);
         const approveTx = await tokenContract.approve(vaultAddress, amountParsed, { gasLimit: 1200000 });
         await approveTx.wait();
+        closeModal(); // dismiss the wallet sheet from the approval before the deposit prompt
         tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays, { gasLimit: 1200000 });
       }
       await tx.wait();
@@ -517,7 +519,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       setIsProcessing(false);
       const e = err as any;
       console.error('[Vault] Deposit failed:', e);
-      alert('Deposit failed: ' + (e?.reason || e?.message || 'Unknown error'));
+      alert('Deposit failed: ' + friendlyTxError(e));
+    } finally {
+      closeModal();
     }
   };
 
@@ -545,9 +549,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     } catch (err) {
       const e = err as any;
       console.error('[Vault] Exit failed:', e);
-      alert('Exit failed: ' + (e?.reason || e?.message || 'Unknown error'));
+      alert('Exit failed: ' + friendlyTxError(e));
     } finally {
       setRowBusyId(null);
+      closeModal();
     }
   };
 

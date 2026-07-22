@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning, CircleNotch } from '@phosphor-icons/react';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
@@ -110,7 +111,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   };
 
   // Wallet + on-chain zap wiring.
-  const { isConnected } = useWallet();
+  const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
   const [zapState, setZapState] = useState<'idle' | 'pending' | 'done'>('idle');
 
@@ -130,8 +131,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     } catch (e) {
       const err = e as any;
       console.error('[Zap] failed:', err);
-      alert('Zap failed: ' + (err?.reason || err?.shortMessage || err?.message || 'Unknown error'));
+      alert('Zap failed: ' + friendlyTxError(err));
       setZapState('idle');
+    } finally {
+      closeModal();
     }
   };
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import { CircleNotch, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { CTA_BLUE, CTA_GREEN, CTA_RED } from '../lib/ui';
 import {
@@ -24,7 +25,7 @@ const fmtLeft = (deadline: number) => {
 };
 
 export function CommunityTab({ theme }: CommunityTabProps) {
-  const { isConnected, address, connect } = useWallet();
+  const { isConnected, address, connect, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -69,8 +70,8 @@ export function CommunityTab({ theme }: CommunityTabProps) {
     if (!isConnected || !walletClient) { connect(); return; }
     setBusy('claim');
     try { await claimCode(walletClient); await Promise.all([load(), loadVoter()]); }
-    catch (e: any) { alert('Claim failed: ' + (e?.reason || e?.shortMessage || e?.message || 'error')); }
-    finally { setBusy(null); }
+    catch (e: any) { alert('Claim failed: ' + friendlyTxError(e)); }
+    finally { setBusy(null); closeModal(); }
   };
 
   const doVote = async (id: number, support: boolean) => {
@@ -78,8 +79,8 @@ export function CommunityTab({ theme }: CommunityTabProps) {
     if (power <= 0) { alert('Claim CODE first to get voting power.'); return; }
     setBusy(`vote-${id}-${support}`);
     try { await castVoteGov(walletClient, id, support); await Promise.all([load(), loadVoter()]); }
-    catch (e: any) { alert('Vote failed: ' + (e?.reason || e?.shortMessage || e?.message || 'error')); }
-    finally { setBusy(null); }
+    catch (e: any) { alert('Vote failed: ' + friendlyTxError(e)); }
+    finally { setBusy(null); closeModal(); }
   };
 
   const doPropose = async () => {
@@ -88,8 +89,8 @@ export function CommunityTab({ theme }: CommunityTabProps) {
     if (power < threshold) { alert(`You need at least ${fmtCode(threshold)} CODE to propose.`); return; }
     setBusy('propose');
     try { await proposeGov(walletClient, title.trim(), desc.trim()); setTitle(''); setDesc(''); await load(); }
-    catch (e: any) { alert('Proposal failed: ' + (e?.reason || e?.shortMessage || e?.message || 'error')); }
-    finally { setBusy(null); }
+    catch (e: any) { alert('Proposal failed: ' + friendlyTxError(e)); }
+    finally { setBusy(null); closeModal(); }
   };
 
   return (

@@ -6,6 +6,7 @@ import { JsonRpcProvider, Contract, formatUnits } from 'ethers';
 import { getTestnetSigner } from '../lib/testnetSigner';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { friendlyTxError } from '../lib/txErrors';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE, CTA_GREEN_SOLID } from '../lib/ui';
@@ -51,7 +52,7 @@ const compactAmount = (v: number): string => {
  * Designed to be embedded inside the wallet dropdown.
  */
 export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) => {
-  const { isConnected } = useWallet();
+  const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
   const [isClaiming, setIsClaiming] = useState(false);
   const [justClaimed, setJustClaimed] = useState(false);
@@ -120,9 +121,10 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
     } catch (err) {
       const e = err as any;
       console.error('[Faucet] Claim failed:', e);
-      alert('Claim failed: ' + (e?.reason || e?.shortMessage || e?.message || 'Unknown error'));
+      alert('Claim failed: ' + friendlyTxError(e));
     } finally {
       setIsClaiming(false);
+      closeModal();
     }
   };
 
