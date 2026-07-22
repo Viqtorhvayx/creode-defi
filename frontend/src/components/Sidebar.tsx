@@ -20,6 +20,7 @@ import { CustomVaultIcon } from './CustomVaultIcon';
 import { CustomEarnIcon } from './CustomEarnIcon';
 import { CustomP2PIcon } from './CustomP2PIcon';
 import { CustomActivityIcon } from './CustomActivityIcon';
+import { CustomPortfolioIcon } from './CustomPortfolioIcon';
 import { useWallet } from '../context/WalletContext';
 
 interface SidebarProps {
@@ -105,6 +106,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
             >
               {item.id === 'Activity' ? (
                 <CustomActivityIcon className="w-[18px] h-[18px] shrink-0" />
+              ) : item.id === 'Portfolio' ? (
+                <CustomPortfolioIcon className="w-[18px] h-[18px] shrink-0" />
               ) : (
                 <Icon size={18} weight={isActive ? "fill" : "regular"} />
               )}
