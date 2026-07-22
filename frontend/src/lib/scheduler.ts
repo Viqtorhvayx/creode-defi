@@ -1,22 +1,16 @@
 // Client helpers for CreodeCompoundScheduler — protocol-level HIP-1215
 // auto-compounding. Users enroll/unenroll a position (cheap, no scheduling);
 // the treasury runs the on-chain self-perpetuating tick loop.
-import { BrowserProvider, JsonRpcProvider, Contract } from 'ethers';
+import { JsonRpcProvider, Contract } from 'ethers';
 import schedArtifact from '../contracts/CreodeCompoundScheduler.json';
+import { getTestnetSigner } from './testnetSigner';
 
 export const SCHEDULER_ADDRESS: string = (schedArtifact as any).address;
 export const SCHEDULER_ABI: any[] = (schedArtifact as any).abi;
 export const RPC_URL = process.env.NEXT_PUBLIC_HEDERA_JSON_RPC_URL || 'https://testnet.hashio.io/api';
 
-async function getSigner(walletClient: any) {
-  const provider = new BrowserProvider(walletClient);
-  const net = await provider.getNetwork();
-  if (net.chainId !== 296n) {
-    try { await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]); }
-    catch { throw new Error('Please switch your wallet to Hedera Testnet (chain 296).'); }
-  }
-  return provider.getSigner();
-}
+// Chain-safe signer (auto-switches to 296 and rebuilds the provider after).
+const getSigner = (walletClient: any) => getTestnetSigner(walletClient);
 
 /** Is this user's position enrolled in auto-compounding? */
 export async function isAutoEnrolled(address: string, strategyId: number): Promise<boolean> {

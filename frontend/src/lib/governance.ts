@@ -1,5 +1,6 @@
 // Client + server helpers for CreodeGovernance (Community tab).
-import { BrowserProvider, JsonRpcProvider, Contract, formatUnits } from 'ethers';
+import { JsonRpcProvider, Contract, formatUnits } from 'ethers';
+import { getTestnetSigner } from './testnetSigner';
 import govArtifact from '../contracts/CreodeGovernance.json';
 import codeArtifact from '../contracts/CodeToken.json';
 
@@ -82,15 +83,8 @@ export async function fetchVoter(address: string): Promise<{ power: number; clai
 }
 
 // ── Client writes (through the user's wallet) ────────────────────────────────
-async function getSigner(walletClient: any) {
-  const provider = new BrowserProvider(walletClient);
-  const net = await provider.getNetwork();
-  if (net.chainId !== 296n) {
-    try { await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]); }
-    catch { throw new Error('Please switch your wallet to Hedera Testnet (chain 296).'); }
-  }
-  return provider.getSigner();
-}
+// Chain-safe signer (auto-switches to 296 and rebuilds the provider after).
+const getSigner = (walletClient: any) => getTestnetSigner(walletClient);
 
 export async function claimCode(walletClient: any): Promise<string> {
   const signer = await getSigner(walletClient);

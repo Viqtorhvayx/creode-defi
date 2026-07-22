@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { CircleNotch, CheckCircle, Clock } from '@phosphor-icons/react';
-import { BrowserProvider, JsonRpcProvider, Contract, formatUnits } from 'ethers';
+import { JsonRpcProvider, Contract, formatUnits } from 'ethers';
+import { getTestnetSigner } from '../lib/testnetSigner';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
@@ -107,8 +108,8 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
     if (cooldown > 0) return;
     setIsClaiming(true);
     try {
-      const provider = new BrowserProvider(walletClient as any);
-      const signer = await provider.getSigner();
+      // Chain-safe signer: auto-switches to 296 and rebuilds the provider after.
+      const signer = await getTestnetSigner(walletClient);
       const faucet = new Contract(FAUCET_ADDRESS, (faucetArtifact as any).abi, signer);
       // Explicit gas limit: 8 HTS transfers make the wallet's estimateGas flaky.
       const tx = await faucet.claim({ gasLimit: 2000000 });

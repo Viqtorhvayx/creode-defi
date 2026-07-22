@@ -1,8 +1,9 @@
 // Client helpers for the Creode Earn / Yield Hub (Phase 2: real zap swaps).
-import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
+import { JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import vaultArtifact from '../contracts/CreodeYieldVaultV3.json';
 import routerArtifact from '../contracts/CreodeTreasurySwap.json';
 import strategyMap from '../contracts/yield_strategies.json';
+import { getTestnetSigner } from './testnetSigner';
 
 export const YIELD_VAULT_ADDRESS: string = (vaultArtifact as any).address;
 export const YIELD_VAULT_ABI: any[] = (vaultArtifact as any).abi;
@@ -34,19 +35,8 @@ const ERC20_ABI = [
   'function allowance(address,address) view returns (uint256)',
 ];
 
-async function ensureHederaTestnet(provider: BrowserProvider) {
-  const net = await provider.getNetwork();
-  if (net.chainId !== 296n) {
-    try { await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]); }
-    catch { throw new Error('Please switch your wallet to Hedera Testnet (chain 296).'); }
-  }
-}
-
-async function getSigner(walletClient: any) {
-  const provider = new BrowserProvider(walletClient);
-  await ensureHederaTestnet(provider);
-  return provider.getSigner();
-}
+// Chain-safe signer (auto-switches to 296 and rebuilds the provider after).
+const getSigner = (walletClient: any) => getTestnetSigner(walletClient);
 
 /** Single-sided zap: supply `amount` of `token`; ~half is swapped on-chain. */
 export async function zapIn(walletClient: any, strategyId: number, token: StrategyTokenMeta, amount: string): Promise<string> {

@@ -1,7 +1,8 @@
 // Client helpers for the CreodeP2P order-book escrow (P2P tab).
-import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits, parseEther } from 'ethers';
+import { JsonRpcProvider, Contract, parseUnits, formatUnits, parseEther } from 'ethers';
 import p2pArtifact from '../contracts/CreodeP2P.json';
 import cfg from '../contracts/p2p_config.json';
+import { getTestnetSigner } from './testnetSigner';
 
 export const P2P_ADDRESS: string = (p2pArtifact as any).address;
 export const P2P_ABI: any[] = (p2pArtifact as any).abi;
@@ -29,15 +30,8 @@ const ERC20_ABI = [
   'function allowance(address,address) view returns (uint256)',
 ];
 
-async function getSigner(walletClient: any) {
-  const provider = new BrowserProvider(walletClient);
-  const net = await provider.getNetwork();
-  if (net.chainId !== 296n) {
-    try { await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]); }
-    catch { throw new Error('Please switch your wallet to Hedera Testnet (chain 296).'); }
-  }
-  return provider.getSigner();
-}
+// Chain-safe signer (auto-switches to 296 and rebuilds the provider after).
+const getSigner = (walletClient: any) => getTestnetSigner(walletClient);
 
 // Raw on-chain amount for a token (HBAR -> tinybar, ERC20 -> its decimals).
 const toRaw = (t: TokenMeta, human: number) => parseUnits(human.toFixed(dec(t)), dec(t));

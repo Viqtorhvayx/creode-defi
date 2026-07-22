@@ -13,7 +13,8 @@ import { CustomVaultIcon } from './CustomVaultIcon';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
 import { ChevronDown, X, Info } from 'lucide-react';
-import { BrowserProvider, JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
+import { JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
+import { getTestnetSigner } from '../lib/testnetSigner';
 import { useWalletClient } from 'wagmi';
 import vaultArtifact from '../context/abis.json';
 
@@ -449,20 +450,6 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     setDepositAmount((bal * pct).toFixed(Math.min(dec, 6)));
   };
 
-  // Ensure the wallet is on Hedera Testnet (296); attempt an auto-switch otherwise.
-  // Signing on the wrong chain hits addresses with no code → cryptic "missing revert data".
-  const ensureHederaTestnet = async (provider: BrowserProvider): Promise<boolean> => {
-    try {
-      const net = await provider.getNetwork();
-      if (Number(net.chainId) === 296) return true;
-      await provider.send('wallet_switchEthereumChain', [{ chainId: '0x128' }]);
-      return true;
-    } catch {
-      alert('Wrong network. Please switch your wallet to Hedera Testnet (chain ID 296) and try again.');
-      return false;
-    }
-  };
-
   const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) return;
     if (!isConnected || !walletClient) {
@@ -492,9 +479,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     setIsProcessing(true);
 
     try {
-      const provider = new BrowserProvider(walletClient as any);
-      if (!(await ensureHederaTestnet(provider))) { setIsProcessing(false); return; }
-      const signer = await provider.getSigner();
+      // Chain-safe signer: auto-switches to 296 and rebuilds the provider after
+      // the switch (reusing the pre-switch provider throws NETWORK_ERROR).
+      const signer = await getTestnetSigner(walletClient);
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
       const durationDays = displayLockDays;
 
@@ -546,9 +533,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     }
     setRowBusyId(row.id);
     try {
-      const provider = new BrowserProvider(walletClient as any);
-      if (!(await ensureHederaTestnet(provider))) { setRowBusyId(null); return; }
-      const signer = await provider.getSigner();
+      const signer = await getTestnetSigner(walletClient);
       const vault = new Contract(vaultAddress, VAULT_ABI, signer);
       // Explicit gas limit: HTS yield transfers make the wallet's estimateGas flaky.
       const tx = row.matured
