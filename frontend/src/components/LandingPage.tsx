@@ -252,7 +252,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
       <footer className="relative z-10 border-t border-white/5">
         <div className="mx-auto flex max-w-[1180px] flex-col gap-8 px-8 py-12 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-3 max-w-[360px]">
-            <div className="scale-90 origin-left"><Logo theme="dark" /></div>
+            <div className="scale-90 origin-left"><Logo theme="dark" showText={false} /></div>
             <p className="text-[12.5px] leading-relaxed text-white/35">Non-custodial DeFi on Hedera. Testnet deployment, no real funds at risk.</p>
           </div>
 
