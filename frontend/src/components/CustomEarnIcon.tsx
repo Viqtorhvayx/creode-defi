@@ -7,7 +7,7 @@ import React from 'react';
 export const CustomEarnIcon = ({ className }: { className?: string }) => {
   return (
     <svg
-      viewBox="0 0 736 736"
+      viewBox="246 177 246 386"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       fill="currentColor"
