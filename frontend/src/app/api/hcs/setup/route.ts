@@ -36,12 +36,18 @@ export async function POST(request: Request) {
 
 /* GET: temporary diagnostic — reports only whether each expected env var is
  * present (never its value), to debug a Vercel env-var scope/typo issue
- * without exposing secrets. Safe to remove once setup succeeds. */
+ * without exposing secrets. Safe to remove once setup succeeds. Forcing a
+ * fresh commit here (rather than a dashboard "Redeploy") to rule out any
+ * stale-build caching as the cause of a var not showing up at runtime. */
 export async function GET() {
+  const allEnvKeys = Object.keys(process.env).filter((k) => /HCS|HEDERA/i.test(k));
   return NextResponse.json({
     hasSetupSecret: !!process.env.HCS_SETUP_SECRET,
     hasAccountId: !!process.env.HEDERA_ACCOUNT_ID,
     hasPrivateKey: !!process.env.HEDERA_PRIVATE_KEY,
     accountIdPreview: process.env.HEDERA_ACCOUNT_ID || null,
+    secretLength: process.env.HCS_SETUP_SECRET?.length ?? 0,
+    matchingEnvKeys: allEnvKeys,
+    deployedAt: new Date().toISOString(),
   });
 }
