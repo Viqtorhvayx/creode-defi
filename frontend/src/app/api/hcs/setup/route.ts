@@ -33,3 +33,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: String((e as Error)?.message || e) }, { status: 500 });
   }
 }
+
+/* GET: temporary diagnostic — reports only whether each expected env var is
+ * present (never its value), to debug a Vercel env-var scope/typo issue
+ * without exposing secrets. Safe to remove once setup succeeds. */
+export async function GET() {
+  return NextResponse.json({
+    hasSetupSecret: !!process.env.HCS_SETUP_SECRET,
+    hasAccountId: !!process.env.HEDERA_ACCOUNT_ID,
+    hasPrivateKey: !!process.env.HEDERA_PRIVATE_KEY,
+    accountIdPreview: process.env.HEDERA_ACCOUNT_ID || null,
+  });
+}
