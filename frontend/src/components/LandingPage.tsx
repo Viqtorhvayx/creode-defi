@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { LockKey, TrendUp, ArrowsLeftRight, UsersThree, BookOpen, XLogo, DiscordLogo } from '@phosphor-icons/react';
+import { UsersThree, BookOpen, XLogo, DiscordLogo } from '@phosphor-icons/react';
 import { Logo } from './Logo';
+import { CustomVaultIcon } from './CustomVaultIcon';
+import { CustomEarnIcon } from './CustomEarnIcon';
+import { CustomP2PIcon } from './CustomP2PIcon';
+import { useWallet } from '../context/WalletContext';
 
 const BLUE = '#00A8E8';
 
@@ -112,12 +116,15 @@ const ScrollWords: React.FC<{ text: string; as?: 'h1' | 'h2'; className?: string
   );
 };
 
-// The four sections — the only place icons are used.
+// The four sections — the only place icons are used. Vault/Earn/Trade reuse
+// the exact same custom icon components as the in-app sidebar so the two
+// never visually diverge; Community has no sidebar counterpart (it lives
+// inside Earn), so it keeps a regular Phosphor icon.
 const SECTIONS = [
-  { icon: LockKey, name: 'Vault', tab: 'Vault', desc: 'Time-locked savings that pay a fixed APY by asset tier, up to 28% on ecosystem tokens over 7 / 30 / 60-day locks.' },
-  { icon: TrendUp, name: 'Earn', tab: 'Earn', desc: 'Supply one token and the protocol auto-zaps it into a balanced yield position, with hands-off auto-compounding via Hedera HIP-1215.' },
-  { icon: ArrowsLeftRight, name: 'Trade', tab: 'P2P', desc: 'A trustless peer-to-peer order book with escrowed limit orders and live market data. No house, no pool.' },
-  { icon: UsersThree, name: 'Community', tab: 'Earn', desc: 'Hold CODE to open proposals and cast weighted votes on emissions, new assets and upgrades. Every tally settles on-chain.' },
+  { icon: CustomVaultIcon, custom: true, name: 'Vault', tab: 'Vault', desc: 'Time-locked savings that pay a fixed APY by asset tier, up to 28% on ecosystem tokens over 7 / 30 / 60-day locks.' },
+  { icon: CustomEarnIcon, custom: true, name: 'Earn', tab: 'Earn', desc: 'Supply one token and the protocol auto-zaps it into a balanced yield position, with hands-off auto-compounding via Hedera HIP-1215.' },
+  { icon: CustomP2PIcon, custom: true, name: 'Trade', tab: 'P2P', desc: 'A trustless peer-to-peer order book with escrowed limit orders and live market data. No house, no pool.' },
+  { icon: UsersThree, custom: false, name: 'Community', tab: 'Earn', desc: 'Hold CODE to open proposals and cast weighted votes on emissions, new assets and upgrades. Every tally settles on-chain.' },
 ];
 
 const SECURITY = [
@@ -127,8 +134,8 @@ const SECURITY = [
   { t: 'Verified on HashScan', d: 'Every Creode contract is source-verified and publicly auditable.' },
 ];
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNavigate }) => {
-  const go = (tab: string) => (onNavigate ? onNavigate(tab) : onLaunch());
+export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs }) => {
+  const { connect } = useWallet();
   return (
     <div className="lp-root min-h-screen w-full overflow-x-hidden text-white antialiased">
       <style>{lpCss}</style>
@@ -187,8 +194,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
             const Icon = s.icon;
             return (
               <Reveal key={s.name} delay={i * 80}>
-                <button onClick={() => go(s.tab)} className="lp-card group h-full">
-                  <div className="lp-section-ico"><Icon size={20} weight="regular" /></div>
+                <button onClick={connect} className="lp-card group h-full">
+                  <div className="lp-section-ico">
+                    {s.custom ? <Icon className="w-5 h-5" /> : <Icon size={20} weight="regular" />}
+                  </div>
                   <h3 className="mt-6 text-[22px] font-bold tracking-tight">{s.name}</h3>
                   <p className="mt-2.5 text-[14px] leading-relaxed text-white/50">{s.desc}</p>
                   <span className="lp-section-open">Open {s.name}</span>
@@ -216,7 +225,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
 
       {/* Security — no icons */}
       <section id="security" className="relative z-10 mx-auto max-w-[1180px] px-8 py-24">
-        <ScrollWords as="h2" text="Secured by Hedera HTS." className="lp-h2 max-w-[18ch]" />
+        <ScrollWords as="h2" text="Secured by Hedera HTS and HCS." className="lp-h2 max-w-[18ch]" />
         <Reveal className="mt-4">
           <p className="max-w-[54ch] text-[15px] leading-relaxed text-white/55">Token rules enforced at the network layer, not just in application code.</p>
         </Reveal>
@@ -258,7 +267,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs, onNa
 
           <div className="flex flex-col gap-4 sm:items-end">
             <div className="flex items-center gap-3">
-              <button onClick={onDocs} title="Docs" className="lp-social"><BookOpen size={17} weight="bold" /></button>
+              <a href="/docs/Creode_Documentation.docx" download title="Download Docs" className="lp-social"><BookOpen size={17} weight="bold" /></a>
               <span title="X: coming soon" className="lp-social lp-social-soon"><XLogo size={17} weight="bold" /></span>
               <span title="Discord: coming soon" className="lp-social lp-social-soon"><DiscordLogo size={17} weight="bold" /></span>
             </div>
