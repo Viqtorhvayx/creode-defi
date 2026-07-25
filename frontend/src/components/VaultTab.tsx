@@ -133,6 +133,10 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [isSetSelected, setIsSetSelected] = useState<boolean>(false);
   const [lockDaysInput, setLockDaysInput] = useState<string>('30');
   const [displayLockDays, setDisplayLockDays] = useState<number>(30);
+  // 30 days is the default lock period, but it shouldn't look pre-selected
+  // before the user has actually clicked a lock-period pill — only style one
+  // as active once they've genuinely chosen it.
+  const [lockTouched, setLockTouched] = useState<boolean>(false);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -683,8 +687,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               {[7, 30, 60].map((days) => (
                 <button
                   key={days}
-                  onClick={() => setDisplayLockDays(days)}
-                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(displayLockDays === days)}`}
+                  onClick={() => { setDisplayLockDays(days); setLockTouched(true); }}
+                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(lockTouched && displayLockDays === days)}`}
                 >
                   {days} Days
                 </button>
@@ -694,8 +698,9 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   onClick={() => {
                     setTempCustomDays(![7, 30, 60].includes(displayLockDays) ? displayLockDays.toString() : '');
                     setIsCustomModalOpen(true);
+                    setLockTouched(true);
                   }}
-                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(![7, 30, 60].includes(displayLockDays))}`}
+                  className={`flex-1 py-2.5 text-[13px] active:scale-[0.98] ${seg(lockTouched && ![7, 30, 60].includes(displayLockDays))}`}
                 >
                   Custom
                 </button>

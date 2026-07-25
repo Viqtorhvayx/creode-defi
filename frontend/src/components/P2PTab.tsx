@@ -42,11 +42,12 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [pairStats, setPairStats] = useState<Record<string, PairStat>>({});
   const [mkt, setMkt] = useState<MarketStats | null>(null); // live price/high/low/change from the chart feed
   const stat = pairStats[selectedPairId];
-  // The amount input is denominated in the traded asset (the pair's base
-  // token) — that's what the pill shows, so it always reflects the chosen
-  // market (HBAR for HBAR-USDC, WBTC for WBTC-USDC, …).
+  // The pair's base symbol (HBAR for HBAR-USDC, WBTC for WBTC-USDC, …), used
+  // for the base-asset USD fallback price below.
   const tradeSym = pair.base;
   // Long pays the quote token to buy base; Short pays (sells) the base token.
+  // The amount input is denominated in this pay token, matching its pill —
+  // so what you type is exactly what gets spent.
   const payTokenSym = tradeSide === 'Long' ? pair.quote : pair.base;
   const recvSym = tradeSide === 'Long' ? pair.base : pair.quote;
 
@@ -152,24 +153,25 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   const submitOrder = async () => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
-    const baseAmt = parseFloat(String(payAmount).replace(/,/g, ''));
-    if (!baseAmt || baseAmt <= 0) { alert('Enter an amount.'); return; }
+    // payAmount is denominated in payTokenSym (the token the user is paying
+    // with — quote for Long, base for Short), matching the pill shown on the
+    // input, so it can be passed straight through as the "pay" amount.
+    const payNum = parseFloat(String(payAmount).replace(/,/g, ''));
+    if (!payNum || payNum <= 0) { alert('Enter an amount.'); return; }
     setTxState('pending');
     try {
       if (activeTradeMode === 'Limit') {
         const price = parseFloat(String(priceAmount).replace(/,/g, ''));
         if (!price || price <= 0) { alert('Enter a limit price.'); setTxState('idle'); return; }
-        // Convert the traded (base) amount into the pay-token amount the
-        // escrow contract expects (Long pays quote = base × price).
-        const payTok = tradeSide === 'Long' ? baseAmt * price : baseAmt;
-        await createLimitOrder(walletClient, selectedPairId, tradeSide, payTok, price);
+        await createLimitOrder(walletClient, selectedPairId, tradeSide, payNum, price);
       } else {
         const mktPrice = mkt?.price || 0;
         if (tradeSide === 'Long' && mktPrice <= 0) { alert('Live price unavailable — try again in a moment.'); setTxState('idle'); return; }
-        const payTok = tradeSide === 'Long' ? baseAmt * mktPrice : baseAmt;
-        await marketFill(walletClient, selectedPairId, tradeSide, payTok);
+        await marketFill(walletClient, selectedPairId, tradeSide, payNum);
       }
       setTxState('done');
+      setPayAmount('');
+      setPosSize(0);
       loadOrders();
       setTimeout(() => setTxState('idle'), 4000);
     } catch (e) {
@@ -212,25 +214,30 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const highStr = mkt ? formatPrice(mkt.high24h) : '—';
   const lowStr = mkt ? formatPrice(mkt.low24h) : '—';
 
-  // Estimated fill for the trade panel, from real inputs. `payAmount` now holds
-  // the amount of the traded (base) asset; we convert to the pay-token amount
-  // the contract expects (Long spends quote = base × price; Short spends base).
-  const baseNum = parseFloat(String(payAmount).replace(/,/g, '')) || 0;
+  // Estimated fill for the trade panel, from real inputs. `payAmount` is
+  // denominated in payTokenSym (quote for Long, base for Short) — the same
+  // token shown on the input's pill — so it maps directly onto what the
+  // escrow contract expects, with no base↔quote conversion needed here.
+  const payNum = parseFloat(String(payAmount).replace(/,/g, '')) || 0;
   const priceNum = activeTradeMode === 'Limit'
     ? (parseFloat(String(priceAmount).replace(/,/g, '')) || 0)
     : (mkt?.price || 0);
-  const recvEst = tradeSide === 'Long' ? baseNum : baseNum * priceNum;
-  // Max tradable base given the wallet balance of the token actually spent.
-  const maxBase = tradeSide === 'Long'
-    ? (priceNum > 0 && payBalance ? payBalance / priceNum : 0)
-    : (payBalance ?? 0);
+  // "You will receive (Est.)" is always in the opposite (received) token.
+  const recvEst = tradeSide === 'Long'
+    ? (priceNum > 0 ? payNum / priceNum : 0) // spend quote, receive base
+    : payNum * priceNum;                     // spend base, receive quote
+  // Max payable given the wallet balance of the token actually spent — this
+  // is simply that balance, already fetched in payTokenSym units.
+  const maxPay = payBalance ?? 0;
 
-  // USD value of the traded (base) amount, for the "$0.00" line under the
-  // amount input (matching the Vault deposit box). Every pair but HBAR-SAUCE
-  // quotes a USD stable, so priceNum is already ~USD per base in those cases.
+  // USD value of the pay-token amount, for the "$0.00" line under the amount
+  // input (matching the Vault deposit box). Every pair but HBAR-SAUCE quotes
+  // a USD stable, so priceNum is already ~USD per base in those cases.
   const quoteIsUsdStable = pair.quote === 'USDC' || pair.quote === 'USDT';
   const baseUsdPrice = quoteIsUsdStable ? priceNum : (FALLBACK_USD[tradeSym] ?? 0);
-  const baseUsdValue = baseNum * baseUsdPrice;
+  const quoteUsdPrice = quoteIsUsdStable ? 1 : (FALLBACK_USD[pair.quote] ?? 0);
+  const payUsdPrice = tradeSide === 'Long' ? quoteUsdPrice : baseUsdPrice;
+  const payUsdValue = payNum * payUsdPrice;
 
   // The connected user's own open orders on this pair (for the Orders tab).
   const myOrders = openOrders.filter((o) => myAddr && o.maker.toLowerCase() === myAddr);
@@ -593,7 +600,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                     </div>
 
                     <div className="flex justify-between items-end mb-2">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount ({tradeSym})</span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount ({payTokenSym})</span>
                     </div>
 
                     {/* Amount Input */}
@@ -608,16 +615,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         />
                         
                         <div className={TOKEN_PILL}>
-                          <TokenLogo sym={tradeSym} size={24} />
-                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{tradeSym}</span>
+                          <TokenLogo sym={payTokenSym} size={24} />
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                         </div>
                       </div>
-                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${baseNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${baseUsdValue.toFixed(2)}</span>
+                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${payNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${payUsdValue.toFixed(2)}</span>
                     </div>
 
                     {/* Balance */}
                     <div className="flex justify-between items-center mb-6 px-1 -mt-1.5">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxBase)} {tradeSym}</span></span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxPay)} {payTokenSym}</span></span>
                     </div>
 
                     {/* Slider */}
@@ -628,7 +635,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           min="0"
                           max="100"
                           value={posSize}
-                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (maxBase) setPayAmount(String(Number((maxBase * p / 100).toFixed(6)))); }}
+                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (maxPay) setPayAmount(String(Number((maxPay * p / 100).toFixed(6)))); }}
                           className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
                         />
                         {/* Markers */}
@@ -698,7 +705,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
                     {/* Amount Input */}
                     <div className="flex justify-between items-end mb-2">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount ({tradeSym})</span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Amount ({payTokenSym})</span>
                     </div>
                     <div className={`w-full ${theme === 'dark' ? 'bg-[#0b0e14]' : 'bg-white'} border ${theme === 'dark' ? 'border-white/10' : 'border-slate-300'} rounded-[12px] py-4 px-4 mb-3 focus-within:border-[#00A8E8] transition-colors group`}>
                       <div className="flex items-center justify-between gap-2">
@@ -710,16 +717,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           className={`bg-transparent outline-none focus:outline-none focus:ring-0 border-none text-[30px] sm:text-[36px] font-bold w-full min-w-0 text-left [appearance:textfield] ${textMain} placeholder-slate-300 dark:placeholder-white/20 leading-none m-0 p-0`} 
                         />
                         <div className={TOKEN_PILL}>
-                          <TokenLogo sym={tradeSym} size={24} />
-                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{tradeSym}</span>
+                          <TokenLogo sym={payTokenSym} size={24} />
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white leading-none">{payTokenSym}</span>
                         </div>
                       </div>
-                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${baseNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${baseUsdValue.toFixed(2)}</span>
+                      <span className={`text-[12px] font-bold ml-1 transition-colors block mt-1.5 ${payNum > 0 ? 'text-[#00A8E8]' : 'text-slate-400 dark:text-white/40'}`}>${payUsdValue.toFixed(2)}</span>
                     </div>
 
                     {/* Balance */}
                     <div className="flex justify-between items-center mb-5 px-1 -mt-1.5">
-                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxBase)} {tradeSym}</span></span>
+                      <span className={`text-[12px] font-semibold ${textMuted}`}>Tradable: <span className="text-[#00A8E8] font-bold tabular-nums">{payBalance === null ? (isConnected ? '…' : '—') : formatPrice(maxPay)} {payTokenSym}</span></span>
                     </div>
 
                     {/* Price Input */}
@@ -747,7 +754,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           min="0"
                           max="100"
                           value={posSize}
-                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (maxBase) setPayAmount(String(Number((maxBase * p / 100).toFixed(6)))); }}
+                          onChange={(e) => { const p = Number(e.target.value); setPosSize(p); if (maxPay) setPayAmount(String(Number((maxPay * p / 100).toFixed(6)))); }}
                           className="absolute inset-0 w-full h-full opacity-0 z-30 cursor-pointer m-0 p-0"
                         />
                         {/* Markers */}
