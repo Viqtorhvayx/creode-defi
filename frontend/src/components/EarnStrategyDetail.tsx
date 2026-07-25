@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Database, ShieldCheck, Info, ArrowUpRight, Lightning, CircleNotch } from '@phosphor-icons/react';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
 import { TokenLogo } from './TokenLogo';
@@ -113,6 +114,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   // Wallet + on-chain zap wiring.
   const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
+  const { showToast } = useToast();
   const [zapState, setZapState] = useState<'idle' | 'pending' | 'done'>('idle');
 
   // Brief cyan glow on the Back button so a click is clearly acknowledged.
@@ -120,9 +122,9 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   const handleBack = () => { setBackGlow(true); setTimeout(onBack, 280); };
 
   const handleZap = async () => {
-    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
-    if (!meta || !metaTok) { alert('This strategy is not available on-chain yet.'); return; }
-    if (!hasAmt) return;
+    if (!isConnected || !walletClient) { showToast('Please connect your wallet first.', { type: 'warning' }); return; }
+    if (!meta || !metaTok) { showToast('This strategy is not available on-chain yet.', { type: 'warning' }); return; }
+    if (!hasAmt) { showToast('Enter an amount to supply.', { type: 'warning' }); return; }
     setZapState('pending');
     try {
       await zapIn(walletClient, meta.id, metaTok, amt.replace(/,/g, ''));
@@ -131,7 +133,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
     } catch (e) {
       const err = e as any;
       console.error('[Zap] failed:', err);
-      alert('Zap failed: ' + friendlyTxError(err));
+      showToast('Zap failed: ' + friendlyTxError(err), { type: 'error' });
       setZapState('idle');
     } finally {
       closeModal();

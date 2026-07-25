@@ -6,6 +6,7 @@ import { JsonRpcProvider, Contract, formatUnits } from 'ethers';
 import { getTestnetSigner } from '../lib/testnetSigner';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import faucetArtifact from '../contracts/CreodeFaucet.json';
 import { TokenLogo } from './TokenLogo';
@@ -54,6 +55,7 @@ const compactAmount = (v: number): string => {
 export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) => {
   const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
+  const { showToast } = useToast();
   const [isClaiming, setIsClaiming] = useState(false);
   const [justClaimed, setJustClaimed] = useState(false);
   const [cooldown, setCooldown] = useState(0);
@@ -104,8 +106,8 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
   }, [cooldown]);
 
   const handleClaim = async () => {
-    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
-    if (!FAUCET_ADDRESS) { alert('Faucet address not configured.'); return; }
+    if (!isConnected || !walletClient) { showToast('Please connect your wallet first.', { type: 'warning' }); return; }
+    if (!FAUCET_ADDRESS) { showToast('Faucet address not configured.', { type: 'error' }); return; }
     if (cooldown > 0) return;
     setIsClaiming(true);
     try {
@@ -121,7 +123,7 @@ export const FaucetPanel: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
     } catch (err) {
       const e = err as any;
       console.error('[Faucet] Claim failed:', e);
-      alert('Claim failed: ' + friendlyTxError(e));
+      showToast('Claim failed: ' + friendlyTxError(e), { type: 'error' });
     } finally {
       setIsClaiming(false);
       closeModal();

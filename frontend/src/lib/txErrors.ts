@@ -1,5 +1,5 @@
 // Translates raw ethers/wallet errors into short, actionable messages for
-// alert() dialogs. Ethers v6 surfaces internals ("could not coalesce error",
+// toast notifications. Ethers v6 surfaces internals ("could not coalesce error",
 // "missing revert data (action=estimateGas ...)") that mean nothing to users
 // and hide the actual fix, so every tx catch block should route through this.
 export function friendlyTxError(err: any, fallback = 'Unknown error'): string {

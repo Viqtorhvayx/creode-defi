@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { CircleNotch, CheckCircle, Sparkle } from '@phosphor-icons/react';
 import { CTA_BLUE, CTA_GREEN, CTA_RED } from '../lib/ui';
@@ -27,6 +28,7 @@ const fmtLeft = (deadline: number) => {
 
 export function CommunityTab({ theme }: CommunityTabProps) {
   const { isConnected, address, connect, closeModal } = useWallet();
+  const { showToast } = useToast();
   const { data: walletClient } = useWalletClient();
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -75,34 +77,34 @@ export function CommunityTab({ theme }: CommunityTabProps) {
       if (address) logHcsEvent({ type: 'Governance Claim', detail: 'Claimed CODE voting power', account: address, txHash });
       await Promise.all([load(), loadVoter()]);
     }
-    catch (e: any) { alert('Claim failed: ' + friendlyTxError(e)); }
+    catch (e: any) { showToast('Claim failed: ' + friendlyTxError(e), { type: 'error' }); }
     finally { setBusy(null); closeModal(); }
   };
 
   const doVote = async (id: number, support: boolean) => {
     if (!isConnected || !walletClient) { connect(); return; }
-    if (power <= 0) { alert('Claim CODE first to get voting power.'); return; }
+    if (power <= 0) { showToast('Claim CODE first to get voting power.', { type: 'warning' }); return; }
     setBusy(`vote-${id}-${support}`);
     try {
       const txHash = await castVoteGov(walletClient, id, support);
       if (address) logHcsEvent({ type: 'Governance Vote', detail: `Voted ${support ? 'For' : 'Against'} proposal #${id}`, account: address, txHash });
       await Promise.all([load(), loadVoter()]);
     }
-    catch (e: any) { alert('Vote failed: ' + friendlyTxError(e)); }
+    catch (e: any) { showToast('Vote failed: ' + friendlyTxError(e), { type: 'error' }); }
     finally { setBusy(null); closeModal(); }
   };
 
   const doPropose = async () => {
     if (!isConnected || !walletClient) { connect(); return; }
-    if (!title.trim()) { alert('Enter a proposal title.'); return; }
-    if (power < threshold) { alert(`You need at least ${fmtCode(threshold)} CODE to propose.`); return; }
+    if (!title.trim()) { showToast('Enter a proposal title.', { type: 'warning' }); return; }
+    if (power < threshold) { showToast(`You need at least ${fmtCode(threshold)} CODE to propose.`, { type: 'warning' }); return; }
     setBusy('propose');
     try {
       const txHash = await proposeGov(walletClient, title.trim(), desc.trim());
       if (address) logHcsEvent({ type: 'Governance Proposal', detail: `Proposed: ${title.trim()}`, account: address, txHash });
       setTitle(''); setDesc(''); await load();
     }
-    catch (e: any) { alert('Proposal failed: ' + friendlyTxError(e)); }
+    catch (e: any) { showToast('Proposal failed: ' + friendlyTxError(e), { type: 'error' }); }
     finally { setBusy(null); closeModal(); }
   };
 
