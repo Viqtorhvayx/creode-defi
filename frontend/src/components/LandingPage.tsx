@@ -134,7 +134,7 @@ const SECURITY = [
   { t: 'Verified on HashScan', d: 'Every Creode contract is source-verified and publicly auditable.' },
 ];
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch }) => {
   const { connect } = useWallet();
   return (
     <div className="lp-root min-h-screen w-full overflow-x-hidden text-white antialiased">
@@ -152,7 +152,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs }) =>
       <nav className="relative z-20 mx-auto flex max-w-[1180px] items-center justify-between px-8 py-7">
         <button onClick={onLaunch} className="scale-90 origin-left"><Logo theme="dark" /></button>
         <div className="flex items-center gap-4">
-          <button onClick={onDocs} className="hidden text-[13.5px] font-semibold tracking-wide text-white/55 transition-colors hover:text-white sm:block">Docs</button>
+          <a href="/docs/Creode_Documentation.docx" download className="hidden text-[13.5px] font-semibold tracking-wide text-white/55 transition-colors hover:text-white sm:block">Docs</a>
           <button onClick={onLaunch} className="lp-cta">Launch App</button>
         </div>
       </nav>
@@ -251,7 +251,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch, onDocs }) =>
               Connect a wallet on Hedera Testnet, claim test tokens from the faucet and try every product, with no real funds at risk.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <button onClick={onDocs} className="lp-ghost">Read the Docs</button>
+              <a href="/docs/Creode_Documentation.docx" download className="lp-ghost">Read the Docs</a>
             </div>
           </div>
         </Reveal>
