@@ -182,15 +182,15 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   // The user's open zap positions (illustrative on testnet).
   const positions = [
     {
-      token1: hbar, token2: sauce, pair: 'HBAR-SAUCE', venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk,
+      token1: hbar, token2: sauce, pair: 'HBAR-SAUCE', venue: 'HashPack DEX', riskLevel: 'Balanced', ...emeraldRisk,
       supplied: '$12,400.00', accrued: '+$850.20', accruedPct: '+6.85%', change7d: '+4.32%', apr: '24.65%', utilization: 72, trendUp: true,
     },
     {
-      token1: usdc, token2: usdt, pair: 'USDC-USDT', venue: 'Creode AMM', riskLevel: 'Conservative', ...conservativeRisk,
+      token1: usdc, token2: usdt, pair: 'USDC-USDT', venue: 'SaucerSwap', riskLevel: 'Conservative', ...conservativeRisk,
       supplied: '$25,100.00', accrued: '+$1,120.00', accruedPct: '+4.46%', change7d: '+1.92%', apr: '12.78%', utilization: 48, trendUp: true,
     },
     {
-      token1: hbar, token2: dovu, pair: 'HBAR-DOVU', venue: 'Creode AMM', riskLevel: 'Aggressive', ...roseRisk,
+      token1: hbar, token2: dovu, pair: 'HBAR-DOVU', venue: 'DOVU Finance', riskLevel: 'Aggressive', ...roseRisk,
       supplied: '$5,000.00', accrued: '+$1,270.30', accruedPct: '+25.41%', change7d: '+7.18%', apr: '38.92%', utilization: 83, trendUp: true,
     },
   ];
@@ -207,13 +207,13 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
   // Metadata (logos, venue, risk) for every on-chain pair, keyed by name —
   // used to render live My Positions rows.
   const pairInfo: Record<string, any> = {
-    'HBAR-SAUCE': { token1: hbar, token2: sauce, venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk },
-    'HBAR-WBTC': { token1: hbar, token2: wbtc, venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk },
-    'HBAR-DOVU': { token1: hbar, token2: dovu, venue: 'Creode AMM', riskLevel: 'Aggressive', ...roseRisk },
-    'HBAR-WETH': { token1: hbar, token2: weth, venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk },
-    'HBAR-USDC': { token1: hbar, token2: usdc, venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk },
-    'SAUCE-USDC': { token1: sauce, token2: usdc, venue: 'Creode AMM', riskLevel: 'Balanced', ...emeraldRisk },
-    'USDC-USDT': { token1: usdc, token2: usdt, venue: 'Creode AMM', riskLevel: 'Conservative', ...conservativeRisk },
+    'HBAR-SAUCE': { token1: hbar, token2: sauce, venue: 'HashPack DEX', riskLevel: 'Balanced', ...emeraldRisk },
+    'HBAR-WBTC': { token1: hbar, token2: wbtc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
+    'HBAR-DOVU': { token1: hbar, token2: dovu, venue: 'DOVU Finance', riskLevel: 'Aggressive', ...roseRisk },
+    'HBAR-WETH': { token1: hbar, token2: weth, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
+    'HBAR-USDC': { token1: hbar, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
+    'SAUCE-USDC': { token1: sauce, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
+    'USDC-USDT': { token1: usdc, token2: usdt, venue: 'SaucerSwap V2', riskLevel: 'Conservative', ...conservativeRisk },
   };
 
   // Open a pair's zap detail from a "Supply More" click.

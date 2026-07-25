@@ -212,7 +212,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
               <h2 className="text-[16px] font-bold tracking-tight">How it Works</h2>
             </div>
             <p className={`text-[14px] leading-[1.6] font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-              This strategy auto-zaps your single-asset deposit into a balanced {token1.sym} / {token2.sym} position on Creode's own on-chain AMM, then deposits it into the Yield Hub to accrue yield. Compounding can be triggered manually at any time, or automated hands-off via Hedera's native scheduled transactions (HIP-1215).
+              This strategy automatically provisions concentrated liquidity for the {token1.sym} / {token2.sym} pair into high-volume bands on SaucerSwap V2. Creode's smart contracts actively manage and dynamically re-range the price boundaries to prevent out-of-range yield pauses, maximizing your trading fee collection automatically.
             </p>
           </div>
 
@@ -227,7 +227,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
               {/* Row 1 */}
               <div className={`flex justify-between items-center py-5 border-b ${borderColor}`}>
                 <span className={`text-[13px] font-semibold ${textMuted}`}>Underlying Venue</span>
-                <span className="text-[13px] font-bold">Creode AMM (100% Allocation)</span>
+                <span className="text-[13px] font-bold">SaucerSwap V2 (100% Allocation)</span>
               </div>
               {/* Row 2 */}
               <div className={`flex justify-between items-center py-5 border-b ${borderColor}`}>
