@@ -53,13 +53,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           return (
             <div
               key={toast.id}
-              className="glass-panel !p-4 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 shadow-2xl min-w-[320px] max-w-[380px]"
+              className="bg-white/95 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl p-4 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 min-w-[320px] max-w-[380px]"
             >
               <div className={`${iconBg} p-2 rounded-full shrink-0`}>
                 <Icon className={iconColor} size={20} />
               </div>
               <div className="flex-grow min-w-0">
-                <p className="text-sm font-bold text-white leading-snug">{toast.message}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{toast.message}</p>
                 {toast.txHash && (
                   <a
                     href={`https://hashscan.io/testnet/transaction/${toast.txHash}`}
@@ -73,7 +73,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               </div>
               <button
                 onClick={() => dismiss(toast.id)}
-                className="text-white/30 hover:text-white/70 transition-colors shrink-0 -mt-0.5 -mr-0.5"
+                className="text-black/30 dark:text-white/30 hover:text-black/70 dark:hover:text-white/70 transition-colors shrink-0 -mt-0.5 -mr-0.5"
                 aria-label="Dismiss"
               >
                 <XCircle size={16} />
