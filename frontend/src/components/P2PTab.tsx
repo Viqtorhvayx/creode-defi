@@ -6,6 +6,7 @@ import { OrderBook } from './OrderBook';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
 import { useWalletClient, useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
@@ -34,6 +35,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   // On-chain P2P order wiring.
   const { isConnected, closeModal } = useWallet();
+  const { showToast } = useToast();
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
@@ -118,7 +120,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   // Take (fill) another maker's resting order — pay its full remaining buy side.
   const takeOrder = async (o: OpenOrder) => {
-    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    if (!isConnected || !walletClient) { showToast('Please connect your wallet first.', { type: 'warning' }); return; }
     setBusyId(o.id);
     try {
       const txHash = await fillOrderById(walletClient, o, o.buyRemaining);
@@ -136,7 +138,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] fill failed:', err);
-      alert('Fill failed: ' + friendlyTxError(err));
+      showToast('Fill failed: ' + friendlyTxError(err), { type: 'error' });
     } finally {
       setBusyId(null);
       closeModal();
@@ -145,7 +147,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
 
   // Cancel the connected user's own resting order (refunds escrow).
   const cancelMyOrder = async (o: OpenOrder) => {
-    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    if (!isConnected || !walletClient) { showToast('Please connect your wallet first.', { type: 'warning' }); return; }
     setBusyId(o.id);
     try {
       const txHash = await cancelOrder(walletClient, o.id);
@@ -161,7 +163,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] cancel failed:', err);
-      alert('Cancel failed: ' + friendlyTxError(err));
+      showToast('Cancel failed: ' + friendlyTxError(err), { type: 'error' });
     } finally {
       setBusyId(null);
       closeModal();
@@ -171,22 +173,22 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const fmtNum = (n: number, max = 4) => n.toLocaleString(undefined, { maximumFractionDigits: max });
 
   const submitOrder = async () => {
-    if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
+    if (!isConnected || !walletClient) { showToast('Please connect your wallet first.', { type: 'warning' }); return; }
     // payAmount is denominated in payTokenSym (the token the user is paying
     // with — quote for Long, base for Short), matching the pill shown on the
     // input, so it can be passed straight through as the "pay" amount.
     const payNum = parseFloat(String(payAmount).replace(/,/g, ''));
-    if (!payNum || payNum <= 0) { alert('Enter an amount.'); return; }
+    if (!payNum || payNum <= 0) { showToast('Enter an amount.', { type: 'warning' }); return; }
     setTxState('pending');
     try {
       let txHash: string;
       if (activeTradeMode === 'Limit') {
         const price = parseFloat(String(priceAmount).replace(/,/g, ''));
-        if (!price || price <= 0) { alert('Enter a limit price.'); setTxState('idle'); return; }
+        if (!price || price <= 0) { showToast('Enter a limit price.', { type: 'warning' }); setTxState('idle'); return; }
         txHash = await createLimitOrder(walletClient, selectedPairId, tradeSide, payNum, price);
       } else {
         const mktPrice = mkt?.price || 0;
-        if (tradeSide === 'Long' && mktPrice <= 0) { alert('Live price unavailable — try again in a moment.'); setTxState('idle'); return; }
+        if (tradeSide === 'Long' && mktPrice <= 0) { showToast('Live price unavailable — try again in a moment.', { type: 'warning' }); setTxState('idle'); return; }
         txHash = await marketFill(walletClient, selectedPairId, tradeSide, payNum);
       }
       if (address) {
@@ -207,7 +209,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     } catch (e) {
       const err = e as any;
       console.error('[P2P] order failed:', err);
-      alert('Order failed: ' + friendlyTxError(err));
+      showToast('Order failed: ' + friendlyTxError(err), { type: 'error' });
       setTxState('idle');
     } finally {
       closeModal();

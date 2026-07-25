@@ -7,6 +7,7 @@ import { TOKEN_MAPPINGS, SaucerSwapToken } from '../utils/tokenMapping';
 import { createPortal } from 'react-dom';
 import { PriceChart } from './PriceChart';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { useCurrency } from '../context/CurrencyContext';
 import { ShieldCheck, LockKey, Warning, CalendarBlank, ChartLineUp, CaretDown, Percent, ArrowsClockwise, CheckCircle, CircleNotch } from '@phosphor-icons/react';
@@ -167,6 +168,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
   const { balance, isConnected, address, closeModal } = useWallet();
   const { format: formatCurrency } = useCurrency();
+  const { showToast } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const TOKENS = ['HBAR', 'USDT', 'USDC', 'SAUCE', 'PACK', 'WBTC', 'WETH', 'BONZO', 'JAM'];
@@ -457,13 +459,13 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   };
 
   const handleDeposit = async () => {
-    if (Number(depositAmount) <= 0) return;
+    if (Number(depositAmount) <= 0) { showToast('Enter an amount to deposit.', { type: 'warning' }); return; }
     if (!isConnected || !walletClient) {
-      alert('Please connect your wallet first.');
+      showToast('Please connect your wallet first.', { type: 'warning' });
       return;
     }
     if (!vaultAddress) {
-      alert('Vault contract address not configured.');
+      showToast('Vault contract address not configured.', { type: 'error' });
       return;
     }
 
@@ -471,14 +473,14 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     // "missing revert data" on Hedera's gas estimator otherwise).
     const min = minDeposits[activeToken] ?? 0;
     if (min > 0 && Number(depositAmount) < min) {
-      alert(`Minimum deposit for ${activeToken} is ${min} ${activeToken}. Please enter at least that amount.`);
+      showToast(`Minimum deposit for ${activeToken} is ${min} ${activeToken}. Please enter at least that amount.`, { type: 'warning' });
       return;
     }
 
     const isHbar = activeToken === 'HBAR';
     const tokenEvm = TOKEN_EVM_ADDRESSES[activeToken] || '';
     if (!isHbar && !tokenEvm) {
-      alert(`${activeToken} is not configured with a token address.`);
+      showToast(`${activeToken} is not configured with a token address.`, { type: 'error' });
       return;
     }
 
@@ -534,7 +536,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
       setIsProcessing(false);
       const e = err as any;
       console.error('[Vault] Deposit failed:', e);
-      alert('Deposit failed: ' + friendlyTxError(e));
+      showToast('Deposit failed: ' + friendlyTxError(e), { type: 'error' });
     } finally {
       closeModal();
     }
@@ -543,11 +545,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   // Exit a deposit: matured -> withdraw, otherwise -> unlock (early, with penalty).
   const handleExit = async (row: VaultRow) => {
     if (!isConnected || !walletClient) {
-      alert('Please connect your wallet first.');
+      showToast('Please connect your wallet first.', { type: 'warning' });
       return;
     }
     if (!vaultAddress) {
-      alert('Vault contract address not configured.');
+      showToast('Vault contract address not configured.', { type: 'error' });
       return;
     }
     setRowBusyId(row.id);
@@ -574,7 +576,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
     } catch (err) {
       const e = err as any;
       console.error('[Vault] Exit failed:', e);
-      alert('Exit failed: ' + friendlyTxError(e));
+      showToast('Exit failed: ' + friendlyTxError(e), { type: 'error' });
     } finally {
       setRowBusyId(null);
       closeModal();
@@ -1062,11 +1064,11 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               onClick={() => {
                 const val = parseInt(tempCustomDays);
                 if (isNaN(val) || val <= 0) {
-                  alert('Please enter a lock duration of at least 1 day.');
+                  showToast('Please enter a lock duration of at least 1 day.', { type: 'warning' });
                   return;
                 }
                 if (val > MAX_LOCK_DAYS) {
-                  alert(`Maximum lock duration is ${MAX_LOCK_DAYS} days.`);
+                  showToast(`Maximum lock duration is ${MAX_LOCK_DAYS} days.`, { type: 'warning' });
                   return;
                 }
                 setDisplayLockDays(val);

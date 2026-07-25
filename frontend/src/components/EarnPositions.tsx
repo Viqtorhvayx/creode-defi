@@ -5,6 +5,7 @@ import { Info, MagnifyingGlass, ShieldCheck, ArrowUpRight, CircleNotch, Wallet, 
 import { createChart, ColorType, UTCTimestamp } from 'lightweight-charts';
 import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
+import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { fetchUserPositions, withdrawAll, compound, UserPositionV2 } from '../lib/yieldVault';
 import { isAutoEnrolled, enrollAuto, unenrollAuto } from '../lib/scheduler';
@@ -141,6 +142,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
   // ── Live on-chain positions ──────────────────────────────────────────
   const { isConnected, closeModal } = useWallet();
   const { data: walletClient } = useWalletClient();
+  const { showToast } = useToast();
   const [live, setLive] = useState<UserPositionV2[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [busyKey, setBusyKey] = useState<number | null>(null);
@@ -181,7 +183,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
     if (!walletClient) return;
     setBusyKey(pos.strategyId);
     try { await withdrawAll(walletClient, pos.strategyId); await load(); }
-    catch (e) { const err = e as any; alert('Withdraw failed: ' + friendlyTxError(err)); }
+    catch (e) { const err = e as any; showToast('Withdraw failed: ' + friendlyTxError(err), { type: 'error' }); }
     finally { setBusyKey(null); closeModal(); }
   };
 
@@ -189,7 +191,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
     if (!walletClient) return;
     setCompoundBusy(pos.strategyId);
     try { await compound(walletClient, pos.strategyId); await load(); }
-    catch (e) { const err = e as any; alert('Compound failed: ' + friendlyTxError(err)); }
+    catch (e) { const err = e as any; showToast('Compound failed: ' + friendlyTxError(err), { type: 'error' }); }
     finally { setCompoundBusy(null); closeModal(); }
   };
 
@@ -203,7 +205,7 @@ export const EarnPositions: React.FC<EarnPositionsProps> = ({ theme, positions, 
       else await enrollAuto(walletClient, pos.strategyId);
       await load();
     }
-    catch (e) { const err = e as any; alert('Auto-compound update failed: ' + friendlyTxError(err)); }
+    catch (e) { const err = e as any; showToast('Auto-compound update failed: ' + friendlyTxError(err), { type: 'error' }); }
     finally { setAutoBusy(null); closeModal(); }
   };
 
