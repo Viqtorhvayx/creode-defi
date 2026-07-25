@@ -49,5 +49,17 @@ export async function GET() {
     secretLength: process.env.HCS_SETUP_SECRET?.length ?? 0,
     matchingEnvKeys: allEnvKeys,
     deployedAt: new Date().toISOString(),
+    // Vercel's own system env vars — proof of exactly which project/repo/
+    // commit/branch is actually serving this request, independent of
+    // anything visible in the dashboard.
+    vercel: {
+      env: process.env.VERCEL_ENV || null,
+      url: process.env.VERCEL_URL || null,
+      projectProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL || null,
+      gitRepoOwner: process.env.VERCEL_GIT_REPO_OWNER || null,
+      gitRepoSlug: process.env.VERCEL_GIT_REPO_SLUG || null,
+      gitCommitRef: process.env.VERCEL_GIT_COMMIT_REF || null,
+      gitCommitSha: process.env.VERCEL_GIT_COMMIT_SHA || null,
+    },
   });
 }
