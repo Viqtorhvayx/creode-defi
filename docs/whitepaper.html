@@ -275,6 +275,8 @@
 
       <p>You can <strong>Compound</strong> accrued rewards back into your position, <strong>Supply More</strong> or <strong>Withdraw</strong> the full position on demand.</p>
 
+      <div class="note info"><span class="ic">→</span><div>On <b>testnet</b>, the zap swap and pool above run through Creode's own in-house constant-product AMM (<code class="k">CreodeSwapRouter</code>) as a stand-in, since it lets the full deposit → zap → compound → withdraw flow be demonstrated end-to-end without depending on external liquidity. On <b>mainnet</b>, this step is planned to route through real external Hedera DEX liquidity (e.g. SaucerSwap) so yield is sourced from genuine market volume rather than a protocol-seeded pool.</div></div>
+
       <h3>Auto-compounding via Hedera HIP-1215</h3>
       <p>Compound by hand with the <strong>Compound</strong> button, or flip <strong>Auto: On</strong> and let the protocol do it fully on-chain, using <a class="link" href="https://hips.hedera.com/hip/hip-1215">HIP-1215</a> generalized scheduled contract calls. A contract can schedule its own future calls through the Hedera Schedule Service, meaning native on-chain "cron" with no off-chain keeper.</p>
       <ul>

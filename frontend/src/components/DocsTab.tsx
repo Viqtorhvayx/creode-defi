@@ -162,6 +162,10 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
           </ol>
           <P>You can <B>Compound</B> accrued rewards back into your position at any time, <B>Supply More</B>, or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
 
+          <Callout icon={<ArrowsClockwise size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
+            On <B>testnet</B>, the zap swap runs through Creode's own in-house constant-product AMM as a stand-in, so the full deposit → zap → compound → withdraw flow can be demonstrated end-to-end without depending on external liquidity. On <B>mainnet</B>, this step is planned to route through real external Hedera DEX liquidity (e.g. SaucerSwap) so yield is sourced from genuine market volume rather than a protocol-seeded pool.
+          </Callout>
+
           <h3 className={`text-[16px] font-bold ${textMain} mt-6 mb-2 flex items-center gap-2`}><ArrowsClockwise size={18} weight="bold" style={{ color: PRIMARY }} /> Auto-compounding (via Hedera HIP-1215)</h3>
           <div className="flex flex-wrap gap-2 mb-3"><Pill color={GREEN}>Live on-chain</Pill><Pill>Keeperless</Pill></div>
           <P>You can compound by hand any time with the <B>Compound</B> button, or flip <B>Auto: On</B> on any position and let the protocol do it for you fully on-chain, using <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A>'s <B>generalized scheduled contract calls</B>. HIP-1215 lets a contract schedule its <B>own future calls</B> through the Hedera Schedule Service, meaning native on-chain "cron" with no off-chain keeper or bot.</P>
