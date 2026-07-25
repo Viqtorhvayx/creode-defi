@@ -217,8 +217,9 @@
     <a href="#p2p"><span class="n">04</span> P2P Trading</a>
     <a href="#governance"><span class="n">05</span> Governance</a>
     <a href="#points"><span class="n">06</span> CODE Points</a>
-    <a href="#security"><span class="n">07</span> Security &amp; HTS</a>
-    <a href="#contracts"><span class="n">08</span> Contracts</a>
+    <a href="#hcs-log"><span class="n">07</span> Protocol Event Log</a>
+    <a href="#security"><span class="n">08</span> Security &amp; HTS</a>
+    <a href="#contracts"><span class="n">09</span> Contracts</a>
   </nav>
 
   <main>
@@ -331,8 +332,20 @@
       <p>Totals and per-transaction rewards are computed from real on-chain history and shown in the Activity tab.</p>
     </section>
 
+    <section id="hcs-log">
+      <div class="sec-eyebrow">07. Protocol Event Log</div>
+      <h2>An independently-verifiable audit trail on Hedera Consensus Service</h2>
+      <p>Alongside its EVM contracts, Creode writes a real-time protocol event log to a dedicated <strong>Hedera Consensus Service (HCS)</strong> topic. Every Vault deposit/exit, P2P order fill, and governance action is submitted to the topic the moment its underlying transaction confirms.</p>
+      <ul>
+        <li><strong>Tamper-evident ordering:</strong> HCS assigns each message a consensus timestamp and sequence number under Hedera's aBFT consensus, independent of any single API or database Creode operates.</li>
+        <li><strong>Independently verifiable:</strong> the topic can be read directly from any Hedera Mirror Node — no trust in Creode's frontend required to confirm an event happened when it says it did.</li>
+        <li><strong>Read live in-app:</strong> the Activity tab's Protocol Event Log panel surfaces these messages as they land, each linking to its underlying transaction on HashScan.</li>
+      </ul>
+      <p id="hcs-topic-line">Topic ID: <span id="hcs-topic-id">being provisioned</span></p>
+    </section>
+
     <section id="security">
-      <div class="sec-eyebrow">07. Security</div>
+      <div class="sec-eyebrow">08. Security</div>
       <h2>Secured by Hedera HTS, hardened by proven primitives</h2>
       <p>Creode's assets are <strong>Hedera Token Service (HTS)</strong> tokens, not plain ERC-20s bolted onto an EVM. HTS enforces token rules at the <strong>network layer</strong>, below and independent of any application contract:</p>
       <ul>
@@ -346,7 +359,7 @@
     </section>
 
     <section id="contracts">
-      <div class="sec-eyebrow">08. Contracts</div>
+      <div class="sec-eyebrow">09. Contracts</div>
       <h2>Deployed contracts &amp; addresses</h2>
       <p>Network: <strong>Hedera Testnet</strong> · chain <code class="k">296</code> (<code class="k">0x128</code>) · JSON-RPC <code class="k">https://testnet.hashio.io/api</code>. All source and deployments are verifiable on HashScan.</p>
       <div class="tbl-wrap">
@@ -375,6 +388,15 @@
       var cur = root.getAttribute('data-theme') || (isDark ? 'dark' : 'light');
       root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
     });
+  })();
+
+  // HCS topic — set once the topic is provisioned (see frontend/src/contracts/hcs_config.json).
+  (function () {
+    var TOPIC_ID = ''; // e.g. '0.0.xxxxxx'
+    var el = document.getElementById('hcs-topic-id');
+    if (TOPIC_ID && el) {
+      el.innerHTML = '<a href="https://hashscan.io/testnet/topic/' + TOPIC_ID + '" target="_blank" rel="noopener">' + TOPIC_ID + '</a>';
+    }
   })();
 
   // Contract table — real deployed addresses, linked to HashScan.

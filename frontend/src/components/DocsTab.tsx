@@ -4,11 +4,12 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BookOpen, Rocket, LockKey, ChartLineUp, ArrowsLeftRight, Sparkle,
   FileCode, ShieldCheck, Lifebuoy, MagnifyingGlass, ArrowSquareOut, Warning,
-  UsersThree, ArrowsClockwise,
+  UsersThree, ArrowsClockwise, Broadcast,
 } from '@phosphor-icons/react';
 import codeArtifact from '../contracts/CodeToken.json';
 import govArtifact from '../contracts/CreodeGovernance.json';
 import schedArtifact from '../contracts/CreodeCompoundScheduler.json';
+import hcsConfig from '../contracts/hcs_config.json';
 
 const PRIMARY = '#00A8E8';
 const GREEN = '#10B981';
@@ -258,6 +259,25 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
               </tbody>
             </table>
           </div>
+        </>
+      ),
+    },
+    {
+      id: 'hcs-log', title: 'Protocol Event Log (HCS)', icon: Broadcast, keywords: 'hcs consensus service event log audit trail topic',
+      body: (
+        <>
+          <H>Protocol Event Log (HCS)</H>
+          <P>Alongside its EVM contracts, Creode writes a real-time audit trail to the <B>Hedera Consensus Service (HCS)</B> — a dedicated topic that every Vault deposit/exit, P2P order fill, and governance action is logged to the moment it confirms on-chain.</P>
+          <ul className="list-disc pl-5 space-y-1.5 mb-3">
+            <Li><B>Tamper-evident:</B> HCS gives each message a consensus timestamp and sequence number ordered by Hedera's aBFT consensus, independent of any single API or database Creode operates.</Li>
+            <Li><B>Independently verifiable:</B> anyone can read the topic directly from a Mirror Node — no trust in Creode's frontend required.</Li>
+            <Li><B>Read live in-app:</B> the <B>Activity</B> tab's Protocol Event Log panel shows these messages as they land, each linking to its underlying transaction on HashScan.</Li>
+          </ul>
+          <P>
+            Topic: {(hcsConfig as any).topicId
+              ? <A href={`https://hashscan.io/testnet/topic/${(hcsConfig as any).topicId}`}><Code>{(hcsConfig as any).topicId}</Code></A>
+              : <span className="italic">being provisioned</span>}
+          </P>
         </>
       ),
     },

@@ -16,6 +16,7 @@ import { CTA_BLUE, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL, seg } from '../lib/ui';
 import { ChevronDown, X, Info } from 'lucide-react';
 import { JsonRpcProvider, Contract, parseUnits, formatUnits } from 'ethers';
 import { getTestnetSigner } from '../lib/testnetSigner';
+import { logHcsEvent } from '../lib/hcsClient';
 import { useWalletClient } from 'wagmi';
 import vaultArtifact from '../context/abis.json';
 
@@ -164,7 +165,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>('/tokens/jam.png');
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
-  const { balance, isConnected, closeModal } = useWallet();
+  const { balance, isConnected, address, closeModal } = useWallet();
   const { format: formatCurrency } = useCurrency();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -508,6 +509,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         tx = await vault.depositToVault(tokenEvm, amountParsed, durationDays, { gasLimit: 1200000 });
       }
       await tx.wait();
+      if (address) {
+        logHcsEvent({
+          type: 'Vault Deposit',
+          detail: `${depositAmount} ${activeToken} locked for ${durationDays} days`,
+          account: address,
+          txHash: tx.hash,
+          amount: depositAmount,
+          sym: activeToken,
+        });
+      }
 
       setIsProcessing(false);
       setIsSuccess(true);
@@ -548,6 +559,16 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
         ? await vault.withdraw(row.id, { gasLimit: 1500000 })
         : await vault.unlock(row.id, { gasLimit: 1500000 });
       await tx.wait();
+      if (address) {
+        logHcsEvent({
+          type: row.matured ? 'Vault Withdraw' : 'Vault Unlock',
+          detail: `${row.amount} ${row.symbol}${row.matured ? ' withdrawn at maturity' : ' unlocked early'}`,
+          account: address,
+          txHash: tx.hash,
+          amount: row.amount,
+          sym: row.symbol,
+        });
+      }
       await fetchVaults();
       await fetchBalances();
     } catch (err) {

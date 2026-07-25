@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hashgraph/sdk": "^2.81.0",
     "@phosphor-icons/react": "^2.1.10",
     "@reown/appkit": "1.6.8",
     "@reown/appkit-adapter-wagmi": "1.6.8",

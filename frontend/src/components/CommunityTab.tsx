@@ -9,6 +9,7 @@ import { CTA_BLUE, CTA_GREEN, CTA_RED } from '../lib/ui';
 import {
   fetchGovernance, fetchVoter, claimCode, proposeGov, castVoteGov, type Proposal,
 } from '../lib/governance';
+import { logHcsEvent } from '../lib/hcsClient';
 
 interface CommunityTabProps {
   theme: 'light' | 'dark';
@@ -69,7 +70,11 @@ export function CommunityTab({ theme }: CommunityTabProps) {
   const doClaim = async () => {
     if (!isConnected || !walletClient) { connect(); return; }
     setBusy('claim');
-    try { await claimCode(walletClient); await Promise.all([load(), loadVoter()]); }
+    try {
+      const txHash = await claimCode(walletClient);
+      if (address) logHcsEvent({ type: 'Governance Claim', detail: 'Claimed CODE voting power', account: address, txHash });
+      await Promise.all([load(), loadVoter()]);
+    }
     catch (e: any) { alert('Claim failed: ' + friendlyTxError(e)); }
     finally { setBusy(null); closeModal(); }
   };
@@ -78,7 +83,11 @@ export function CommunityTab({ theme }: CommunityTabProps) {
     if (!isConnected || !walletClient) { connect(); return; }
     if (power <= 0) { alert('Claim CODE first to get voting power.'); return; }
     setBusy(`vote-${id}-${support}`);
-    try { await castVoteGov(walletClient, id, support); await Promise.all([load(), loadVoter()]); }
+    try {
+      const txHash = await castVoteGov(walletClient, id, support);
+      if (address) logHcsEvent({ type: 'Governance Vote', detail: `Voted ${support ? 'For' : 'Against'} proposal #${id}`, account: address, txHash });
+      await Promise.all([load(), loadVoter()]);
+    }
     catch (e: any) { alert('Vote failed: ' + friendlyTxError(e)); }
     finally { setBusy(null); closeModal(); }
   };
@@ -88,7 +97,11 @@ export function CommunityTab({ theme }: CommunityTabProps) {
     if (!title.trim()) { alert('Enter a proposal title.'); return; }
     if (power < threshold) { alert(`You need at least ${fmtCode(threshold)} CODE to propose.`); return; }
     setBusy('propose');
-    try { await proposeGov(walletClient, title.trim(), desc.trim()); setTitle(''); setDesc(''); await load(); }
+    try {
+      const txHash = await proposeGov(walletClient, title.trim(), desc.trim());
+      if (address) logHcsEvent({ type: 'Governance Proposal', detail: `Proposed: ${title.trim()}`, account: address, txHash });
+      setTitle(''); setDesc(''); await load();
+    }
     catch (e: any) { alert('Proposal failed: ' + friendlyTxError(e)); }
     finally { setBusy(null); closeModal(); }
   };

@@ -15,6 +15,7 @@ import {
   Sparkle,
   ArrowUpRight,
   ArrowDownLeft,
+  Broadcast,
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
@@ -41,6 +42,16 @@ interface Tx {
 const GREEN = '#10B981';
 const RED = '#EF4444';
 const PRIMARY = '#00A8E8';
+
+interface HcsEvent {
+  type: string;
+  detail: string;
+  account: string;
+  txHash?: string;
+  sequenceNumber: number;
+  consensusTimestamp: string;
+  ts: number;
+}
 
 const isProtocol = (type: string) => /p2p|vault|swap|faucet|router|contract/i.test(type);
 
@@ -85,6 +96,22 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
   }, [address]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Protocol event log — real HCS (Hedera Consensus Service) topic messages,
+  // written whenever a Vault/P2P/Governance transaction confirms. Read back
+  // through the Mirror Node, independent of any single API being up.
+  const [hcsEvents, setHcsEvents] = useState<HcsEvent[]>([]);
+  const [hcsTopicId, setHcsTopicId] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const loadHcs = () => fetch('/api/hcs/log?limit=15')
+      .then((r) => r.json())
+      .then((d) => { if (alive) { setHcsEvents(d.events || []); setHcsTopicId(d.topicId || null); } })
+      .catch(() => {});
+    loadHcs();
+    const t = setInterval(loadHcs, 20_000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
 
   const loadMore = async () => {
     if (!address || !next) return;
@@ -326,6 +353,62 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
           </button>
         </div>
       )}
+
+      {/* Protocol Event Log — real Hedera Consensus Service (HCS) messages */}
+      <div className={`w-full ${cardBg} border ${borderColor} rounded-[16px] shadow-sm overflow-hidden mb-8`}>
+        <div className="px-6 py-4 border-b border-transparent flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5">
+            <Broadcast size={18} weight="fill" style={{ color: PRIMARY }} />
+            <div>
+              <h2 className={`text-[15px] font-bold ${textMain}`}>Protocol Event Log</h2>
+              <p className={`text-[12px] ${textMuted}`}>Real HCS topic messages — Vault, P2P & governance actions, independently verifiable on Mirror Node.</p>
+            </div>
+          </div>
+          {hcsTopicId && (
+            <a
+              href={`https://hashscan.io/testnet/topic/${hcsTopicId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`text-[12px] font-semibold ${rowHover} border ${borderColor} rounded-lg px-3 py-1.5 flex items-center gap-1.5 transition-colors`}
+              style={{ color: PRIMARY }}
+            >
+              Topic {hcsTopicId} <ArrowSquareOut size={13} weight="bold" />
+            </a>
+          )}
+        </div>
+
+        {!hcsTopicId ? (
+          <div className={`px-6 py-8 text-center text-[13px] ${textMuted}`}>HCS topic not yet configured.</div>
+        ) : hcsEvents.length === 0 ? (
+          <div className={`px-6 py-8 text-center text-[13px] ${textMuted}`}>No protocol events logged yet — they'll appear here the moment a Vault, P2P, or governance transaction confirms.</div>
+        ) : (
+          <div className="flex flex-col">
+            {hcsEvents.map((e) => (
+              <div key={e.sequenceNumber} className={`flex items-center justify-between gap-4 px-6 py-3.5 border-b ${borderColor} last:border-b-0 ${rowHover} transition-colors text-[13px]`}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="inline-flex shrink-0 text-[11px] font-bold px-2 py-1 rounded-md" style={{ background: `${PRIMARY}18`, color: PRIMARY }}>{e.type}</span>
+                  <span className={`truncate ${textMain}`}>{e.detail}</span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className={`text-[12px] ${textMuted}`}>{fmtTime(Math.floor(Number(e.consensusTimestamp)))}</span>
+                  {e.txHash && (
+                    <a
+                      href={`https://hashscan.io/testnet/transaction/${e.txHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0"
+                      style={{ color: PRIMARY }}
+                      title="View transaction"
+                    >
+                      <ArrowSquareOut size={14} weight="bold" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

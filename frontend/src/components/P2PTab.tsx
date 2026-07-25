@@ -10,6 +10,7 @@ import { friendlyTxError } from '../lib/txErrors';
 import { createLimitOrder, marketFill, fetchBook, fillOrderById, cancelOrder, fetchBalance, fetchTrades, type OpenOrder, type Trade } from '../lib/p2p';
 import { getPair, fetchPairStats, formatVolume, formatPrice, type PairStat, type Timeframe } from '../lib/market';
 import { CTA_GREEN, CTA_RED, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
+import { logHcsEvent } from '../lib/hcsClient';
 
 interface P2PTabProps {
   theme: 'light' | 'dark';
@@ -120,7 +121,17 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
     setBusyId(o.id);
     try {
-      await fillOrderById(walletClient, o, o.buyRemaining);
+      const txHash = await fillOrderById(walletClient, o, o.buyRemaining);
+      if (address) {
+        logHcsEvent({
+          type: 'P2P Fill',
+          detail: `Filled order #${o.id} — paid ${fmtNum(o.buyRemaining)} ${o.buySym} for ${o.sellSym}`,
+          account: address,
+          txHash,
+          amount: String(o.buyRemaining),
+          sym: o.buySym,
+        });
+      }
       await loadOrders();
     } catch (e) {
       const err = e as any;
@@ -137,7 +148,15 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     if (!isConnected || !walletClient) { alert('Please connect your wallet first.'); return; }
     setBusyId(o.id);
     try {
-      await cancelOrder(walletClient, o.id);
+      const txHash = await cancelOrder(walletClient, o.id);
+      if (address) {
+        logHcsEvent({
+          type: 'P2P Cancel',
+          detail: `Cancelled order #${o.id} (${o.sellSym} → ${o.buySym})`,
+          account: address,
+          txHash,
+        });
+      }
       await loadOrders();
     } catch (e) {
       const err = e as any;
@@ -160,14 +179,25 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     if (!payNum || payNum <= 0) { alert('Enter an amount.'); return; }
     setTxState('pending');
     try {
+      let txHash: string;
       if (activeTradeMode === 'Limit') {
         const price = parseFloat(String(priceAmount).replace(/,/g, ''));
         if (!price || price <= 0) { alert('Enter a limit price.'); setTxState('idle'); return; }
-        await createLimitOrder(walletClient, selectedPairId, tradeSide, payNum, price);
+        txHash = await createLimitOrder(walletClient, selectedPairId, tradeSide, payNum, price);
       } else {
         const mktPrice = mkt?.price || 0;
         if (tradeSide === 'Long' && mktPrice <= 0) { alert('Live price unavailable — try again in a moment.'); setTxState('idle'); return; }
-        await marketFill(walletClient, selectedPairId, tradeSide, payNum);
+        txHash = await marketFill(walletClient, selectedPairId, tradeSide, payNum);
+      }
+      if (address) {
+        logHcsEvent({
+          type: activeTradeMode === 'Limit' ? 'P2P Limit Order' : 'P2P Market Order',
+          detail: `${tradeSide} ${selectedPairId} — paid ${fmtNum(payNum)} ${payTokenSym}`,
+          account: address,
+          txHash,
+          amount: String(payNum),
+          sym: payTokenSym,
+        });
       }
       setTxState('done');
       setPayAmount('');
