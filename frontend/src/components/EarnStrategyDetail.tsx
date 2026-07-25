@@ -73,10 +73,10 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
   // into the other side. Only tokens the vault accepts on-chain are offered.
   const zapTokens: StrategyToken[] = [token1, token2].filter((t) => acceptedSyms.has(t.sym));
   const [zapIdx, setZapIdx] = useState(0);
-  const [amt, setAmt] = useState(strategy.token1Amount);
+  const [amt, setAmt] = useState('');
   useEffect(() => {
     setZapIdx(0);
-    setAmt(strategy.token1Amount);
+    setAmt('');
   }, [strategy.pair]);
 
   const zapToken = zapTokens[Math.min(zapIdx, Math.max(0, zapTokens.length - 1))] || token1;
@@ -107,8 +107,7 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
 
   const selectZap = (i: number) => {
     setZapIdx(i);
-    const sym = zapTokens[i]?.sym;
-    setAmt(sym === token2.sym ? strategy.token2Amount : strategy.token1Amount);
+    setAmt('');
   };
 
   // Wallet + on-chain zap wiring.

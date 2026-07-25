@@ -29,9 +29,9 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
   const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Peer Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
-  const [payAmount, setPayAmount] = useState<string>('1500');
-  const [priceAmount, setPriceAmount] = useState<string>('0.0815');
-  const [posSize, setPosSize] = useState<number>(10);
+  const [payAmount, setPayAmount] = useState<string>('');
+  const [priceAmount, setPriceAmount] = useState<string>('');
+  const [posSize, setPosSize] = useState<number>(0);
 
   // On-chain P2P order wiring.
   const { isConnected, closeModal } = useWallet();
