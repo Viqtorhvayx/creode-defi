@@ -4,6 +4,22 @@ import React, { useEffect, useRef } from 'react';
 import { createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { fetchCandles, getPair, RESOLUTIONS, PYTH_FEED_IDS, type Timeframe, type Candle } from '../lib/market';
 import { subscribePythPrice } from '../lib/pythStream';
+import { pollPoolTick } from '../lib/poolStream';
+import { POOL_TICK_CONFIG } from '../lib/uniswapV3Pools';
+
+// Fold a new live tick into the candle array for the given timeframe bucket,
+// returning the updated array and the single bar to push into the chart
+// series. Shared by both live-tick sources (Pyth streaming, pool polling).
+function mergeTick(candles: Candle[], bucketSecs: number, price: number, time: number): { candles: Candle[]; bar: Candle } {
+  const bucket = Math.floor(time / bucketSecs) * bucketSecs;
+  const last = candles[candles.length - 1];
+  if (last && last.time === bucket) {
+    const bar: Candle = { ...last, high: Math.max(last.high, price), low: Math.min(last.low, price), close: price };
+    return { candles: [...candles.slice(0, -1), bar], bar };
+  }
+  const bar: Candle = { time: bucket, open: price, high: price, low: price, close: price };
+  return { candles: [...candles, bar], bar };
+}
 
 export interface MarketStats { price: number; change24h: number; high24h: number; low24h: number }
 
@@ -97,26 +113,34 @@ export const P2PCandleChart: React.FC<P2PCandleChartProps> = ({ theme, pairId, i
 
     const pair = getPair(pairId);
     const feedId = pair.source === 'pyth' && pair.pythSymbol ? PYTH_FEED_IDS[pair.pythSymbol] : null;
+    const hasPoolTick = pairId in POOL_TICK_CONFIG;
 
     load().then(() => {
       if (!alive) return;
+      const secs = RESOLUTIONS[interval].secs;
       if (feedId) {
-        // Live stream: bucket each tick into the active timeframe's candle
-        // width and push it straight into the chart — no more re-polling.
-        const secs = RESOLUTIONS[interval].secs;
+        // Live stream (Pyth Hermes): bucket each tick into the active
+        // timeframe's candle width and push it straight into the chart.
         teardown = subscribePythPrice(feedId, ({ price, time }) => {
           if (!alive || !seriesRef.current) return;
-          const bucket = Math.floor(time / secs) * secs;
-          const last = candles[candles.length - 1];
-          const bar: Candle = last && last.time === bucket
-            ? { ...last, high: Math.max(last.high, price), low: Math.min(last.low, price), close: price }
-            : { time: bucket, open: price, high: price, low: price, close: price };
-          candles = last && last.time === bucket ? [...candles.slice(0, -1), bar] : [...candles, bar];
+          const { candles: next, bar } = mergeTick(candles, secs, price, time);
+          candles = next;
+          seriesRef.current.update(bar as any);
+          applyStats();
+        });
+      } else if (hasPoolTick) {
+        // No push feed (GeckoTerminal-sourced), but reading the pool's own
+        // Swap events directly is far faster than re-fetching a GeckoTerminal
+        // snapshot every 15-30s.
+        teardown = pollPoolTick(pairId, ({ price, time }) => {
+          if (!alive || !seriesRef.current) return;
+          const { candles: next, bar } = mergeTick(candles, secs, price, time);
+          candles = next;
           seriesRef.current.update(bar as any);
           applyStats();
         });
       } else {
-        // No live feed for this pair — keep polling (intraday frames faster).
+        // Fallback for any pair without a configured live source.
         const period = interval === '15m' || interval === '1H' ? 15000 : 30000;
         const t = setInterval(load, period);
         teardown = () => clearInterval(t);
