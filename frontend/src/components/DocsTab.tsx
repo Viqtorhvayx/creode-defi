@@ -160,7 +160,7 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
             <Li>The <B>SwapRouter</B> (a constant-product AMM) swaps ~50% into the pair token to build a ~50/50 position.</Li>
             <Li>The balanced position is deposited into <B>CreodeYieldVaultV3</B>, which accrues yield.</Li>
           </ol>
-          <P>You can <B>Compound</B> accrued rewards back into your position at any time, <B>Supply More</B>, or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
+          <P>Every position auto-compounds by default — no button to click. You can <B>Supply More</B> or <B>Withdraw</B> the full position on demand. Live APY and TVL on each strategy are derived from real on-chain vault custody and prices.</P>
 
           <Callout icon={<ArrowsClockwise size={18} weight="fill" style={{ color: PRIMARY }} className="shrink-0 mt-0.5" />}>
             On <B>testnet</B>, the zap swap runs through Creode's own in-house constant-product AMM as a stand-in, so the full deposit → zap → compound → withdraw flow can be demonstrated end-to-end without depending on external liquidity. On <B>mainnet</B>, this step is planned to route through real external Hedera DEX liquidity (e.g. SaucerSwap) so yield is sourced from genuine market volume rather than a protocol-seeded pool.
@@ -168,15 +168,15 @@ export const DocsTab: React.FC<Props> = ({ theme, focus = 'overview' }) => {
 
           <h3 className={`text-[16px] font-bold ${textMain} mt-6 mb-2 flex items-center gap-2`}><ArrowsClockwise size={18} weight="bold" style={{ color: PRIMARY }} /> Auto-compounding (via Hedera HIP-1215)</h3>
           <div className="flex flex-wrap gap-2 mb-3"><Pill color={GREEN}>Live on-chain</Pill><Pill>Keeperless</Pill></div>
-          <P>You can compound by hand any time with the <B>Compound</B> button, or flip <B>Auto: On</B> on any position and let the protocol do it for you fully on-chain, using <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A>'s <B>generalized scheduled contract calls</B>. HIP-1215 lets a contract schedule its <B>own future calls</B> through the Hedera Schedule Service, meaning native on-chain "cron" with no off-chain keeper or bot.</P>
+          <P>Every position is auto-compounded for you fully on-chain — nothing to toggle, using <A href="https://hips.hedera.com/hip/hip-1215">Hedera HIP-1215</A>'s <B>generalized scheduled contract calls</B>. HIP-1215 lets a contract schedule its <B>own future calls</B> through the Hedera Schedule Service, meaning native on-chain "cron" with no off-chain keeper or bot.</P>
           <ul className="list-disc pl-5 space-y-1.5 mb-3">
-            <Li><B>You enroll</B> a position with one cheap transaction (<Code>Auto: On</Code>), with no scheduling cost to you.</Li>
+            <Li>The moment you deposit, your position is <B>enrolled automatically</B> with one cheap background transaction — no scheduling cost to you and nothing to click.</Li>
             <Li>The <B>CreodeCompoundScheduler</B> runs a self-perpetuating tick: each scheduled tick compounds every enrolled position <B>and schedules the next tick itself</B>, so the loop continues with no keeper.</Li>
             <Li>Scheduling cost is paid <B>once by the protocol</B> and amortized across all users, instead of each user paying to schedule their own calls.</Li>
             <Li>The Schedule Service requires each scheduled second to be strictly in the future, closing off infinite-loop abuse.</Li>
           </ul>
           <Callout icon={<Sparkle size={18} weight="fill" style={{ color: GREEN }} className="shrink-0 mt-0.5" />} color={GREEN}>
-            This is <B>live on Hedera testnet</B> and verified end-to-end. Scheduled ticks execute and re-arm themselves autonomously on-chain. Toggle <B>Auto: On</B> next to any position in the Earn tab.
+            This is <B>live on Hedera testnet</B> and verified end-to-end. Scheduled ticks execute and re-arm themselves autonomously on-chain, with every deposit auto-enrolled by default.
           </Callout>
         </>
       ),
