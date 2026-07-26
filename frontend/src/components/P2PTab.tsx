@@ -27,7 +27,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeInterval, setActiveInterval] = useState<Timeframe>('1H');
   const [selectedPairId, setSelectedPairId] = useState<string>('HBAR-USDC');
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
-  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Limit Order'>('Orders');
+  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Limit Orders'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('');
   const [priceAmount, setPriceAmount] = useState<string>('');
@@ -72,7 +72,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     return () => { alive = false; };
   }, [isConnected, address, payTokenSym]);
 
-  // Live "Open Limit Order" book straight from the CreodeP2P contract.
+  // Live "Open Limit Orders" book straight from the CreodeP2P contract.
   const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -407,7 +407,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col min-h-[300px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             {/* Tabs */}
             <div className={`flex items-center px-3 pt-4 border-b ${borderColor}`}>
-              {['Orders', 'Trades', 'Open Limit Order'].map((tab) => (
+              {['Orders', 'Trades', 'Open Limit Orders'].map((tab) => (
                 <div 
                   key={tab}
                   className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-[#00A8E8] font-medium' : textMuted}`}
@@ -493,7 +493,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </table>
               )}
 
-              {activeOrderTab === 'Open Limit Order' && (
+              {activeOrderTab === 'Open Limit Orders' && (
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className={textMuted}>
