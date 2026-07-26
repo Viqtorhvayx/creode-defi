@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
-import { fetchCandles, type Timeframe, type Candle } from '../lib/market';
+import { fetchCandles, getPair, RESOLUTIONS, PYTH_FEED_IDS, type Timeframe, type Candle } from '../lib/market';
+import { subscribePythPrice } from '../lib/pythStream';
 
 export interface MarketStats { price: number; change24h: number; high24h: number; low24h: number }
 
@@ -67,27 +68,62 @@ export const P2PCandleChart: React.FC<P2PCandleChartProps> = ({ theme, pairId, i
     return () => { window.removeEventListener('resize', handleResize); chart.remove(); chartRef.current = null; seriesRef.current = null; };
   }, [theme]);
 
-  // Load + live-poll candles whenever the pair or interval changes.
+  // Load history, then either stream live ticks (Pyth-sourced "majors") or
+  // fall back to polling a fresh snapshot (GeckoTerminal-sourced pairs, which
+  // have no live push feed) whenever the pair or interval changes.
   useEffect(() => {
     let alive = true;
     let fitted = false;
+    let candles: Candle[] = [];
+    let teardown: (() => void) | null = null;
+
+    const applyStats = () => {
+      const stats = computeStats(candles);
+      if (stats && onStatsRef.current) onStatsRef.current(stats);
+    };
+
     const load = async () => {
       try {
-        const candles = await fetchCandles(pairId, interval);
-        if (!alive || !seriesRef.current || candles.length === 0) return;
+        const fresh = await fetchCandles(pairId, interval);
+        if (!alive || !seriesRef.current || fresh.length === 0) return;
+        candles = fresh;
         seriesRef.current.setData(candles as any);
         if (!fitted) { chartRef.current?.timeScale().fitContent(); fitted = true; }
-        const stats = computeStats(candles);
-        if (stats && onStatsRef.current) onStatsRef.current(stats);
+        applyStats();
       } catch (err) {
         console.error('[P2PCandleChart] load failed:', err);
       }
     };
-    load();
-    // Movement: intraday frames refresh fast, higher frames slower.
-    const period = interval === '15m' || interval === '1H' ? 15000 : 30000;
-    const t = setInterval(load, period);
-    return () => { alive = false; clearInterval(t); };
+
+    const pair = getPair(pairId);
+    const feedId = pair.source === 'pyth' && pair.pythSymbol ? PYTH_FEED_IDS[pair.pythSymbol] : null;
+
+    load().then(() => {
+      if (!alive) return;
+      if (feedId) {
+        // Live stream: bucket each tick into the active timeframe's candle
+        // width and push it straight into the chart — no more re-polling.
+        const secs = RESOLUTIONS[interval].secs;
+        teardown = subscribePythPrice(feedId, ({ price, time }) => {
+          if (!alive || !seriesRef.current) return;
+          const bucket = Math.floor(time / secs) * secs;
+          const last = candles[candles.length - 1];
+          const bar: Candle = last && last.time === bucket
+            ? { ...last, high: Math.max(last.high, price), low: Math.min(last.low, price), close: price }
+            : { time: bucket, open: price, high: price, low: price, close: price };
+          candles = last && last.time === bucket ? [...candles.slice(0, -1), bar] : [...candles, bar];
+          seriesRef.current.update(bar as any);
+          applyStats();
+        });
+      } else {
+        // No live feed for this pair — keep polling (intraday frames faster).
+        const period = interval === '15m' || interval === '1H' ? 15000 : 30000;
+        const t = setInterval(load, period);
+        teardown = () => clearInterval(t);
+      }
+    });
+
+    return () => { alive = false; teardown?.(); };
   }, [pairId, interval]);
 
   return <div className="w-full h-full relative" ref={chartContainerRef} />;

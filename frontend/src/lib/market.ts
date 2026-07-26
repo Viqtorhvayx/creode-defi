@@ -51,6 +51,16 @@ export const PAIRS: MarketPair[] = [
 
 export const getPair = (id: string): MarketPair => PAIRS.find((p) => p.id === id) || PAIRS[0];
 
+// Pyth Hermes price-feed ids (verified against https://hermes.pyth.network/v2/price_feeds)
+// for the "majors" pairs, keyed by the same pythSymbol string already on each
+// pair. Used to open a live price stream instead of polling for a snapshot.
+export const PYTH_FEED_IDS: Record<string, string> = {
+  'Crypto.HBAR/USD': '3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd',
+  'Crypto.USDT/USD': '2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b',
+  'Crypto.WBTC/USD': 'c9d8b075a5c69303365ae23633d4e085199bf5c520a3b90fed1322a0342ffc33',
+  'Crypto.WETH/USD': '9d4294bbcd1174d6f2003ec365831e64cc31d9f6f15a2b85399db8d5000960f6',
+};
+
 // Timeframe → upstream resolution. secs = candle width in seconds.
 export const RESOLUTIONS: Record<Timeframe, { pyth: string; geckoTf: 'minute' | 'hour' | 'day'; geckoAgg: number; secs: number }> = {
   '15m': { pyth: '15', geckoTf: 'minute', geckoAgg: 15, secs: 900 },
