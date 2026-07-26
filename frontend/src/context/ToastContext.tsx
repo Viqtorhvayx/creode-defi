@@ -53,7 +53,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           return (
             <div
               key={toast.id}
-              className="bg-white/95 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl p-4 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 min-w-[320px] max-w-[380px]"
+              className="glass-panel-light dark:glass-panel !border-black/10 dark:!border-white/10 shadow-2xl p-4 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 min-w-[320px] max-w-[380px]"
             >
               <div className={`${iconBg} p-2 rounded-full shrink-0`}>
                 <Icon className={iconColor} size={20} />
