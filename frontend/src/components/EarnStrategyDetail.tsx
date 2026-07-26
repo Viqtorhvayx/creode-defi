@@ -5,6 +5,7 @@ import { useWallet } from '../context/WalletContext';
 import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
 import { STRATEGIES, zapIn, quoteSwap } from '../lib/yieldVault';
+import { ensureAutoEnrolled } from '../lib/scheduler';
 import { TokenLogo } from './TokenLogo';
 import { CTA_BLUE, CTA_GREEN_SOLID, TOKEN_PILL } from '../lib/ui';
 
@@ -129,6 +130,11 @@ export const EarnStrategyDetail: React.FC<EarnStrategyDetailProps> = ({ theme, s
       await zapIn(walletClient, meta.id, metaTok, amt.replace(/,/g, ''));
       setZapState('done');
       setTimeout(() => setZapState('idle'), 4000);
+      // Deposits are hands-off by default now: enroll this position into
+      // on-chain auto-compounding in the background. The deposit already
+      // succeeded, so this never blocks or surfaces an error to the user —
+      // it just retries silently if the enroll tx has a transient hiccup.
+      ensureAutoEnrolled(walletClient, meta.id);
     } catch (e) {
       const err = e as any;
       console.error('[Zap] failed:', err);

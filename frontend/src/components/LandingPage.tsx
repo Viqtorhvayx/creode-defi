@@ -215,7 +215,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunch }) => {
             <span className="lp-tag">Keeperless · HIP-1215</span>
             <ScrollWords as="h2" text="Auto-compounding that runs itself." className="lp-h2 mt-4" />
             <p className="mt-4 max-w-[64ch] text-[15px] leading-relaxed text-white/55">
-              Turn on auto-compound and Creode compounds your position on-chain, with no bots and no keepers.
+              Every position compounds itself on-chain by default, with no bots and no keepers.
               Powered by Hedera HIP-1215 scheduled contract calls: each tick compounds every enrolled
               position and schedules the next one itself.
             </p>

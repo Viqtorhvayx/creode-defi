@@ -38,3 +38,21 @@ export async function unenrollAuto(walletClient: any, strategyId: number): Promi
   await tx.wait();
   return tx.hash;
 }
+
+/** Every deposit is auto-compounded by default now — call this right after a
+ *  deposit/zap succeeds. Retries silently a few times on failure (e.g. a
+ *  transient RPC hiccup); the deposit itself already succeeded, so this must
+ *  never surface an error or block the caller. Never throws. */
+export async function ensureAutoEnrolled(walletClient: any, strategyId: number, attempts = 3): Promise<void> {
+  const address = walletClient?.account?.address;
+  if (!address) return;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      if (await isAutoEnrolled(address, strategyId)) return;
+      await enrollAuto(walletClient, strategyId);
+      return;
+    } catch {
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+}
