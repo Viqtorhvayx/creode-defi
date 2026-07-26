@@ -44,6 +44,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [pairStats, setPairStats] = useState<Record<string, PairStat>>({});
   const [mkt, setMkt] = useState<MarketStats | null>(null); // live price/high/low/change from the chart feed
   const stat = pairStats[selectedPairId];
+  // Clear stale price/high/low from the previous pair the instant the user
+  // switches markets — otherwise they'd linger (showing the old pair's
+  // numbers under the new pair's label) until the chart's fresh fetch resolves.
+  useEffect(() => { setMkt(null); }, [selectedPairId]);
   // The pair's base symbol (HBAR for HBAR-USDC, WBTC for WBTC-USDC, …), used
   // for the base-asset USD fallback price below.
   const tradeSym = pair.base;
