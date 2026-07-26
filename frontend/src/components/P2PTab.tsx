@@ -411,7 +411,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
               {['Orders', 'Trades', 'Open Peer Orders'].map((tab) => (
                 <div 
                   key={tab}
-                  className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
+                  className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-[#00A8E8] font-medium' : textMuted}`}
                   onClick={() => setActiveOrderTab(tab as any)}
                 >
                   {tab}
@@ -452,7 +452,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.side === 'Short' ? o.sellRemaining : o.buyRemaining)} {pair.base}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.price)} {pair.quote}</td>
-                        <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
+                        <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#00A8E8] font-bold tracking-tight">Open</span></td>
                         <td className="py-3 px-4 font-bold tracking-tight">
                           <button onClick={() => cancelMyOrder(o)} disabled={busyId === o.id} className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1">
                             {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
@@ -544,7 +544,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">${fmtNum(o.price)}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">{fmtNum(baseAvail)} {baseSym}</td>
-                          <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
+                          <td className="py-3 px-4 text-[#00A8E8] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
                           <td className="py-3 px-4 text-right">
                             {mine ? (
                               <button
@@ -559,7 +559,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                               <button
                                 onClick={() => takeOrder(o)}
                                 disabled={busyId === o.id}
-                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                               >
                                 {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
                                 Fill
