@@ -687,7 +687,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                             <TokenLogo sym={token} size={24} />
                             <div className="flex flex-col">
                               <span className={`text-[13px] font-bold leading-tight ${activeToken === token ? 'text-[#00A8E8]' : 'text-slate-900 dark:text-white group-hover:text-[#00A8E8] dark:group-hover:text-[#00A8E8]'}`}>{token}</span>
-                              <span className="text-[11px] font-medium leading-tight text-slate-500 dark:text-white/40">{TOKEN_DESCRIPTIONS[token] ?? ''}</span>
+                              <span className="text-[9px] font-medium leading-tight text-slate-500 dark:text-white/40">{TOKEN_DESCRIPTIONS[token] ?? ''}</span>
                             </div>
                           </div>
 
