@@ -16,6 +16,8 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Broadcast,
+  CaretLeft,
+  CaretRight,
 } from '@phosphor-icons/react';
 import { useAccount } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
@@ -70,23 +72,29 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
   const { isConnected } = useWallet();
   const { address } = useAccount();
 
-  const [txs, setTxs] = useState<Tx[]>([]);
+  // Paged history: each entry in `pages` is one fetched batch (25 txs) from
+  // the Mirror Node's cursor-based pagination. Pages already fetched are kept
+  // in memory, so paging Back is instant; paging past the last cached page
+  // fetches the next batch using the cursor the API returned alongside it.
+  const [pages, setPages] = useState<Tx[][]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [next, setNext] = useState<string | null>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
   const [accountId, setAccountId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!address) { setTxs([]); setAccountId(null); return; }
+    if (!address) { setPages([]); setPageIndex(0); setNextCursor(null); setAccountId(null); return; }
     setLoading(true);
     try {
       const res = await fetch(`/api/activity/${address}`);
       const data = await res.json();
-      setTxs(data.transactions || []);
-      setNext(data.next || null);
+      setPages([data.transactions || []]);
+      setPageIndex(0);
+      setNextCursor(data.next || null);
       setAccountId(data.accountId || null);
     } catch (e) {
       console.error('[Activity] load failed:', e);
@@ -113,20 +121,28 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
     return () => { alive = false; clearInterval(t); };
   }, []);
 
-  const loadMore = async () => {
-    if (!address || !next) return;
-    setLoadingMore(true);
+  const isLastCachedPage = pageIndex === pages.length - 1;
+  const canGoNext = !isLastCachedPage || !!nextCursor;
+  const canGoPrev = pageIndex > 0;
+
+  const goNext = async () => {
+    if (!address || !canGoNext) return;
+    if (!isLastCachedPage) { setPageIndex((i) => i + 1); return; }
+    setPageLoading(true);
     try {
-      const res = await fetch(`/api/activity/${address}?before=${encodeURIComponent(next)}`);
+      const res = await fetch(`/api/activity/${address}?before=${encodeURIComponent(nextCursor!)}`);
       const data = await res.json();
-      setTxs((prev) => [...prev, ...(data.transactions || [])]);
-      setNext(data.next || null);
+      setPages((prev) => [...prev, data.transactions || []]);
+      setNextCursor(data.next || null);
+      setPageIndex((i) => i + 1);
     } catch (e) {
-      console.error('[Activity] load more failed:', e);
+      console.error('[Activity] next page failed:', e);
     } finally {
-      setLoadingMore(false);
+      setPageLoading(false);
     }
   };
+
+  const goPrev = () => { if (canGoPrev) setPageIndex((i) => i - 1); };
 
   const copy = (text: string) => {
     navigator.clipboard?.writeText(text);
@@ -134,11 +150,13 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
     setTimeout(() => setCopied(null), 1500);
   };
 
+  const txs = pages[pageIndex] || [];
   const q = query.trim().toLowerCase();
   const filtered = q
     ? txs.filter((t) => t.txId.toLowerCase().includes(q) || t.type.toLowerCase().includes(q) || t.detail.toLowerCase().includes(q) || (t.amount?.sym.toLowerCase().includes(q)))
     : txs;
-  const totalCode = txs.reduce((s, t) => s + (t.reward || 0), 0);
+  const totalCode = pages.flat().reduce((s, t) => s + (t.reward || 0), 0);
+  const totalLoadedTxs = pages.reduce((s, p) => s + p.length, 0);
 
   const cols = 'grid-cols-1 md:grid-cols-[1.2fr_1fr_1.3fr_1.1fr_0.9fr_1.1fr]';
 
@@ -233,7 +251,7 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
             <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: `${PRIMARY}14` }}>
               <Receipt size={26} weight="regular" style={{ color: PRIMARY }} />
             </div>
-            <span className="text-[14px] font-medium">{txs.length === 0 ? 'No transactions found for this wallet yet.' : 'No transactions match your search.'}</span>
+            <span className="text-[14px] font-medium">{totalLoadedTxs === 0 ? 'No transactions found for this wallet yet.' : 'No transactions match your search.'}</span>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -340,16 +358,29 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ theme }) => {
         )}
       </div>
 
-      {/* Load more */}
-      {isConnected && next && !loading && (
-        <div className="w-full flex items-center justify-center pb-8 -mt-2">
+      {/* Pagination */}
+      {isConnected && !loading && totalLoadedTxs > 0 && (canGoPrev || canGoNext) && (
+        <div className="w-full flex items-center justify-center gap-3 pb-8 -mt-2">
           <button
-            onClick={loadMore}
-            disabled={loadingMore}
-            className={`flex items-center gap-2 ${cardBg} border ${borderColor} rounded-lg px-6 py-2.5 text-[13px] font-semibold ${rowHover} transition-colors disabled:opacity-60`}
+            onClick={goPrev}
+            disabled={!canGoPrev || pageLoading}
+            title="Previous page"
+            className={`flex items-center justify-center w-9 h-9 rounded-lg border ${borderColor} ${cardBg} ${rowHover} transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}
             style={{ color: PRIMARY }}
           >
-            {loadingMore ? <><CircleNotch size={14} weight="bold" className="animate-spin" /> Loading…</> : 'Load more'}
+            <CaretLeft size={15} weight="bold" />
+          </button>
+          <span className={`text-[13px] font-semibold tabular-nums ${textMuted} min-w-[64px] text-center`}>
+            {pageLoading ? <CircleNotch size={14} weight="bold" className="animate-spin inline" /> : `${pageIndex + 1} / ${pages.length}${nextCursor ? '+' : ''}`}
+          </span>
+          <button
+            onClick={goNext}
+            disabled={!canGoNext || pageLoading}
+            title="Next page"
+            className={`flex items-center justify-center w-9 h-9 rounded-lg border ${borderColor} ${cardBg} ${rowHover} transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}
+            style={{ color: PRIMARY }}
+          >
+            <CaretRight size={15} weight="bold" />
           </button>
         </div>
       )}
