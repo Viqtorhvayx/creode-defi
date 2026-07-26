@@ -4,7 +4,7 @@ import { MarketSelector } from './MarketSelector';
 import { TokenLogo } from './TokenLogo';
 import { OrderBook } from './OrderBook';
 import { CircleNotch, CheckCircle } from '@phosphor-icons/react';
-import { useWalletClient, useAccount } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import { useWallet } from '../context/WalletContext';
 import { useToast } from '../context/ToastContext';
 import { friendlyTxError } from '../lib/txErrors';
@@ -27,17 +27,16 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
   const [activeInterval, setActiveInterval] = useState<Timeframe>('1H');
   const [selectedPairId, setSelectedPairId] = useState<string>('HBAR-USDC');
   const [activeChartTab, setActiveChartTab] = useState<'Market Overview' | 'Order Book'>('Market Overview');
-  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Peer Orders'>('Orders');
+  const [activeOrderTab, setActiveOrderTab] = useState<'Orders' | 'Trades' | 'Open Limit Order'>('Orders');
   const [tradeSide, setTradeSide] = useState<'Long' | 'Short'>('Long');
   const [payAmount, setPayAmount] = useState<string>('');
   const [priceAmount, setPriceAmount] = useState<string>('');
   const [posSize, setPosSize] = useState<number>(0);
 
   // On-chain P2P order wiring.
-  const { isConnected, closeModal } = useWallet();
+  const { isConnected, closeModal, address } = useWallet();
   const { showToast } = useToast();
   const { data: walletClient } = useWalletClient();
-  const { address } = useAccount();
   const [txState, setTxState] = useState<'idle' | 'pending' | 'done'>('idle');
 
   // Selected market + real price data.
@@ -73,7 +72,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
     return () => { alive = false; };
   }, [isConnected, address, payTokenSym]);
 
-  // Live "Open Peer Orders" book straight from the CreodeP2P contract.
+  // Live "Open Limit Order" book straight from the CreodeP2P contract.
   const [openOrders, setOpenOrders] = useState<OpenOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -408,10 +407,10 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
           <div className={`${cardBg} border ${borderColor} rounded-[16px] flex flex-col min-h-[300px] overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_15px_rgba(37,99,235,0.05)]`}>
             {/* Tabs */}
             <div className={`flex items-center px-3 pt-4 border-b ${borderColor}`}>
-              {['Orders', 'Trades', 'Open Peer Orders'].map((tab) => (
+              {['Orders', 'Trades', 'Open Limit Order'].map((tab) => (
                 <div 
                   key={tab}
-                  className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-white font-medium' : textMuted}`}
+                  className={`px-3 pb-3 text-sm cursor-pointer relative ${activeOrderTab === tab ? 'text-[#00A8E8] font-medium' : textMuted}`}
                   onClick={() => setActiveOrderTab(tab as any)}
                 >
                   {tab}
@@ -452,7 +451,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                         <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.side === 'Short' ? o.sellRemaining : o.buyRemaining)} {pair.base}</td>
                         <td className="py-3 px-4 font-bold tracking-tight tabular-nums">{formatPrice(o.price)} {pair.quote}</td>
-                        <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#3b82f6] font-bold tracking-tight">Open</span></td>
+                        <td className="py-3 px-4 font-bold tracking-tight"><span className="text-[#00A8E8] font-bold tracking-tight">Open</span></td>
                         <td className="py-3 px-4 font-bold tracking-tight">
                           <button onClick={() => cancelMyOrder(o)} disabled={busyId === o.id} className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1">
                             {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
@@ -494,7 +493,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                 </table>
               )}
 
-              {activeOrderTab === 'Open Peer Orders' && (
+              {activeOrderTab === 'Open Limit Order' && (
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className={textMuted}>
@@ -544,7 +543,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                           <td className={`py-3 px-4 font-bold tracking-tight ${o.side === 'Short' ? 'text-[#EF4444]' : 'text-[#10B981]'}`}>{o.side}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">${fmtNum(o.price)}</td>
                           <td className="py-3 px-4 text-right font-bold tracking-tight">{fmtNum(baseAvail)} {baseSym}</td>
-                          <td className="py-3 px-4 text-[#3b82f6] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
+                          <td className="py-3 px-4 text-[#00A8E8] font-bold tracking-tight">{fmtNum(o.buyRemaining)} {o.buySym}</td>
                           <td className="py-3 px-4 text-right">
                             {mine ? (
                               <button
@@ -559,7 +558,7 @@ export const P2PTab: React.FC<P2PTabProps> = ({ theme }) => {
                               <button
                                 onClick={() => takeOrder(o)}
                                 disabled={busyId === o.id}
-                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                                className="text-[10px] font-bold px-3 py-1.5 rounded bg-transparent border border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                               >
                                 {busyId === o.id ? <CircleNotch size={11} weight="bold" className="animate-spin" /> : null}
                                 Fill
