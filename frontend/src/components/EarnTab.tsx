@@ -7,13 +7,11 @@ import { EarnPositions } from './EarnPositions';
 import { fetchVaultTokenBalances } from '../lib/yieldVault';
 import { CTA_BLUE } from '../lib/ui';
 import { 
-  ChartLineUp, 
-  Stack, 
+  ChartLineUp,
+  Stack,
   Info,
   Star,
   Drop,
-  CaretLeft,
-  CaretRight,
   CaretDown,
   GridFour,
   List
@@ -116,8 +114,8 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     riskTextClass: 'text-emerald-500 dark:text-emerald-500',
   };
   const roseRisk = {
-    riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
-    riskTextClass: 'text-rose-600 dark:text-rose-500',
+    riskBgClass: 'bg-[#EF4444]/10',
+    riskTextClass: 'text-[#EF4444]',
   };
   const conservativeRisk = {
     riskBgClass: 'bg-[#00A8E8]/10',
@@ -139,6 +137,15 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     token1Amount: '5,000.00', token1Usd: '$425.00',
     token2Amount: '12,450.00', token2Usd: '$425.00',
     dailyEarnings: '+14.2 HBAR / +35.4 SAUCE',
+  };
+
+  // A stablecoin strategy, also shown as the 6th Yield Hub card.
+  const usdcUsdtStrategy = {
+    token1: usdc, token2: usdt, pair: 'USDC-USDT', riskLevel: 'Conservative', apy: '12.78%', tvl: '$4.2M',
+    ...conservativeRisk,
+    token1Amount: '5,000.00', token1Usd: '$5,000.00',
+    token2Amount: '5,000.00', token2Usd: '$5,000.00',
+    dailyEarnings: '+1.7 USDC / +1.7 USDT',
   };
 
   const strategies = [
@@ -164,19 +171,20 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
       dailyEarnings: '+1.7 HBAR / +0.000041 WETH',
     },
     {
-      token1: hbar, token2: usdc, pair: 'HBAR-USDC', riskLevel: 'Balanced', apy: '10.2%', tvl: '$6.8M',
-      ...emeraldRisk,
+      token1: hbar, token2: usdc, pair: 'HBAR-USDC', riskLevel: 'Conservative', apy: '10.2%', tvl: '$6.8M',
+      ...conservativeRisk,
       token1Amount: '5,000.00', token1Usd: '$425.00',
       token2Amount: '425.00', token2Usd: '$425.00',
       dailyEarnings: '+1.5 HBAR / +0.12 USDC',
     },
     {
-      token1: sauce, token2: usdc, pair: 'SAUCE-USDC', riskLevel: 'Balanced', apy: '18.5%', tvl: '$2.9M',
-      ...emeraldRisk,
+      token1: sauce, token2: usdc, pair: 'SAUCE-USDC', riskLevel: 'Aggressive', apy: '18.5%', tvl: '$2.9M',
+      ...roseRisk,
       token1Amount: '12,450.00', token1Usd: '$425.00',
       token2Amount: '425.00', token2Usd: '$425.00',
       dailyEarnings: '+21.5 SAUCE / +0.21 USDC',
     },
+    usdcUsdtStrategy,
   ];
 
   // The user's open zap positions (illustrative on testnet).
@@ -195,15 +203,6 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     },
   ];
 
-  // A stablecoin strategy that lives only in My Positions (Supply More target).
-  const usdcUsdtStrategy = {
-    token1: usdc, token2: usdt, pair: 'USDC-USDT', riskLevel: 'Conservative', apy: '12.78%', tvl: '$4.2M',
-    ...conservativeRisk,
-    token1Amount: '5,000.00', token1Usd: '$5,000.00',
-    token2Amount: '5,000.00', token2Usd: '$5,000.00',
-    dailyEarnings: '+1.7 USDC / +1.7 USDT',
-  };
-
   // Metadata (logos, venue, risk) for every on-chain pair, keyed by name —
   // used to render live My Positions rows.
   const pairInfo: Record<string, any> = {
@@ -211,14 +210,14 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     'HBAR-WBTC': { token1: hbar, token2: wbtc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
     'HBAR-DOVU': { token1: hbar, token2: dovu, venue: 'DOVU Finance', riskLevel: 'Aggressive', ...roseRisk },
     'HBAR-WETH': { token1: hbar, token2: weth, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
-    'HBAR-USDC': { token1: hbar, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
-    'SAUCE-USDC': { token1: sauce, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Balanced', ...emeraldRisk },
+    'HBAR-USDC': { token1: hbar, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Conservative', ...conservativeRisk },
+    'SAUCE-USDC': { token1: sauce, token2: usdc, venue: 'SaucerSwap V2', riskLevel: 'Aggressive', ...roseRisk },
     'USDC-USDT': { token1: usdc, token2: usdt, venue: 'SaucerSwap V2', riskLevel: 'Conservative', ...conservativeRisk },
   };
 
   // Open a pair's zap detail from a "Supply More" click.
   const onSupplyMore = (pair: string) => {
-    const all = [featuredStrategy, ...strategies, usdcUsdtStrategy];
+    const all = [featuredStrategy, ...strategies];
     const found = all.find((s) => s.pair === pair);
     if (found) setSelectedStrategy(found);
   };
@@ -571,33 +570,6 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
               ))}
             </div>
           )}
-
-          {/* Pagination */}
-          <div className="flex flex-col items-center justify-center mt-2 mb-4">
-            <span className="text-[12px] font-semibold text-slate-500 dark:text-white/60 mb-4">
-              Showing 1 to 6 of 12 strategies
-            </span>
-            <div className="flex items-center gap-2">
-              <button className={`w-8 h-8 flex items-center justify-center rounded-md border transition-colors ${
-                theme === 'dark' ? 'border-white/10 bg-[#0F141A] text-white/50 hover:bg-white/5' : 'border-[#EAECEF] bg-white text-slate-400 hover:bg-slate-50'
-              }`}>
-                <CaretLeft size={14} weight="bold" />
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-[#00A8E8] text-white font-bold text-[13px]">
-                1
-              </button>
-              <button className={`w-8 h-8 flex items-center justify-center rounded-md border transition-colors ${
-                theme === 'dark' ? 'border-white/10 bg-[#0F141A] text-slate-400 hover:bg-white/5' : 'border-[#EAECEF] bg-white text-slate-700 hover:bg-slate-50'
-              } font-bold text-[13px]`}>
-                2
-              </button>
-              <button className={`w-8 h-8 flex items-center justify-center rounded-md border transition-colors ${
-                theme === 'dark' ? 'border-white/10 bg-[#0F141A] text-slate-400 hover:bg-white/5' : 'border-[#EAECEF] bg-white text-slate-700 hover:bg-slate-50'
-              }`}>
-                <CaretRight size={14} weight="bold" />
-              </button>
-            </div>
-          </div>
         </>
       ) : activeTab === 'My Positions' ? (
         <EarnPositions theme={theme} positions={positions} pairInfo={pairInfo} priceUsd={priceUsd} onSupplyMore={onSupplyMore} />
