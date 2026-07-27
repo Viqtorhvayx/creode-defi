@@ -114,8 +114,8 @@ export const EarnTab: React.FC<EarnTabProps> = ({ theme }) => {
     riskTextClass: 'text-emerald-500 dark:text-emerald-500',
   };
   const roseRisk = {
-    riskBgClass: theme === 'dark' ? 'bg-rose-500/10' : 'bg-rose-50',
-    riskTextClass: 'text-rose-600 dark:text-rose-500',
+    riskBgClass: 'bg-[#EF4444]/10',
+    riskTextClass: 'text-[#EF4444]',
   };
   const conservativeRisk = {
     riskBgClass: 'bg-[#00A8E8]/10',
