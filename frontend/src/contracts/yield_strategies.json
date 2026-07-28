@@ -35,18 +35,18 @@
       }
     },
     "HBAR-DOVU": {
-      "id": 2,
+      "id": 7,
       "apyBps": 6210,
-      "single": true,
+      "single": false,
       "tokenA": {
         "sym": "HBAR",
         "address": "0x0000000000000000000000000000000000000000",
         "decimals": 18
       },
       "tokenB": {
-        "sym": "HBAR",
-        "address": "0x0000000000000000000000000000000000000000",
-        "decimals": 18
+        "sym": "DOVU",
+        "address": "0x00000000000000000000000000000000009343F4",
+        "decimals": 6
       }
     },
     "HBAR-WETH": {
