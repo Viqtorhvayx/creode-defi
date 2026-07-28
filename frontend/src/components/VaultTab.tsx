@@ -179,7 +179,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
   const [jamLogoUrlSmall, setJamLogoUrlSmall] = useState<string | null>('/tokens/jam.png');
   const [isLogosLoading, setIsLogosLoading] = useState<boolean>(true);
 
-  const { balance, isConnected, address, closeModal } = useWallet();
+  const { balance, isConnected, address, closeModal, connect } = useWallet();
   const { format: formatCurrency } = useCurrency();
   const { showToast } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -797,8 +797,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
           {/* Deposit / Withdraw Buttons */}
           <div className="mt-auto pt-4 w-full">
-            <button 
-              onClick={handleDeposit}
+            <button
+              onClick={isConnected ? handleDeposit : () => connect()}
               disabled={isProcessing || isSuccess}
               className={`w-full h-12 text-[15px] flex items-center justify-center active:scale-[0.98] tracking-wide shadow-sm relative ${
                 isSuccess
@@ -811,7 +811,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
               {isSuccess && (
                 <div className="absolute inset-0 rounded-[12px] bg-[#10B981] animate-ping-once pointer-events-none"></div>
               )}
-              
+
               {isProcessing ? (
                 <div className="flex items-center gap-2 z-10">
                   <CircleNotch size={18} weight="bold" className="animate-spin" />
@@ -822,6 +822,8 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
                   <CheckCircle size={18} weight="bold" />
                   <span>Deposited Successfully</span>
                 </div>
+              ) : !isConnected ? (
+                <span className="z-10">Connect Wallet</span>
               ) : (
                 <span className="z-10">Deposit to Vault</span>
               )}
