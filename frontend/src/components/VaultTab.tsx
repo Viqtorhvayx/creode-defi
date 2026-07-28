@@ -473,6 +473,7 @@ export const VaultTab: React.FC<VaultTabProps> = ({ theme }) => {
 
   const handleDeposit = async () => {
     if (Number(depositAmount) <= 0) { showToast('Enter an amount to deposit.', { type: 'warning' }); return; }
+    if (!lockTouched) { showToast('Please choose a lock duration first.', { type: 'warning' }); return; }
     if (!isConnected || !walletClient) {
       showToast('Please connect your wallet first.', { type: 'warning' });
       return;
