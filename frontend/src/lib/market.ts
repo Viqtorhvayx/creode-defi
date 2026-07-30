@@ -61,6 +61,37 @@ export const PYTH_FEED_IDS: Record<string, string> = {
   'Crypto.WETH/USD': '9d4294bbcd1174d6f2003ec365831e64cc31d9f6f15a2b85399db8d5000960f6',
 };
 
+// Vault tab's "Market" chart — a fast, multi-pair price watch (display only,
+// not tied to what's depositable in the Vault). Every feed id below was
+// verified live against https://hermes.pyth.network/v2/price_feeds. CoinGecko
+// ids drive the market-cap/rank/volume footer stats (best-effort — if a
+// CoinGecko call fails, those stats just fall back to blanks, same tolerance
+// pattern already used for token logos elsewhere in the app).
+export interface VaultWatchToken { sym: string; name: string; pythFeedId: string; coingeckoId: string }
+export const VAULT_WATCH_TOKENS: VaultWatchToken[] = [
+  { sym: 'HBAR', name: 'Hedera', pythFeedId: '3728e591097635310e6341af53db8b7ee42da9b3a8d918f9463ce9cca886dfbd', coingeckoId: 'hedera-hashgraph' },
+  { sym: 'BTC', name: 'Bitcoin', pythFeedId: 'e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43', coingeckoId: 'bitcoin' },
+  { sym: 'ETH', name: 'Ethereum', pythFeedId: 'ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace', coingeckoId: 'ethereum' },
+  { sym: 'SOL', name: 'Solana', pythFeedId: 'ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d', coingeckoId: 'solana' },
+  { sym: 'HYPE', name: 'Hyperliquid', pythFeedId: '4279e31cc369bbcc2faf022b382b080e32a8e689ff20fbc530d2a603eb6cd98b', coingeckoId: 'hyperliquid' },
+  { sym: 'XRP', name: 'XRP', pythFeedId: 'ec5d399846a9209f3fe5881d70aae9268c94339ff9817e8d18ff19fa05eea1c8', coingeckoId: 'ripple' },
+  { sym: 'BNB', name: 'BNB', pythFeedId: '2f95862b045670cd22bee3114c39763a4a08beeb663b145d283c31d7d1101c4f', coingeckoId: 'binancecoin' },
+  { sym: 'DOGE', name: 'Dogecoin', pythFeedId: 'dcef50dd0a4cd2dcc17e45df1676dcb336a11a61c69df7a0299b0150c672d25c', coingeckoId: 'dogecoin' },
+  { sym: 'SUI', name: 'Sui', pythFeedId: '23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744', coingeckoId: 'sui' },
+  { sym: 'AVAX', name: 'Avalanche', pythFeedId: '93da3352f9f1d105fdfe4971cfa80e9dd777bfc5d0f683ebb6e1294b92137bb7', coingeckoId: 'avalanche-2' },
+  { sym: 'LINK', name: 'Chainlink', pythFeedId: '8ac0c70fff57e9aefdf5edf44b51d62c2d433653cbb2cf5cc06bb115af04d221', coingeckoId: 'chainlink' },
+  { sym: 'AAVE', name: 'Aave', pythFeedId: '2b9ab1e972a281585084148ba1389800799bd4be63b957507db1349314e47445', coingeckoId: 'aave' },
+  { sym: 'TON', name: 'Toncoin', pythFeedId: '8963217838ab4cf5cadc172203c1f0b763fbaa45f346d8ee50ba994bbcac3026', coingeckoId: 'the-open-network' },
+  { sym: 'NEAR', name: 'NEAR Protocol', pythFeedId: 'c415de8d2eba7db216527dff4b60e8f3a5311c740dadb233e13e12547e226750', coingeckoId: 'near' },
+  { sym: 'TAO', name: 'Bittensor', pythFeedId: '410f41de235f2db824e562ea7ab2d3d3d4ff048316c61d629c0b93f58584e1af', coingeckoId: 'bittensor' },
+  { sym: 'ZEC', name: 'Zcash', pythFeedId: 'be9b59d178f0d6a97ab4c343bff2aa69caa1eaae3e9048a65788c529b125bb24', coingeckoId: 'zcash' },
+  { sym: 'PENGU', name: 'Pudgy Penguins', pythFeedId: 'bed3097008b9b5e3c93bec20be79cb43986b85a996475589351a21e67bae9b61', coingeckoId: 'pudgy-penguins' },
+  { sym: 'PEPE', name: 'Pepe', pythFeedId: 'd69731a2e74ac1ce884fc3890f7ee324b6deb66147055249568869ed700882e4', coingeckoId: 'pepe' },
+  { sym: 'ASTER', name: 'Aster', pythFeedId: 'a903b5a82cb572397e3d47595d2889cf80513f5b4cf7a36b513ae10cc8b1e338', coingeckoId: 'aster-2' },
+  { sym: 'WLFI', name: 'World Liberty Financial', pythFeedId: 'd41369178d64f41d51ca95465c144a2c74d2fff30be69164835911943fa64c3e', coingeckoId: 'world-liberty-financial' },
+  { sym: 'FARTCOIN', name: 'Fartcoin', pythFeedId: '58cd29ef0e714c5affc44f269b2c1899a52da4169d7acc147b9da692e6953608', coingeckoId: 'fartcoin' },
+];
+
 // Timeframe → upstream resolution. secs = candle width in seconds.
 export const RESOLUTIONS: Record<Timeframe, { pyth: string; geckoTf: 'minute' | 'hour' | 'day'; geckoAgg: number; secs: number }> = {
   '15m': { pyth: '15', geckoTf: 'minute', geckoAgg: 15, secs: 900 },
