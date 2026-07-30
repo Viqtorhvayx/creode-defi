@@ -63,11 +63,45 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
   // Real-time price: a direct Pyth Hermes SSE stream (sub-second push), not a
   // polling loop — switches feed the instant a different token is selected.
+  // If Pyth goes quiet for 10s, fall back to a Binance/Bybit spot price (same
+  // staleness-triggered cascade vDEX documents for its own chart) until Pyth
+  // resumes.
+  const [priceSource, setPriceSource] = useState<'binance' | 'bybit' | null>(null);
   useEffect(() => {
     setLivePrice(null);
-    const unsubscribe = subscribePythPrice(token.pythFeedId, ({ price }) => setLivePrice(price));
-    return unsubscribe;
-  }, [token.pythFeedId]);
+    setPriceSource(null);
+    let lastPythTick = 0;
+    let fallbackTimer: ReturnType<typeof setInterval> | null = null;
+    let alive = true;
+
+    const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
+    const pollFallback = async () => {
+      try {
+        const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}`);
+        if (!res.ok || !alive) return;
+        const d = await res.json();
+        if (Date.now() - lastPythTick < 10_000) return; // Pyth resumed while this was in flight.
+        if (d.price != null) { setLivePrice(d.price); setPriceSource(d.source); }
+      } catch { /* keep last known price */ }
+    };
+
+    const unsubscribe = subscribePythPrice(token.pythFeedId, ({ price }) => {
+      lastPythTick = Date.now();
+      setPriceSource(null);
+      setLivePrice(price);
+      stopFallback();
+    });
+
+    const staleCheck = setInterval(() => {
+      if (!alive || fallbackTimer) return;
+      if (lastPythTick === 0 || Date.now() - lastPythTick >= 10_000) {
+        pollFallback();
+        fallbackTimer = setInterval(pollFallback, 3000);
+      }
+    }, 2000);
+
+    return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
+  }, [token.pythFeedId, token.sym]);
 
   // Market cap / 24h change / volume / rank / supply — CoinGecko, best-effort
   // (same tolerance as the rest of the app: a failed call just leaves the
@@ -172,22 +206,53 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       } catch (err) { console.error("History Error:", err); }
     };
 
+    const applyTick = (price: number, time: number) => {
+      if (!alive || !seriesRef.current) return;
+      const bucket = (Math.floor(time / bucketSecs) * bucketSecs) as UTCTimestamp;
+      const last = points[points.length - 1];
+      if (last && last.time === bucket) {
+        last.value = price;
+      } else {
+        points = [...points, { time: bucket, value: price }];
+      }
+      seriesRef.current.update(points[points.length - 1]);
+    };
+
+    // Same 10s Pyth-staleness → Binance/Bybit fallback cascade as the price
+    // header, kept in sync here so the chart line itself keeps moving during
+    // a Pyth outage instead of just the big number.
+    let lastPythTick = 0;
+    let fallbackTimer: ReturnType<typeof setInterval> | null = null;
+    const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
+    const pollFallback = async () => {
+      try {
+        const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}`);
+        if (!res.ok || !alive) return;
+        const d = await res.json();
+        if (Date.now() - lastPythTick < 10_000) return;
+        if (d.price != null) applyTick(d.price, Math.floor(Date.now() / 1000));
+      } catch { /* keep last known point */ }
+    };
+
     loadHistory().then(() => {
       if (!alive) return;
       // Live streaming: fold each Pyth tick into the current bucket so the
       // chart's last point moves in real time instead of waiting on the next
       // full history re-fetch.
       unsubTick = subscribePythPrice(token.pythFeedId, ({ price, time }) => {
-        if (!alive || !seriesRef.current) return;
-        const bucket = (Math.floor(time / bucketSecs) * bucketSecs) as UTCTimestamp;
-        const last = points[points.length - 1];
-        if (last && last.time === bucket) {
-          last.value = price;
-        } else {
-          points = [...points, { time: bucket, value: price }];
-        }
-        seriesRef.current.update(points[points.length - 1]);
+        lastPythTick = Date.now();
+        stopFallback();
+        applyTick(price, time);
       });
+      const staleCheck = setInterval(() => {
+        if (!alive || fallbackTimer) return;
+        if (lastPythTick === 0 || Date.now() - lastPythTick >= 10_000) {
+          pollFallback();
+          fallbackTimer = setInterval(pollFallback, 3000);
+        }
+      }, 2000);
+      const prevUnsub = unsubTick;
+      unsubTick = () => { prevUnsub?.(); clearInterval(staleCheck); stopFallback(); };
     });
 
     const handleResize = () => {
@@ -281,6 +346,11 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
             {priceChange24h && priceChange24h >= 0 ? '▲' : '▼'} {priceChange24h ? Math.abs(priceChange24h).toFixed(2) : "..."}%
             <span className="text-[12px] ml-1 text-slate-500 dark:text-white/60 font-medium">(24h)</span>
           </span>
+          {priceSource && (
+            <span className="text-[10px] font-semibold text-amber-500/80" title="Pyth feed went quiet for 10s+ — showing a live exchange price instead">
+              via {priceSource === 'binance' ? 'Binance' : 'Bybit'} (fallback)
+            </span>
+          )}
         </div>
       </div>
 
