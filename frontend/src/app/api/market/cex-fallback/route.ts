@@ -36,8 +36,26 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sym = (searchParams.get('symbol') || '').toUpperCase();
+    const source = searchParams.get('source'); // 'binance' | 'bybit' | omitted (combined)
     if (!sym) return NextResponse.json({ error: 'missing symbol' }, { status: 400 });
     const pair = `${sym}USDT`;
+
+    // A specific source is requested by the Vault chart's Binance-primary
+    // cascade (matches vDEX's own documented pOracle source), which needs to
+    // know precisely whether Binance itself succeeded rather than getting a
+    // pre-merged result.
+    if (source === 'binance') {
+      const p = await fromBinance(pair);
+      return NextResponse.json(p != null
+        ? { price: p, source: 'binance', time: Math.floor(Date.now() / 1000) }
+        : { price: null, source: null, time: null });
+    }
+    if (source === 'bybit') {
+      const p = await fromBybit(pair);
+      return NextResponse.json(p != null
+        ? { price: p, source: 'bybit', time: Math.floor(Date.now() / 1000) }
+        : { price: null, source: null, time: null });
+    }
 
     const binancePrice = await fromBinance(pair);
     if (binancePrice != null) {
