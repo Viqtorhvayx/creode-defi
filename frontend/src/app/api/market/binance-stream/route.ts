@@ -9,18 +9,19 @@
 // the browser as Server-Sent Events.
 //
 // Vercel serverless functions can't hold a connection open indefinitely, so
-// this proactively closes the stream well inside the execution limit below;
-// the client's EventSource reconnects automatically on a dropped connection
-// per spec. maxDuration=60 is explicitly declared (supported on every Vercel
-// plan, including Hobby, with no dashboard changes needed) so reconnects
-// only happen roughly once a minute instead of every few seconds — the
-// short interval was making the tick rate feel inconsistent, since each
-// reconnect's handshake latency briefly pauses the stream.
+// this proactively closes the stream well inside any execution limit; the
+// client's EventSource reconnects automatically on a dropped connection per
+// spec, so this is invisible to the user beyond a brief reconnect blip every
+// ~9s — still far more responsive than polling a snapshot once a second.
+//
+// A longer interval (55s, with an explicit maxDuration=60) was tried and
+// broke the stream in production across every browser, not just restrictive
+// ones — reverted back to this known-working interval rather than guess
+// further without being able to reproduce the failure locally.
 export const runtime = 'nodejs';
-export const maxDuration = 60;
 
 const BINANCE_WS = 'wss://stream.binance.com:443/ws';
-const SELF_CLOSE_MS = 55_000;
+const SELF_CLOSE_MS = 9000;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
