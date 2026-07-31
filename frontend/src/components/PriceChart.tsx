@@ -20,6 +20,13 @@ const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingvie
 // a jagged point per tick.
 const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, 'W': 604800 };
 
+// vDEX's own pOracle samples Binance every 1s; polling it every 300ms
+// instead (same REST endpoint, same reliable code path — just a faster
+// timer) means Creode reflects a given price move up to ~700ms sooner on
+// average, with no new architecture or failure mode introduced.
+const BINANCE_POLL_MS = 300;
+const BINANCE_FAIL_GRACE = Math.ceil(1000 / BINANCE_POLL_MS); // ~1s of consecutive failures before treating it as an outage.
+
 export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -65,7 +72,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   // Hermes SSE stream with Binance/Bybit only as a 10s-staleness fallback.
   // Every other token here is one vDEX also lists, so its live price instead
   // tracks vDEX's own documented pOracle source directly: Binance spot,
-  // polled every 1s (their exact cadence), falling back to Pyth then Bybit if
+  // polled every 300ms — vDEX's own pOracle samples the same source at 1s,
+  // so this reflects a given move sooner without any new architecture — same
+  // proven REST poll, just a faster timer. Falls back to Pyth then Bybit if
   // Binance goes quiet.
   const [priceSource, setPriceSource] = useState<'binance' | 'pyth' | 'bybit' | null>(null);
   useEffect(() => {
@@ -129,7 +138,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       } catch {
         if (!alive) return;
         binanceFailStreak++;
-        if (binanceFailStreak < 2) return; // ~1s grace before treating it as an outage.
+        if (binanceFailStreak < BINANCE_FAIL_GRACE) return;
         if (lastPythTick && Date.now() - lastPythTick < 10_000) {
           setLivePrice(lastPythPrice);
           setPriceSource('pyth');
@@ -145,7 +154,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     };
 
     pollBinance();
-    const binanceTimer = setInterval(pollBinance, 1000);
+    const binanceTimer = setInterval(pollBinance, BINANCE_POLL_MS);
     return () => { alive = false; unsubscribePyth(); clearInterval(binanceTimer); };
   }, [token.pythFeedId, token.sym]);
 
@@ -266,9 +275,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
     // HBAR (not a vDEX pair) keeps the original 10s Pyth-staleness →
     // Binance/Bybit fallback cascade. Every other token here tracks vDEX's
-    // own documented pOracle source directly: Binance polled every 1s,
-    // falling back to Pyth then Bybit if Binance goes quiet — kept in sync
-    // with the price header above so the chart line moves the same way.
+    // own documented pOracle source directly: Binance polled every 300ms
+    // (vDEX's own pOracle samples the same source at 1s), falling back to
+    // Pyth then Bybit if Binance goes quiet — kept in sync with the price
+    // header above so the chart line moves the same way.
     let lastPythTick = 0;
     let fallbackTimer: ReturnType<typeof setInterval> | null = null;
     const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
@@ -329,7 +339,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         } catch {
           if (!alive) return;
           binanceFailStreak++;
-          if (binanceFailStreak < 2) return;
+          if (binanceFailStreak < BINANCE_FAIL_GRACE) return;
           if (lastPythTickTime && Date.now() - lastPythTickTime < 10_000) {
             applyTick(lastPythPrice!, Math.floor(Date.now() / 1000));
             return;
@@ -344,7 +354,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       };
 
       pollBinance();
-      const binanceTimer = setInterval(pollBinance, 1000);
+      const binanceTimer = setInterval(pollBinance, BINANCE_POLL_MS);
       unsubTick = () => { unsubscribePyth(); clearInterval(binanceTimer); };
     });
 
