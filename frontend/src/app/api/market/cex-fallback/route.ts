@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 
 /* Route: /api/market/cex-fallback?symbol=BTC
- * Last-resort price source for the Vault market chart: only used client-side
- * once the primary Pyth Hermes stream has gone quiet for 10+ seconds (mirrors
- * the same staleness-triggered cascade vDEX documents for its own chart —
- * Binance primary, Bybit backup). Server-side because neither exchange's
- * public API sends CORS headers for browser calls, and Binance's main
+ * Fallback price source for the Vault market chart. HBAR (not a vDEX pair)
+ * uses the combined Binance-then-Bybit response here once Pyth goes quiet.
+ * Every other token streams Binance directly over a live WebSocket
+ * (lib/binanceStream.ts) instead of polling this route; this only serves
+ * `source=bybit` for those as the last-resort tier once both that stream and
+ * Pyth have gone quiet. Server-side because neither exchange's public REST
+ * API sends CORS headers for browser calls, and Binance's main
  * api.binance.com blocks some server regions entirely — data-api.binance.vision
  * is their dedicated public-market-data mirror, unrestricted and read-only. */
 
@@ -36,20 +38,12 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sym = (searchParams.get('symbol') || '').toUpperCase();
-    const source = searchParams.get('source'); // 'binance' | 'bybit' | omitted (combined)
+    const source = searchParams.get('source'); // 'bybit' | omitted (combined)
     if (!sym) return NextResponse.json({ error: 'missing symbol' }, { status: 400 });
     const pair = `${sym}USDT`;
 
-    // A specific source is requested by the Vault chart's Binance-primary
-    // cascade (matches vDEX's own documented pOracle source), which needs to
-    // know precisely whether Binance itself succeeded rather than getting a
-    // pre-merged result.
-    if (source === 'binance') {
-      const p = await fromBinance(pair);
-      return NextResponse.json(p != null
-        ? { price: p, source: 'binance', time: Math.floor(Date.now() / 1000) }
-        : { price: null, source: null, time: null });
-    }
+    // Bybit-only is requested as the last fallback tier once both the Vault
+    // chart's live Binance WebSocket stream and Pyth have gone quiet.
     if (source === 'bybit') {
       const p = await fromBybit(pair);
       return NextResponse.json(p != null
