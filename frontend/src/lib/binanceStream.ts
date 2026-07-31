@@ -25,7 +25,18 @@ export function subscribeBinancePrice(sym: string, onTick: (tick: BinanceTick) =
 
   const connect = () => {
     if (closed) return;
-    ws = new WebSocket(`${BINANCE_WS}/${pair}@trade`);
+    try {
+      ws = new WebSocket(`${BINANCE_WS}/${pair}@trade`);
+    } catch {
+      // WebSocket unavailable/blocked in this environment (some in-app
+      // browsers restrict it) — retry with backoff instead of throwing
+      // synchronously out of the caller's effect, which would otherwise
+      // crash the whole render. The Pyth/Bybit fallback in PriceChart
+      // takes over once this has been silent for 10s.
+      retryTimer = setTimeout(connect, retryDelay);
+      retryDelay = Math.min(retryDelay * 2, 15000);
+      return;
+    }
     ws.onopen = () => { retryDelay = 1000; };
     ws.onmessage = (ev) => {
       try {
