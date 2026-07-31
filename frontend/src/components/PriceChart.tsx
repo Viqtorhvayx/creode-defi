@@ -7,7 +7,6 @@ import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lig
 import { CaretDown } from '@phosphor-icons/react';
 import { TokenLogo } from './TokenLogo';
 import { subscribePythPrice } from '../lib/pythStream';
-import { subscribeBinancePrice } from '../lib/binanceStream';
 import { VAULT_WATCH_TOKENS } from '../lib/market';
 
 interface PriceChartProps {
@@ -65,11 +64,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   // Real-time price. HBAR (not a vDEX pair) keeps its original direct Pyth
   // Hermes SSE stream with Binance/Bybit only as a 10s-staleness fallback.
   // Every other token here is one vDEX also lists, so its live price instead
-  // streams directly off Binance's public trade WebSocket — a tick per
-  // trade print, often several times a second — rather than polling a
-  // snapshot every 1s the way vDEX's own pOracle samples it. That streaming
-  // vs. polling gap is what makes this faster than vDEX, not a different
-  // source. Falls back to Pyth, then Bybit, if the stream goes quiet.
+  // tracks vDEX's own documented pOracle source directly: Binance spot,
+  // polled every 1s (their exact cadence), falling back to Pyth then Bybit if
+  // Binance goes quiet.
   const [priceSource, setPriceSource] = useState<'binance' | 'pyth' | 'bybit' | null>(null);
   useEffect(() => {
     setLivePrice(null);
@@ -108,52 +105,48 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
     }
 
-    // Binance-stream-primary cascade for vDEX-matching tokens.
-    let lastBinanceTick = 0;
+    // Binance-primary cascade for vDEX-matching tokens.
+    let lastPythPrice: number | null = null;
     let lastPythTick = 0;
-    let inFallback = false;
+    const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
+      lastPythPrice = price;
+      lastPythTick = Date.now();
+    });
 
-    let fallbackTimer: ReturnType<typeof setInterval> | null = null;
-    const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
-    const pollBybit = async () => {
+    let binanceFailStreak = 0;
+    const pollBinance = async () => {
       try {
-        const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=bybit`);
-        if (!res.ok || !alive) return;
-        const d = await res.json();
-        if (Date.now() - lastBinanceTick < 10_000) return; // Binance resumed while this was in flight.
-        if (d.price != null) { setLivePrice(d.price); setPriceSource('bybit'); }
-      } catch { /* keep last known price */ }
+        const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=binance`);
+        const d = res.ok ? await res.json() : { price: null };
+        if (!alive) return;
+        if (d.price != null) {
+          binanceFailStreak = 0;
+          setLivePrice(d.price);
+          setPriceSource(null); // Binance is primary here — no fallback badge.
+          return;
+        }
+        throw new Error('no binance price');
+      } catch {
+        if (!alive) return;
+        binanceFailStreak++;
+        if (binanceFailStreak < 2) return; // ~1s grace before treating it as an outage.
+        if (lastPythTick && Date.now() - lastPythTick < 10_000) {
+          setLivePrice(lastPythPrice);
+          setPriceSource('pyth');
+          return;
+        }
+        try {
+          const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=bybit`);
+          if (!res.ok || !alive) return;
+          const d = await res.json();
+          if (d.price != null) { setLivePrice(d.price); setPriceSource('bybit'); }
+        } catch { /* keep last known price */ }
+      }
     };
 
-    const unsubscribeBinance = subscribeBinancePrice(token.sym, ({ price }) => {
-      lastBinanceTick = Date.now();
-      inFallback = false;
-      setPriceSource(null); // Binance's live stream is primary — no fallback badge.
-      setLivePrice(price);
-      stopFallback();
-    });
-
-    const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
-      lastPythTick = Date.now();
-      // If Binance has already gone stale, ride Pyth's own live ticks
-      // instead of freezing until the next staleness check.
-      if (inFallback && Date.now() - lastBinanceTick >= 10_000) {
-        setLivePrice(price);
-        setPriceSource('pyth');
-      }
-    });
-
-    const staleCheck = setInterval(() => {
-      if (!alive) return;
-      if (Date.now() - lastBinanceTick < 10_000) { inFallback = false; return; }
-      inFallback = true;
-      if (fallbackTimer) return; // already escalated to Bybit polling
-      if (lastPythTick && Date.now() - lastPythTick < 10_000) return; // Pyth's own tick handler is keeping this fresh
-      pollBybit();
-      fallbackTimer = setInterval(pollBybit, 3000);
-    }, 2000);
-
-    return () => { alive = false; unsubscribeBinance(); unsubscribePyth(); stopFallback(); clearInterval(staleCheck); };
+    pollBinance();
+    const binanceTimer = setInterval(pollBinance, 1000);
+    return () => { alive = false; unsubscribePyth(); clearInterval(binanceTimer); };
   }, [token.pythFeedId, token.sym]);
 
   // Market cap / 24h change / volume / rank / supply — CoinGecko, best-effort
@@ -272,10 +265,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     };
 
     // HBAR (not a vDEX pair) keeps the original 10s Pyth-staleness →
-    // Binance/Bybit fallback cascade. Every other token here streams Binance
-    // trade prints live instead, falling back to Pyth then Bybit if that
-    // stream goes quiet — kept in sync with the price header above so the
-    // chart line moves the same way.
+    // Binance/Bybit fallback cascade. Every other token here tracks vDEX's
+    // own documented pOracle source directly: Binance polled every 1s,
+    // falling back to Pyth then Bybit if Binance goes quiet — kept in sync
+    // with the price header above so the chart line moves the same way.
     let lastPythTick = 0;
     let fallbackTimer: ReturnType<typeof setInterval> | null = null;
     const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
@@ -313,48 +306,46 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         return;
       }
 
-      // Binance-stream-primary cascade for vDEX-matching tokens — a live
-      // trade-print push instead of a fixed-interval poll, so the chart's
-      // last point moves faster than vDEX's own 1s-sampled pOracle.
-      let lastBinanceTick = 0;
+      // Binance-primary cascade for vDEX-matching tokens.
+      let lastPythPrice: number | null = null;
       let lastPythTickTime = 0;
-      let inFallback = false;
+      const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
+        lastPythPrice = price;
+        lastPythTickTime = Date.now();
+      });
 
-      let fallbackTimer: ReturnType<typeof setInterval> | null = null;
-      const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
-      const pollBybit = async () => {
+      let binanceFailStreak = 0;
+      const pollBinance = async () => {
         try {
-          const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=bybit`);
-          if (!res.ok || !alive) return;
-          const d = await res.json();
-          if (Date.now() - lastBinanceTick < 10_000) return;
-          if (d.price != null) applyTick(d.price, Math.floor(Date.now() / 1000));
-        } catch { /* keep last known point */ }
+          const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=binance`);
+          const d = res.ok ? await res.json() : { price: null };
+          if (!alive) return;
+          if (d.price != null) {
+            binanceFailStreak = 0;
+            applyTick(d.price, Math.floor(Date.now() / 1000));
+            return;
+          }
+          throw new Error('no binance price');
+        } catch {
+          if (!alive) return;
+          binanceFailStreak++;
+          if (binanceFailStreak < 2) return;
+          if (lastPythTickTime && Date.now() - lastPythTickTime < 10_000) {
+            applyTick(lastPythPrice!, Math.floor(Date.now() / 1000));
+            return;
+          }
+          try {
+            const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=bybit`);
+            if (!res.ok || !alive) return;
+            const d = await res.json();
+            if (d.price != null) applyTick(d.price, Math.floor(Date.now() / 1000));
+          } catch { /* keep last known point */ }
+        }
       };
 
-      const unsubscribeBinance = subscribeBinancePrice(token.sym, ({ price, time }) => {
-        lastBinanceTick = Date.now();
-        inFallback = false;
-        stopFallback();
-        applyTick(price, time);
-      });
-
-      const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price, time }) => {
-        lastPythTickTime = Date.now();
-        if (inFallback && Date.now() - lastBinanceTick >= 10_000) applyTick(price, time);
-      });
-
-      const staleCheck = setInterval(() => {
-        if (!alive) return;
-        if (Date.now() - lastBinanceTick < 10_000) { inFallback = false; return; }
-        inFallback = true;
-        if (fallbackTimer) return;
-        if (lastPythTickTime && Date.now() - lastPythTickTime < 10_000) return;
-        pollBybit();
-        fallbackTimer = setInterval(pollBybit, 3000);
-      }, 2000);
-
-      unsubTick = () => { unsubscribeBinance(); unsubscribePyth(); stopFallback(); clearInterval(staleCheck); };
+      pollBinance();
+      const binanceTimer = setInterval(pollBinance, 1000);
+      unsubTick = () => { unsubscribePyth(); clearInterval(binanceTimer); };
     });
 
     const handleResize = () => {
