@@ -12,9 +12,14 @@ import { NextResponse } from 'next/server';
 const BINANCE = 'https://data-api.binance.vision/api/v3/ticker/price';
 const BYBIT = 'https://api.bybit.com/v5/market/tickers';
 
+// no-store is deliberate: Next.js's fetch cache was previously set to
+// revalidate:1 here, which silently capped every price at up to a second
+// stale regardless of how often the client polled this route — confirmed by
+// watching the same price repeat for 2+ seconds under rapid polling. This is
+// a live price feed; every call needs the real current value.
 async function fromBinance(pair: string): Promise<number | null> {
   try {
-    const res = await fetch(`${BINANCE}?symbol=${pair}`, { next: { revalidate: 1 } });
+    const res = await fetch(`${BINANCE}?symbol=${pair}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const d = await res.json();
     const p = Number(d?.price);
@@ -24,7 +29,7 @@ async function fromBinance(pair: string): Promise<number | null> {
 
 async function fromBybit(pair: string): Promise<number | null> {
   try {
-    const res = await fetch(`${BYBIT}?category=spot&symbol=${pair}`, { next: { revalidate: 1 } });
+    const res = await fetch(`${BYBIT}?category=spot&symbol=${pair}`, { cache: 'no-store' });
     if (!res.ok) return null;
     const d = await res.json();
     const p = Number(d?.result?.list?.[0]?.lastPrice);
