@@ -20,11 +20,15 @@ const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingvie
 // a jagged point per tick.
 const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, 'W': 604800 };
 
-// vDEX's own pOracle samples Binance every 1s; polling it every 300ms
-// instead (same REST endpoint, same reliable code path — just a faster
-// timer) means Creode reflects a given price move up to ~700ms sooner on
-// average, with no new architecture or failure mode introduced.
-const BINANCE_POLL_MS = 300;
+// vDEX's own pOracle samples Binance every 1s, and vDEX's own *displayed*
+// price additionally blends in their own order book (per their docs), so
+// their real on-screen lag behind Binance varies — sometimes sub-second,
+// sometimes stretching to multiple seconds when their book hasn't caught
+// up. Creode can't control how far vDEX drifts, only how close it stays to
+// Binance itself; polling every 150ms (same reliable REST endpoint, same
+// code path — just a faster timer) keeps that gap as small as reasonably
+// possible, so whenever vDEX's own blend does lag, Creode is already there.
+const BINANCE_POLL_MS = 150;
 const BINANCE_FAIL_GRACE = Math.ceil(1000 / BINANCE_POLL_MS); // ~1s of consecutive failures before treating it as an outage.
 
 export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
