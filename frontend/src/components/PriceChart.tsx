@@ -7,6 +7,7 @@ import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lig
 import { CaretDown } from '@phosphor-icons/react';
 import { TokenLogo } from './TokenLogo';
 import { subscribePythPrice } from '../lib/pythStream';
+import { subscribeBinancePrice } from '../lib/binanceStream';
 import { VAULT_WATCH_TOKENS } from '../lib/market';
 
 interface PriceChartProps {
@@ -118,7 +119,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
     }
 
-    // Binance-primary cascade for vDEX-matching tokens.
+    // Binance-primary cascade for vDEX-matching tokens. Untouched from the
+    // last known-stable version — the poll below never depends on the
+    // stream layered on top of it further down, so this half of the effect
+    // works exactly as it already does regardless of what the stream does.
     let lastPythPrice: number | null = null;
     let lastPythTick = 0;
     const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
@@ -126,16 +130,24 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       lastPythTick = Date.now();
     });
 
+    // Guards against a slow in-flight poll response overwriting a fresher
+    // tick the stream below already applied while that request was pending.
+    let lastAppliedAt = 0;
+
     let binanceFailStreak = 0;
     const pollBinance = async () => {
+      const firedAt = Date.now();
       try {
         const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=binance`);
         const d = res.ok ? await res.json() : { price: null };
         if (!alive) return;
         if (d.price != null) {
           binanceFailStreak = 0;
-          setLivePrice(d.price);
-          setPriceSource(null); // Binance is primary here — no fallback badge.
+          if (firedAt >= lastAppliedAt) {
+            lastAppliedAt = firedAt;
+            setLivePrice(d.price);
+            setPriceSource(null); // Binance is primary here — no fallback badge.
+          }
           return;
         }
         throw new Error('no binance price');
@@ -159,7 +171,20 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
     pollBinance();
     const binanceTimer = setInterval(pollBinance, BINANCE_POLL_MS);
-    return () => { alive = false; unsubscribePyth(); clearInterval(binanceTimer); };
+
+    // Pure add-on: a live per-trade stream layered on top of the poll above.
+    // The poll keeps running exactly as it always has regardless of this —
+    // if the stream never connects, misbehaves, or Vercel does something
+    // unexpected with it again, this silently produces no ticks and the
+    // poll alone continues to drive the display, unchanged from today.
+    const unsubscribeStream = subscribeBinancePrice(token.sym, ({ price }) => {
+      if (!alive) return;
+      lastAppliedAt = Date.now();
+      setLivePrice(price);
+      setPriceSource(null);
+    });
+
+    return () => { alive = false; unsubscribePyth(); unsubscribeStream(); clearInterval(binanceTimer); };
   }, [token.pythFeedId, token.sym]);
 
   // Market cap / 24h change / volume / rank / supply — CoinGecko, best-effort
@@ -320,7 +345,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         return;
       }
 
-      // Binance-primary cascade for vDEX-matching tokens.
+      // Binance-primary cascade for vDEX-matching tokens. Untouched from the
+      // last known-stable version — the stream layered on top further down
+      // is a pure add-on this loop never depends on.
       let lastPythPrice: number | null = null;
       let lastPythTickTime = 0;
       const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
@@ -328,15 +355,23 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         lastPythTickTime = Date.now();
       });
 
+      // Guards against a slow in-flight poll response overwriting a fresher
+      // tick the stream below already applied while that request was pending.
+      let lastAppliedAt = 0;
+
       let binanceFailStreak = 0;
       const pollBinance = async () => {
+        const firedAt = Date.now();
         try {
           const res = await fetch(`/api/market/cex-fallback?symbol=${encodeURIComponent(token.sym)}&source=binance`);
           const d = res.ok ? await res.json() : { price: null };
           if (!alive) return;
           if (d.price != null) {
             binanceFailStreak = 0;
-            applyTick(d.price, Math.floor(Date.now() / 1000));
+            if (firedAt >= lastAppliedAt) {
+              lastAppliedAt = firedAt;
+              applyTick(d.price, Math.floor(Date.now() / 1000));
+            }
             return;
           }
           throw new Error('no binance price');
@@ -359,7 +394,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
       pollBinance();
       const binanceTimer = setInterval(pollBinance, BINANCE_POLL_MS);
-      unsubTick = () => { unsubscribePyth(); clearInterval(binanceTimer); };
+
+      // Pure add-on: a live per-trade stream layered on top of the poll
+      // above. If it never connects or misbehaves, this silently produces
+      // no ticks and the poll alone continues driving the chart, unchanged.
+      const unsubscribeStream = subscribeBinancePrice(token.sym, ({ price, time }) => {
+        if (!alive) return;
+        lastAppliedAt = Date.now();
+        applyTick(price, time);
+      });
+
+      unsubTick = () => { unsubscribePyth(); unsubscribeStream(); clearInterval(binanceTimer); };
     });
 
     const handleResize = () => {
