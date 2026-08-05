@@ -26,13 +26,13 @@ const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, '
 // their real on-screen lag behind Binance varies — sometimes sub-second,
 // sometimes stretching to multiple seconds when their book hasn't caught
 // up. Creode can't control how far vDEX drifts, only how close it stays to
-// Binance itself; polling every 75ms (same reliable REST endpoint, same
+// Binance itself; polling every 50ms (same reliable REST endpoint, same
 // code path — just a faster timer) keeps that gap as small as reasonably
 // possible. Measured real round-trip latency to Binance is ~165-170ms, so
 // requests already overlap in flight at this interval — going lower than
 // this doesn't buy additional freshness, just more redundant in-flight
 // requests for no benefit.
-const BINANCE_POLL_MS = 75;
+const BINANCE_POLL_MS = 50;
 const BINANCE_FAIL_GRACE = Math.ceil(1000 / BINANCE_POLL_MS); // ~1s of consecutive failures before treating it as an outage.
 
 export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
