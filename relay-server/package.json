@@ -1,0 +1,17 @@
+{
+  "name": "creode-binance-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone always-on relay: holds persistent WebSocket connections to Binance per symbol and re-broadcasts trade prints to browsers over SSE. Deployed separately from the main Next.js app (which isn't built for long-running processes) so the upstream Binance connection never has to reconnect on a serverless execution-time limit.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

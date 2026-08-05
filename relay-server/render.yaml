@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: creode-binance-relay
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /health
+    autoDeploy: true
