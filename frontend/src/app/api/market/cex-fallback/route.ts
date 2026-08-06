@@ -7,7 +7,18 @@ import { NextResponse } from 'next/server';
  * Binance primary, Bybit backup). Server-side because neither exchange's
  * public API sends CORS headers for browser calls, and Binance's main
  * api.binance.com blocks some server regions entirely — data-api.binance.vision
- * is their dedicated public-market-data mirror, unrestricted and read-only. */
+ * is their dedicated public-market-data mirror, unrestricted and read-only.
+ *
+ * runtime='edge' is deliberate: measuring the real deployed Node.js
+ * serverless version of this route directly showed ~400-500ms round trips
+ * even on warm instances (vs. ~165-170ms measured hitting Binance directly),
+ * which was eating most of the speed advantage the polling frequency work
+ * was supposed to deliver. This route only uses fetch/URL/console — all
+ * fully Edge-Runtime-supported — so moving it to Vercel's globally
+ * distributed Edge Network (faster cold starts, no Node.js container
+ * spin-up) is a well-supported, low-risk way to attack that overhead
+ * directly, rather than polling an already-slow endpoint faster. */
+export const runtime = 'edge';
 
 const BINANCE = 'https://data-api.binance.vision/api/v3/ticker/price';
 const BYBIT = 'https://api.bybit.com/v5/market/tickers';
