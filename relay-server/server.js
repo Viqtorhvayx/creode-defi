@@ -25,7 +25,6 @@
 
 const http = require('http');
 const WebSocket = require('ws');
-const { connectPythLazer } = require('./pythLazer');
 
 // The 20 tokens the Vault chart tracks that vDEX also lists (must match
 // frontend/src/lib/market.ts's VAULT_WATCH_TOKENS, minus HBAR — HBAR isn't
@@ -83,12 +82,6 @@ function connectUpstream(sym) {
 }
 
 SYMBOLS.forEach(connectUpstream);
-
-// Additive accelerant, not a replacement — see pythLazer.js for exactly
-// which symbols this covers and why (only the ones whose Lazer feed beats
-// this relay's own ~103ms-median Binance path). Every symbol keeps working
-// on Binance alone regardless of whether this connects.
-connectPythLazer(broadcast);
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
