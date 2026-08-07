@@ -2,10 +2,10 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
-COPY server.js ./
+COPY . .
 
 ENV PORT=3001
 EXPOSE 3001
