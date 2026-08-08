@@ -21,11 +21,12 @@ const PYTH_BENCHMARKS_URL = "https://benchmarks.pyth.network/v1/shims/tradingvie
 // a jagged point per tick.
 const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, 'W': 604800 };
 
-// vDEX's own pOracle samples Binance every 1s, and vDEX's own *displayed*
-// price additionally blends in their own order book (per their docs), so
-// their real on-screen lag behind Binance varies — sometimes sub-second,
-// sometimes stretching to multiple seconds when their book hasn't caught
-// up. Creode can't control how far vDEX drifts, only how close it stays to
+// Hotstuff/Hyperliquid's own index price samples an 8-exchange weighted
+// median (Binance weighted heaviest) only once every 3s, and its displayed
+// mark price further blends that with a 150s EMA smoothing term (per their
+// docs) — so its real on-screen lag behind Binance itself varies, and can
+// stretch into multiple seconds even outside fast moves. Creode can't
+// control how far Hotstuff's oracle drifts, only how close it stays to
 // Binance itself; polling every 50ms (same reliable REST endpoint, same
 // code path — just a faster timer) keeps that gap as small as reasonably
 // possible. Measured real round-trip latency to Binance is ~165-170ms, so
@@ -76,12 +77,13 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
     return `${val.toLocaleString()} ${sym}`;
   };
 
-  // Real-time price. HBAR (not a vDEX pair) keeps its original direct Pyth
-  // Hermes SSE stream with Binance/Bybit only as a 10s-staleness fallback.
-  // Every other token here is one vDEX also lists, so its live price instead
-  // tracks vDEX's own documented pOracle source directly: Binance spot,
-  // polled every 300ms — vDEX's own pOracle samples the same source at 1s,
-  // so this reflects a given move sooner without any new architecture — same
+  // Real-time price. HBAR (not a Hotstuff/Hyperliquid pair) keeps its
+  // original direct Pyth Hermes SSE stream with Binance/Bybit only as a
+  // 10s-staleness fallback. Every other token here is one Hotstuff also
+  // lists, so its live price instead tracks the same underlying source
+  // Hotstuff's own index price weights heaviest: Binance spot, polled every
+  // 300ms — Hotstuff's own index only samples that source once every 3s, so
+  // this reflects a given move sooner without any new architecture — same
   // proven REST poll, just a faster timer. Falls back to Pyth then Bybit if
   // Binance goes quiet.
   const [priceSource, setPriceSource] = useState<'binance' | 'pyth' | 'bybit' | null>(null);
@@ -122,8 +124,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
     }
 
-    // Binance-primary cascade for vDEX-matching tokens. Untouched from the
-    // last known-stable version — the poll below never depends on the
+    // Binance-primary cascade for Hotstuff-matching tokens. Untouched from
+    // the last known-stable version — the poll below never depends on the
     // stream layered on top of it further down, so this half of the effect
     // works exactly as it already does regardless of what the stream does.
     let lastPythPrice: number | null = null;
@@ -305,12 +307,14 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       seriesRef.current.update(points[points.length - 1]);
     };
 
-    // HBAR (not a vDEX pair) keeps the original 10s Pyth-staleness →
-    // Binance/Bybit fallback cascade. Every other token here tracks vDEX's
-    // own documented pOracle source directly: Binance polled every 300ms
-    // (vDEX's own pOracle samples the same source at 1s), falling back to
-    // Pyth then Bybit if Binance goes quiet — kept in sync with the price
-    // header above so the chart line moves the same way.
+    // HBAR (not a Hotstuff/Hyperliquid pair) keeps the original 10s
+    // Pyth-staleness → Binance/Bybit fallback cascade. Every other token
+    // here tracks the same source Hotstuff's own index price weights
+    // heaviest: Binance polled every 300ms (Hotstuff's own index only
+    // samples that source once every 3s, plus a further 150s EMA smoothing
+    // term on top for its displayed mark price), falling back to Pyth then
+    // Bybit if Binance goes quiet — kept in sync with the price header above
+    // so the chart line moves the same way.
     let lastPythTick = 0;
     let fallbackTimer: ReturnType<typeof setInterval> | null = null;
     const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
@@ -348,9 +352,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         return;
       }
 
-      // Binance-primary cascade for vDEX-matching tokens. Untouched from the
-      // last known-stable version — the stream layered on top further down
-      // is a pure add-on this loop never depends on.
+      // Binance-primary cascade for Hotstuff-matching tokens. Untouched from
+      // the last known-stable version — the stream layered on top further
+      // down is a pure add-on this loop never depends on.
       let lastPythPrice: number | null = null;
       let lastPythTickTime = 0;
       const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {

@@ -26,9 +26,9 @@
 const http = require('http');
 const WebSocket = require('ws');
 
-// The 20 tokens the Vault chart tracks that vDEX also lists (must match
-// frontend/src/lib/market.ts's VAULT_WATCH_TOKENS, minus HBAR — HBAR isn't
-// a vDEX pair and stays on its own separate Pyth-only path in the app).
+// The 20 tokens the Vault chart tracks that Hotstuff/Hyperliquid also lists
+// (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS, minus HBAR —
+// HBAR isn't a Hotstuff pair and stays on its own separate Pyth-only path).
 const SYMBOLS = [
   'BTC', 'ETH', 'SOL', 'HYPE', 'XRP', 'BNB', 'DOGE', 'SUI', 'AVAX', 'LINK',
   'AAVE', 'TON', 'NEAR', 'TAO', 'ZEC', 'PENGU', 'PEPE', 'ASTER', 'WLFI', 'FARTCOIN',
