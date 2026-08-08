@@ -26,12 +26,20 @@
 const http = require('http');
 const WebSocket = require('ws');
 
-// The 20 tokens the Vault chart tracks that Hotstuff/Hyperliquid also lists
+// The tokens the Vault chart tracks that Hotstuff/Hyperliquid also lists
 // (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS, minus HBAR —
 // HBAR isn't a Hotstuff pair and stays on its own separate Pyth-only path).
+// The block below the first 20 is the expansion: every remaining Hotstuff
+// token confirmed to have a live Binance USDT pair AND a stable Pyth feed.
 const SYMBOLS = [
   'BTC', 'ETH', 'SOL', 'HYPE', 'XRP', 'BNB', 'DOGE', 'SUI', 'AVAX', 'LINK',
   'AAVE', 'TON', 'NEAR', 'TAO', 'ZEC', 'PENGU', 'PEPE', 'ASTER', 'WLFI', 'FARTCOIN',
+  'ATOM', 'INJ', 'STX', 'GMX', 'SNX', 'APT', 'COMP', 'WLD', 'ZRO', 'FTT',
+  'BLUR', 'MINA', 'PENDLE', 'FET', 'ORDI', 'PYTH', 'SUSHI', 'ILV', 'IMX', 'GMT',
+  'RSR', 'GALA', 'JTO', 'CAKE', 'ENS', 'ETC', 'MANTA', 'ONDO', 'DYM', 'AR',
+  'BOME', 'ETHFI', 'ENA', 'TNSR', 'EIGEN', 'REZ', 'IO', 'ZK', 'RENDER', 'CELO',
+  'XLM', 'IOTA', 'VIRTUAL', 'USUAL', 'AIXBT', 'BERA', 'KAITO', 'PAXG', 'WCT', 'RESOLV',
+  'SYRUP', 'LINEA', 'AVNT', '0G', '2Z', 'ICP', 'AERO', 'FOGO', 'AXS',
 ];
 
 const BINANCE_WS = 'wss://stream.binance.com:443/ws';
