@@ -27,20 +27,18 @@ const http = require('http');
 const WebSocket = require('ws');
 const { connectHotstuffMarkPx, REPLICA_FRESH_MS } = require('./hotstuffMarkPx');
 
-// The tokens the Vault chart tracks that Hotstuff/Hyperliquid also lists
-// (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS, minus HBAR —
-// HBAR isn't a Hotstuff pair and stays on its own separate Pyth-only path).
-// The block below the first 20 is the expansion: every remaining Hotstuff
-// token confirmed to have a live Binance USDT pair AND a stable Pyth feed.
+// The tokens the Vault chart tracks that 01 Exchange/N1 (terminal.trade)
+// also lists (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS,
+// minus HBAR — HBAR isn't an N1 pair and stays on its own separate
+// Pyth-only path). Listed in N1's own market order (GET /info on
+// zo-mainnet.n1.xyz), skipping IP — N1's only listed token with neither a
+// live Binance USDT pair nor a stable Pyth feed, so there's no real-time
+// source for it at all.
 const SYMBOLS = [
-  'BTC', 'ETH', 'SOL', 'HYPE', 'XRP', 'BNB', 'DOGE', 'SUI', 'AVAX', 'LINK',
-  'AAVE', 'TON', 'NEAR', 'TAO', 'ZEC', 'PENGU', 'PEPE', 'ASTER', 'WLFI', 'FARTCOIN',
-  'ATOM', 'INJ', 'STX', 'GMX', 'SNX', 'APT', 'COMP', 'WLD', 'ZRO', 'FTT',
-  'BLUR', 'MINA', 'PENDLE', 'FET', 'ORDI', 'PYTH', 'SUSHI', 'ILV', 'IMX', 'GMT',
-  'RSR', 'GALA', 'JTO', 'CAKE', 'ENS', 'ETC', 'MANTA', 'ONDO', 'DYM', 'AR',
-  'BOME', 'ETHFI', 'ENA', 'TNSR', 'EIGEN', 'REZ', 'IO', 'ZK', 'RENDER', 'CELO',
-  'XLM', 'IOTA', 'VIRTUAL', 'USUAL', 'AIXBT', 'BERA', 'KAITO', 'PAXG', 'WCT', 'RESOLV',
-  'SYRUP', 'LINEA', 'AVNT', '0G', '2Z', 'ICP', 'AERO', 'FOGO', 'AXS',
+  'BTC', 'ETH', 'SOL', 'HYPE', 'BERA', 'SUI', 'XRP', 'WLFI', 'XPL', 'S',
+  'JUP', 'EIGEN', 'APT', 'AAVE', 'KAITO', 'VIRTUAL', 'ENA', 'NEAR', 'ARB', 'ZEC',
+  'ASTER', 'PAXG', 'LIT', 'PUMP', 'WLD', 'TAO', 'DOGE', 'BNB', 'UNI', 'ONDO',
+  'PENGU', 'PEPE', 'FARTCOIN', 'MON', 'VVV', 'ZRO', 'MORPHO', 'AERO',
 ];
 
 const BINANCE_WS = 'wss://stream.binance.com:443/ws';
