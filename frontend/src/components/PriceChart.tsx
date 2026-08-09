@@ -34,14 +34,17 @@ const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, '
 const BINANCE_POLL_MS = 50;
 const BINANCE_FAIL_GRACE = Math.ceil(1000 / BINANCE_POLL_MS); // ~1s of consecutive failures before treating it as an outage.
 
-// Tokens with no safe CEX source at all — not even as a fallback. LIT is
-// here because Binance's LITUSDT is a different, unrelated coin (Litentry)
-// than N1's LIT (Lighter): confirmed live, Binance priced it ~$0.74 while
-// Pyth's correct feed read ~$2.34 at the same instant. Unlike HBAR (which
-// has a real Binance/Bybit pair and uses it as a staleness fallback), these
-// symbols get Pyth only — no fallback — since the CEX pair itself would be
-// wrong, not just slow.
-const PYTH_ONLY_SYMS = new Set(['LIT']);
+// Tokens with no safe Binance/Bybit REST pair at all, primary or fallback.
+// LIT is here because Binance's LITUSDT is a different, unrelated coin
+// (Litentry) than N1's LIT (Lighter): confirmed live, Binance priced it
+// ~$0.74 while Pyth's correct feed read ~$2.34 at the same instant. These
+// symbols still get the relay's live stream — server.js never opens a
+// Binance connection for them (see BINANCE_SYMBOLS there), so anything that
+// arrives on their channel is always N1's own correct published price, not
+// a guess — just never the REST cex-fallback route, since that would hit
+// the wrong asset directly by symbol name. Pyth runs the whole time as a
+// plain fallback if the relay stream ever goes quiet.
+const NO_REST_FALLBACK_SYMS = new Set(['LIT']);
 
 export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -129,12 +132,24 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
     }
 
-    if (PYTH_ONLY_SYMS.has(token.sym)) {
-      const unsubscribe = subscribePythPrice(token.pythFeedId, ({ price }) => {
+    if (NO_REST_FALLBACK_SYMS.has(token.sym)) {
+      // Relay stream is primary (N1's own price for this symbol — see
+      // NO_REST_FALLBACK_SYMS above); Pyth is a plain fallback if the
+      // stream ever goes quiet for 5+ seconds. No REST calls here at all.
+      let lastStreamTick = 0;
+      const unsubscribePyth = subscribePythPrice(token.pythFeedId, ({ price }) => {
+        if (Date.now() - lastStreamTick > 5000) {
+          setPriceSource('pyth');
+          setLivePrice(price);
+        }
+      });
+      const unsubscribeStream = subscribeBinancePrice(token.sym, ({ price }) => {
+        if (!alive) return;
+        lastStreamTick = Date.now();
         setPriceSource(null);
         setLivePrice(price);
       });
-      return () => { alive = false; unsubscribe(); };
+      return () => { alive = false; unsubscribePyth(); unsubscribeStream(); };
     }
 
     // Binance-primary cascade for N1-matching tokens. Untouched from the
@@ -363,10 +378,17 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         return;
       }
 
-      if (PYTH_ONLY_SYMS.has(token.sym)) {
-        unsubTick = subscribePythPrice(token.pythFeedId, ({ price, time }) => {
+      if (NO_REST_FALLBACK_SYMS.has(token.sym)) {
+        // Same relay-primary/Pyth-fallback split as the price header above.
+        let lastStreamTick = 0;
+        const unsubPyth = subscribePythPrice(token.pythFeedId, ({ price, time }) => {
+          if (Date.now() - lastStreamTick > 5000) applyTick(price, time);
+        });
+        const unsubStream = subscribeBinancePrice(token.sym, ({ price, time }) => {
+          lastStreamTick = Date.now();
           applyTick(price, time);
         });
+        unsubTick = () => { unsubPyth(); unsubStream(); };
         return;
       }
 

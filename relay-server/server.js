@@ -34,18 +34,21 @@ const { connectN1MarkPx, REPLICA_FRESH_MS } = require('./n1MarkPx');
 // zo-mainnet.n1.xyz), skipping IP — N1's only listed token with neither a
 // live Binance USDT pair nor a stable Pyth feed, so there's no real-time
 // source for it at all.
-// LIT is deliberately excluded: Binance's LITUSDT is a different, unrelated
-// coin (Litentry) than N1's LIT (Lighter) — confirmed live, Binance priced
-// it at ~$0.74 while Pyth's correct LIT feed read ~$2.34 at the same
-// instant. LIT still trades on Creode's chart via Pyth alone (see
-// PYTH_ONLY_SYMS in PriceChart.tsx); it just never opens a relay
-// connection here, so this process can't broadcast the wrong asset's price.
 const SYMBOLS = [
   'BTC', 'ETH', 'SOL', 'HYPE', 'BERA', 'SUI', 'XRP', 'WLFI', 'XPL', 'S',
   'JUP', 'EIGEN', 'APT', 'AAVE', 'KAITO', 'VIRTUAL', 'ENA', 'NEAR', 'ARB', 'ZEC',
-  'ASTER', 'PAXG', 'PUMP', 'WLD', 'TAO', 'DOGE', 'BNB', 'UNI', 'ONDO',
+  'ASTER', 'PAXG', 'LIT', 'PUMP', 'WLD', 'TAO', 'DOGE', 'BNB', 'UNI', 'ONDO',
   'PENGU', 'PEPE', 'FARTCOIN', 'MON', 'VVV', 'ZRO', 'MORPHO', 'AERO',
 ];
+
+// Every symbol above EXCEPT LIT gets a real upstream Binance connection.
+// Binance's LITUSDT is a different, unrelated coin (Litentry) than N1's LIT
+// (Lighter) — confirmed live, Binance priced it at ~$0.74 while Pyth's
+// correct LIT feed read ~$2.34 at the same instant. LIT still gets a valid
+// /stream channel (fed only by n1MarkPx.js's own N1 data, see below) — it
+// just never opens a Binance connection, so this process can never
+// broadcast the wrong asset's price for it, from Binance or otherwise.
+const BINANCE_SYMBOLS = SYMBOLS.filter((sym) => sym !== 'LIT');
 
 const BINANCE_WS = 'wss://stream.binance.com:443/ws';
 const PORT = process.env.PORT || 3001;
@@ -55,11 +58,12 @@ const subscribers = new Map(SYMBOLS.map((sym) => [sym, new Set()]));
 // sym -> last known {price, time}, so a brand-new subscriber gets an
 // immediate value instead of waiting for the next trade print.
 const lastTick = new Map();
-// sym -> ms timestamp of the last fresh tick from n1MarkPx.js, for the
-// small set of symbols (BTC/ETH) where that's the preferred source. See
-// connectUpstream's message handler below for how this suppresses Binance's
-// own broadcast while N1's own published price is fresh, and falls back the
-// instant it isn't.
+// sym -> ms timestamp of the last fresh tick from n1MarkPx.js, which is now
+// the preferred source for every symbol N1 lists — N1's own published mark
+// price, not just raw Binance. See connectUpstream's message handler below
+// for how this suppresses Binance's own broadcast while that feed is
+// fresh, and falls back the instant it isn't (LIT has no Binance broadcast
+// to suppress in the first place — see BINANCE_SYMBOLS above).
 const replicaFreshAt = new Map();
 
 function broadcast(sym, tick) {
@@ -88,12 +92,11 @@ function connectUpstream(sym) {
       const price = Number(msg.p);
       const time = Math.floor(Number(msg.T) / 1000);
       if (!Number.isFinite(price) || !Number.isFinite(time)) return;
-      // Suppressed while n1MarkPx.js's feed is fresh for this symbol — for
-      // BTC/ETH that's the preferred source now (N1's own published mark
-      // price, not just raw Binance), not an accelerant layered alongside
-      // Binance like every other symbol here. Binance still resumes
-      // automatically the moment that feed goes stale, so these symbols are
-      // never left without a live price either way.
+      // Suppressed while n1MarkPx.js's feed is fresh for this symbol — N1's
+      // own published mark price is the preferred source now, not just an
+      // accelerant layered alongside Binance. Binance still resumes
+      // automatically the moment that feed goes stale, so no symbol is ever
+      // left without a live price either way.
       const freshAt = replicaFreshAt.get(sym);
       if (freshAt && Date.now() - freshAt < REPLICA_FRESH_MS) return;
       broadcast(sym, { price, time });
@@ -108,8 +111,8 @@ function connectUpstream(sym) {
   ws.on('error', () => { try { ws.close(); } catch { /* already closing */ } });
 }
 
-SYMBOLS.forEach(connectUpstream);
-connectN1MarkPx(broadcast, replicaFreshAt);
+BINANCE_SYMBOLS.forEach(connectUpstream);
+connectN1MarkPx(broadcast, replicaFreshAt, SYMBOLS);
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
