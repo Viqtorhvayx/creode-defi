@@ -25,7 +25,7 @@
 
 const http = require('http');
 const WebSocket = require('ws');
-const { connectHotstuffMarkPx, REPLICA_FRESH_MS } = require('./hotstuffMarkPx');
+const { connectN1MarkPx, REPLICA_FRESH_MS } = require('./n1MarkPx');
 
 // The tokens the Vault chart tracks that 01 Exchange/N1 (terminal.trade)
 // also lists (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS,
@@ -55,11 +55,11 @@ const subscribers = new Map(SYMBOLS.map((sym) => [sym, new Set()]));
 // sym -> last known {price, time}, so a brand-new subscriber gets an
 // immediate value instead of waiting for the next trade print.
 const lastTick = new Map();
-// sym -> ms timestamp of the last fresh tick from hotstuffMarkPx.js, for the
+// sym -> ms timestamp of the last fresh tick from n1MarkPx.js, for the
 // small set of symbols (BTC/ETH) where that's the preferred source. See
 // connectUpstream's message handler below for how this suppresses Binance's
-// own broadcast while the replica is healthy, and falls back the instant
-// it isn't.
+// own broadcast while N1's own published price is fresh, and falls back the
+// instant it isn't.
 const replicaFreshAt = new Map();
 
 function broadcast(sym, tick) {
@@ -88,12 +88,12 @@ function connectUpstream(sym) {
       const price = Number(msg.p);
       const time = Math.floor(Number(msg.T) / 1000);
       if (!Number.isFinite(price) || !Number.isFinite(time)) return;
-      // Suppressed while hotstuffMarkPx.js's replica is fresh for this
-      // symbol — for BTC/ETH that's the preferred source now (Hotstuff's
-      // own validated mark price, not just raw Binance), not an accelerant
-      // layered alongside Binance like every other symbol here. Binance
-      // still resumes automatically the moment the replica goes stale, so
-      // these symbols are never left without a live price either way.
+      // Suppressed while n1MarkPx.js's feed is fresh for this symbol — for
+      // BTC/ETH that's the preferred source now (N1's own published mark
+      // price, not just raw Binance), not an accelerant layered alongside
+      // Binance like every other symbol here. Binance still resumes
+      // automatically the moment that feed goes stale, so these symbols are
+      // never left without a live price either way.
       const freshAt = replicaFreshAt.get(sym);
       if (freshAt && Date.now() - freshAt < REPLICA_FRESH_MS) return;
       broadcast(sym, { price, time });
@@ -109,7 +109,7 @@ function connectUpstream(sym) {
 }
 
 SYMBOLS.forEach(connectUpstream);
-connectHotstuffMarkPx(broadcast, replicaFreshAt);
+connectN1MarkPx(broadcast, replicaFreshAt);
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
