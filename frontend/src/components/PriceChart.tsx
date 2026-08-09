@@ -34,6 +34,15 @@ const BUCKET_SECS: Record<string, number> = { '1': 60, '60': 3600, 'D': 86400, '
 const BINANCE_POLL_MS = 50;
 const BINANCE_FAIL_GRACE = Math.ceil(1000 / BINANCE_POLL_MS); // ~1s of consecutive failures before treating it as an outage.
 
+// Tokens with no safe CEX source at all — not even as a fallback. LIT is
+// here because Binance's LITUSDT is a different, unrelated coin (Litentry)
+// than N1's LIT (Lighter): confirmed live, Binance priced it ~$0.74 while
+// Pyth's correct feed read ~$2.34 at the same instant. Unlike HBAR (which
+// has a real Binance/Bybit pair and uses it as a staleness fallback), these
+// symbols get Pyth only — no fallback — since the CEX pair itself would be
+// wrong, not just slow.
+const PYTH_ONLY_SYMS = new Set(['LIT']);
+
 export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -118,6 +127,14 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
       }, 2000);
 
       return () => { alive = false; unsubscribe(); stopFallback(); clearInterval(staleCheck); };
+    }
+
+    if (PYTH_ONLY_SYMS.has(token.sym)) {
+      const unsubscribe = subscribePythPrice(token.pythFeedId, ({ price }) => {
+        setPriceSource(null);
+        setLivePrice(price);
+      });
+      return () => { alive = false; unsubscribe(); };
     }
 
     // Binance-primary cascade for N1-matching tokens. Untouched from the
@@ -343,6 +360,13 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
         }, 2000);
         const prevUnsub = unsubTick;
         unsubTick = () => { prevUnsub?.(); clearInterval(staleCheck); stopFallback(); };
+        return;
+      }
+
+      if (PYTH_ONLY_SYMS.has(token.sym)) {
+        unsubTick = subscribePythPrice(token.pythFeedId, ({ price, time }) => {
+          applyTick(price, time);
+        });
         return;
       }
 
