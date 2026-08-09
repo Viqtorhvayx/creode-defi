@@ -25,7 +25,7 @@
 
 const http = require('http');
 const WebSocket = require('ws');
-const { connectN1MarkPx, REPLICA_FRESH_MS } = require('./n1MarkPx');
+const { connectN1IndexPx, REPLICA_FRESH_MS } = require('./n1IndexPx');
 
 // The tokens the Vault chart tracks that 01 Exchange/N1 (terminal.trade)
 // also lists (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS,
@@ -45,7 +45,7 @@ const SYMBOLS = [
 // Binance's LITUSDT is a different, unrelated coin (Litentry) than N1's LIT
 // (Lighter) — confirmed live, Binance priced it at ~$0.74 while Pyth's
 // correct LIT feed read ~$2.34 at the same instant. LIT still gets a valid
-// /stream channel (fed only by n1MarkPx.js's own N1 data, see below) — it
+// /stream channel (fed only by n1IndexPx.js's own N1 data, see below) — it
 // just never opens a Binance connection, so this process can never
 // broadcast the wrong asset's price for it, from Binance or otherwise.
 const BINANCE_SYMBOLS = SYMBOLS.filter((sym) => sym !== 'LIT');
@@ -58,10 +58,14 @@ const subscribers = new Map(SYMBOLS.map((sym) => [sym, new Set()]));
 // sym -> last known {price, time}, so a brand-new subscriber gets an
 // immediate value instead of waiting for the next trade print.
 const lastTick = new Map();
-// sym -> ms timestamp of the last fresh tick from n1MarkPx.js, which is now
-// the preferred source for every symbol N1 lists — N1's own published mark
-// price, not just raw Binance. See connectUpstream's message handler below
-// for how this suppresses Binance's own broadcast while that feed is
+// sym -> ms timestamp of the last fresh tick from n1IndexPx.js, which is
+// now the preferred source for every symbol N1 lists — N1's own published
+// index/oracle price, not just raw Binance. Index over mark specifically:
+// a live measurement showed N1's own mark price lags its own index price
+// by a median ~3.2s whenever they diverge (mark is order-book-derived,
+// pulled toward index over time via funding — index reads straight from
+// Pyth/Switchboard, no such lag). See connectUpstream's message handler
+// below for how this suppresses Binance's own broadcast while that feed is
 // fresh, and falls back the instant it isn't (LIT has no Binance broadcast
 // to suppress in the first place — see BINANCE_SYMBOLS above).
 const replicaFreshAt = new Map();
@@ -92,8 +96,8 @@ function connectUpstream(sym) {
       const price = Number(msg.p);
       const time = Math.floor(Number(msg.T) / 1000);
       if (!Number.isFinite(price) || !Number.isFinite(time)) return;
-      // Suppressed while n1MarkPx.js's feed is fresh for this symbol — N1's
-      // own published mark price is the preferred source now, not just an
+      // Suppressed while n1IndexPx.js's feed is fresh for this symbol — N1's
+      // own published index price is the preferred source now, not just an
       // accelerant layered alongside Binance. Binance still resumes
       // automatically the moment that feed goes stale, so no symbol is ever
       // left without a live price either way.
@@ -112,7 +116,7 @@ function connectUpstream(sym) {
 }
 
 BINANCE_SYMBOLS.forEach(connectUpstream);
-connectN1MarkPx(broadcast, replicaFreshAt, SYMBOLS);
+connectN1IndexPx(broadcast, replicaFreshAt, SYMBOLS);
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
