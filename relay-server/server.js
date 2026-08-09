@@ -34,10 +34,16 @@ const { connectHotstuffMarkPx, REPLICA_FRESH_MS } = require('./hotstuffMarkPx');
 // zo-mainnet.n1.xyz), skipping IP — N1's only listed token with neither a
 // live Binance USDT pair nor a stable Pyth feed, so there's no real-time
 // source for it at all.
+// LIT is deliberately excluded: Binance's LITUSDT is a different, unrelated
+// coin (Litentry) than N1's LIT (Lighter) — confirmed live, Binance priced
+// it at ~$0.74 while Pyth's correct LIT feed read ~$2.34 at the same
+// instant. LIT still trades on Creode's chart via Pyth alone (see
+// PYTH_ONLY_SYMS in PriceChart.tsx); it just never opens a relay
+// connection here, so this process can't broadcast the wrong asset's price.
 const SYMBOLS = [
   'BTC', 'ETH', 'SOL', 'HYPE', 'BERA', 'SUI', 'XRP', 'WLFI', 'XPL', 'S',
   'JUP', 'EIGEN', 'APT', 'AAVE', 'KAITO', 'VIRTUAL', 'ENA', 'NEAR', 'ARB', 'ZEC',
-  'ASTER', 'PAXG', 'LIT', 'PUMP', 'WLD', 'TAO', 'DOGE', 'BNB', 'UNI', 'ONDO',
+  'ASTER', 'PAXG', 'PUMP', 'WLD', 'TAO', 'DOGE', 'BNB', 'UNI', 'ONDO',
   'PENGU', 'PEPE', 'FARTCOIN', 'MON', 'VVV', 'ZRO', 'MORPHO', 'AERO',
 ];
 
