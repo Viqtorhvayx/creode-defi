@@ -88,8 +88,8 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
   // direct Pyth Hermes SSE stream with Binance/Bybit only as a 10s-staleness
   // fallback. Every other token here is one 01 Exchange/N1 (terminal.trade)
   // also lists, so its live price instead tracks the same underlying
-  // source: Binance spot, polled every 300ms — same proven REST poll, just
-  // a faster timer than waiting on N1's own publish cycle. Falls back to
+  // source: Binance spot, polled every BINANCE_POLL_MS — same proven REST
+  // poll, just a faster timer than waiting on N1's own publish cycle. Falls back to
   // Pyth then Bybit if Binance goes quiet.
   const [priceSource, setPriceSource] = useState<'binance' | 'pyth' | 'bybit' | null>(null);
   useEffect(() => {
@@ -322,10 +322,10 @@ export const PriceChart: React.FC<PriceChartProps> = ({ theme = 'light' }) => {
 
     // HBAR (not an 01 Exchange/N1 pair) keeps the original 10s
     // Pyth-staleness → Binance/Bybit fallback cascade. Every other token
-    // here tracks the same source: Binance polled every 300ms, a faster
-    // timer than waiting on N1's own publish cycle, falling back to Pyth
-    // then Bybit if Binance goes quiet — kept in sync with the price header above
-    // so the chart line moves the same way.
+    // here tracks the same source: Binance polled every BINANCE_POLL_MS, a
+    // faster timer than waiting on N1's own publish cycle, falling back to
+    // Pyth then Bybit if Binance goes quiet — kept in sync with the price
+    // header above so the chart line moves the same way.
     let lastPythTick = 0;
     let fallbackTimer: ReturnType<typeof setInterval> | null = null;
     const stopFallback = () => { if (fallbackTimer) { clearInterval(fallbackTimer); fallbackTimer = null; } };
