@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 
 /* Route: /api/market/cex-fallback?symbol=BTC
  * Last-resort price source for the Vault market chart: only used client-side
- * once the primary Pyth Hermes stream has gone quiet for 10+ seconds (mirrors
- * the same Binance-primary, Bybit-backup cascade Hotstuff/Hyperliquid's own
- * index price weights heaviest). Server-side because neither exchange's
+ * once the primary Pyth Hermes stream has gone quiet for 10+ seconds
+ * (Binance-primary, Bybit-backup cascade — the same underlying source 01
+ * Exchange/N1's own listed tokens trade against). Server-side because neither exchange's
  * public API sends CORS headers for browser calls, and Binance's main
  * api.binance.com blocks some server regions entirely — data-api.binance.vision
  * is their dedicated public-market-data mirror, unrestricted and read-only.
