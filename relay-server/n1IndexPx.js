@@ -19,10 +19,16 @@ const POLL_MS = 400; // N1's own values change roughly once per second (measured
 // broadcasting Binance directly for these symbols again.
 const REPLICA_FRESH_MS = 2000;
 
-// marketId -> our symbol, built once from N1's own market list. 'k'-prefixed
-// symbols (e.g. kPEPE) are Hyperliquid/N1's convention for a 1000x-scaled
-// display price, not a different asset — stripped to match our own naming.
-let marketIdToSym = null;
+// marketId -> { sym, scale }, built once from N1's own market list.
+// 'k'-prefixed symbols (e.g. kPEPE) are Hyperliquid/N1's convention for
+// quoting price per 1000 units of an ultra-low-priced token, not a
+// different asset — but the PRICE VALUE itself is still 1000x the true
+// per-token price, so it has to be divided down, not just have the 'k'
+// stripped from the display name. Confirmed live: N1's kPEPE indexPrice
+// read 0.00290335 while Pyth's real per-PEPE price read 0.0000029035 at
+// the same instant — a ~1000x ratio, exactly as expected. Missing this
+// scale factor would broadcast PEPE at ~1000x its real price.
+let marketIdToInfo = null;
 
 async function buildMapping() {
   const res = await fetch(N1_INFO_URL);
@@ -30,25 +36,30 @@ async function buildMapping() {
   const map = {};
   for (const m of data.markets) {
     let sym = m.symbol.replace(/USD$/, '');
-    if (sym.startsWith('k')) sym = sym.slice(1);
-    map[m.marketId] = sym;
+    let scale = 1;
+    if (sym.startsWith('k')) {
+      sym = sym.slice(1);
+      scale = 1000;
+    }
+    map[m.marketId] = { sym, scale };
   }
   return map;
 }
 
 async function poll(broadcast, replicaFreshAt, trackedSyms) {
   try {
-    if (!marketIdToSym) marketIdToSym = await buildMapping();
+    if (!marketIdToInfo) marketIdToInfo = await buildMapping();
     const res = await fetch(N1_LIVE_URL);
     const data = await res.json();
     const t = Date.now();
     for (const m of data.markets) {
-      const sym = marketIdToSym[m.marketId];
-      if (!sym || !trackedSyms.has(sym)) continue;
-      const price = Number(m?.indexPrice);
-      if (!Number.isFinite(price)) continue;
-      broadcast(sym, { price, time: Math.floor(t / 1000) });
-      replicaFreshAt.set(sym, t);
+      const info = marketIdToInfo[m.marketId];
+      if (!info || !trackedSyms.has(info.sym)) continue;
+      const raw = Number(m?.indexPrice);
+      if (!Number.isFinite(raw)) continue;
+      const price = raw / info.scale;
+      broadcast(info.sym, { price, time: Math.floor(t / 1000) });
+      replicaFreshAt.set(info.sym, t);
     }
   } catch (e) {
     console.error('[n1-indexpx] poll failed:', e.message);
