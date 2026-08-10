@@ -14,7 +14,14 @@
 // leads instead of the one that lags.
 const N1_INFO_URL = 'https://zo-mainnet.n1.xyz/info';
 const N1_LIVE_URL = 'https://zo-mainnet.n1.xyz/markets/live';
-const POLL_MS = 400; // N1's own values change roughly once per second (measured); this samples faster so a new value is picked up close to when it's published.
+// N1's own values change roughly once per second (measured). This is the
+// gap AFTER each request completes (see poll()'s trailing setTimeout), not
+// a fixed-rate timer, so effective cadence = real request time + POLL_MS —
+// measured median request time to N1's endpoint is ~170ms, so 150ms here
+// gives an effective ~320ms cadence, comfortably below N1's own ~1s refresh
+// without wastefully over-polling relative to it (same reasoning as
+// BINANCE_POLL_MS elsewhere in this codebase).
+const POLL_MS = 150;
 // server.js treats a value older than this as stale and falls back to
 // broadcasting Binance directly for these symbols again.
 const REPLICA_FRESH_MS = 2000;
