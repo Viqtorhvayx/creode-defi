@@ -20,6 +20,24 @@ interface OndoGapTabProps {
 // archive.
 const HISTORY_MAX = 180; // ~a few minutes at roughly 1 tick/sec
 
+// Below this, the gap is within ordinary noise for these instruments (we
+// measured typical gaps around 0.01-0.04% for similar mark-vs-oracle pairs
+// this session) — showing a directional hint on noise-floor movement would
+// be actively misleading, so it stays neutral instead.
+const HINT_THRESHOLD_PCT = 0.01;
+
+// Deliberately NOT "BUY"/"SELL" — that implies a confident recommendation
+// this data doesn't support. Mark price is pulled toward oracle over time
+// via funding (a real, measured tendency), so this describes the direction
+// that pressure points, not an instruction. See the disclaimer below for
+// why this isn't a reliable trading signal on its own.
+function directionalHint(basisPct: number | null): { label: string; color: string } | null {
+  if (basisPct == null) return null;
+  if (basisPct <= -HINT_THRESHOLD_PCT) return { label: 'Mark below oracle — may drift up', color: '#10B981' };
+  if (basisPct >= HINT_THRESHOLD_PCT) return { label: 'Mark above oracle — may drift down', color: '#EF4444' };
+  return { label: 'Roughly in line', color: '#94A3B8' };
+}
+
 const formatMoney = (v: number): string => {
   if (!Number.isFinite(v)) return '—';
   if (v >= 1000) return v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -62,6 +80,7 @@ export const OndoGapTab: React.FC<OndoGapTabProps> = ({ theme = 'light' }) => {
 
   const basis = tick ? tick.markPrice - tick.oraclePrice : null;
   const basisPct = tick ? (basis! / tick.oraclePrice) * 100 : null;
+  const hint = directionalHint(basisPct);
   const history = historyRef.current;
   const absHistory = history.map((v) => Math.abs(v));
   const sessionMax = absHistory.length ? Math.max(...absHistory) : null;
@@ -159,6 +178,15 @@ export const OndoGapTab: React.FC<OndoGapTabProps> = ({ theme = 'light' }) => {
                 </span>
               )}
             </div>
+            {hint && (
+              <div
+                className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold"
+                style={{ backgroundColor: `${hint.color}1A`, color: hint.color }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hint.color }} />
+                {hint.label}
+              </div>
+            )}
           </div>
           {sparkPoints && (
             <svg width={sparkW} height={sparkH} className="shrink-0">
@@ -183,8 +211,9 @@ export const OndoGapTab: React.FC<OndoGapTabProps> = ({ theme = 'light' }) => {
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
         This shows raw price data only — trading fees, bid-ask spread, and your own execution latency aren&apos;t reflected here.
         The gap between mark and oracle is typically small (well under 0.1% in normal conditions) and tends to close within a
-        few seconds once it widens. This is not a trading signal or a guarantee of profit — it&apos;s the same two numbers
-        Ondo Perps already publishes, shown side by side.
+        few seconds once it widens. The colored hint above shows which direction that reversion tendency points — it is
+        <span className="font-bold text-foreground"> not a buy/sell recommendation</span> or a guarantee the gap will close
+        before it widens further. It&apos;s the same two numbers Ondo Perps already publishes, shown side by side.
       </div>
     </div>
   );
