@@ -26,15 +26,17 @@ const HISTORY_MAX = 180; // ~a few minutes at roughly 1 tick/sec
 // be actively misleading, so it stays neutral instead.
 const HINT_THRESHOLD_PCT = 0.01;
 
-// Deliberately NOT "BUY"/"SELL" — that implies a confident recommendation
-// this data doesn't support. Mark price is pulled toward oracle over time
-// via funding (a real, measured tendency), so this describes the direction
-// that pressure points, not an instruction. See the disclaimer below for
-// why this isn't a reliable trading signal on its own.
+// Deliberately "favors long/short" rather than "BUY"/"SELL" — long/short
+// are neutral trading terms (which position type this tendency would
+// benefit), not a command to act. Naming the position directly instead of
+// just the price direction, since "mark may drift up" left it ambiguous
+// which side of a trade that actually favors. Still not a recommendation —
+// see the disclaimer below for why this isn't a reliable trading signal on
+// its own.
 function directionalHint(basisPct: number | null): { label: string; color: string } | null {
   if (basisPct == null) return null;
-  if (basisPct <= -HINT_THRESHOLD_PCT) return { label: 'Mark below oracle — may drift up', color: '#10B981' };
-  if (basisPct >= HINT_THRESHOLD_PCT) return { label: 'Mark above oracle — may drift down', color: '#EF4444' };
+  if (basisPct <= -HINT_THRESHOLD_PCT) return { label: 'Mark below oracle — favors long', color: '#10B981' };
+  if (basisPct >= HINT_THRESHOLD_PCT) return { label: 'Mark above oracle — favors short', color: '#EF4444' };
   return { label: 'Roughly in line', color: '#94A3B8' };
 }
 
@@ -211,7 +213,8 @@ export const OndoGapTab: React.FC<OndoGapTabProps> = ({ theme = 'light' }) => {
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
         This shows raw price data only — trading fees, bid-ask spread, and your own execution latency aren&apos;t reflected here.
         The gap between mark and oracle is typically small (well under 0.1% in normal conditions) and tends to close within a
-        few seconds once it widens. The colored hint above shows which direction that reversion tendency points — it is
+        few seconds once it widens. The colored hint above names which position (long or short) that reversion tendency
+        favors, so the direction isn&apos;t left ambiguous — but it is
         <span className="font-bold text-foreground"> not a buy/sell recommendation</span> or a guarantee the gap will close
         before it widens further. It&apos;s the same two numbers Ondo Perps already publishes, shown side by side.
       </div>
