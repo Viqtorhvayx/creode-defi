@@ -13,6 +13,7 @@ import { Sidebar } from '../components/Sidebar';
 import { VaultTab } from '../components/VaultTab';
 import { P2PTab } from '../components/P2PTab';
 import { EarnTab } from '../components/EarnTab';
+import { OndoGapTab } from '../components/OndoGapTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
 import { SettingsTab } from '../components/SettingsTab';
@@ -78,6 +79,12 @@ export default function Dashboard() {
         return (
           <div className="pt-[39px] pb-8">
             <P2PTab theme={theme} />
+          </div>
+        );
+      case 'OndoGap':
+        return (
+          <div className="pt-[39px] pb-8">
+            <OndoGapTab theme={theme} />
           </div>
         );
       case 'Earn':

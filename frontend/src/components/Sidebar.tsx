@@ -3,9 +3,9 @@
 
 import React from 'react';
 import { Logo } from './Logo';
-import { 
-  LockKey, 
-  TrendUp, 
+import {
+  LockKey,
+  TrendUp,
   ArrowsDownUp,
   ChartLineUp,
   Users,
@@ -14,7 +14,8 @@ import {
   ChartPie,
   FileText,
   ShieldCheck,
-  Lifebuoy
+  Lifebuoy,
+  Target
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { CustomEarnIcon } from './CustomEarnIcon';
@@ -45,6 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'Vault', icon: LockKey, label: 'Vault' },
     { id: 'Earn', icon: TrendUp, label: 'Earn' },
     { id: 'P2P', icon: Users, label: 'P2P' },
+    { id: 'OndoGap', icon: Target, label: 'Ondo Gap' },
   ];
 
   const secondaryMenu = [
