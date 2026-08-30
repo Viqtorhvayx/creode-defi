@@ -26,7 +26,6 @@
 const http = require('http');
 const WebSocket = require('ws');
 const { connectN1IndexPx, REPLICA_FRESH_MS } = require('./n1IndexPx');
-const { connectBullbitPx, SYMBOLS: BULLBIT_SYMBOLS } = require('./bullbitPx');
 
 // The tokens the Vault chart tracks that 01 Exchange/N1 (terminal.trade)
 // also lists (must match frontend/src/lib/market.ts's VAULT_WATCH_TOKENS,
@@ -119,27 +118,6 @@ function connectUpstream(sym) {
 BINANCE_SYMBOLS.forEach(connectUpstream);
 connectN1IndexPx(broadcast, replicaFreshAt, SYMBOLS);
 
-// Bullbit Gap Monitor: a separate, parallel feed from everything above —
-// not crypto-only, not Binance/N1-sourced. Each tick carries BOTH
-// indexPrice and markPrice together (the existing broadcast/subscribers
-// above only ever carry a single price per symbol), so this gets its own
-// subscriber map, its own last-tick cache, and its own /bullbit-stream
-// endpoint rather than reusing /stream's shape.
-const bullbitSubscribers = new Map(BULLBIT_SYMBOLS.map((sym) => [sym, new Set()]));
-const bullbitLastTick = new Map();
-
-function bullbitBroadcast(sym, tick) {
-  bullbitLastTick.set(sym, tick);
-  const subs = bullbitSubscribers.get(sym);
-  if (!subs || subs.size === 0) return;
-  const payload = `data: ${JSON.stringify(tick)}\n\n`;
-  for (const res of subs) {
-    try { res.write(payload); } catch { /* client likely disconnected; req 'close' will clean it up */ }
-  }
-}
-
-connectBullbitPx(bullbitBroadcast);
-
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -172,29 +150,6 @@ const server = http.createServer((req, res) => {
 
     subscribers.get(sym).add(res);
     req.on('close', () => { subscribers.get(sym)?.delete(res); });
-    return;
-  }
-
-  if (url.pathname === '/bullbit-stream') {
-    const sym = (url.searchParams.get('symbol') || '').toUpperCase();
-    if (!BULLBIT_SYMBOLS.includes(sym)) {
-      res.writeHead(400, { 'Content-Type': 'text/plain' });
-      res.end('unknown symbol');
-      return;
-    }
-
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache, no-transform',
-      Connection: 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-    });
-
-    const existing = bullbitLastTick.get(sym);
-    if (existing) res.write(`data: ${JSON.stringify(existing)}\n\n`);
-
-    bullbitSubscribers.get(sym).add(res);
-    req.on('close', () => { bullbitSubscribers.get(sym)?.delete(res); });
     return;
   }
 

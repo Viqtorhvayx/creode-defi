@@ -13,7 +13,7 @@ import { Sidebar } from '../components/Sidebar';
 import { VaultTab } from '../components/VaultTab';
 import { P2PTab } from '../components/P2PTab';
 import { EarnTab } from '../components/EarnTab';
-import { BullbitGapTab } from '../components/BullbitGapTab';
+import { BullbitFastPriceTab } from '../components/BullbitFastPriceTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
 import { SettingsTab } from '../components/SettingsTab';
@@ -81,10 +81,10 @@ export default function Dashboard() {
             <P2PTab theme={theme} />
           </div>
         );
-      case 'BullbitGap':
+      case 'BullbitFast':
         return (
           <div className="pt-[39px] pb-8">
-            <BullbitGapTab theme={theme} />
+            <BullbitFastPriceTab theme={theme} />
           </div>
         );
       case 'Earn':
