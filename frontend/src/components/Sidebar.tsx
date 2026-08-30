@@ -46,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'Vault', icon: LockKey, label: 'Vault' },
     { id: 'Earn', icon: TrendUp, label: 'Earn' },
     { id: 'P2P', icon: Users, label: 'P2P' },
-    { id: 'BullbitGap', icon: Target, label: 'Bullbit Gap' },
+    { id: 'BullbitFast', icon: Target, label: 'Bullbit Fast' },
   ];
 
   const secondaryMenu = [
