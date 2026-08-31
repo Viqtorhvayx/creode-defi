@@ -133,7 +133,9 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
           <CaretDown size={14} className={subtleText} />
         </button>
         {dropdownOpen && (
-          <div className={`absolute z-20 mt-2 w-[260px] max-h-[320px] overflow-y-auto rounded-[12px] border shadow-lg ${cardBg}`}>
+          <div className={`absolute z-20 mt-2 w-[260px] max-h-[320px] overflow-y-auto rounded-[12px] border shadow-lg backdrop-blur-xl ${
+            isDark ? 'bg-[#0B0F14]/95 border-white/10' : 'bg-white/95 border-[#EAECEF]'
+          }`}>
             {BULLBIT_FAST_MARKETS.map((m) => (
               <button
                 key={m.sym}
