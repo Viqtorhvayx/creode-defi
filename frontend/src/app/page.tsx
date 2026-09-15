@@ -14,6 +14,7 @@ import { VaultTab } from '../components/VaultTab';
 import { P2PTab } from '../components/P2PTab';
 import { EarnTab } from '../components/EarnTab';
 import { BullbitFastPriceTab } from '../components/BullbitFastPriceTab';
+import { HotstuffFastPriceTab } from '../components/HotstuffFastPriceTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
 import { SettingsTab } from '../components/SettingsTab';
@@ -85,6 +86,12 @@ export default function Dashboard() {
         return (
           <div className="pt-[39px] pb-8">
             <BullbitFastPriceTab theme={theme} />
+          </div>
+        );
+      case 'HotstuffLead':
+        return (
+          <div className="pt-[39px] pb-8">
+            <HotstuffFastPriceTab theme={theme} />
           </div>
         );
       case 'Earn':
