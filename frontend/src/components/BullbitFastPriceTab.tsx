@@ -184,9 +184,14 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
       {/* Disclaimer */}
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
         This is Creode&apos;s own direct read of the underlying exchange — not Bullbit&apos;s published index or mark price.
-        A live measurement earlier found Bullbit&apos;s own oracle typically lags raw exchange prices by roughly
-        <span className="font-bold text-foreground"> a few hundred milliseconds</span> under normal conditions — real, but
-        modest, and not a fixed or guaranteed lead on every tick. Use this as a fast reference, not a trading signal on its own.
+        An earlier version of this note claimed Bullbit&apos;s oracle lags raw exchange prices by a few hundred
+        milliseconds. <span className="font-bold text-foreground">That was wrong and has been removed.</span>{' '}
+        It came from cross-correlating the two series on a resampled grid, which reports a venue&apos;s own publish interval
+        as though it were a lead. Re-tested directly across 302 index updates — comparing which past Binance value
+        best matches each new print — the best fit is at{' '}
+        <span className="font-bold text-foreground">0ms</span>, with error rising steadily from there ($1.74 at 0ms,
+        $3.39 at 500ms, $8.12 at 2s). Bullbit&apos;s index tracks Binance in step. This tab is still a useful direct
+        read of the underlying market, but it is not ahead of Bullbit&apos;s own number.
       </div>
     </div>
   );
