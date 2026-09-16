@@ -10,9 +10,10 @@
 // Measured against Hotstuff's live API before shipping (BTC-PERP):
 //
 // vs their ORACLE (index_price), ~2.5min sample:
-//   - Oracle refreshes every ~2.16s; cross-correlation vs raw Binance peaks
-//     at ~3.2-3.5s lag, stable across 200/100/400ms resampling grids
+//   - Oracle republishes every ~2.16s
 //   - Gap median 0.0127% (~$9.74 on BTC at $77k)
+//   - For its lag, see the LEAD/LAG section below — measured directly, not
+//     by the cross-correlation originally used here
 //
 // vs their MARKET PRICE (order book mid), 75s sample — this is what the tab
 // actually compares against, since the mid is what you'd trade near:
@@ -21,8 +22,27 @@
 //   - Their bid-ask spread ran median 0.0474% ($36.02), so the gap is only
 //     ~1.16x the cost of crossing it, before Hotstuff's own fees
 //
-// LEAD/LAG — Binance vs their mid (359s, 1195 samples, 107 quote changes).
-// RESULT: no meaningful lead. Their book tracks Binance in step.
+// LEAD/LAG. Two different questions, two different answers — the ORACLE
+// genuinely trails, the MID does not. Conflating them is what produced the
+// retracted claim below.
+//
+// THEIR ORACLE (index_price) DOES lag, confirmed two independent ways.
+// Direct level test over 239s / 108 index updates, mean absolute error by
+// lag, basis-adjusted:
+//       0ms -> $11.36
+//    2000ms ->  $7.85
+//    4000ms ->  $5.77   <- best fit
+//    5000ms ->  $5.87
+//   10000ms -> $11.28
+//   20000ms -> $19.94
+// A clean interior minimum at ~4-5s, rising steeply either side — the shape
+// a real lag produces. Expected from their design: a weighted median of nine
+// venues with MAD outlier filtering, republished every ~2.2s.
+// NOT TRADABLE: this is an order-book venue. You fill against the book, not
+// the oracle, and the book does not lag (below). The oracle governs their
+// margin and liquidation math only.
+//
+// THEIR MID (order book) — RESULT: no meaningful lead. Tracks Binance in step.
 //
 // Testing which past Binance value best matches each new quote (mean
 // absolute error, basis-adjusted, one observation per quote change):
@@ -48,10 +68,9 @@
 // For a claim about levels ("their book sits where Binance was X ago"), test
 // levels directly. Don't infer it from a correlation on a resampled grid.
 //
-// What bounds that lead is depth, not timing: sampled over 30s, top of book
+// Depth, for context on any gap you do see: sampled over 30s, top of book
 // held a median 0.00405 BTC bid / 0.00575 BTC ask — roughly $308/$437 at
-// ~$76k. Market makers quote thin precisely because they know they trail
-// Binance. See the disclaimer in HotstuffFastPriceTab.tsx.
+// ~$76k. See the disclaimer in HotstuffFastPriceTab.tsx.
 //
 // Separately, their mid tracks their own index tightly: median ~0.045%
 // discount, max deviation 0.098% over 149s, far inside their ±7.5% cap,
