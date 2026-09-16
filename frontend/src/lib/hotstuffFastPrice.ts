@@ -26,7 +26,12 @@
 // genuinely trails, the MID does not. Conflating them is what produced the
 // retracted claim below.
 //
-// THEIR ORACLE (index_price) DOES lag, confirmed two independent ways.
+// THEIR ORACLE (index_price) DOES lag, confirmed three independent ways.
+// The third is a 20-venue study run later — see research/lead-lag/ — which put
+// it at 5250ms in one capture and 4900ms in another, with a 45% well-depth
+// against a 2% placebo. That study also measured their BOOK at roughly 550ms
+// behind Binance, which is the reason the oracle lag stays untradable: the
+// thing you actually fill against has already moved.
 // Direct level test over 239s / 108 index updates, mean absolute error by
 // lag, basis-adjusted:
 //       0ms -> $11.36
