@@ -21,14 +21,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
 import { subscribePythPrice } from '../lib/pythStream';
-import { HOTSTUFF_MARKETS, fetchHotstuffTicker, type HotstuffTicker } from '../lib/hotstuffFastPrice';
+import {
+  HOTSTUFF_MARKETS,
+  fetchHotstuffTicker,
+  subscribeHotstuffTicker,
+  type HotstuffTicker,
+} from '../lib/hotstuffFastPrice';
 
 interface HotstuffFastPriceTabProps {
   theme?: 'light' | 'dark';
 }
 
 const BINANCE_POLL_MS = 50;   // same proven cadence as the Vault market chart
-const TICKER_POLL_MS = 400;   // their mid only refreshes ~every 3.3s; 400ms is plenty
+// Only used if the WebSocket can't be established — see the fallback note in
+// lib/hotstuffFastPrice.ts.
+const TICKER_POLL_MS = 400;
 const HISTORY_MAX = 180;
 
 const formatMoney = (v: number): string => {
@@ -47,6 +54,7 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
   // it) — this is what makes their ~3.3s quote cadence visible instead of
   // hidden behind our own polling rate.
   const [midChangedAt, setMidChangedAt] = useState<number | null>(null);
+  const [liveSource, setLiveSource] = useState<'connecting' | 'ws' | 'poll'>('connecting');
   const [, setTickVersion] = useState(0);
   const historyRef = useRef<number[]>([]); // rolling gap % for the sparkline
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -80,25 +88,57 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
   }, [market.sym, market.source, market.pythFeedId]);
 
   // Hotstuff's own market price (order book mid), plus bid/ask and the
-  // oracle, all from a single ticker call so they're same-instant.
+  // oracle — all same-instant, since they arrive together in one ticker
+  // payload.
+  //
+  // Pushed over their WebSocket rather than polled: with a 400ms poll we'd
+  // learn about a change up to 400ms after it happened, which is delay
+  // Creode was adding on its own. The REST poll stays as a fallback for
+  // environments that block raw browser WebSockets, and to paint the card
+  // immediately on mount instead of waiting for the first push.
   useEffect(() => {
     setTicker(null);
     setMidChangedAt(null);
+    setLiveSource('connecting');
     let alive = true;
     let lastMid: number | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
 
-    const poll = async () => {
-      const t = await fetchHotstuffTicker(market.instrument);
-      if (!alive || !t) return;
+    const apply = (t: HotstuffTicker, via: 'ws' | 'poll') => {
+      if (!alive) return;
       if (lastMid === null || t.midPrice !== lastMid) {
         lastMid = t.midPrice;
         setMidChangedAt(Date.now());
       }
       setTicker(t);
+      setLiveSource(via);
     };
-    poll();
-    const timer = setInterval(poll, TICKER_POLL_MS);
-    return () => { alive = false; clearInterval(timer); };
+
+    // Immediate first paint, and the seed value if the socket is slow to
+    // deliver its first push.
+    fetchHotstuffTicker(market.instrument).then((t) => {
+      if (t && alive && lastMid === null) apply(t, 'poll');
+    });
+
+    const startPollFallback = () => {
+      if (!alive || pollTimer) return;
+      pollTimer = setInterval(async () => {
+        const t = await fetchHotstuffTicker(market.instrument);
+        if (t) apply(t, 'poll');
+      }, TICKER_POLL_MS);
+    };
+
+    const unsubscribe = subscribeHotstuffTicker(
+      market.instrument,
+      (t) => apply(t, 'ws'),
+      startPollFallback,
+    );
+
+    return () => {
+      alive = false;
+      unsubscribe();
+      if (pollTimer) clearInterval(pollTimer);
+    };
   }, [market.instrument]);
 
   // Drives the "Xs ago" readout so it counts up between quote updates
@@ -203,7 +243,14 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
           </div>
         </div>
         <div className={`rounded-[16px] border p-5 ${cardBg}`}>
-          <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Hotstuff Market Price</div>
+          <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>
+            Hotstuff Market Price
+            {liveSource !== 'connecting' && (
+              <span className="normal-case font-normal">
+                {' '}· {liveSource === 'ws' ? 'pushed live' : 'polled (fallback)'}
+              </span>
+            )}
+          </div>
           <div className={`text-[11px] mt-0.5 ${subtleText}`}>Order book mid — what you&apos;d actually trade near</div>
           <div className="text-[32px] font-bold text-foreground mt-2 tabular-nums">
             {ticker != null ? `$${formatMoney(ticker.midPrice)}` : '—'}
