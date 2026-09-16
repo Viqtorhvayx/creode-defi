@@ -21,17 +21,32 @@
 //   - Their bid-ask spread ran median 0.0474% ($36.02), so the gap is only
 //     ~1.16x the cost of crossing it, before Hotstuff's own fees
 //
-// LEAD/LAG — Binance vs their mid (359s, 1195 samples, 107 quote changes):
-//   - Cross-correlation on returns peaks at a POSITIVE lag of ~2s, i.e.
-//     Binance moves reach their book about 2s later:
-//       250ms grid -> +1750ms (0.331)
-//       500ms grid -> +2000ms (0.4885)
-//      1000ms grid -> +2000ms (0.6144)
-//   - The evidence is the asymmetry, not the peak: reverse-direction
-//     correlation (their mid leading Binance) never exceeds ~0.06 at any
-//     grid. Their book follows Binance; Binance does not follow their book.
-//   - An earlier 74s sample suggested ~3s, but rested on only 16 quote
-//     changes. The 359s/107-event figure above supersedes it.
+// LEAD/LAG — Binance vs their mid (359s, 1195 samples, 107 quote changes).
+// RESULT: no meaningful lead. Their book tracks Binance in step.
+//
+// Testing which past Binance value best matches each new quote (mean
+// absolute error, basis-adjusted, one observation per quote change):
+//       lag     0ms -> $2.78
+//       lag   500ms -> $2.75   <- best fit
+//       lag  1000ms -> $2.93
+//       lag  2000ms -> $4.34
+//       lag  4000ms -> $5.72
+// Error rises monotonically past ~500ms. A best fit inside 500ms sits within
+// our own polling latency, so there is no lead to act on.
+//
+// AN EARLIER VERSION OF THIS FILE CLAIMED A ~2s LEAD. It was wrong. That
+// figure came from cross-correlating returns on a resampled grid, and two
+// things went wrong:
+//   1. Their mid updates every ~3.3s and was forward-filled onto 250-1000ms
+//      grids. The resulting step series mechanically trails any continuous
+//      driver under forward-fill, independent of economics — that artifact
+//      produced the apparent +2000ms peak and the 0.61/0.06 asymmetry that
+//      was cited as decisive.
+//   2. "Stable across 250/500/1000ms grids" was treated as robustness. It
+//      isn't: those are the same 107 events resampled, sharing the same
+//      noise. It tests resolution sensitivity, not sampling error.
+// For a claim about levels ("their book sits where Binance was X ago"), test
+// levels directly. Don't infer it from a correlation on a resampled grid.
 //
 // What bounds that lead is depth, not timing: sampled over 30s, top of book
 // held a median 0.00405 BTC bid / 0.00575 BTC ask — roughly $308/$437 at
