@@ -17,7 +17,8 @@ import {
   Lifebuoy,
   Target,
   Lightning,
-  ArrowsLeftRight
+  ArrowsLeftRight,
+  Scales
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { CustomEarnIcon } from './CustomEarnIcon';
@@ -51,6 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'BullbitFast', icon: Target, label: 'Bullbit Fast' },
     { id: 'HotstuffLead', icon: Lightning, label: 'Hotstuff Lead' },
     { id: 'LeadMirror', icon: ArrowsLeftRight, label: 'Lead vs Mirror' },
+    { id: 'IndexRace', icon: Scales, label: 'Index Race' },
   ];
 
   const secondaryMenu = [
