@@ -21,10 +21,26 @@
 //   - Their bid-ask spread ran median 0.0474% ($36.02), so the gap is only
 //     ~1.16x the cost of crossing it, before Hotstuff's own fees
 //
+// LEAD/LAG — Binance vs their mid (359s, 1195 samples, 107 quote changes):
+//   - Cross-correlation on returns peaks at a POSITIVE lag of ~2s, i.e.
+//     Binance moves reach their book about 2s later:
+//       250ms grid -> +1750ms (0.331)
+//       500ms grid -> +2000ms (0.4885)
+//      1000ms grid -> +2000ms (0.6144)
+//   - The evidence is the asymmetry, not the peak: reverse-direction
+//     correlation (their mid leading Binance) never exceeds ~0.06 at any
+//     grid. Their book follows Binance; Binance does not follow their book.
+//   - An earlier 74s sample suggested ~3s, but rested on only 16 quote
+//     changes. The 359s/107-event figure above supersedes it.
+//
+// What bounds that lead is depth, not timing: sampled over 30s, top of book
+// held a median 0.00405 BTC bid / 0.00575 BTC ask — roughly $308/$437 at
+// ~$76k. Market makers quote thin precisely because they know they trail
+// Binance. See the disclaimer in HotstuffFastPriceTab.tsx.
+//
 // Separately, their mid tracks their own index tightly: median ~0.045%
 // discount, max deviation 0.098% over 149s, far inside their ±7.5% cap,
-// with funding pinned throughout. See the disclaimer in
-// HotstuffFastPriceTab.tsx for why a steady basis is not a trading edge.
+// with funding pinned throughout.
 export type FastPriceSource = 'binance' | 'pyth';
 
 export interface HotstuffMarket {

@@ -304,20 +304,44 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
             </svg>
           )}
         </div>
+
+        {/* Measured lead — the headline finding, with the two things that
+            bound it stated in the same breath so the number never travels
+            without its context. */}
+        <div className={`mt-4 pt-4 border-t ${isDark ? 'border-white/5' : 'border-black/5'}`}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Measured Lead</span>
+            <span
+              className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-bold tabular-nums"
+              style={{ backgroundColor: '#00A8E81A', color: '#00A8E8' }}
+            >
+              ~2s
+            </span>
+          </div>
+          <div className={`text-[11px] mt-1.5 leading-relaxed ${subtleText}`}>
+            Binance moves reach Hotstuff&apos;s book about 2 seconds later — correlation{' '}
+            <span className="text-foreground font-bold">0.61 forward</span> vs.{' '}
+            <span className="text-foreground font-bold">0.06 reverse</span>{' '}
+            over 107 quote changes in 359s, so their book follows Binance and not the other way round. What caps it
+            isn&apos;t the lead, it&apos;s depth: their top of book held a median of{' '}
+            <span className="text-foreground font-bold">~$437</span>{' '}
+            on the ask. Market makers quote thin precisely because they know they&apos;re behind.
+          </div>
+        </div>
       </div>
 
       {/* Disclaimer */}
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
-        This compares Creode&apos;s own direct exchange read against Hotstuff&apos;s order book mid — the price you&apos;d
-        actually trade near, rather than their oracle. Hotstuff&apos;s market price tracks its oracle tightly: measured
-        over 149s on BTC, the mid held a steady ~0.045% discount to index and never deviated more than 0.098%, far
-        inside their ±7.5% bandwidth cap, with funding pinned throughout to sustain it.
-        <span className="font-bold text-foreground"> A gap here is not free money.</span>{' '}
-        Measured over 75s on BTC, Creode&apos;s read sat a steady 0.0551% above Hotstuff&apos;s mid — never once
-        flipping sign — while the spread you&apos;d cross to act on it ran 0.0474%. The gap is roughly 1.2x the
-        crossing cost before Hotstuff&apos;s own fees, and a basis that holds steady in one direction is the
-        market&apos;s clearing price, not an error waiting to close. This is a measurement, shown honestly, not a
-        signal.
+        This compares Creode&apos;s own direct exchange read against Hotstuff&apos;s order book mid — the price
+        you&apos;d actually trade near, rather than their oracle. The ~2s lead above is real and measured, but it is
+        <span className="font-bold text-foreground"> not the same thing as a profitable trade</span>, for three
+        reasons worth reading together. First, correlation 0.61 explains roughly a third of the variance, so a
+        sizeable share of Binance moves aren&apos;t followed at all. Second, the level gap and the spread are nearly
+        the same size — a median 0.0551% basis against a 0.0474% spread you&apos;d cross to act on it, before
+        Hotstuff&apos;s own fees. Third, and most limiting, top-of-book depth ran a median ~$437: even a perfect
+        two-second read on direction only applies to a few hundred dollars of notional per quote refresh. Separately,
+        their mid tracks their own oracle tightly — a steady ~0.045% discount, max deviation 0.098% over 149s, far
+        inside their ±7.5% cap, with funding pinned throughout. These are measurements, shown honestly, not signals.
       </div>
     </div>
   );
