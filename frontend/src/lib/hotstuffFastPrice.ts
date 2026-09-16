@@ -36,6 +36,9 @@ export interface HotstuffMarket {
 }
 
 export const HOTSTUFF_API = 'https://api.hotstuff.trade/info';
+// Trailing slash is required — without it the upgrade gets a 301 and the
+// handshake fails. Confirmed live.
+export const HOTSTUFF_WS = 'wss://api.hotstuff.trade/ws/';
 
 export const HOTSTUFF_MARKETS: HotstuffMarket[] = [
   { sym: 'BTC', name: 'Bitcoin', instrument: 'BTC-PERP', source: 'binance' },
@@ -98,4 +101,73 @@ export async function fetchHotstuffTicker(instrument: string): Promise<HotstuffT
   } catch {
     return null;
   }
+}
+
+/** Subscribes to Hotstuff's pushed ticker stream over their WebSocket
+ *  (JSON-RPC 2.0, channel `ticker`). Their server pushes the instant their
+ *  book changes, which removes the polling delay the REST path carries —
+ *  with a 400ms poll we'd learn about a change up to 400ms after it
+ *  happened; here we learn about it as soon as the network delivers it.
+ *
+ *  This cannot make Creode EARLIER than Hotstuff's market price: their mid
+ *  is computed from orders resting on their own book, so nothing upstream
+ *  precedes it. It only removes Creode's own lag in observing it.
+ *
+ *  Returns an unsubscribe function. Callers should keep a REST fallback:
+ *  raw browser WebSockets are blocked outright in some environments
+ *  (in-app wallet browsers, restrictive networks) in a way client-side JS
+ *  can't always detect, which is the same reason the Binance/N1 feeds go
+ *  through the relay rather than connecting directly. */
+export function subscribeHotstuffTicker(
+  instrument: string,
+  onTick: (tick: HotstuffTicker) => void,
+  onFailure?: () => void,
+): () => void {
+  let ws: WebSocket | null = null;
+  let closed = false;
+
+  try {
+    ws = new WebSocket(HOTSTUFF_WS);
+  } catch {
+    onFailure?.();
+    return () => {};
+  }
+
+  ws.onopen = () => {
+    try {
+      ws?.send(JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'subscribe',
+        params: { channel: 'ticker', symbol: instrument },
+      }));
+    } catch { /* socket died between open and send */ }
+  };
+
+  ws.onmessage = (ev) => {
+    try {
+      const msg = JSON.parse(ev.data);
+      const d = msg?.params?.data;
+      if (!d) return; // subscribe ack, heartbeat, or another channel
+      const midPrice = Number(d.mid_price);
+      if (!Number.isFinite(midPrice)) return;
+      onTick({
+        midPrice,
+        bidPrice: Number(d.best_bid_price),
+        askPrice: Number(d.best_ask_price),
+        markPrice: Number(d.mark_price),
+        indexPrice: Number(d.index_price),
+        fundingRate: Number(d.funding_rate),
+        lastUpdated: Date.now(),
+      });
+    } catch { /* skip malformed frame */ }
+  };
+
+  ws.onerror = () => { if (!closed) onFailure?.(); };
+  ws.onclose = () => { if (!closed) onFailure?.(); };
+
+  return () => {
+    closed = true;
+    try { ws?.close(); } catch { /* already closing */ }
+  };
 }
