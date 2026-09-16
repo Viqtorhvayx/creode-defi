@@ -305,27 +305,26 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
           )}
         </div>
 
-        {/* Measured lead — the headline finding, with the two things that
-            bound it stated in the same breath so the number never travels
-            without its context. */}
+        {/* Lead test — this previously claimed a ~2s lead. That was wrong;
+            see the note below and the comment block in
+            lib/hotstuffFastPrice.ts for how the error arose. */}
         <div className={`mt-4 pt-4 border-t ${isDark ? 'border-white/5' : 'border-black/5'}`}>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Measured Lead</span>
+            <span className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Lead Test</span>
             <span
-              className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-bold tabular-nums"
-              style={{ backgroundColor: '#00A8E81A', color: '#00A8E8' }}
+              className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-bold"
+              style={{ backgroundColor: '#94A3B81A', color: '#94A3B8' }}
             >
-              ~2s
+              none found
             </span>
           </div>
           <div className={`text-[11px] mt-1.5 leading-relaxed ${subtleText}`}>
-            Binance moves reach Hotstuff&apos;s book about 2 seconds later — correlation{' '}
-            <span className="text-foreground font-bold">0.61 forward</span> vs.{' '}
-            <span className="text-foreground font-bold">0.06 reverse</span>{' '}
-            over 107 quote changes in 359s, so their book follows Binance and not the other way round. What caps it
-            isn&apos;t the lead, it&apos;s depth: their top of book held a median of{' '}
-            <span className="text-foreground font-bold">~$437</span>{' '}
-            on the ask. Market makers quote thin precisely because they know they&apos;re behind.
+            Their book tracks Binance essentially <span className="text-foreground font-bold">in step</span>, not on
+            a delay. Testing which past Binance value best matches each new quote across 107 quote changes in 359s,
+            mean error was lowest at a lag of{' '}
+            <span className="text-foreground font-bold">0–500ms</span>{' '}
+            ($2.75–2.78) and rose steadily from there — $4.34 at 2s, $5.72 at 4s. A best fit inside 500ms is within
+            our own polling latency, so there is no lead here to act on.
           </div>
         </div>
       </div>
@@ -333,15 +332,17 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
       {/* Disclaimer */}
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
         This compares Creode&apos;s own direct exchange read against Hotstuff&apos;s order book mid — the price
-        you&apos;d actually trade near, rather than their oracle. The ~2s lead above is real and measured, but it is
-        <span className="font-bold text-foreground"> not the same thing as a profitable trade</span>, for three
-        reasons worth reading together. First, correlation 0.61 explains roughly a third of the variance, so a
-        sizeable share of Binance moves aren&apos;t followed at all. Second, the level gap and the spread are nearly
-        the same size — a median 0.0551% basis against a 0.0474% spread you&apos;d cross to act on it, before
-        Hotstuff&apos;s own fees. Third, and most limiting, top-of-book depth ran a median ~$437: even a perfect
-        two-second read on direction only applies to a few hundred dollars of notional per quote refresh. Separately,
-        their mid tracks their own oracle tightly — a steady ~0.045% discount, max deviation 0.098% over 149s, far
-        inside their ±7.5% cap, with funding pinned throughout. These are measurements, shown honestly, not signals.
+        you&apos;d actually trade near, rather than their oracle.
+        <span className="font-bold text-foreground"> An earlier version of this tab claimed a ~2 second lead. That
+        was wrong and has been removed.</span>{' '}
+        It came from cross-correlating the two price series on a resampled grid, which forward-fills their mid —
+        updated only every ~3.3s — onto a 250ms–1000ms grid. A step series trails any continuous driver under
+        forward-fill for mechanical reasons, regardless of economics, and that artifact was mistaken for a real lead.
+        Testing the level claim directly on the same data shows the best fit inside 500ms. What remains true and
+        measured: the level gap and the spread are nearly the same size (a median 0.0551% basis against a 0.0474%
+        spread), top-of-book depth ran a median ~$437, and their mid tracks their own oracle tightly — a steady
+        ~0.045% discount, max deviation 0.098% over 149s, far inside their ±7.5% cap, with funding pinned throughout.
+        These are measurements, shown honestly, not signals.
       </div>
     </div>
   );
