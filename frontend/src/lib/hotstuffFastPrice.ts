@@ -7,22 +7,30 @@
 // from directly, so Creode couldn't show anything ahead of Hotstuff's own
 // number for them.
 //
-// Measured against Hotstuff's live API before shipping (2026-09-15, BTC/USDC,
-// ~2.5min sample):
-//   - Their oracle refreshes every ~2.16s (69 value changes over 149s)
-//   - Cross-correlation vs raw Binance peaks at ~3.2-3.5s lag, stable across
-//     200ms/100ms/400ms resampling grids
-//   - BUT the actual price gap is small: median 0.0127% (~$9.74 on BTC at
-//     $77k), p95 0.0441%, max 0.0894%
-// The lead is real and the largest measured across any venue checked, but see
-// the disclaimer in HotstuffFastPriceTab.tsx for why a slow *oracle* is not
-// the same thing as a slow *tradable price*.
+// Measured against Hotstuff's live API before shipping (BTC-PERP):
+//
+// vs their ORACLE (index_price), ~2.5min sample:
+//   - Oracle refreshes every ~2.16s; cross-correlation vs raw Binance peaks
+//     at ~3.2-3.5s lag, stable across 200/100/400ms resampling grids
+//   - Gap median 0.0127% (~$9.74 on BTC at $77k)
+//
+// vs their MARKET PRICE (order book mid), 75s sample — this is what the tab
+// actually compares against, since the mid is what you'd trade near:
+//   - Creode's read sat a steady +0.0551% above their mid (p5 +0.0381%,
+//     p95 +0.0583%) — persistently positive, never flipping sign
+//   - Their bid-ask spread ran median 0.0474% ($36.02), so the gap is only
+//     ~1.16x the cost of crossing it, before Hotstuff's own fees
+//
+// Separately, their mid tracks their own index tightly: median ~0.045%
+// discount, max deviation 0.098% over 149s, far inside their ±7.5% cap,
+// with funding pinned throughout. See the disclaimer in
+// HotstuffFastPriceTab.tsx for why a steady basis is not a trading edge.
 export type FastPriceSource = 'binance' | 'pyth';
 
 export interface HotstuffMarket {
   sym: string;
   name: string;
-  oracleSymbol: string; // Hotstuff's own symbol, for POST /info method:"oracle"
+  instrument: string; // Hotstuff's perp instrument, for POST /info method:"ticker"
   source: FastPriceSource;
   pythFeedId?: string; // only when source === 'pyth'
 }
@@ -30,48 +38,63 @@ export interface HotstuffMarket {
 export const HOTSTUFF_API = 'https://api.hotstuff.trade/info';
 
 export const HOTSTUFF_MARKETS: HotstuffMarket[] = [
-  { sym: 'BTC', name: 'Bitcoin', oracleSymbol: 'BTC/USDC', source: 'binance' },
-  { sym: 'ETH', name: 'Ethereum', oracleSymbol: 'ETH/USDC', source: 'binance' },
-  { sym: 'SOL', name: 'Solana', oracleSymbol: 'SOL/USDC', source: 'binance' },
-  { sym: 'XRP', name: 'XRP', oracleSymbol: 'XRP/USDC', source: 'binance' },
-  { sym: 'BNB', name: 'BNB', oracleSymbol: 'BNB/USDC', source: 'binance' },
-  { sym: 'ZEC', name: 'Zcash', oracleSymbol: 'ZEC/USDC', source: 'binance' },
+  { sym: 'BTC', name: 'Bitcoin', instrument: 'BTC-PERP', source: 'binance' },
+  { sym: 'ETH', name: 'Ethereum', instrument: 'ETH-PERP', source: 'binance' },
+  { sym: 'SOL', name: 'Solana', instrument: 'SOL-PERP', source: 'binance' },
+  { sym: 'XRP', name: 'XRP', instrument: 'XRP-PERP', source: 'binance' },
+  { sym: 'BNB', name: 'BNB', instrument: 'BNB-PERP', source: 'binance' },
+  { sym: 'ZEC', name: 'Zcash', instrument: 'ZEC-PERP', source: 'binance' },
   // Binance does not spot-list HYPE (confirmed live: "Invalid symbol"), so
   // this one uses the same verified Pyth feed the rest of the app already
   // trusts for HYPE — see VAULT_WATCH_TOKENS in market.ts.
   {
     sym: 'HYPE',
     name: 'Hyperliquid',
-    oracleSymbol: 'HYPE/USDC',
+    instrument: 'HYPE-PERP',
     source: 'pyth',
     pythFeedId: '4279e31cc369bbcc2faf022b382b080e32a8e689ff20fbc530d2a603eb6cd98b',
   },
 ];
 
-export interface HotstuffOracleTick {
-  indexPrice: number;
-  extMarkPrice: number;
-  updatedAt: number; // unix seconds, Hotstuff's own timestamp
+export interface HotstuffTicker {
+  midPrice: number;    // order book mid — the actual market price you'd trade near
+  bidPrice: number;
+  askPrice: number;
+  markPrice: number;   // smoothed, used for their margin/liquidation math
+  indexPrice: number;  // their oracle
+  fundingRate: number;
+  lastUpdated: number; // unix ms, Hotstuff's own timestamp
 }
 
-/** Reads Hotstuff's published oracle for one symbol. Their API sends
+/** Reads Hotstuff's full ticker for one instrument — mid, bid/ask, mark and
+ *  index all arrive in a single call, so the market price and the oracle
+ *  shown side by side are always from the same instant rather than two
+ *  separately-timed requests. Their API sends
  *  `access-control-allow-origin: *`, so this is called straight from the
- *  browser — no relay or proxy route in the path, which matters for a
- *  latency-focused readout. */
-export async function fetchHotstuffOracle(oracleSymbol: string): Promise<HotstuffOracleTick | null> {
+ *  browser — no relay or proxy hop, which matters for a latency-focused
+ *  readout. */
+export async function fetchHotstuffTicker(instrument: string): Promise<HotstuffTicker | null> {
   try {
     const res = await fetch(HOTSTUFF_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'oracle', params: { symbol: oracleSymbol } }),
+      body: JSON.stringify({ method: 'ticker', params: { symbol: instrument } }),
     });
     if (!res.ok) return null;
-    const d = await res.json();
-    const indexPrice = Number(d.index_price);
-    const extMarkPrice = Number(d.ext_mark_price);
-    const updatedAt = Number(d.updated_at);
-    if (!Number.isFinite(indexPrice)) return null;
-    return { indexPrice, extMarkPrice, updatedAt };
+    const arr = await res.json();
+    const d = Array.isArray(arr) ? arr[0] : arr;
+    if (!d) return null;
+    const midPrice = Number(d.mid_price);
+    if (!Number.isFinite(midPrice)) return null;
+    return {
+      midPrice,
+      bidPrice: Number(d.best_bid_price),
+      askPrice: Number(d.best_ask_price),
+      markPrice: Number(d.mark_price),
+      indexPrice: Number(d.index_price),
+      fundingRate: Number(d.funding_rate),
+      lastUpdated: Number(d.last_updated),
+    };
   } catch {
     return null;
   }

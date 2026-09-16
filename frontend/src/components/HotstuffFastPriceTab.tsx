@@ -1,30 +1,34 @@
 "use client";
 
-// Hotstuff Lead — Creode's own direct-exchange read shown against Hotstuff's
-// published oracle, so the lead time between them is visible rather than
-// asserted.
+// Hotstuff Lead — Creode's own direct-exchange read shown against
+// Hotstuff's actual market price (order book mid), so the difference
+// between them is visible rather than asserted.
+//
+// Compares against the MID, not the oracle, deliberately: the mid is what
+// you'd actually trade near, and the oracle is only used for their margin
+// and liquidation math. The oracle still arrives in the same ticker call
+// and is used in the measured notes below, but it isn't the headline
+// comparison.
 //
 // This tab shows two numbers on purpose (unlike the Bullbit Fast Price tab,
 // which is deliberately single-price): the whole point here is the *gap*
-// between Creode's live read and Hotstuff's slower published oracle, and a
-// lone number can't show that. Everything shown is measured, not predicted —
-// Creode's own read on one side, Hotstuff's own published figure on the
-// other.
+// between Creode's live read and Hotstuff's own book, and a lone number
+// can't show that. Everything shown is measured, not predicted.
 //
-// See lib/hotstuffFastPrice.ts for the measured characteristics of their
-// oracle, and the disclaimer at the bottom of this file for why a slow
-// oracle is not the same thing as a trading edge.
+// See lib/hotstuffFastPrice.ts for measured characteristics, and the
+// disclaimer at the bottom of this file for why a steady basis is not a
+// trading edge.
 import React, { useEffect, useRef, useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
 import { subscribePythPrice } from '../lib/pythStream';
-import { HOTSTUFF_MARKETS, fetchHotstuffOracle, type HotstuffOracleTick } from '../lib/hotstuffFastPrice';
+import { HOTSTUFF_MARKETS, fetchHotstuffTicker, type HotstuffTicker } from '../lib/hotstuffFastPrice';
 
 interface HotstuffFastPriceTabProps {
   theme?: 'light' | 'dark';
 }
 
 const BINANCE_POLL_MS = 50;   // same proven cadence as the Vault market chart
-const ORACLE_POLL_MS = 400;   // their oracle only refreshes ~every 2.16s; 400ms is plenty
+const TICKER_POLL_MS = 400;   // their mid only refreshes ~every 3.3s; 400ms is plenty
 const HISTORY_MAX = 180;
 
 const formatMoney = (v: number): string => {
@@ -38,11 +42,11 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
   const [selected, setSelected] = useState(HOTSTUFF_MARKETS[0].sym);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fastPrice, setFastPrice] = useState<number | null>(null);
-  const [oracle, setOracle] = useState<HotstuffOracleTick | null>(null);
-  // When Hotstuff's oracle value last actually CHANGED (not just when we
-  // last polled it) — this is what makes their ~2.16s refresh cadence
-  // visible instead of hidden behind our own polling rate.
-  const [oracleChangedAt, setOracleChangedAt] = useState<number | null>(null);
+  const [ticker, setTicker] = useState<HotstuffTicker | null>(null);
+  // When Hotstuff's mid last actually CHANGED (not just when we last polled
+  // it) — this is what makes their ~3.3s quote cadence visible instead of
+  // hidden behind our own polling rate.
+  const [midChangedAt, setMidChangedAt] = useState<number | null>(null);
   const [, setTickVersion] = useState(0);
   const historyRef = useRef<number[]>([]); // rolling gap % for the sparkline
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -75,28 +79,29 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
     return () => { alive = false; clearInterval(timer); };
   }, [market.sym, market.source, market.pythFeedId]);
 
-  // Hotstuff's published oracle.
+  // Hotstuff's own market price (order book mid), plus bid/ask and the
+  // oracle, all from a single ticker call so they're same-instant.
   useEffect(() => {
-    setOracle(null);
-    setOracleChangedAt(null);
+    setTicker(null);
+    setMidChangedAt(null);
     let alive = true;
-    let lastIndex: number | null = null;
+    let lastMid: number | null = null;
 
     const poll = async () => {
-      const tick = await fetchHotstuffOracle(market.oracleSymbol);
-      if (!alive || !tick) return;
-      if (lastIndex === null || tick.indexPrice !== lastIndex) {
-        lastIndex = tick.indexPrice;
-        setOracleChangedAt(Date.now());
+      const t = await fetchHotstuffTicker(market.instrument);
+      if (!alive || !t) return;
+      if (lastMid === null || t.midPrice !== lastMid) {
+        lastMid = t.midPrice;
+        setMidChangedAt(Date.now());
       }
-      setOracle(tick);
+      setTicker(t);
     };
     poll();
-    const timer = setInterval(poll, ORACLE_POLL_MS);
+    const timer = setInterval(poll, TICKER_POLL_MS);
     return () => { alive = false; clearInterval(timer); };
-  }, [market.oracleSymbol]);
+  }, [market.instrument]);
 
-  // Drives the "Xs ago" readout so it counts up between oracle refreshes
+  // Drives the "Xs ago" readout so it counts up between quote updates
   // instead of freezing until the next tick lands.
   useEffect(() => {
     const t = setInterval(() => setTickVersion((v) => v + 1), 200);
@@ -111,8 +116,11 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const gap = fastPrice != null && oracle != null ? fastPrice - oracle.indexPrice : null;
-  const gapPct = gap != null && oracle != null ? (gap / oracle.indexPrice) * 100 : null;
+  const gap = fastPrice != null && ticker != null ? fastPrice - ticker.midPrice : null;
+  const gapPct = gap != null && ticker != null ? (gap / ticker.midPrice) * 100 : null;
+  const spreadPct = ticker != null && ticker.bidPrice > 0
+    ? ((ticker.askPrice - ticker.bidPrice) / ticker.bidPrice) * 100
+    : null;
 
   if (gapPct != null) {
     const hist = historyRef.current;
@@ -123,7 +131,7 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
   }
   const history = historyRef.current;
 
-  const oracleAgeMs = oracleChangedAt != null ? Date.now() - oracleChangedAt : null;
+  const midAgeMs = midChangedAt != null ? Date.now() - midChangedAt : null;
 
   const isDark = theme === 'dark';
   const cardBg = isDark ? 'bg-white/[0.03] border-white/5' : 'bg-white border-black/5';
@@ -149,7 +157,7 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
       <div>
         <h2 className="text-[22px] font-bold text-foreground">Hotstuff Lead</h2>
         <p className={`text-[13px] mt-1 ${subtleText}`}>
-          Creode&apos;s own live exchange read against Hotstuff&apos;s published oracle — measured, not predicted.
+          Creode&apos;s own live exchange read against Hotstuff&apos;s order book — measured, not predicted.
         </p>
       </div>
 
@@ -195,15 +203,22 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
           </div>
         </div>
         <div className={`rounded-[16px] border p-5 ${cardBg}`}>
-          <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Hotstuff Oracle</div>
-          <div className={`text-[11px] mt-0.5 ${subtleText}`}>Weighted median of 9 venues — refreshes ~every 2s</div>
+          <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Hotstuff Market Price</div>
+          <div className={`text-[11px] mt-0.5 ${subtleText}`}>Order book mid — what you&apos;d actually trade near</div>
           <div className="text-[32px] font-bold text-foreground mt-2 tabular-nums">
-            {oracle != null ? `$${formatMoney(oracle.indexPrice)}` : '—'}
+            {ticker != null ? `$${formatMoney(ticker.midPrice)}` : '—'}
           </div>
-          <div className={`text-[11px] mt-1 ${subtleText}`}>
-            {oracleAgeMs != null
-              ? `last changed ${(oracleAgeMs / 1000).toFixed(1)}s ago`
-              : 'waiting for first refresh…'}
+          <div className={`text-[11px] mt-1 tabular-nums ${subtleText}`}>
+            {ticker != null
+              ? `bid $${formatMoney(ticker.bidPrice)} · ask $${formatMoney(ticker.askPrice)}${
+                  spreadPct != null ? ` · spread ${spreadPct.toFixed(4)}%` : ''
+                }`
+              : ' '}
+          </div>
+          <div className={`text-[11px] mt-0.5 ${subtleText}`}>
+            {midAgeMs != null
+              ? `last changed ${(midAgeMs / 1000).toFixed(1)}s ago`
+              : 'waiting for first quote…'}
           </div>
         </div>
       </div>
@@ -212,7 +227,7 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
       <div className={`rounded-[16px] border p-5 ${cardBg}`}>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Gap (Creode − Hotstuff)</div>
+            <div className={`text-[12px] font-bold uppercase tracking-wide ${subtleText}`}>Gap (Creode − Hotstuff Market)</div>
             <div className={`text-[24px] font-bold mt-1 tabular-nums ${
               gap == null ? 'text-foreground' : gap >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'
             }`}>
@@ -224,7 +239,9 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
               )}
             </div>
             <div className={`text-[11px] mt-2 ${subtleText}`}>
-              Measured median on BTC: <span className="text-foreground font-bold">0.0127%</span> (~$9.74 at $77k)
+              Measured on BTC: median gap <span className="text-foreground font-bold">0.0551%</span> vs. median
+              spread <span className="text-foreground font-bold">0.0474%</span> — the gap runs only ~1.2x the cost
+              of crossing it
             </div>
           </div>
           {sparkPoints && (
@@ -244,15 +261,16 @@ export const HotstuffFastPriceTab: React.FC<HotstuffFastPriceTabProps> = ({ them
 
       {/* Disclaimer */}
       <div className={`rounded-[12px] border p-4 text-[12px] leading-relaxed ${cardBg} ${subtleText}`}>
-        Hotstuff&apos;s oracle is a weighted median of nine venues (Binance, Bybit, Gate.io, Hyperliquid, Kraken,
-        KuCoin, MEXC, OKX, Pyth) with outlier filtering, refreshing roughly every 2 seconds — so Creode&apos;s
-        single-source read genuinely does move first. Measured on BTC, the correlation peak sits around 3 seconds.
-        <span className="font-bold text-foreground"> That is not a trading edge.</span>{' '}
-        You don&apos;t fill orders
-        against the oracle — you fill against Hotstuff&apos;s order book, and the market makers quoting it read the
-        same exchanges in real time. A slow oracle affects margin and liquidation math, not the price you trade at.
-        The gap itself is also small: a median of ~0.013% is a fraction of what fees and spread cost to cross.
-        This is a measurement, shown honestly, not a signal.
+        This compares Creode&apos;s own direct exchange read against Hotstuff&apos;s order book mid — the price you&apos;d
+        actually trade near, rather than their oracle. Hotstuff&apos;s market price tracks its oracle tightly: measured
+        over 149s on BTC, the mid held a steady ~0.045% discount to index and never deviated more than 0.098%, far
+        inside their ±7.5% bandwidth cap, with funding pinned throughout to sustain it.
+        <span className="font-bold text-foreground"> A gap here is not free money.</span>{' '}
+        Measured over 75s on BTC, Creode&apos;s read sat a steady 0.0551% above Hotstuff&apos;s mid — never once
+        flipping sign — while the spread you&apos;d cross to act on it ran 0.0474%. The gap is roughly 1.2x the
+        crossing cost before Hotstuff&apos;s own fees, and a basis that holds steady in one direction is the
+        market&apos;s clearing price, not an error waiting to close. This is a measurement, shown honestly, not a
+        signal.
       </div>
     </div>
   );
