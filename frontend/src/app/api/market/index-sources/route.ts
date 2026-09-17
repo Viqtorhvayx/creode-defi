@@ -25,17 +25,27 @@ import { NextResponse } from 'next/server';
  * route costs roughly one round trip, not seven. */
 export const runtime = 'edge';
 
-type Src = 'binance' | 'okx' | 'bybit' | 'kraken' | 'kucoin' | 'gate' | 'mexc';
+/* The venues here are the USDT-quoted half of the set recovered in
+ * research/gains-oracle/ — Binance, Bybit, Bitget, Gate, plus OKX as an
+ * untested candidate and Kraken, which the search rated marginal. KuCoin and
+ * MEXC were dropped: neither could be tested, and carrying untested venues in
+ * the SLOW path buys nothing.
+ *
+ * Every pair here is deliberately USDT-quoted so the caller can apply one
+ * conversion to the whole response. Coinbase's and Kraken's USD books, which
+ * the streaming path also reads, cannot be mixed in without per-source quote
+ * handling — and the fallback is already the degraded path, so it stays simple
+ * rather than half-right. */
+type Src = 'binance' | 'okx' | 'bybit' | 'bitget' | 'kraken' | 'gate';
 
 /** Per-source pair naming. Kraken still uses XBT for bitcoin. */
 const PAIR: Record<Src, (s: string) => string> = {
   binance: (s) => `${s}USDT`,
   okx: (s) => `${s}-USDT`,
   bybit: (s) => `${s}USDT`,
+  bitget: (s) => `${s}USDT`,
   kraken: (s) => `${s === 'BTC' ? 'XBT' : s}USDT`,
-  kucoin: (s) => `${s}-USDT`,
   gate: (s) => `${s}_USDT`,
-  mexc: (s) => `${s}USDT`,
 };
 
 const mid = (b: unknown, a: unknown): number | null => {
@@ -71,11 +81,11 @@ const READERS: Record<Src, (sym: string) => Promise<number | null>> = {
     const d = k ? res[k] : null;
     return d ? mid(d.b?.[0], d.a?.[0]) : null;
   },
-  kucoin: async (s) => {
-    const r = await fetch(`https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=${PAIR.kucoin(s)}`, { cache: 'no-store' });
+  bitget: async (s) => {
+    const r = await fetch(`https://api.bitget.com/api/v2/spot/market/tickers?symbol=${PAIR.bitget(s)}`, { cache: 'no-store' });
     if (!r.ok) return null;
-    const d = (await r.json())?.data;
-    return mid(d?.bestBid, d?.bestAsk);
+    const d = (await r.json())?.data?.[0];
+    return mid(d?.bidPr, d?.askPr);
   },
   gate: async (s) => {
     const r = await fetch(`https://api.gateio.ws/api/v4/spot/tickers?currency_pair=${PAIR.gate(s)}`, { cache: 'no-store' });
@@ -83,15 +93,9 @@ const READERS: Record<Src, (sym: string) => Promise<number | null>> = {
     const d = (await r.json())?.[0];
     return mid(d?.highest_bid, d?.lowest_ask);
   },
-  mexc: async (s) => {
-    const r = await fetch(`https://api.mexc.com/api/v3/ticker/bookTicker?symbol=${PAIR.mexc(s)}`, { cache: 'no-store' });
-    if (!r.ok) return null;
-    const d = await r.json();
-    return mid(d?.bidPrice, d?.askPrice);
-  },
 };
 
-const ALL: Src[] = ['binance', 'okx', 'bybit', 'kraken', 'kucoin', 'gate', 'mexc'];
+const ALL: Src[] = ['binance', 'okx', 'bybit', 'bitget', 'kraken', 'gate'];
 
 /* Every book above is quoted in USDT, and a perp DEX oracle is quoted in USD.
  * That difference is not a rounding detail: measured live, Gains' BTC oracle

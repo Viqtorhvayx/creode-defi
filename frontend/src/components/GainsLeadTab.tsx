@@ -40,6 +40,7 @@ interface GainsLeadTabProps { theme?: 'light' | 'dark'; }
 
 const HISTORY_MS = 60_000;     // how much of our own series the fit can reach back into
 const LEAD_SAMPLES = 60;       // rolling window of their publishes used by the fit
+const BASIS_SAMPLES = 40;      // rolling window for the level-offset calibration
 const MIN_SAMPLES = 10;        // below this the fit is not reported at all
 const MAX_LEAD_MS = 3000;      // their cadence is ~505ms; a "lead" past 3s is a coincidence
 const LEAD_STEP_MS = 25;
@@ -87,6 +88,9 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
 
   const historyRef = useRef<Array<{ t: number; px: number }>>([]);
   const eventsRef = useRef<Array<{ t: number; px: number }>>([]);
+  /** Observed (their print − our value) for past publishes only. */
+  const biasRef = useRef<number[]>([]);
+  const [basis, setBasis] = useState<number | null>(null);
   const lastTheirsRef = useRef<number | null>(null);
   const lastTheirsAtRef = useRef<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -111,9 +115,10 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
     eventsRef.current = [];
     lastTheirsRef.current = null;
     lastTheirsAtRef.current = null;
+    biasRef.current = [];
     setOurs(null); setTheirs(null); setLeadMs(null); setLeadN(0); setFit(null);
     setTheirGapMs(null); setLegs({}); setPolledLegs([]); setGainsLive(false);
-    setOurMode('streaming');
+    setOurMode('streaming'); setBasis(null);
   }, [market.sym]);
 
   /** Our replicated value as of time `t`, from the rolling history. */
@@ -147,6 +152,24 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
     lastTheirsRef.current = px;
     lastTheirsAtRef.current = now;
     setTheirs(px);
+
+    // Calibrate the level offset between their number and ours, from publishes
+    // that have already happened. A persistent basis — a different source set, a
+    // USDT rate that is not exactly theirs — is not lag and it is not error in
+    // any useful sense, because it can be measured and removed live. Leaving it
+    // in costs a lot: measured over 1,064 publishes, removing it cut our mean
+    // error against their next print from $2.28 to $1.32.
+    //
+    // Strictly backward-looking on purpose. It is updated only after the print
+    // it is being scored against has landed, so it can never see the value it
+    // is helping to predict.
+    const ourNow = ourAt(now - 30);
+    if (ourNow != null) {
+      const b = biasRef.current;
+      b.push(px - ourNow);
+      while (b.length > BASIS_SAMPLES) b.shift();
+      if (b.length >= MIN_SAMPLES) setBasis(median(b));
+    }
 
     const ev = eventsRef.current;
     ev.push({ t: now, px });
@@ -283,8 +306,13 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
   const cardBg = isDark ? 'bg-white/[0.03] border-white/5' : 'bg-white border-black/5';
   const subtle = isDark ? 'text-white/50' : 'text-slate-500';
 
-  const gap = ours != null && theirs != null ? theirs - ours : null;
-  const gapBp = gap != null && ours ? (1e4 * gap) / ours : null;
+  // What we show is our estimate of the number Gains is about to print, so the
+  // measured level offset belongs in it. The raw composite stays visible
+  // underneath, because "we calibrated to you" and "we reproduced you" are
+  // different claims and the page should not blur them.
+  const calibrated = ours != null && basis != null ? ours + basis : ours;
+  const gap = calibrated != null && theirs != null ? theirs - calibrated : null;
+  const gapBp = gap != null && calibrated ? (1e4 * gap) / calibrated : null;
   const printAgeMs = lastTheirsAtRef.current != null ? Date.now() - lastTheirsAtRef.current : null;
   const totalStaleMs = leadMs != null && printAgeMs != null ? leadMs + printAgeMs : null;
   const roundTripBp = market.spreadBp + 2 * GAINS_FEE_BP_PER_SIDE;
@@ -355,11 +383,16 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
             </span>
           </div>
           <div className="text-[36px] font-bold text-foreground mt-2 tabular-nums">
-            {ours != null && !indexDrifted ? `$${fmt(ours)}` : '—'}
+            {calibrated != null && !indexDrifted ? `$${fmt(calibrated)}` : '—'}
           </div>
           <div className={`text-[11px] mt-1 ${subtle}`}>
             median of {liveCount} live book{liveCount === 1 ? '' : 's'}
             {usdtUsd != null ? ` · USDT/USD ${usdtUsd.toFixed(5)}` : ' · waiting for USDT/USD'}
+          </div>
+          <div className={`text-[11px] mt-0.5 ${subtle}`}>
+            {basis != null && ours != null
+              ? <>raw median ${fmt(ours)} · level offset {basis >= 0 ? '+' : '−'}${fmt(Math.abs(basis))} calibrated from their last {Math.min(BASIS_SAMPLES, leadN)} publishes</>
+              : 'calibrating level offset…'}
           </div>
         </div>
 
@@ -406,11 +439,13 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
         </div>
         <div className={`mt-4 pt-4 border-t text-[11px] leading-relaxed ${isDark ? 'border-white/5' : 'border-black/5'} ${subtle}`}>
           <span className="text-foreground font-bold">The lead above is smaller than our own formula error.</span>{' '}
-          Measured over 14 minutes, their oracle trailed by 150ms while our replication sat $2.13 from their number —
-          and BTC moves a median of $0.00, p90 $4.30, inside 300ms. Asked directly whether our value predicts their
-          next print better than their current print does, it wins{' '}
-          <span className="text-foreground font-bold">29.3%</span> of the time. It loses. Early by less than you are
-          wrong by is not an advantage.
+          Their oracle trails by 150ms while BTC moves a median of $0.00, p90 $4.30, inside 300ms. Recovering their
+          source set cut our error from $1.60 to <span className="text-foreground font-bold">$1.43</span>, and
+          calibrating the level offset cut it again to <span className="text-foreground font-bold">$1.24</span> — but
+          asked directly whether our value predicts their next print better than their own current print does, it still
+          wins only <span className="text-foreground font-bold">33.9%</span> of the time. Their last print carries
+          $0.95 of error because the market barely moves in half a second. To beat that we would need their complete
+          source set, and two or three of their seven venues could not be streamed from the measurement environment.
           <br /><br />
           What does reach seconds is the age of the print itself: they do not republish when their median has not
           changed. Sampled every 25ms across the capture, that age ran a median of 395ms, p90 1651ms and p99 4011ms,
@@ -450,11 +485,18 @@ export const GainsLeadTab: React.FC<GainsLeadTabProps> = ({ theme = 'light' }) =
           </div>
         )}
         <div className={`text-[11px] mt-3 ${subtle}`}>
-          USDT-quoted books are multiplied by the live USDT/USD rate before the median is taken. That is not a
-          nicety: Gains quotes USD, and on BTC the USDT books sit about{' '}
-          <span className="text-foreground font-bold">$72 (9.4bp)</span> above the USD ones — nine times Gains&apos; own
-          quoted spread. An earlier version of this took the median over both currencies at once and was wrong by
-          exactly that much.
+          These six are not a guess. Gains publishes no source list, so the set was recovered by trying all 4,083
+          subsets of twelve streamed books and level-testing each one&apos;s median against their prints: Bitget,
+          Coinbase, Binance, Bybit and Gate came out{' '}
+          <span className="text-foreground font-bold">1.4–1.85x</span> over-represented among the best-fitting
+          subsets, while Gemini, Bitstamp, Bitfinex and Crypto.com came out at{' '}
+          <span className="text-foreground font-bold">0.24–0.68x</span>. OKX is carried untested — it could not be
+          streamed from where this was measured, and a median absorbs a wrong member better than a missing one.
+          <br /><br />
+          USDT-quoted books are multiplied by the live USDT/USD rate before the median is taken. Gains quotes USD, and
+          on BTC the USDT books sit about <span className="text-foreground font-bold">$72 (9.4bp)</span> above the USD
+          ones — nine times Gains&apos; own quoted spread. An earlier version took the median over both currencies at
+          once and was wrong by exactly that much.
         </div>
       </div>
 

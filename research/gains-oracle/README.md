@@ -121,6 +121,88 @@ movement dwarfs a penny of error. Gains says only "median of up to 8 exchanges"
 without naming them, so the best available stand-in carries dollars of error
 into a window where the market barely moves.
 
+## Recovering the source set
+
+Gains publishes neither its exchange list nor its weights. Their own material
+says each Chainlink node takes **the median of seven exchange APIs**, and the
+aggregator then takes a median across **eight node answers**. So there are no
+weights to recover — it is an unweighted median twice over. Confirmed against
+the data: a plain median fits $1.427, a trimmed mean $1.430, a plain mean
+$1.515. The error was never in the weighting.
+
+That leaves membership, recovered by exhaustion: stream twelve books, try all
+4,083 subsets of at least three, take each subset's median in USD, level-test it
+against their prints. 25 minutes, BTC, 1,144 Gains prints.
+
+**Best subsets:**
+
+| fit | lag | basis | well | members |
+|---|---|---|---|---|
+| **$1.427** | +150ms | $2.01 | 52% | coinbase kraken binance bybit bitget gate |
+| $1.432 | +150ms | $1.93 | 54% | coinbase binance bybit bitget |
+| $1.476 | +150ms | $1.16 | 53% | coinbase bitfinex binance bybit bitget gate |
+| … | | | | |
+| $3.81 | +250ms | −$9.97 | 22% | bitfinex cryptocom gate *(worst)* |
+
+**Membership frequency in the best 5% of subsets, against how often each venue
+could appear at all:**
+
+| venue | lift | | venue | lift |
+|---|---|---|---|---|
+| Bitget | **1.85x** | | Bitstamp | 0.68x |
+| Coinbase | **1.85x** | | Bitfinex | 0.64x |
+| Binance | **1.77x** | | Crypto.com | 0.60x |
+| Bybit | **1.57x** | | Gemini | **0.24x** |
+| Gate | **1.41x** | | | |
+| Kraken | 1.12x | | | |
+
+The separation is clean: accepted venues at 1.4x and above, rejected at 0.68x
+and below. Gemini at 0.24x is what says the test has power rather than merely
+preferring larger sets. Kraken at 1.12x is marginal and is kept only because it
+appears in the single best subset.
+
+**Two or three members are still unidentified, and the residual says so.** At
+the best subset's lag, Gains' print sits a median **0.072bp** from the nearest
+readable book (p10 0.012bp), where the rounding floor on a 2dp BTC price is
+0.0013bp. It is landing *between* our books, not on one — which is what a median
+over a set containing invisible members looks like. The "nearest book" tally is
+correspondingly diffuse: Coinbase 19.8%, Bitget 17.1%, Gate 13.9%, Binance
+13.5%, and a long tail.
+
+The likely missing venues are **OKX, HTX, KuCoin and MEXC** — every one of which
+was unreachable by websocket from the measurement environment, which is exactly
+why they could not be tested. Their REST endpoints answer in 0.3–2.3s, far too
+slow to test against a 150ms question, so polling them would have added noise
+rather than evidence. This is an infrastructure limit here, not a fundamental
+one: a deployment that can stream them could extend the same search.
+
+One thing that did get eliminated: whether their nodes read book mids or
+last-trade prices. On BTC the spread is about a cent, and the two families are
+indistinguishable — 0.107bp vs 0.108bp median distance to the nearest venue.
+
+## Does the recovered set help?
+
+Fit improves. The product test does not.
+
+| | mean error vs their next print | wins |
+|---|---|---|
+| four books, equal median, raw | $2.27 | 19.3% |
+| recovered six-book set, raw | $2.28 | 19.8% |
+| recovered set, level offset calibrated out | $1.32 | 32.3% |
+| recovered set, trimmed, calibrated | **$1.24** | **33.9%** |
+| **their own last print** | **$0.95** | **the bar** |
+
+Break-even is 50%. Calibrating the level offset is worth more than recovering
+the set — it cuts the error by 45% on its own, and it is legitimate because a
+persistent offset is measurable live from past publishes and is not lag. Both
+together still lose.
+
+The reason is now precise rather than vague: **their previous print carries only
+$0.95 of error, because BTC barely moves in 505ms.** Our reconstruction carries
+$1.24. To win we would need to be more accurate than their own most recent
+number, which needs the complete source set. That is the whole remaining gap,
+and it is two or three venues wide.
+
 ## What does reach seconds: their screen goes stale
 
 They do not republish when their median has not changed. Sampling the age of the
@@ -197,11 +279,17 @@ it; Gains has almost no lag to defend.
 ## Reproducing
 
 ```
-node gainsnet.js    # load their trading page and record every host it calls
-node gainscap.js    # 14-min capture: Gains feed, 5 CEX books, USDT/USD
-node gainslag.js    # the level test, the guards, the composite, print age
-node gainsfill.js   # 25-min capture of all 463 pairs on their feed
-node gainsexec.js   # settled fills vs the display feed: is it the same price?
+node gainsnet.js       # load their trading page and record every host it calls
+node gainscap.js       # 14-min capture: Gains feed, 5 CEX books, USDT/USD
+node gainslag.js       # the level test, the guards, the composite, print age
+node gainsfill.js      # 25-min capture of all 463 pairs on their feed
+node gainsexec.js      # settled fills vs the display feed: is it the same price?
+
+node wsprobe.js        # which exchange books can be streamed from here at all
+node midvslast.js      # do their nodes read book mids or last trade prices?
+node gainsset.js       # 25-min capture: Gains + 12 books + USDT/USD
+node gainssetfit.js    # all 4,083 subsets, membership lift, the residual
+node gainssetverify.js # does the recovered set change the product test?
 ```
 
 `gainsnet.js` needs Playwright and is the only step that does — it is how the

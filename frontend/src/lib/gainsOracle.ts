@@ -37,12 +37,21 @@
 // THE HONEST PART, and it is the finding rather than a caveat. The lead is
 // real, it survives every guard, and it is SMALLER THAN OUR OWN FORMULA ERROR.
 // Their oracle trails by 150-300ms; BTC moves a median of $0.00 and a p90 of
-// $4.30 in 300ms; our replication sits $2.13 from their number. Being 150ms
-// early is worth less than being $2 wrong. Tested directly: asked whether our
-// value predicts their NEXT print better than their CURRENT print does, it wins
-// 29.3% of the time — it loses. Hyperliquid worked because 2.25 seconds of
-// movement dwarfs a $0.01 formula error. Six times the cadence and two hundred
-// times the fidelity error is the whole difference.
+// $4.30 in 300ms. Two rounds of work closed some of the gap and not enough of
+// it, measured over 1,064 publishes on one 25-minute capture:
+//
+//   four books, equal median, raw                     $2.27   wins 19.3%
+//   recovered six-book set, raw                       $2.28   wins 19.8%
+//   recovered set, level offset calibrated out        $1.32   wins 32.3%
+//   recovered set, trimmed, calibrated                $1.24   wins 33.9%
+//   their own last print, for comparison              $0.95   — the bar
+//
+// Break-even is 50%. Their previous print is a better predictor of their next
+// print than our reconstruction is, because at a 505ms cadence the market has
+// barely moved. Beating $0.95 needs their complete source set, and two or three
+// of their seven venues could not be streamed from where this was measured.
+// Hyperliquid worked because 2.25 seconds of movement dwarfs a $0.01 formula
+// error, and because they publish their exact weights.
 //
 // WHAT IS STILL TRUE AND VISIBLE: they do not republish when their median has
 // not changed, so the print on their screen is older than the lag. Sampled
@@ -210,21 +219,62 @@ export function subscribeGainsPrices(
  * books converted to USD, and a USDT median presented as a USD price would be
  * wrong by nine times their own quoted spread. Early and wrong is worth
  * nothing. */
-export type SpotLegId = 'binance' | 'bybit' | 'okx' | 'coinbase' | 'kraken';
+export type SpotLegId = 'binance' | 'bybit' | 'bitget' | 'gate' | 'okx' | 'coinbase' | 'kraken';
 
 export interface SpotLeg {
   id: SpotLegId;
   label: string;
   /** What the book is quoted in. 'usdt' legs are multiplied by USDT/USD. */
   quote: 'usdt' | 'usd';
+  /** Whether this venue's membership in Gains' set was actually tested. */
+  evidence: 'measured' | 'untested';
 }
 
+/* THE SET, RECOVERED. Gains publishes neither its exchange list nor its
+ * weights, so this was recovered by exhaustion: stream twelve books, try all
+ * 4,083 subsets of at least three, take each subset's median in USD, and
+ * level-test it against their prints. 25 minutes, BTC. Full tables in
+ * research/gains-oracle/.
+ *
+ * Membership frequency in the best 5% of subsets against how often a venue
+ * could appear at all — a venue genuinely in their set should be
+ * over-represented:
+ *
+ *     Bitget    1.85x      Bitstamp   0.68x
+ *     Coinbase  1.85x      Bitfinex   0.64x
+ *     Binance   1.77x      Crypto.com 0.60x
+ *     Bybit     1.57x      Gemini     0.24x
+ *     Gate      1.41x
+ *     Kraken    1.12x   (marginal, kept: it is in the single best subset)
+ *
+ * The separation is clean — the five accepted venues sit at 1.4x and above,
+ * the four rejected at 0.68x and below, with Gemini strongly excluded. That
+ * gap is what says the test has power rather than just preferring bigger sets.
+ *
+ * Their own material says each Chainlink node takes the median of SEVEN
+ * exchange APIs, and eight nodes are then median-ed again by the aggregator.
+ * So there are no weights to recover — it is an unweighted median twice over,
+ * which is why medianOf below is the right function and the error was never in
+ * the weighting. Confirmed against the data: a plain median fits $1.427, a
+ * trimmed mean $1.430, a plain mean $1.515.
+ *
+ * Two or three members remain unidentified, and the residual says so: their
+ * print sits a median 0.072bp from the nearest readable book, where the
+ * rounding floor is 0.0013bp, so it is landing BETWEEN our books rather than on
+ * one. The likely missing venues are OKX, HTX, KuCoin and MEXC — every one of
+ * which was unreachable by websocket from the measurement environment, which is
+ * exactly why they could not be tested. OKX is carried below anyway, flagged
+ * untested: it is a large enough venue that its absence is less likely than its
+ * presence, and a median absorbs a wrong member far better than it absorbs a
+ * missing one. */
 export const SPOT_LEGS: SpotLeg[] = [
-  { id: 'binance', label: 'Binance', quote: 'usdt' },
-  { id: 'bybit', label: 'Bybit', quote: 'usdt' },
-  { id: 'okx', label: 'OKX', quote: 'usdt' },
-  { id: 'coinbase', label: 'Coinbase', quote: 'usd' },
-  { id: 'kraken', label: 'Kraken', quote: 'usd' },
+  { id: 'coinbase', label: 'Coinbase', quote: 'usd', evidence: 'measured' },
+  { id: 'binance', label: 'Binance', quote: 'usdt', evidence: 'measured' },
+  { id: 'bybit', label: 'Bybit', quote: 'usdt', evidence: 'measured' },
+  { id: 'bitget', label: 'Bitget', quote: 'usdt', evidence: 'measured' },
+  { id: 'gate', label: 'Gate', quote: 'usdt', evidence: 'measured' },
+  { id: 'kraken', label: 'Kraken', quote: 'usd', evidence: 'measured' },
+  { id: 'okx', label: 'OKX', quote: 'usdt', evidence: 'untested' },
 ];
 
 export interface CompositeUpdate {
@@ -338,6 +388,21 @@ export function subscribeSpotComposite(
       if (p == null) return;
       if (d.product_id === 'USDT-USD') { if (p > 0.9 && p < 1.1) { rate = p; emit(); } return; }
       if (d.product_id === `${S}-USD`) { raw.coinbase = p; emit(); }
+    });
+
+  connect('bitget', 'wss://ws.bitget.com/v2/ws/public',
+    { op: 'subscribe', args: [{ instType: 'SPOT', channel: 'ticker', instId: `${S}USDT` }] }, (m) => {
+      const d = m as { data?: Array<{ bidPr?: string; askPr?: string }> };
+      const p = legMid(d.data?.[0]?.bidPr, d.data?.[0]?.askPr);
+      if (p != null) { raw.bitget = p; emit(); }
+    });
+
+  connect('gate', 'wss://api.gateio.ws/ws/v4/',
+    { time: Math.floor(Date.now() / 1000), channel: 'spot.book_ticker', event: 'subscribe', payload: [`${S}_USDT`] },
+    (m) => {
+      const d = m as { result?: { b?: string; a?: string } };
+      const p = legMid(d.result?.b, d.result?.a);
+      if (p != null) { raw.gate = p; emit(); }
     });
 
   connect('kraken', 'wss://ws.kraken.com/v2',
