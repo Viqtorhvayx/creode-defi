@@ -1,0 +1,4 @@
+*.jsonl
+*.log
+*.png
+node_modules/
