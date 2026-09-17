@@ -17,7 +17,6 @@ import {
   Lifebuoy,
   Target,
   Lightning,
-  ArrowsLeftRight,
   Scales,
   Percent
 } from '@phosphor-icons/react';
@@ -52,7 +51,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'P2P', icon: Users, label: 'P2P' },
     { id: 'BullbitFast', icon: Target, label: 'Bullbit Fast' },
     { id: 'HotstuffLead', icon: Lightning, label: 'Hotstuff Lead' },
-    { id: 'LeadMirror', icon: ArrowsLeftRight, label: 'Lead vs Mirror' },
     { id: 'IndexRace', icon: Scales, label: 'Index Race' },
     { id: 'FundingMonitor', icon: Percent, label: 'Funding' },
   ];
