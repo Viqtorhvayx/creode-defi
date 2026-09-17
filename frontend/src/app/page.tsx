@@ -17,6 +17,7 @@ import { BullbitFastPriceTab } from '../components/BullbitFastPriceTab';
 import { HotstuffFastPriceTab } from '../components/HotstuffFastPriceTab';
 import { IndexRaceTab } from '../components/IndexRaceTab';
 import { FundingMonitorTab } from '../components/FundingMonitorTab';
+import { PaperCarryTab } from '../components/PaperCarryTab';
 import { ActivityTab } from '../components/ActivityTab';
 import { PortfolioTab } from '../components/PortfolioTab';
 import { SettingsTab } from '../components/SettingsTab';
@@ -106,6 +107,12 @@ export default function Dashboard() {
         return (
           <div className="pt-[39px] pb-8">
             <FundingMonitorTab theme={theme} />
+          </div>
+        );
+      case 'PaperCarry':
+        return (
+          <div className="pt-[39px] pb-8">
+            <PaperCarryTab theme={theme} />
           </div>
         );
       case 'Earn':

@@ -18,7 +18,8 @@ import {
   Target,
   Lightning,
   Scales,
-  Percent
+  Percent,
+  Notebook
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { CustomEarnIcon } from './CustomEarnIcon';
@@ -53,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'HotstuffLead', icon: Lightning, label: 'Hotstuff Lead' },
     { id: 'IndexRace', icon: Scales, label: 'Index Race' },
     { id: 'FundingMonitor', icon: Percent, label: 'Funding' },
+    { id: 'PaperCarry', icon: Notebook, label: 'Paper Carry' },
   ];
 
   const secondaryMenu = [
