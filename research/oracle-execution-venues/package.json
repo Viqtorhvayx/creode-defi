@@ -1,0 +1,6 @@
+{
+  "name": "creode-research-oracle-execution-venues",
+  "private": true,
+  "//": "The repo root sets \"type\": \"module\", which would make these CommonJS capture scripts fail with 'require is not defined'. This pins the directory back to CommonJS. poolnet.js needs playwright; the rest use built-in fetch/WebSocket.",
+  "type": "commonjs"
+}

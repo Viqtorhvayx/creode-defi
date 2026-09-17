@@ -13,6 +13,21 @@ act. Seven venues were named as unchecked. This checks them.
 feed — and the round-trip fee is larger than the biggest move BTC made in any
 3.2-second window during the capture.** The fee is the wall, not the lag.
 
+**This class is now closed.** Every venue in it has been measured or ruled out,
+including the four whose endpoints were dead on the first pass:
+
+| venue | oracle lag | why it does not pay |
+|---|---|---|
+| GMX v2 | **3200ms** | 10.4bp round trip vs a $69.90 maximum 3.2s move — 0.00% hit rate |
+| Ostium | 650–900ms | 1.66bp spread; the window closes before you can act |
+| Avantis / Veranta | 200–400ms | 0.17bp band alone beats 96.9% of the moves in the window |
+| Arcus | 300ms | no lag to speak of; a 7.2bp mark-over-oracle basis you cannot trade |
+| Gains / gTrade | 150–300ms | 8.0bp round trip vs a $9.80 p99 300ms move |
+| Levana | — | shut down |
+| HMX / DESK | — | pool backend dead; live product is an order book |
+| Jupiter | — | executes at Pyth, sub-second by design |
+| Adrena | — | bot-walled, not measured |
+
 ## What could be reached
 
 | venue | status |
@@ -21,10 +36,10 @@ feed — and the round-trip fee is larger than the biggest move BTC made in any
 | **Ostium** | fully measured (also in `research/lead-lag/`) |
 | **Gains / gTrade** | **now fully measured — see `research/gains-oracle/`** |
 | Jupiter | no reachable OpenAPI; executes at Pyth, which is sub-second by design |
-| Avantis | every documented endpoint 404s |
-| Levana | `querier-mainnet.levana.finance` — Cloudflare 1016, origin DNS dead |
-| HMX | `api.hmx.org` — Cloudflare 526, invalid SSL certificate |
-| Adrena | `datapi.adrena.xyz` — 503, upstream connection failure |
+| **Avantis** | **now fully measured — see "The four that were unreachable" below** |
+| **Levana** | **shut down — the site redirects to a protocol shutdown notice** |
+| **HMX** | **rebranded to DESK; the pool backend 503s and the live product is a CLOB** |
+| Adrena | `app.adrena.xyz` sits behind a Vercel bot checkpoint |
 
 ## The trap: GMX publishes two price feeds
 
@@ -99,6 +114,65 @@ from 750–1000ms earlier, so execution is not materially staler than display
 either. Full write-up, guards and the execution test in
 `research/gains-oracle/`.
 
+## The four that were unreachable
+
+Revisited with the technique that cracked Gains: pull the trading app's JS
+bundles and read the feed host out of them, rather than guessing REST paths.
+Two of the four turned out not to be venues any more.
+
+| venue | what it is now |
+|---|---|
+| **Levana** | **shut down.** `trade.levana.finance` redirects to a protocol shutdown notice. |
+| **HMX** | **rebranded to DESK.** `pool-api.desk.exchange` returns 503 and `arbitrum-gapi.hmx.org` still 526s. The live product is `clob.desk.exchange` — an order book, so the oracle is no longer the fill price and it leaves this class entirely. |
+| **Adrena** | behind a Vercel bot checkpoint. Not measured. |
+| **Avantis** | **rebranded to Veranta, and fully measured — below.** |
+
+### Avantis / Veranta
+
+The feed is compiled into the trading bundle, not documented:
+
+```js
+y  = "https://feed-v3.avantisfi.com"
+new EventSource(`${y}/v1/stream?price_feed_ids=1&price_feed_ids=2`)  // event: price_update
+```
+
+It is **Pyth Lazer relayed through their own host** — feed id 1 is BTC/USD, 2 is
+ETH/USD, prices scaled 1e-8, 26 publishers, a quoted bid/ask band on every
+message. `/v1/price-feeds/last-price` is a daily-candle endpoint and is not the
+live feed.
+
+Measured over 11.2 minutes on BTC:
+
+| | |
+|---|---|
+| publish grid | **200ms** (p90 201ms) — regular to the millisecond |
+| lag vs Binance spot | **+200ms**, fit $1.93, well **56%** |
+| lag vs Binance perp | +400ms, fit $2.51, well 33% |
+| lag vs Coinbase | +500ms, fit $2.84, well 23% |
+| quoted band | $1.27 (**0.17bp**) |
+
+Self-control reads **+0ms at 100%**. The placebo reaches 11% well depth, which
+is higher than the 2–4% seen elsewhere, so only the Binance spot result at 56%
+is comfortably clear of it.
+
+**It does not pay, and the margin is not close.** Inside the 400ms window BTC
+moved a median of $0.00 and a p90 of $0.00, with a p99 of $5.80 and a maximum of
+$19.80. Their own quoted band is $1.27 before a single fee, and **only 3.08% of
+windows clear even that**.
+
+One caveat that cuts against trusting this too hard: the capture landed on a
+very quiet tape — 612 Binance perp changes in 11.2 minutes against 4,746 in a
+13-minute Gains capture earlier the same day. That is why the well depths here
+are weaker than elsewhere, and it is the reason to read this as "same order as
+Gains" rather than as a precise 200ms.
+
+A note on their wire clock: `timestampUs` arrives ~217ms *ahead* of our local
+clock, and sits 226ms after the `feedUpdateTimestamp` in the same message. A
+negative transport time is not physical, so their clock is simply running ahead
+of ours. Their stamps are therefore usable for measuring their own publish grid
+and not for absolute timing — which is why the lag above is measured on arrival
+times, with the self-control guard to keep that honest.
+
 ## Ostium, re-confirmed
 
 +900ms lag, $12.67 (1.66bp) spread, measured in the same run. Consistent with
@@ -137,4 +211,8 @@ node poolprobe.js    # which oracle-execution venues answer at all
 node poolcap.js      # GMX ticker + Ostium vs Binance
 node gmxsigned.js    # GMX's actual execution feed vs Binance
 node gmxedge.js      # what the lag is worth after spread, fees and latency
+
+node poolnet.js      # load the dead-endpoint venues' apps, record every host
+node avcap.js        # 13-min capture: Avantis/Veranta Pyth Lazer vs the tape
+node avlag.js        # the level test, the guards, and what the window is worth
 ```
