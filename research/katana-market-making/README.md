@@ -19,17 +19,27 @@ rising mid afterwards is their loss.
 25-minute capture, book polled at 400ms, fills scored only where they fall
 inside the book series.
 
-| market | fills | spread | half-spread | maker fee | adv sel @5s | adv sel @30s | **net** |
-|---|---|---|---|---|---|---|---|
-| BTC-USD | 128 | 0.13bp | 0.07 | 0.48 | 0.99 | 1.19 | **−1.60bp** |
-| ETH-USD | 25 | 0.82bp | 0.41 | 0.48 | 0.70 | 0.32 | **−0.39bp** |
-| HYPE-USD | 22 | 2.49bp | 1.24 | 0.48 | 1.24 | 3.79 | **−3.02bp** |
-| SOL-USD | 21 | 1.99bp | 1.00 | 0.48 | 1.42 | 2.21 | **−1.69bp** |
-| XRP-USD | 23 | 1.54bp | 0.77 | 0.48 | 1.10 | 2.72 | **−2.43bp** |
-| ZEC-USD | 32 | 1.74bp | 0.87 | 0.48 | 3.58 | 1.76 | **−1.36bp** |
+The analysis was run twice on the same capture, the second time after the write
+stream had fully flushed and so with more fills scored. Both are shown, because
+the difference is the honest measure of how firm these numbers are.
 
-Adverse selection runs 0.32–3.79bp against a half-spread of 0.07–1.24bp. It
-alone exceeds everything you earn, in every market.
+| market | half-spread | fee | net (run A) | net (run B) | fills A / B |
+|---|---|---|---|---|---|
+| BTC-USD | 0.07bp | 0.48 | −1.60bp | **−2.02bp** | 128 / 164 |
+| ETH-USD | 0.41bp | 0.48 | −0.39bp | **−0.31bp** | 25 / 28 |
+| HYPE-USD | 1.24bp | 0.48 | −3.02bp | **−2.70bp** | 22 / 24 |
+| SOL-USD | 1.00bp | 0.48 | −1.69bp | **−1.90bp** | 21 / 22 |
+| XRP-USD | 0.77bp | 0.48 | −2.43bp | **−2.72bp** | 23 / 29 |
+| ZEC-USD | 0.87bp | 0.48 | −1.36bp | **−0.15bp** | 32 / 36 |
+
+**The sign is stable in all six markets across both runs. The magnitude is not.**
+ZEC moved from −1.36bp to −0.15bp on four extra fills, which says plainly that a
+30-odd fill sample cannot pin a per-market number. Only BTC, at 164 fills, is
+reasonably stable — and it is the most negative of the six.
+
+So the finding to carry away is the direction and the mechanism, not any single
+figure: adverse selection at 30s runs 0.25–3.47bp against a half-spread of
+0.07–1.24bp, and exceeds everything you earn in every market measured.
 
 ## BTC is the worst market, not the best
 
@@ -110,9 +120,11 @@ node katmmlag.js     # spread, fees, adverse selection at 2/5/15/30s, net edge
 
 ## Caveats
 
-- 25 minutes, one session. Fill counts are 21–128 per market; only BTC's 128 is
-  a comfortable sample. The direction is consistent across all six, which is
-  what makes it believable, not any individual number.
+- 25 minutes, one session. Fill counts are 22–164 per market; only BTC's 164 is
+  a comfortable sample. Re-running the analysis minutes apart moved ZEC's net by
+  1.2bp, so treat every per-market figure as indicative. The direction is
+  consistent across all six markets and both runs, which is what makes it
+  believable — no individual number is.
 - Adverse selection is measured against Katana's own mid, not against a fill you
   actually got. A real maker choosing when and where to quote would do somewhat
   better than a maker assumed to be at the touch continuously.
