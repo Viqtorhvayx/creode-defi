@@ -19,7 +19,7 @@ feed — and the round-trip fee is larger than the biggest move BTC made in any
 |---|---|
 | **GMX v2** | fully measured — execution feed, spread and lag |
 | **Ostium** | fully measured (also in `research/lead-lag/`) |
-| **Gains / gTrade** | spread and fees readable; price feed unreachable, so lag unmeasured |
+| **Gains / gTrade** | **now fully measured — see `research/gains-oracle/`** |
 | Jupiter | no reachable OpenAPI; executes at Pyth, which is sub-second by design |
 | Avantis | every documented endpoint 404s |
 | Levana | `querier-mainnet.levana.finance` — Cloudflare 1016, origin DNS dead |
@@ -89,11 +89,15 @@ credible):
 Plus `totalPositionSizeFeeP = 3.5bp` per side. So BTC round trip ≈ 1bp spread +
 7bp fees = **8bp**, needing a ~$61 move.
 
-Their price backend (`backend-pricing.gains.trade`) does not resolve from here,
-so **their oracle lag is unmeasured**. If it resembles GMX's 3.2s, the same
-arithmetic applies and the answer is the same. If it were far longer, it would
-be worth another look — that is the one genuinely open question left in this
-class.
+**UPDATE — the lag is now measured, and it is small.** The host in their docs
+(`backend-pricing.gains.trade`) does not exist; the real one is compiled into
+their trading page bundle as `backend-pricing.eu.gains.trade/v3`. Measured over
+two captures: they republish every **505ms** and trail the tape by
+**150–300ms**, which makes theirs one of the fastest oracles in this project
+rather than one of the slowest. Their settled fills price off the display feed
+from 750–1000ms earlier, so execution is not materially staler than display
+either. Full write-up, guards and the execution test in
+`research/gains-oracle/`.
 
 ## Ostium, re-confirmed
 
@@ -123,7 +127,8 @@ magnitude larger before the arithmetic turned.
   (`/markets/info` carries funding and borrowing rates but no fee factors), so
   it comes from their published schedule rather than measurement, and price
   impact is excluded entirely. Both omissions make the answer worse, not better.
-- Gains' lag is genuinely unmeasured, not assumed.
+- Gains' lag was genuinely unmeasured here rather than assumed, and has since
+  been measured — see the update above.
 
 ## Reproducing
 

@@ -1,0 +1,10 @@
+# Capture output and fetched fixtures. gains.jsonl runs to ~45MB for a 14-minute
+# capture and gainsall.jsonl to ~12MB; the scripts regenerate all of it.
+*.jsonl
+*.log
+*.png
+gains_tv.json
+th_arb.json
+th_base.json
+fills.json
+node_modules/
