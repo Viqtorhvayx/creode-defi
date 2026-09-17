@@ -18,6 +18,7 @@ import {
   Target,
   Lightning,
   Timer,
+  Gauge,
 } from '@phosphor-icons/react';
 import { CustomVaultIcon } from './CustomVaultIcon';
 import { CustomEarnIcon } from './CustomEarnIcon';
@@ -51,6 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ theme, activeTab, setActiveTab
     { id: 'BullbitFast', icon: Target, label: 'Bullbit Fast' },
     { id: 'HotstuffLead', icon: Lightning, label: 'Hotstuff Lead' },
     { id: 'GainsLead', icon: Timer, label: 'Gains Lead' },
+    { id: 'GmxLead', icon: Gauge, label: 'GMX Lead' },
   ];
 
   const secondaryMenu = [
