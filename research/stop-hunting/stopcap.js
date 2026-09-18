@@ -15,11 +15,54 @@
 // This captures each venue's TRIGGER price — the one its own docs say governs
 // stops, margin and liquidation — against a reference built from the deepest
 // books, so the deviation can be measured rather than assumed.
+//
+// RUNNING THIS FOR A RESULT RATHER THAN A ZERO. The first 23-minute run landed
+// on a dead tape — BTC's largest move inside Katana's whole 5.5s lag window was
+// 6.21bp — so every phantom-stop figure came back 0.00% and none of them meant
+// anything. The mechanism needs the market to move. So this version:
+//
+//   - APPENDS, so a container restart costs the process and not the data
+//   - runs for hours rather than minutes, because volatility has to be waited
+//     for and cannot be summoned
+//   - watches the reference itself and prints a line to stdout whenever BTC
+//     actually moves, so the wait can be monitored instead of polled, and so
+//     the analysis can be pointed at the windows that carry information
 const fs = require('fs');
 const S = __dirname;
-const out = fs.createWriteStream(`${S}/stops.jsonl`, { flags: 'w' });
+const out = fs.createWriteStream(`${S}/stops.jsonl`, { flags: process.env.APPEND === '0' ? 'w' : 'a' });
 const last = {}; const counts = {};
 let running = true;
+
+// --- volatility watch ----------------------------------------------------
+// A rolling window of the reference, used only to decide when something is
+// happening. THRESH_BP is the move over WINDOW_MS that counts as an event; the
+// default of 15bp over 10s is well above the 6.21bp ceiling of the dead-tape
+// run, so it fires on genuine movement rather than on noise.
+const WINDOW_MS = Number(process.env.WINDOW_MS || 10000);
+const THRESH_BP = Number(process.env.THRESH_BP || 15);
+const refBuf = [];
+let inEvent = false, eventPeak = 0, eventStart = 0, events = 0;
+const stamp = () => new Date().toISOString().slice(11, 19);
+
+function watch(px) {
+  const now = Date.now();
+  refBuf.push({ t: now, m: px });
+  while (refBuf.length && now - refBuf[0].t > WINDOW_MS) refBuf.shift();
+  if (refBuf.length < 5) return;
+  let lo = Infinity, hi = -Infinity;
+  for (const r of refBuf) { if (r.m < lo) lo = r.m; if (r.m > hi) hi = r.m; }
+  const bp = 1e4 * (hi - lo) / lo;
+  if (!inEvent && bp >= THRESH_BP) {
+    inEvent = true; eventPeak = bp; eventStart = now; events++;
+    console.log(`${stamp()} VOLATILITY ${bp.toFixed(1)}bp over ${(WINDOW_MS / 1000).toFixed(0)}s  BTC ${px.toFixed(0)}`);
+  } else if (inEvent) {
+    if (bp > eventPeak) eventPeak = bp;
+    if (bp < THRESH_BP / 2) {
+      inEvent = false;
+      console.log(`${stamp()} settled — peak ${eventPeak.toFixed(1)}bp, lasted ${((now - eventStart) / 1000).toFixed(0)}s (event ${events})`);
+    }
+  }
+}
 
 const emit = (f, m, extra) => {
   if (!running || !Number.isFinite(m) || m <= 0) return;
@@ -34,7 +77,7 @@ function sock(name, url, sub, handle, opts) {
   const open = () => {
     if (!running) return;
     let ws;
-    try { ws = new WebSocket(url, opts); } catch { return; }
+    try { ws = new WebSocket(url); } catch { return; }
     ws.onopen = () => { if (sub) try { ws.send(JSON.stringify(sub)); } catch {} };
     ws.onmessage = (e) => { attempt = 0; try { handle(JSON.parse(e.data)); } catch {} };
     ws.onclose = () => { if (running) setTimeout(open, Math.min(20000, 1000 * 2 ** Math.min(attempt++, 4))); };
@@ -54,7 +97,10 @@ const UA = { headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json' 
 
 // ===== the reference: what the market actually did =======================
 sock('binperp', 'wss://fstream.binance.com/ws/btcusdt@bookTicker', null, (m) => {
-  if (m.e === 'bookTicker') emit('ref-binance-perp', mid(m.b, m.a));
+  if (m.e !== 'bookTicker') return;
+  const p = mid(m.b, m.a);
+  emit('ref-binance-perp', p);
+  watch(p);
 });
 sock('binspot', 'wss://data-stream.binance.vision/ws/btcusdt@bookTicker', null, (m) => {
   if (m.b && m.a) emit('ref-binance-spot', mid(m.b, m.a));
@@ -142,8 +188,16 @@ poll('hotstuff', 500, async () => {
   if (d?.mid_price) emit('hotstuff-mid', Number(d.mid_price));
 });
 
+// Default six hours. Volatility cannot be summoned, only waited for, and a
+// 25-minute window is what produced the uninformative zeros the first time.
+const RUN_MS = Number(process.env.RUN_MS || 6 * 3600 * 1000);
+console.log(`${stamp()} capturing for ${(RUN_MS / 3600000).toFixed(1)}h — flagging any move of ${THRESH_BP}bp inside ${(WINDOW_MS / 1000).toFixed(0)}s`);
+setInterval(() => {
+  if (running) console.log(`${stamp()} alive — ${events} volatility events so far, ${(counts['ref-binance-perp'] || 0)} reference ticks`);
+}, 1800000).unref?.();
 setTimeout(() => {
   running = false;
+  console.log(`${stamp()} [done] ${events} volatility events`);
   console.error('[done] ' + Object.entries(counts).map(([k, v]) => `${k}:${v}`).join(' '));
   out.end(() => process.exit(0));
-}, Number(process.env.RUN_MS || 1500000));
+}, RUN_MS);
