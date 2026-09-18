@@ -1,0 +1,5 @@
+*.json
+!package.json
+*.jsonl
+*.log
+node_modules/

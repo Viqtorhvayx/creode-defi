@@ -1,0 +1,6 @@
+{
+  "name": "creode-research-trader-outcomes",
+  "private": true,
+  "//": "The repo root sets \"type\": \"module\"; these are CommonJS. hlskill.js needs a large heap: node --max-old-space-size=3000 hlskill.js",
+  "type": "commonjs"
+}

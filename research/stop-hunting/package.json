@@ -1,0 +1,6 @@
+{
+  "name": "creode-research-stop-hunting",
+  "private": true,
+  "//": "The repo root sets \"type\": \"module\"; these are CommonJS. stopfit.js needs a large heap: node --max-old-space-size=3000 stopfit.js",
+  "type": "commonjs"
+}

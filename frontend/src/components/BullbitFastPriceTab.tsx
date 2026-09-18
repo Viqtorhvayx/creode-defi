@@ -13,11 +13,14 @@
 // not list HYPE at all). See lib/bullbitFastPrice.ts for the full mapping
 // and how each was verified.
 //
-// Honesty note baked into the UI itself: a live measurement earlier this
-// session found Bullbit's own published index price lags raw Binance by a
-// median of roughly ~400ms for BTC under normal conditions — real, but
-// modest, and not guaranteed on every tick. This tab does not claim a
-// fixed lead time; it just shows Creode's own fast number.
+// NO LEAD IS CLAIMED, and this comment used to claim one. It said Bullbit's
+// published index lags raw Binance by a median of ~400ms. That was retracted in
+// the UI disclaimer below but left standing here, which is worse than either —
+// the file and the screen disagreed. Re-tested directly across 302 index
+// updates, asking which past Binance value best matches each new Bullbit print:
+// the best fit is 0ms, with error rising steadily from there ($1.74 at 0ms,
+// $3.39 at 500ms, $8.12 at 2s). Bullbit's index tracks Binance in step. This
+// tab is a convenient direct read of the underlying market, nothing more.
 import React, { useEffect, useRef, useState } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
 import { subscribePythPrice } from '../lib/pythStream';
@@ -112,6 +115,10 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
   }
 
   const staleSecs = updatedAt != null ? Math.floor((Date.now() - updatedAt) / 1000) : null;
+  // Our sources quote per single token; Bullbit lists some meme markets per
+  // 1000. Showing the unscaled number put this tab a thousand times away from
+  // the price on their screen — see the correction in lib/bullbitFastPrice.ts.
+  const shown = price != null ? price * (market.displayScale ?? 1) : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -128,7 +135,7 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
           onClick={() => setDropdownOpen((v) => !v)}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-[12px] font-bold text-[14px] border ${cardBg} text-foreground`}
         >
-          <span>{market.sym}</span>
+          <span>{market.venueSymbol ?? market.sym}</span>
           <span className={`font-normal text-[12px] ${subtleText}`}>{market.name}</span>
           <CaretDown size={14} className={subtleText} />
         </button>
@@ -144,7 +151,7 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
                   m.sym === selected ? 'text-[#00A8E8] font-bold' : 'text-foreground'
                 }`}
               >
-                <span className="font-bold">{m.sym}</span>
+                <span className="font-bold">{m.venueSymbol ?? m.sym}</span>
                 <span className={subtleText}>{m.name}</span>
               </button>
             ))}
@@ -160,8 +167,13 @@ export const BullbitFastPriceTab: React.FC<BullbitFastPriceTabProps> = ({ theme 
               Fast Price <span className="normal-case font-normal">· via {market.source === 'pyth' ? 'Pyth' : 'Binance'}</span>
             </div>
             <div className="text-[40px] font-bold text-foreground mt-2 tabular-nums">
-              {price != null ? `$${formatMoney(price)}` : '—'}
+              {shown != null ? `$${formatMoney(shown)}` : '—'}
             </div>
+            {market.displayScale ? (
+              <div className={`text-[11px] mt-1 ${subtleText}`}>
+                quoted per {market.displayScale.toLocaleString()} {market.sym}, as {market.venueSymbol ?? market.sym} — the way Bullbit lists it
+              </div>
+            ) : null}
             <div className={`text-[11px] mt-1 ${subtleText}`}>
               {staleSecs != null ? (staleSecs <= 1 ? 'updated just now' : `updated ${staleSecs}s ago`) : 'waiting for first tick…'}
             </div>
