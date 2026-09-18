@@ -12,6 +12,21 @@
 // list it at all (confirmed: "Invalid symbol"), so it uses Pyth's existing
 // verified feed instead (see VAULT_WATCH_TOKENS in market.ts) — the same
 // feed the rest of the app already trusts for HYPE.
+// QUOTE CURRENCY — checked, because it is the obvious thing to get wrong.
+// Bullbit names its markets BTCUSD, so the natural assumption is that they are
+// USD-quoted and that a USDT read needs converting, the way the Gains tab does
+// it. Measured against their live index, that assumption is FALSE:
+//
+//   symbol   bullbit index   our raw USDT read   gap raw   gap if converted
+//   BTC         78240.515           78243.735     +0.4bp        -7.9bp
+//   ETH           2513.03             2513.175    +0.6bp        -7.8bp
+//   SOL           106.105             106.095     -0.9bp        -9.3bp
+//   BNB           753.235             753.275     +0.5bp        -7.8bp
+//
+// Their "USD" prices track the USDT book. Applying a USDT/USD conversion here
+// would introduce an 8bp error rather than remove one, so the raw read is
+// correct and is deliberately left alone. Confirmed 2026-09-18 at
+// USDT/USD = 0.999165.
 export type FastPriceSource = 'binance' | 'pyth';
 
 export interface BullbitFastMarket {
@@ -19,6 +34,12 @@ export interface BullbitFastMarket {
   name: string;
   source: FastPriceSource;
   pythFeedId?: string; // only set when source === 'pyth'
+  /** Bullbit lists some meme tokens per 1000 units. Our source is per single
+   *  token, so the displayed number is multiplied by this to match what the
+   *  venue actually shows. Absent means 1. */
+  displayScale?: number;
+  /** How Bullbit names the market, when that differs from `sym`. */
+  venueSymbol?: string;
 }
 
 export const BULLBIT_FAST_MARKETS: BullbitFastMarket[] = [
@@ -44,10 +65,17 @@ export const BULLBIT_FAST_MARKETS: BullbitFastMarket[] = [
   { sym: 'AVAX', name: 'Avalanche', source: 'binance' },
   { sym: 'ADA', name: 'Cardano', source: 'binance' },
   { sym: 'PUMP', name: 'Pump.fun', source: 'binance' },
-  // Binance's own PEPEUSD/BONKUSD tickers are already per-single-token —
-  // unlike Bullbit's "1000PEPE"/"1000BONK" naming, no /1000 scale
-  // correction is needed here. Confirmed live: Binance PEPEUSDT read
-  // 0.0000037, matching real per-token PEPE price directly.
-  { sym: 'PEPE', name: 'Pepe', source: 'binance' },
-  { sym: 'BONK', name: 'Bonk', source: 'binance' },
+  // A CORRECTION. This previously read "no /1000 scale correction is needed
+  // here", on the reasoning that Binance's PEPEUSDT is already per-single-token.
+  // That reasoning was right about Binance and wrong about the conclusion:
+  // Bullbit LISTS these per 1000 units, so a per-token number is what the
+  // venue shows divided by a thousand, and the tab was displaying a price
+  // 1000x away from the one on their screen.
+  //
+  // Measured against their live index on 2026-09-18:
+  //   bullbit 1000PEPEUSD = 0.00370120   our per-token read = 0.000003705
+  //   bullbit 1000BONKUSD = 0.00281400   our per-token read = 0.000002815
+  // Exactly 1000x in both cases.
+  { sym: 'PEPE', name: 'Pepe', source: 'binance', displayScale: 1000, venueSymbol: '1000PEPE' },
+  { sym: 'BONK', name: 'Bonk', source: 'binance', displayScale: 1000, venueSymbol: '1000BONK' },
 ];
