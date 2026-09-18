@@ -203,6 +203,67 @@ $1.24. To win we would need to be more accurate than their own most recent
 number, which needs the complete source set. That is the whole remaining gap,
 and it is two or three venues wide.
 
+## Does the skew price impact pay you? No — and I had it 100x wrong
+
+Gains adjusts the entry price by an imbalance term, so the natural idea is that
+taking the side which balances their book earns a price improvement — an edge
+with nothing to do with speed, hedgeable on a CEX. It was left open in
+`research/trader-outcomes/` because the sign convention could not be read off a
+single sample. Settled here across **13,346 `TradeOpenedMarket` fills** over 72h.
+
+### Two mistakes, both mine, both worth recording
+
+**The realized impact cannot be recovered by subtraction.** On these rows
+`marketPrice` is `null` and `priceAfterImpact` equals `price` exactly on all
+13,346 fills. A first pass differenced those two fields and got 0.00bp every
+time — it was subtracting a field from itself.
+
+**The units were wrong by 100x.** The `...P` fields were read as fractions
+(x1e4), giving a median impact around 110bp. A 1.1% impact on entry should have
+been the tell.
+
+### The anchor that fixes the units
+
+Gains' own `trading-variables` quotes BTC and ETH at a 1.0bp spread and most
+alts at 0.0bp. The fills carry `fixedSpreadP`, which should be exactly half of
+that:
+
+| pair | fills | median abs(fixedSpread) | implied full spread | published |
+|---|---|---|---|---|
+| BTC/USD | 410 | **0.500bp** | **1.00bp** | 1.0bp |
+| ETH/USD | 382 | **0.500bp** | **1.00bp** | 1.0bp |
+| SOL/USD | 174 | 0.000bp | 0.00bp | 0.0bp |
+| ARB/USD | 1,497 | 0.000bp | 0.00bp | 0.0bp |
+| ZEC/USD | 2,100 | 0.000bp | 0.00bp | 0.0bp |
+
+An exact match on five markets. **The `...P` fields are percentages — x100 into
+basis points.** The components also sum: `fixedSpread + cumulVol + skew ==
+total`, with a maximum residual of 1.4e-14bp.
+
+### The sign convention
+
+The fixed spread is a known cost and it is positive for longs, negative for
+shorts. So a **positive value raises the executed price** — which hurts a long
+and helps a short. Trader benefit is therefore `-value` for a long and `+value`
+for a short. The sign describes the price, not the trader.
+
+### The answer
+
+| | median | p10 | p90 | favourable |
+|---|---|---|---|---|
+| skew benefit | **−0.08bp** | −2.42 | +1.41 | **29.0%** |
+| total impact benefit | **−0.95bp** | −4.55 | +0.80 | **17.6%** |
+
+**The skew term is a cost, not a rebate.** It favours the trader on 29% of
+fills, and even its p90 is +1.41bp against a **7bp** round trip. The best market
+by median skew benefit is ETH at +0.35bp. Nothing comes close to clearing.
+
+The figures quoted earlier from this data — "p10 −105bp on ZEC, −143bp ARB,
+−265bp ENA" — were the 100x error. The real magnitudes are around a basis point,
+an order of magnitude below the fee.
+
+That closes the last open non-latency idea on this venue.
+
 ## What does reach seconds: their screen goes stale
 
 They do not republish when their median has not changed. Sampling the age of the
@@ -290,6 +351,7 @@ node midvslast.js      # do their nodes read book mids or last trade prices?
 node gainsset.js       # 25-min capture: Gains + 12 books + USDT/USD
 node gainssetfit.js    # all 4,083 subsets, membership lift, the residual
 node gainssetverify.js # does the recovered set change the product test?
+node skewsign.js       # does the skew price impact pay the balancing side?
 ```
 
 `gainsnet.js` needs Playwright and is the only step that does — it is how the
